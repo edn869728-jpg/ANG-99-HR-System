@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>ANG HR 分流中</title>
+  <style>
+    :root{
+      --bg:#f5f7fb;
+      --card:#ffffff;
+      --text:#111827;
+      --muted:#6b7280;
+      --main:#ff7a21;
+      --deep:#c45a10;
+      --line:#e5e7eb;
+      --gradient:linear-gradient(135deg,#ff882f 0%,#ff6d1d 58%,#ffac73 100%);
+    }
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html,body{
+      margin:0;
+      min-height:100%;
+      background:var(--bg);
+      color:var(--text);
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    }
+    body{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+    }
+    .card{
+      width:min(420px,100%);
+      background:var(--card);
+      border:1px solid rgba(0,0,0,.04);
+      border-radius:28px;
+      box-shadow:0 14px 40px rgba(0,0,0,.08);
+      padding:24px;
+      text-align:center;
+    }
+    .logo{
+      width:86px;
+      height:86px;
+      border-radius:26px;
+      margin:0 auto 16px;
+      background:var(--gradient);
+      color:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:26px;
+      font-weight:950;
+      box-shadow:0 14px 28px rgba(255,122,33,.28);
+    }
+    h1{
+      margin:0 0 8px;
+      font-size:23px;
+      font-weight:950;
+      color:var(--deep);
+    }
+    p{
+      margin:0;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.7;
+      font-weight:700;
+    }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      margin:14px 0 18px;
+      padding:7px 12px;
+      border-radius:999px;
+      background:rgba(255,122,33,.12);
+      color:var(--deep);
+      font-size:12px;
+      font-weight:950;
+      border:1px solid rgba(255,122,33,.16);
+    }
+    .btn{
+      width:100%;
+      border:none;
+      outline:none;
+      cursor:pointer;
+      border-radius:18px;
+      padding:15px 14px;
+      font:inherit;
+      font-size:15px;
+      font-weight:950;
+      color:#fff;
+      background:var(--gradient);
+      box-shadow:0 12px 24px rgba(255,122,33,.22);
+      margin-top:12px;
+    }
+    .btn.secondary{
+      background:#fff;
+      color:var(--deep);
+      border:1px solid rgba(255,122,33,.22);
+      box-shadow:none;
+    }
+    .small{
+      margin-top:14px;
+      font-size:12px;
+      color:#9ca3af;
+      word-break:break-all;
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div class="logo">HR</div>
+    <h1>ANG HR System</h1>
+    <p>正在判斷入口，並導向目前啟用的 Premium 版本。</p>
+    <div class="badge">Premium Only</div>
+
+    <button class="btn" onclick="goNow()">立即進入</button>
+    <button class="btn secondary" onclick="goEmployee()">進入員工頁</button>
+    <button class="btn secondary" onclick="goAdmin()">進入管理頁</button>
+
+    <div class="small" id="targetText">準備跳轉中...</div>
+  </main>
+
+  <script>
+    /*
+      目前只啟用 Premium 版本。
+
+      如果這個 index.html 放在 ang-hr-premium repo 裡：
+      PREMIUM_BASE 保持 './' 即可。
+
+      如果這個 index.html 是放在別的總入口 repo：
+      改成：
+      const PREMIUM_BASE = 'https://edn869728-jpg.github.io/ang-hr-premium/';
+    */
+    const PREMIUM_BASE = './';
+
+    const qs = new URLSearchParams(location.search);
+
+    function cleanBase(base){
+      return String(base || './').replace(/\/?$/, '/');
+    }
+
+    function getRole(){
+      const role = String(
+        qs.get('role') ||
+        qs.get('mode') ||
+        qs.get('page') ||
+        qs.get('target') ||
+        ''
+      ).toLowerCase();
+
+      if (
+        role.includes('creator') ||
+        role.includes('admin') ||
+        role.includes('manager') ||
+        role.includes('manage')
+      ) {
+        return 'admin';
+      }
+
+      return 'employee';
+    }
+
+    function buildUrl(pageName){
+      const params = new URLSearchParams(location.search);
+
+      params.delete('plan');
+      params.delete('version');
+      params.delete('target');
+
+      if (!params.get('mode')) {
+        params.set('mode', pageName === 'admin' ? 'admin' : 'employee');
+      }
+
+      if (!params.get('page')) {
+        params.set('page', pageName === 'admin' ? 'admin' : 'employee');
+      }
+
+      const file = pageName === 'admin' ? 'admin.html' : 'employee.html';
+      return cleanBase(PREMIUM_BASE) + file + '?' + params.toString();
+    }
+
+    function getDefaultTarget(){
+      return buildUrl(getRole());
+    }
+
+    function goNow(){
+      location.replace(getDefaultTarget());
+    }
+
+    function goEmployee(){
+      location.href = buildUrl('employee');
+    }
+
+    function goAdmin(){
+      location.href = buildUrl('admin');
+    }
+
+    const target = getDefaultTarget();
+    document.getElementById('targetText').textContent = target;
+
+    setTimeout(function(){
+      location.replace(target);
+    }, 600);
+  </script>
+</body>
+</html>
