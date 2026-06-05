@@ -487,16 +487,25 @@
     <button class="nav-btn" id="nav-upload" onclick="nav('upload')"><i class="fa-solid fa-file-arrow-up"></i><span>資料上傳</span></button>
   </nav>
 
-    <script>
-    var APP_CTX={
-      id:'<?= typeof id!=="undefined"?id:"" ?>',
-      token:'<?= typeof token!=="undefined"?token:"" ?>',
-      page:'<?= typeof page!=="undefined"?page:"" ?>',
-      role:'<?= typeof role!=="undefined"?role:"" ?>',
-      name:'<?= typeof name!=="undefined"?name:"" ?>',
-      nickname:'<?= typeof nickname!=="undefined"?nickname:"" ?>',
-      webAppUrl:'<?= typeof webAppUrl!=="undefined"?webAppUrl:"" ?>'
-    };
+  <script src="./config.js"></script>
+  <script>
+    var APP_CTX=(function(){
+      var p=new URLSearchParams(window.location.search);
+      var cfg=window.ANG_HR_CONFIG||{};
+      var id=String(p.get('id')||localStorage.getItem('ang_employee_id')||'').trim().toUpperCase();
+      var role=String(p.get('role')||localStorage.getItem('ang_user_role')||(id==='ANG0603'?'Creator':'Employee')||'Employee').trim();
+      return {
+        id:id,
+        token:String(p.get('token')||p.get('key')||localStorage.getItem('ang_employee_token')||'').trim(),
+        page:String(p.get('page')||'').trim(),
+        role:role,
+        name:String(p.get('name')||'').trim(),
+        nickname:String(p.get('nickname')||'').trim(),
+        webAppUrl:String(p.get('api')||p.get('gas')||cfg.apiBaseUrl||cfg.gasApiUrl||'').trim(),
+        employeePageUrl:String(cfg.employeePageUrl||'./employee.html'),
+        adminPageUrl:String(cfg.adminPageUrl||'./admin.html')
+      };
+    })();
 
     var HOURLY_RATE=200;
     var defaultThemeColors=['#FF87E0','#CCA4FF','#8089FF','#59DDFF'];
@@ -544,7 +553,7 @@
     }
     function qs(id){return document.getElementById(id)}
     function setText(id,v){var e=qs(id);if(e)e.innerText=v==null?'':String(v)}
-    function gas(){return typeof google!=='undefined'&&google.script&&google.script.run}
+    function gas(){return false}
     function esc(s){var d=document.createElement('div');d.textContent=s||'';return d.innerHTML}
     function escapeHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
     function showSuccess(m){Swal.fire('成功',m||'已完成','success')}
@@ -677,15 +686,16 @@
     }
 
     function buildPageUrl(pageName){
-      var base = String(APP_CTX.webAppUrl || window.location.href.split('#')[0].split('?')[0] || '').trim();
-      var id = encodeURIComponent(String(currentUserId || APP_CTX.id || '').trim());
-      var token = encodeURIComponent(String(currentUserToken || APP_CTX.token || '').trim());
-      var ts = Date.now();
-      return base
-        + '?page=' + encodeURIComponent(pageName || 'employee')
-        + '&id=' + id
-        + '&token=' + token
-        + '&_ts=' + ts;
+      var cfg=window.ANG_HR_CONFIG||{};
+      var page=String(pageName||'employee').toLowerCase();
+      var base=(page==='admin'||page==='creator'||page==='manager'||page==='data')
+        ? String(APP_CTX.adminPageUrl||cfg.adminPageUrl||'./admin.html')
+        : String(APP_CTX.employeePageUrl||cfg.employeePageUrl||'./employee.html');
+      var id=encodeURIComponent(String(currentUserId||APP_CTX.id||'').trim());
+      var token=encodeURIComponent(String(currentUserToken||APP_CTX.token||'').trim());
+      var role=encodeURIComponent(String(APP_CTX.role||localStorage.getItem('ang_user_role')||'').trim());
+      var ts=Date.now();
+      return base+'?id='+id+'&token='+token+'&role='+role+'&_ts='+ts;
     }
 
     function hardGo(pageName){
@@ -733,15 +743,20 @@
     /* ==================== API ==================== */
 
     function apiPost(action,payload,callback){
-      var fp=Object.assign({},payload||{},{action:action});
-      if(!/^https?:/i.test(String(window.location.href||''))){showWarning('非正式環境');if(callback)callback({ok:false,message:'not_in_web'});return}
-      var apiUrl=String((APP_CTX&&APP_CTX.webAppUrl)||'').trim()||String(window.location.origin+window.location.pathname).trim();
-      Swal.fire({title:'處理中...',allowOutsideClick:false,didOpen:function(){Swal.showLoading()}});
-      var ctrl=new AbortController();var timer=setTimeout(function(){ctrl.abort()},20000);
-      fetch(apiUrl,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(fp),signal:ctrl.signal})
+      var opts={silent:false,timeout:20000};
+      if(payload&&payload._silent){opts.silent=true;delete payload._silent;}
+      if(payload&&payload._timeout){opts.timeout=Number(payload._timeout)||20000;delete payload._timeout;}
+      var fp=Object.assign({},payload||{});
+      fp.action=action;
+      var cfg=window.ANG_HR_CONFIG||{};
+      var apiUrl=String((APP_CTX&&APP_CTX.webAppUrl)||cfg.apiBaseUrl||cfg.gasApiUrl||'').trim();
+      if(!apiUrl){showWarning('尚未設定 GAS API URL，請確認 config.js');if(callback)callback({ok:false,message:'missing_api_url'});return}
+      if(!opts.silent){Swal.fire({title:'處理中...',allowOutsideClick:false,didOpen:function(){Swal.showLoading()}});}
+      var ctrl=new AbortController();var timer=setTimeout(function(){ctrl.abort()},opts.timeout);
+      fetch(apiUrl,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(fp),signal:ctrl.signal,redirect:'follow'})
       .then(function(r){if(!r.ok)throw new Error('HTTP_'+r.status);return r.text()})
-      .then(function(t){clearTimeout(timer);Swal.close();var d=null;try{d=t?JSON.parse(t):{}}catch(e){throw new Error('invalid_json')}if(d&&!d.ok&&d.message)showError(d.message);if(callback)callback(d)})
-      .catch(function(e){clearTimeout(timer);Swal.close();if(e&&e.name==='AbortError'){showError('連線逾時');if(callback)callback({ok:false,message:'timeout'});return}showError('連線錯誤');if(callback)callback({ok:false,message:'network_error'})})
+      .then(function(t){clearTimeout(timer);if(!opts.silent)Swal.close();var d=null;try{d=t?JSON.parse(t):{}}catch(e){throw new Error('invalid_json')};if(d&&!d.ok&&d.message&&!opts.silent)showError(d.message);if(callback)callback(d)})
+      .catch(function(e){clearTimeout(timer);if(!opts.silent)Swal.close();var msg=(e&&e.name==='AbortError')?'連線逾時':'連線錯誤';if(!opts.silent)showError(msg);if(callback)callback({ok:false,message:(e&&e.name==='AbortError')?'timeout':'network_error',error:String(e)})})
       .finally(function(){clearTimeout(timer)});
     }
 
@@ -752,7 +767,7 @@
       var displayId=String(p.id||APP_CTX.id||localStorage.getItem('ang_employee_id')||'').trim().toUpperCase();
       var displayToken=String(p.token||APP_CTX.token||'').trim();
       state.employeeId=displayId;state.userToken=displayToken;currentUserId=displayId;currentUserToken=displayToken;
-      if(displayId){localStorage.setItem('ang_employee_id',displayId);setText('topBrandSub','HR 系統｜'+displayId)}else{setText('topBrandSub','HR 系統｜讀取中')}
+      if(displayId){localStorage.setItem('ang_employee_id',displayId);if(displayToken)localStorage.setItem('ang_employee_token',displayToken);setText('topBrandSub','HR 系統｜'+displayId)}else{setText('topBrandSub','HR 系統｜讀取中')}
       setText('helloName','哈囉，'+(APP_CTX.nickname||p.nickname||p.name||'員工'));
       setText('brandTitleMain','');setText('brandTitleSub','');setText('topBrandTitle','ANG.lo Engine');setLogo('ANG');
       setText('heroChip','標準版');setText('helloStatus','');
@@ -1182,10 +1197,8 @@
       var cfg=state.adminSalaryConfig||{};
       var month=qs('slipMonth')?qs('slipMonth').value:'';
       if(!month){Swal.fire('提醒',cfg.mode==='month'?'請選擇月份':'請先選擇對應月份作為查詢起點','warning');return}
-      if(!gas()){Swal.fire('提醒','非正式環境','warning');return}
-      Swal.fire({title:'載入中.',allowOutsideClick:false,didOpen:function(){Swal.showLoading()}});
-      google.script.run.withSuccessHandler(function(r){
-        Swal.close();if(!r||!r.ok){Swal.fire('提醒',r?r.message:'查無資料','warning');return}
+      apiPost('downloadSalarySlip',{id:currentUserId,token:currentUserToken,month:month,mode:(cfg.mode||'week'),weekStart:(cfg.weekStart||'週一'),monthStart:(cfg.monthStart||'1號')},function(r){
+        if(!r||!r.ok){Swal.fire('提醒',r?r.message:'查無資料','warning');return}
         var s=r.slip,d=s.detail||{};
         var periodLabel=s.periodLabel||s.month||month;
         var html='<div style="text-align:left;font-size:14px;line-height:2">';
@@ -1199,7 +1212,7 @@
         if(d.extras&&d.extras.length){d.extras.forEach(function(e){html+='<b>'+e.type+(e.name?' '+e.name:'')+'：</b>'+(e.isDeduct?'-':'')+'$'+Math.abs(e.amount||0).toLocaleString()+'<br>'})}
         html+='<hr><b style="font-size:18px;color:#c45a10">實發合計：$'+(s.totalPay||0).toLocaleString()+'</b></div>';
         Swal.fire({title:'薪資單',html:html,width:360,confirmButtonText:'關閉'});
-      }).withFailureHandler(function(e){Swal.close();Swal.fire('錯誤',String(e),'error')}).downloadSalarySlip({id:currentUserId,token:currentUserToken,month:month,mode:(cfg.mode||'week'),weekStart:(cfg.weekStart||'週一'),monthStart:(cfg.monthStart||'1號')});
+      });
     }
 
     /* ==================== 上傳 ==================== */
@@ -1340,7 +1353,7 @@
     }
 
     function _doSendClock(action,lat,lng,isFieldMode){
-      apiPost('employeeClock',{id:state.employeeId,token:state.userToken,action:action,source:isFieldMode?'field':'web',device:'web_shortcut',latitude:lat,longitude:lng,isFieldMode:isFieldMode},function(res){
+      apiPost('employeeClock',{id:state.employeeId,token:state.userToken,clockAction:action,source:isFieldMode?'field':'web',device:'web_shortcut',latitude:lat,longitude:lng,isFieldMode:isFieldMode},function(res){
         if(res&&res.ok){showSuccess(res.message||'打卡成功');loadBootstrapData()}
       });
     }
@@ -1614,11 +1627,7 @@
           (state.events||[]).forEach(function(ev){if(ev.extendedProps&&ev.extendedProps.type==='leave')calMain.addEvent(normalizeCalendarEvent(ev))});
         }
       };
-      if(gas()){
-        google.script.run.withSuccessHandler(cb).withFailureHandler(function(){}).getPublishedScheduleForCalendar({id:id,token:token});
-      }else{
-        apiPost('getPublishedScheduleForCalendar',{id:id,token:token},cb);
-      }
+      apiPost('getPublishedScheduleForCalendar',{id:id,token:token,_silent:true},cb);
     }
 
     function loadHeaderData(){
@@ -1634,6 +1643,7 @@
       try{setText('brandTitleMain',s.company_name||s.main_title||'');}catch(e){}
       try{setText('brandTitleSub',s.company_subtitle||s.system_sub||'');}catch(e){}
       try{setText('topBrandTitle',s.system_title||'ANG.lo Engine');}catch(e){}
+      try{if(p.role){APP_CTX.role=p.role;localStorage.setItem('ang_user_role',p.role)}}catch(e){}
       try{setText('topBrandSub','HR 系統｜'+(p.id||state.employeeId||'USER')+'｜'+(p.role||'員工')+'模式');}catch(e){}
       try{setLogo(s.logo_url||s.fallback_text||'ANG');}catch(e){}
       try{setText('heroChip',(p.chip&&!/manager|admin|creator|employee/i.test(String(p.chip)))?p.chip:'標準版');}catch(e){}
@@ -1669,45 +1679,38 @@
     function loadBootstrapData(){
       var id=state.employeeId,token=state.userToken;
       if(!id||!token){return}
-      if(gas()){
-        google.script.run.withSuccessHandler(function(res){if(res&&res.ok)handleBootstrapData(res)}).withFailureHandler(function(){}).getEmployeeBootstrapData(id,token);
-      }else{
-        apiPost('employeeBootstrap',{id:id,token:token},function(res){if(res&&res.ok)handleBootstrapData(res)});
-      }
+      apiPost('employeeBootstrap',{id:id,token:token,_silent:true},function(res){if(res&&res.ok)handleBootstrapData(res)});
     }
 
     /* ==================== 今日狀態（真實資料） ==================== */
 
     function loadTodayStatus(){
-      if(!gas())return;
-      google.script.run.withSuccessHandler(function(r){
+      apiPost('getTodayStatus',{id:currentUserId,token:currentUserToken,_silent:true},function(r){
         if(!r||!r.ok)return;
         var el=qs('todayStatusText'),el2=qs('tomorrowText');
         if(el){el.innerHTML=r.today.icon+' '+r.today.text;if(r.today.urgency==='danger')el.style.color='#fca5a5';else if(r.today.urgency==='warning')el.style.color='#fed7aa';else el.style.color=''}
         if(el2)el2.textContent=r.tomorrow.text;
-      }).withFailureHandler(function(){}).getTodayStatus({id:currentUserId,token:currentUserToken});
+      });
     }
 
     /* ==================== 近期動態（真實資料） ==================== */
 
     function loadRecentActivities(){
-      if(!gas())return;
-      google.script.run.withSuccessHandler(function(r){
+      apiPost('getRecentActivities',{id:currentUserId,token:currentUserToken,_silent:true},function(r){
         var box=qs('recentActivitiesBox');if(!box)return;
         if(!r||!r.ok||!r.activities||!r.activities.length){box.innerHTML='<div class="notice-item"><div class="item-title">暫無動態</div></div>';return}
         box.innerHTML=r.activities.map(function(a){return'<div class="notice-item"><div class="item-title">'+a.icon+' '+esc(a.title)+'</div><div class="item-meta">'+esc(a.time)+'</div></div>'}).join('');
-      }).withFailureHandler(function(){}).getRecentActivities({id:currentUserId,token:currentUserToken});
+      });
     }
 
     /* ==================== 主管通知（真實資料） ==================== */
 
     function loadNotices(){
-      if(!gas())return;
-      google.script.run.withSuccessHandler(function(r){
+      apiPost('getNoticesForEmployee',{id:currentUserId,token:currentUserToken,_silent:true},function(r){
         var box=qs('noticesBox');if(!box)return;
         if(!r||!r.ok||!r.notices||!r.notices.length){box.innerHTML='<div class="notice-item"><div class="item-title">暫無通知</div></div>';return}
         box.innerHTML=r.notices.map(function(n){return'<div class="notice-item"><div class="item-title">'+esc(n.title)+'</div><div class="item-meta">'+esc(n.content)+'</div><div class="item-meta" style="margin-top:4px;font-size:11px;color:#9ca3af">'+esc(n.author)+' · '+esc(n.time)+'</div></div>'}).join('');
-      }).withFailureHandler(function(){}).getNoticesForEmployee({id:currentUserId,token:currentUserToken});
+      });
     }
 
     /* ==================== 選休狀態恢復 ==================== */
@@ -1733,8 +1736,7 @@
 
 
     function loadPreselectStatus(){
-      if(!gas())return;
-      google.script.run.withSuccessHandler(function(r){
+      apiPost('isPreselectOpen',{id:currentUserId,token:currentUserToken,_silent:true},function(r){
         if(!r||!r.ok)return;
         var noteEl=qs('schedule-confirm-note');
         var confirmBtn=document.querySelector('#page-schedule .btn-soft');
@@ -1745,18 +1747,17 @@
         }else{
           if(confirmBtn){confirmBtn.textContent='確認日期選擇';confirmBtn.disabled=false;confirmBtn.style.background='';confirmBtn.style.color=''}
         }
-      }).withFailureHandler(function(){}).isPreselectOpen({id:currentUserId,token:currentUserToken});
+      });
     }
 
     /* ==================== 設定變動輪詢（60秒） ==================== */
 
     var lastSettingsHash='';
     function checkForUpdates(){
-      if(!gas())return;
-      google.script.run.withSuccessHandler(function(r){
+      apiPost('getSettingsHash',{id:currentUserId,token:currentUserToken,_silent:true},function(r){
         if(!r||!r.ok)return;var newHash=JSON.stringify(r.settings||'');
         if(lastSettingsHash&&newHash!==lastSettingsHash)window.location.reload();lastSettingsHash=newHash;
-      }).withFailureHandler(function(){}).getSettingsHash({id:currentUserId,token:currentUserToken});
+      });
     }
 
     /* ==================== 主題初始化 ==================== */
