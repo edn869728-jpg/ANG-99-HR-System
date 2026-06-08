@@ -21,14 +21,14 @@
     /* === 頂部 === */
     .topbar{position:sticky;top:0;z-index:1000;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);padding:8px 12px;min-height:58px;display:flex;align-items:center;justify-content:space-between;gap:10px;box-shadow:0 2px 10px rgba(0,0,0,.04);overflow:hidden}
     .topbar-left{display:flex;align-items:center;gap:10px;min-width:0;flex:0 1 auto}
-    .topbar-right{text-align:right;flex:1 1 auto;min-width:0}
+    .topbar-right{text-align:right;flex:1 1 auto;min-width:0;max-width:54%}
     .brand-logo{width:48px;height:48px;flex:0 0 48px;border-radius:16px;display:flex;align-items:center;justify-content:center;background:var(--emp-gradient);color:#fff;font-size:16px;font-weight:900;box-shadow:0 6px 14px rgba(var(--emp-rgb),.18);overflow:hidden}
     .brand-logo img{width:100%;height:100%;object-fit:contain;border-radius:16px;display:block}
     .brand-title-main{font-size:14px;font-weight:900;color:var(--emp-deep);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:42vw}
     .brand-title-sub{font-size:10px;font-weight:800;color:#9ca3af;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:42vw}
     .title{font-size:16px;font-weight:900;color:var(--emp-deep);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .sub-title{font-size:11px;font-weight:800;color:#9ca3af;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    @media(max-width:430px){.topbar{padding:7px 10px;gap:8px}.brand-logo{width:42px;height:42px;flex-basis:42px;border-radius:14px}.brand-logo img{border-radius:14px}.brand-title-main{font-size:13px;max-width:34vw}.brand-title-sub{font-size:9px;max-width:34vw}.title{font-size:14px}.sub-title{font-size:10px}}
+    @media(max-width:430px){.topbar{padding:7px 10px;gap:8px}.topbar-right{max-width:52%}.brand-logo{width:42px;height:42px;flex-basis:42px;border-radius:14px}.brand-logo img{border-radius:14px}.brand-title-main{font-size:13px;max-width:34vw}.brand-title-sub{font-size:9px;max-width:34vw}.title{font-size:14px}.sub-title{font-size:10px}}
 
     /* === 通用 === */
     .safe{padding:8px 8px 0}
@@ -406,13 +406,30 @@
         <button class="btn-main" onclick="saveGraceSettings()">儲存寬限設定</button>
       </div>
 
-      <!-- 品牌 -->
+      <!-- 品牌 / 分店橫幅 -->
       <div class="card">
-        <div class="mini-row"><h3>Logo & Title</h3><span class="badge ok">設定</span></div>
-        <div class="field-row"><div><label class="label">主標題</label><input type="text" id="mainTitleInput" value="ANG.lo Engine"></div><div><label class="label">系統名稱</label><input type="text" id="systemNameInput" value="HR 系統"></div></div>
+        <div class="mini-row"><h3>Logo & Title / 分店橫幅</h3><span class="badge ok">設定</span></div>
+        <div class="notice-item" style="margin-bottom:10px">
+          <div class="item-title">左側橫幅＝公司名稱 / 公司副名稱</div>
+          <div class="item-meta">例如：ANG.lo 這格會顯示「矽品精密」；Humanized system technology 這格會顯示「精密股份有限公司」。員工資料若有「分店ID」，會優先套用該分店設定。</div>
+        </div>
+        <label class="label">儲存範圍</label>
+        <select id="brandScope">
+          <option value="global">全公司預設</option>
+          <option value="branch">指定分店</option>
+        </select>
+        <div class="field-row">
+          <div><label class="label">分店ID</label><input type="text" id="branchIdInput" placeholder="例如：puli / yuchi / main"></div>
+          <div><label class="label">分店名稱</label><input type="text" id="branchNameInput" placeholder="例如：埔里店"></div>
+        </div>
+        <div class="field-row">
+          <div><label class="label">公司名稱（左側第一行）</label><input type="text" id="companyNameInput" value="ANG.lo" placeholder="例如：矽品精密"></div>
+          <div><label class="label">公司副名稱（左側第二行）</label><input type="text" id="companySubtitleInput" value="Humanized system technology" placeholder="例如：精密股份有限公司"></div>
+        </div>
+        <div class="field-row"><div><label class="label">右側主標題</label><input type="text" id="mainTitleInput" value="ANG.lo Engine"></div><div><label class="label">系統名稱</label><input type="text" id="systemNameInput" value="HR 系統"></div></div>
         <label class="label">無圖時文字</label><input type="text" id="fallbackTextInput" value="ANG">
         <label class="label">上傳 Logo</label><input type="file" id="logoUpload" accept="image/*" onchange="handleLogoUpload(event)">
-        <button class="btn-main" style="margin-top:10px" onclick="saveBrandSettings()">儲存品牌設定</button>
+        <button class="btn-main" style="margin-top:10px" onclick="saveBrandSettings()">儲存品牌 / 分店橫幅設定</button>
       </div>
 
       <!-- 權限總覽 -->
@@ -502,6 +519,8 @@
     var UROLE=normalizeRole(CTX.role||'Employee', UID);
     var logoDataUrl='';
     var mgrData={},admData={},crtData={};
+    var currentTopSystem={};
+    var currentTopProfile={};
     var currentPage='home';
     var salaryDraft=null;
     var REVIEW_BUSY=false;
@@ -608,16 +627,35 @@
       }
     }
 
-    function applyTopBrand(system){
+    function getPageLabel_(page){
+      var map={home:'主頁',admin:'管理中心',creator:'Creator',manager:'Manager',data:'資料夾',noperm:'無權限'};
+      return map[page]||'管理中心';
+    }
+
+    function applyTopBrand(system, profile){
       var s=system||{};
+      var p=profile||currentTopProfile||{};
+      currentTopSystem=s;
+      currentTopProfile=p;
+
       var companyName=s.company_name||s.brandTitleMain||s.main_title||'ANG.lo';
       var companySub=s.company_subtitle||s.brandTitleSub||s.system_sub||'Humanized system technology';
-      var title=s.system_title||s.main_title||'ANG.lo Engine';
-      var sysName=s.system_name||'HR 系統';
+      var branchName=s.branch_name||p.branchName||p.branch_name||'';
+      var branchId=s.branch_id||p.branchId||p.branch_id||'';
+
       setText('brandTitleMain',companyName);
       setText('brandTitleSub',companySub);
-      setText('topTitle',title);
-      setText('topSub',sysName+'｜'+(UID||'USER'));
+
+      // 左側：公司名稱 / 公司副名稱。
+      // 右側第一行：固定系統主標題，例如 ANG.lo Engine。
+      // 右側第二行：顯示分店名稱｜員編，例如 迴龍店｜ANG0603。
+      var topTitle=s.system_title||'ANG.lo Engine';
+      var topBranch=branchName||branchId||'總店';
+      var subParts=[];
+      if(topBranch)subParts.push(topBranch);
+      if(UID)subParts.push(UID);
+      setText('topTitle',topTitle);
+      setText('topSub',subParts.filter(Boolean).join('｜'));
       setLogoValue(s.logo_url||s.fallback_text||'ANG');
     }
 
@@ -706,13 +744,7 @@
       document.querySelectorAll('.fab-sat').forEach(function(e){e.classList.remove('active')});
       var pe=qs('page-'+page);if(pe)pe.classList.add('active');
       var fe=qs('fab-'+page);if(fe)fe.classList.add('active');
-      if(page==='home'){
-        setText('topTitle','ANG.lo Engine');
-        setText('topSub','主頁');
-      }else if(page==='admin'){
-        setText('topTitle','ANG.lo Engine');
-        setText('topSub','HR 系統｜'+(UID||'USER'));
-      }
+      applyTopBrand(currentTopSystem||{}, currentTopProfile||{});
     }
 
     function applyVisibility(){
@@ -927,9 +959,30 @@
     function handleLogoUpload(e){var f=e.target.files&&e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(ev){logoDataUrl=ev.target.result||''};r.readAsDataURL(f)}
 
     function saveBrandSettings(){
-      if(!gas())return warn('非正式環境');loading('儲存中...');
-      google.script.run.withSuccessHandler(function(r){Swal.close();r&&r.ok?ok(r.message):err(r?r.message:'失敗')}).withFailureHandler(function(e){Swal.close();err(String(e))})
-        .saveBrandSettings({userId:UID,token:UTOKEN,logoDataUrl:logoDataUrl,fallbackText:qs('fallbackTextInput').value.trim(),mainTitle:qs('mainTitleInput').value.trim(),systemName:qs('systemNameInput').value.trim(),companyName:(qs('brandTitleMain')?qs('brandTitleMain').innerText:'ANG.lo'),companySubtitle:(qs('brandTitleSub')?qs('brandTitleSub').innerText:'Humanized system technology')});
+      if(!gas())return warn('非正式環境');
+      var scope=(qs('brandScope')&&qs('brandScope').value)||'global';
+      var branchId=(qs('branchIdInput')&&qs('branchIdInput').value.trim())||'';
+      if(scope==='branch'&&!branchId){warn('指定分店時，請先填分店ID');return}
+      loading('儲存中...');
+      google.script.run.withSuccessHandler(function(r){
+        Swal.close();
+        if(!r||!r.ok){err(r?r.message:'失敗');return}
+        ok(r.message||'設定已儲存');
+        loadAll();
+      }).withFailureHandler(function(e){Swal.close();err(String(e))})
+        .saveBrandSettings({
+          userId:UID,
+          token:UTOKEN,
+          brandScope:scope,
+          branchId:branchId,
+          branchName:(qs('branchNameInput')&&qs('branchNameInput').value.trim())||'',
+          logoDataUrl:logoDataUrl,
+          fallbackText:(qs('fallbackTextInput')&&qs('fallbackTextInput').value.trim())||'ANG',
+          mainTitle:(qs('mainTitleInput')&&qs('mainTitleInput').value.trim())||'ANG.lo Engine',
+          systemName:(qs('systemNameInput')&&qs('systemNameInput').value.trim())||'HR 系統',
+          companyName:(qs('companyNameInput')&&qs('companyNameInput').value.trim())||'ANG.lo',
+          companySubtitle:(qs('companySubtitleInput')&&qs('companySubtitleInput').value.trim())||'Humanized system technology'
+        });
     }
 
     function archiveSheet(name){if(!gas())return;loading('歸檔中...');google.script.run.withSuccessHandler(function(r){Swal.close();r&&r.ok?ok(r.message):err(r?r.message:'失敗')}).withFailureHandler(function(e){Swal.close();err(String(e))}).archiveOldRecords({userId:UID,token:UTOKEN,sheetName:name})}
@@ -1033,7 +1086,7 @@
     function applyMgr(r){
       if(!r||!r.ok)return;mgrData=r;
       if(r.profile){UID=String(r.profile.id||UID).trim().toUpperCase();UROLE=normalizeRole(r.profile.role||UROLE,UID);}
-      applyTopBrand(r.system||{});
+      applyTopBrand(r.system||{}, r.profile||{});
       applyVisibility();
       setText('mgrLeavePending',countPending(r.leaveReviews));
       setText('mgrUploadPending',countPending(r.receiveReviews));
@@ -1049,7 +1102,7 @@
     function applyAdm(r){
       if(!r||!r.ok)return;admData=r;
       if(r.profile){UID=String(r.profile.id||UID).trim().toUpperCase();UROLE=normalizeRole(r.profile.role||UROLE,UID);}
-      applyTopBrand(r.system||{});
+      applyTopBrand(r.system||{}, r.profile||{});
       applyVisibility();
       setText('admClockFixPending',countPending(r.clockFixReviews));
       setText('admSalaryPending',countPending(r.salaryReviews));
@@ -1061,11 +1114,16 @@
       renderReviewList('admMessageList',r.messageReviews,true);
       renderPublishList('admNoticeList',r.noticePublishItems);
       if(r.system){
-        qs('mainTitleInput').value=r.system.main_title||'ANG.lo Engine';
-        qs('systemNameInput').value=r.system.system_name||'HR 系統';
-        qs('fallbackTextInput').value=r.system.fallback_text||'ANG';
-        if(r.system.clock_grace_before)qs('graceBeforeMin').value=r.system.clock_grace_before;
-        if(r.system.clock_grace_after)qs('graceAfterMin').value=r.system.clock_grace_after;
+        if(qs('companyNameInput'))qs('companyNameInput').value=r.system.company_name||r.system.main_title||'ANG.lo';
+        if(qs('companySubtitleInput'))qs('companySubtitleInput').value=r.system.company_subtitle||r.system.system_sub||'Humanized system technology';
+        if(qs('mainTitleInput'))qs('mainTitleInput').value=r.system.main_title||r.system.system_title||'ANG.lo Engine';
+        if(qs('systemNameInput'))qs('systemNameInput').value=r.system.system_name||'HR 系統';
+        if(qs('fallbackTextInput'))qs('fallbackTextInput').value=r.system.fallback_text||'ANG';
+        if(qs('branchIdInput'))qs('branchIdInput').value=r.system.branch_id||'';
+        if(qs('branchNameInput'))qs('branchNameInput').value=r.system.branch_name||'';
+        if(qs('brandScope'))qs('brandScope').value=r.system.branch_id?'branch':'global';
+        if(r.system.clock_grace_before&&qs('graceBeforeMin'))qs('graceBeforeMin').value=r.system.clock_grace_before;
+        if(r.system.clock_grace_after&&qs('graceAfterMin'))qs('graceAfterMin').value=r.system.clock_grace_after;
       }
       updateBadges();
     }
@@ -1073,7 +1131,7 @@
     function applyCrt(r){
       if(!r||!r.ok)return;crtData=r;
       if(r.profile){UID=String(r.profile.id||UID).trim().toUpperCase();UROLE=normalizeRole(r.profile.role||UROLE,UID);}
-      applyTopBrand(r.system||{});
+      applyTopBrand(r.system||{}, r.profile||{});
       applyVisibility();
       if(r.approverSettings){
         qs('chkMultiLevel').checked=String(r.approverSettings.multi_level_review_enabled||'true')!=='false';

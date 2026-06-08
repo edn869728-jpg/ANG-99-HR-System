@@ -106,6 +106,7 @@
       text-align:right;
       min-width:0;
       flex:1 1 auto;
+      max-width:54%;
     }
 
     .brand-slot{
@@ -161,6 +162,9 @@
       color:var(--emp-deep);
       letter-spacing:.2px;
       white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width:38vw;
     }
 
     .brand-title-sub{
@@ -169,6 +173,9 @@
       font-weight:800;
       color:#9ca3af;
       white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width:38vw;
     }
 
     .title{
@@ -177,6 +184,9 @@
       line-height:1.05;
       color:var(--emp-deep);
       letter-spacing:.2px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
     }
 
     .sub-title{
@@ -184,6 +194,9 @@
       font-size:11px;
       font-weight:800;
       color:#9ca3af;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
     }
 
     .safe{
@@ -2449,15 +2462,15 @@
 
       if (displayId) {
         localStorage.setItem('ang_employee_id', displayId);
-        setText('topBrandSub', `HR 系統｜${displayId}`);
+        setText('topBrandSub', `總店｜${displayId}`);
       } else {
-        setText('topBrandSub', 'HR 系統｜讀取中');
+        setText('topBrandSub', '總店｜讀取中');
       }
 
       setText('helloName', `哈囉，${currentDisplayName}`);
 
-      setText('brandTitleMain', '食便宜');
-      setText('brandTitleSub', '蔬果商行');
+      setText('brandTitleMain', '公司名稱');
+      setText('brandTitleSub', '公司副名稱');
       setText('topBrandTitle', 'ANG.lo Engine');
 
       setLogo('ANG');
@@ -3041,10 +3054,14 @@
       setText('heroChip', data.profile.chip || '標準版');
       setText('home-next-shift', data.nextShift || '讀取中');
 
-      setText('brandTitleMain', (data.system && (data.system.company_name || data.system.main_title)) || '食便宜');
-      setText('brandTitleSub', (data.system && (data.system.company_subtitle || data.system.system_sub)) || '蔬果商行');
-      setText('topBrandTitle', (data.system && (data.system.system_title || data.system.system_name)) || 'ANG.lo Engine');
-      setText('topBrandSub', 'HR 系統｜' + (data.profile.id || state.employeeId || 'USER') + '｜' + (data.profile.role || '員工') + '模式');
+      setText('brandTitleMain', (data.system && (data.system.company_name || data.system.main_title)) || '公司名稱');
+      setText('brandTitleSub', (data.system && (data.system.company_subtitle || data.system.system_sub)) || '公司副名稱');
+      const topBranchName = (data.system && data.system.branch_name) || (data.profile && (data.profile.branchName || data.profile.branch_name)) || '';
+      const topBranchId = (data.system && data.system.branch_id) || (data.profile && (data.profile.branchId || data.profile.branch_id)) || '';
+      const topSystemTitle = data.system && data.system.system_title || 'ANG.lo Engine';
+      const topBranch = topBranchName || topBranchId || '總店';
+      setText('topBrandTitle', topSystemTitle);
+      setText('topBrandSub', [topBranch, data.profile.id || state.employeeId || 'USER'].filter(Boolean).join('｜'));
       setLogo((data.system && data.system.logo_url) || 'ANG');
 
       setText('home-week-salary', formatMoney(data.weekSalary || 0));
@@ -3091,7 +3108,7 @@
 
     function showHomeError(msg){
       const text = String(msg || '載入失敗');
-      setText('topBrandSub', 'HR 系統｜錯誤');
+      setText('topBrandSub', '總店｜錯誤');
       setText('helloName', '哈囉，錯誤');
       setText('helloStatus', '今天狀態：' + text);
       setText('heroChip', '錯誤');
@@ -3110,7 +3127,10 @@
 
       const companyName = s.company_name || s.main_title || 'ANG.lo';
       const companySubtitle = s.company_subtitle || s.system_sub || 'Humanized system technology';
-      const systemTitle = s.system_title || s.main_title || 'ANG.lo Engine';
+      const systemTitle = s.system_title || 'ANG.lo Engine';
+      const branchName = s.branch_name || p.branchName || p.branch_name || '';
+      const branchId = s.branch_id || p.branchId || p.branch_id || '';
+      const branchDisplayName = branchName || branchId || '總店';
       const fallbackText = s.fallback_text || 'ANG';
 
       state.employeeId = p.id || state.employeeId;
@@ -3144,7 +3164,7 @@
       setText('brandTitleSub', companySubtitle);
 
       setText('topBrandTitle', systemTitle);
-      setText('topBrandSub', 'HR 系統｜' + (p.id || 'USER'));
+      setText('topBrandSub', [branchDisplayName, (p.id || 'USER')].filter(Boolean).join('｜'));
 
       setLogo(s.logo_url || fallbackText);
 
