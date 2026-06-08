@@ -3183,9 +3183,9 @@
 
       const currentDisplayName = p.nickname || p.name || '員工';
 
-      const companyName = s.company_name || s.main_title || 'ANG.lo';
-      const companySubtitle = s.company_subtitle || s.system_sub || 'Humanized system technology';
-      const systemTitle = s.system_title || 'ANG.lo Engine';
+      const companyName = s.company_name || s.brandTitleMain || s.main_title || 'ANG.lo';
+      const companySubtitle = s.company_subtitle || s.brandTitleSub || s.system_sub || 'Humanized system technology';
+      const systemTitle = s.system_title || s.main_title || 'ANG.lo Engine';
       const branchName = s.branch_name || p.branchName || p.branch_name || '';
       const branchId = s.branch_id || p.branchId || p.branch_id || '';
       const branchDisplayName = branchName || branchId || '總店';

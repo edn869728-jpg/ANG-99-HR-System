@@ -773,7 +773,7 @@
       // 左側：公司名稱 / 公司副名稱。
       // 右側第一行：固定系統主標題，例如 ANG.lo Engine。
       // 右側第二行：顯示分店名稱｜員編，例如 迴龍店｜ANG0603。
-      var topTitle=s.system_title||'ANG.lo Engine';
+      var topTitle=s.system_title||s.main_title||'ANG.lo Engine';
       var topBranch=branchName||branchId||'總店';
       var subParts=[];
       if(topBranch)subParts.push(topBranch);
@@ -1289,7 +1289,7 @@
       if(r.system){
         if(qs('companyNameInput'))qs('companyNameInput').value=r.system.company_name||r.system.main_title||'ANG.lo';
         if(qs('companySubtitleInput'))qs('companySubtitleInput').value=r.system.company_subtitle||r.system.system_sub||'Humanized system technology';
-        if(qs('mainTitleInput'))qs('mainTitleInput').value=r.system.main_title||r.system.system_title||'ANG.lo Engine';
+        if(qs('mainTitleInput'))qs('mainTitleInput').value=r.system.system_title||r.system.main_title||'ANG.lo Engine';
         if(qs('systemNameInput'))qs('systemNameInput').value=r.system.system_name||'HR 系統';
         if(qs('fallbackTextInput'))qs('fallbackTextInput').value=r.system.fallback_text||'ANG';
         if(qs('branchIdInput'))qs('branchIdInput').value=r.system.branch_id||'';
