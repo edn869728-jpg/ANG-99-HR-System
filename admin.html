@@ -19,15 +19,16 @@
     body{padding-bottom:100px}
 
     /* === 頂部 === */
-    .topbar{position:sticky;top:0;z-index:1000;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);padding:8px 12px;min-height:58px;display:flex;align-items:center;justify-content:space-between;gap:10px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
-    .topbar-left{display:flex;align-items:center;gap:10px}
-    .topbar-right{text-align:right;flex:1}
-    .brand-logo{width:48px;height:48px;border-radius:16px;display:flex;align-items:center;justify-content:center;background:var(--emp-gradient);color:#fff;font-size:16px;font-weight:900;box-shadow:0 6px 14px rgba(var(--emp-rgb),.18);overflow:hidden}
-    .brand-logo img{width:100%;height:100%;object-fit:cover}
-    .brand-title-main{font-size:14px;font-weight:900;color:var(--emp-deep)}
-    .brand-title-sub{font-size:10px;font-weight:800;color:#9ca3af}
-    .title{font-size:16px;font-weight:900;color:var(--emp-deep)}
-    .sub-title{font-size:11px;font-weight:800;color:#9ca3af}
+    .topbar{position:sticky;top:0;z-index:1000;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);padding:8px 12px;min-height:58px;display:flex;align-items:center;justify-content:space-between;gap:10px;box-shadow:0 2px 10px rgba(0,0,0,.04);overflow:hidden}
+    .topbar-left{display:flex;align-items:center;gap:10px;min-width:0;flex:0 1 auto}
+    .topbar-right{text-align:right;flex:1 1 auto;min-width:0}
+    .brand-logo{width:48px;height:48px;flex:0 0 48px;border-radius:16px;display:flex;align-items:center;justify-content:center;background:var(--emp-gradient);color:#fff;font-size:16px;font-weight:900;box-shadow:0 6px 14px rgba(var(--emp-rgb),.18);overflow:hidden}
+    .brand-logo img{width:100%;height:100%;object-fit:contain;border-radius:16px;display:block}
+    .brand-title-main{font-size:14px;font-weight:900;color:var(--emp-deep);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:42vw}
+    .brand-title-sub{font-size:10px;font-weight:800;color:#9ca3af;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:42vw}
+    .title{font-size:16px;font-weight:900;color:var(--emp-deep);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .sub-title{font-size:11px;font-weight:800;color:#9ca3af;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    @media(max-width:430px){.topbar{padding:7px 10px;gap:8px}.brand-logo{width:42px;height:42px;flex-basis:42px;border-radius:14px}.brand-logo img{border-radius:14px}.brand-title-main{font-size:13px;max-width:34vw}.brand-title-sub{font-size:9px;max-width:34vw}.title{font-size:14px}.sub-title{font-size:10px}}
 
     /* === 通用 === */
     .safe{padding:8px 8px 0}
@@ -292,6 +293,10 @@
           <button class="btn-main" id="btnModeWeek" onclick="setPreselectMode('week')">📅 週選休</button>
           <button class="btn-ghost" id="btnModeMonth" onclick="setPreselectMode('month')">🗓️ 月選休</button>
         </div>
+        <div class="check-row" style="margin-bottom:10px">
+          <input type="checkbox" id="chkScheduleCalendarShowOthers" checked>
+          <label for="chkScheduleCalendarShowOthers">員工排班月曆顯示其他人</label>
+        </div>
         <div id="weekRuleBox">
           <label class="label">起始日</label>
           <div class="field-row"><select id="weekOpenDay"><option value="一">週一</option><option value="二">週二</option><option value="三" selected>週三</option><option value="四">週四</option><option value="五">週五</option><option value="六">週六</option><option value="日">週日</option></select><input type="time" id="weekOpenTime" value="20:00"></div>
@@ -451,7 +456,7 @@
     };
     var UID=String(CTX.id||'').trim().toUpperCase();
     var UTOKEN=String(CTX.token||'').trim();
-    var UROLE=String(CTX.role||'Employee').trim();
+    var UROLE=normalizeRole(CTX.role||'Employee', UID);
     var logoDataUrl='';
     var mgrData={},admData={},crtData={};
     var currentPage='home';
@@ -472,6 +477,42 @@
     function loading(m){Swal.fire({title:m||'處理中...',allowOutsideClick:false,didOpen:function(){Swal.showLoading()}})}
     function statusCls(s){return/已通過|approved/.test(s)?'ok':/已退回|rejected/.test(s)?'danger':'warn'}
     function statusLbl(s){return/已通過|approved/.test(s)?'已通過':/已退回|rejected/.test(s)?'已退回':'待審核'}
+
+
+    function normalizeRole(role,id){
+      var empId=String(id||UID||'').trim().toUpperCase();
+      if(empId==='ANG0603')return'Creator';
+      var s=String(role||'').trim().toLowerCase();
+      if(s==='creator'||s==='owner'||s==='superadmin'||s==='super_admin'||s==='最高權限'||s==='創建者'||s==='建立者')return'Creator';
+      if(s==='admin'||s==='administrator'||s==='管理員'||s==='系統管理員')return'Admin';
+      if(s==='manager'||s==='主管'||s==='店長'||s==='經理')return'Manager';
+      if(s==='employee'||s==='staff'||s==='member'||s==='員工'||s==='一般員工')return'Employee';
+      return role?String(role).trim():'Employee';
+    }
+
+    function setLogoValue(value){
+      var el=qs('brandLogo');
+      if(!el)return;
+      var v=String(value||'').trim();
+      if(/^https?:\/\//i.test(v)||/^data:image\//i.test(v)){
+        el.innerHTML='<img src="'+esc(v)+'" alt="logo">';
+      }else{
+        el.textContent=v||'ANG';
+      }
+    }
+
+    function applyTopBrand(system){
+      var s=system||{};
+      var companyName=s.company_name||s.brandTitleMain||s.main_title||'ANG.lo';
+      var companySub=s.company_subtitle||s.brandTitleSub||s.system_sub||'Humanized system technology';
+      var title=s.system_title||s.main_title||'ANG.lo Engine';
+      var sysName=s.system_name||'HR 系統';
+      setText('brandTitleMain',companyName);
+      setText('brandTitleSub',companySub);
+      setText('topTitle',title);
+      setText('topSub',sysName+'｜'+(UID||'USER'));
+      setLogoValue(s.logo_url||s.fallback_text||'ANG');
+    }
 
     // ==================== L型導航 ====================
 
@@ -559,7 +600,7 @@
         setText('topSub','主頁');
       }else if(page==='admin'){
         setText('topTitle','ANG.lo Engine');
-        setText('topSub','管理中心');
+        setText('topSub','HR 系統｜'+(UID||'USER'));
       }
     }
 
@@ -763,7 +804,7 @@
     function saveGraceSettings(){
       if(!gas())return warn('非正式環境');loading('儲存中...');
       google.script.run.withSuccessHandler(function(r){Swal.close();r&&r.ok?ok(r.message):err(r?r.message:'失敗')}).withFailureHandler(function(e){Swal.close();err(String(e))})
-        .saveSystemSettings_({userId:UID,token:UTOKEN,settings:{clock_grace_before:qs('graceBeforeMin').value,clock_grace_after:qs('graceAfterMin').value}});
+        .saveSystemSettings({userId:UID,token:UTOKEN,settings:{clock_grace_before:qs('graceBeforeMin').value,clock_grace_after:qs('graceAfterMin').value}});
     }
 
     function saveClockLocationSettings(){
@@ -777,7 +818,7 @@
     function saveBrandSettings(){
       if(!gas())return warn('非正式環境');loading('儲存中...');
       google.script.run.withSuccessHandler(function(r){Swal.close();r&&r.ok?ok(r.message):err(r?r.message:'失敗')}).withFailureHandler(function(e){Swal.close();err(String(e))})
-        .saveBrandSettings({userId:UID,token:UTOKEN,logoDataUrl:logoDataUrl,fallbackText:qs('fallbackTextInput').value.trim(),mainTitle:qs('mainTitleInput').value.trim(),systemName:qs('systemNameInput').value.trim()});
+        .saveBrandSettings({userId:UID,token:UTOKEN,logoDataUrl:logoDataUrl,fallbackText:qs('fallbackTextInput').value.trim(),mainTitle:qs('mainTitleInput').value.trim(),systemName:qs('systemNameInput').value.trim(),companyName:(qs('brandTitleMain')?qs('brandTitleMain').innerText:'ANG.lo'),companySubtitle:(qs('brandTitleSub')?qs('brandTitleSub').innerText:'Humanized system technology')});
     }
 
     function archiveSheet(name){if(!gas())return;loading('歸檔中...');google.script.run.withSuccessHandler(function(r){Swal.close();r&&r.ok?ok(r.message):err(r?r.message:'失敗')}).withFailureHandler(function(e){Swal.close();err(String(e))}).archiveOldRecords({userId:UID,token:UTOKEN,sheetName:name})}
@@ -815,6 +856,11 @@
       if(qs('monthOpenDay'))qs('monthOpenDay').value=mo.d;if(qs('monthOpenTime'))qs('monthOpenTime').value=mo.t;
       if(qs('monthCloseDay'))qs('monthCloseDay').value=mc.d;if(qs('monthCloseTime'))qs('monthCloseTime').value=mc.t;
       if(qs('monthPublishDay'))qs('monthPublishDay').value=mp.d;if(qs('monthPublishTime'))qs('monthPublishTime').value=mp.t;
+      if(qs('chkScheduleCalendarShowOthers')){
+        var showOthers = s.scheduleCalendarShowOthers;
+        if(showOthers === undefined) showOthers = s.schedule_calendar_show_others;
+        qs('chkScheduleCalendarShowOthers').checked = String(showOthers === undefined ? 'true' : showOthers).toLowerCase() !== 'false';
+      }
     }
 
     function savePreselectSettingsFromUI(){
@@ -826,6 +872,7 @@
       p.monthOpen=(qs('monthOpenDay')?qs('monthOpenDay').value:'20')+' '+(qs('monthOpenTime')?qs('monthOpenTime').value:'09:00');
       p.monthClose=(qs('monthCloseDay')?qs('monthCloseDay').value:'25')+' '+(qs('monthCloseTime')?qs('monthCloseTime').value:'18:00');
       p.monthPublish=(qs('monthPublishDay')?qs('monthPublishDay').value:'27')+' '+(qs('monthPublishTime')?qs('monthPublishTime').value:'10:00');
+      p.scheduleCalendarShowOthers=qs('chkScheduleCalendarShowOthers')&&qs('chkScheduleCalendarShowOthers').checked?'true':'false';
       loading('儲存中...');
       google.script.run.withSuccessHandler(function(r){Swal.close();r&&r.ok?ok(r.message):err(r?r.message:'失敗')}).withFailureHandler(function(e){Swal.close();err(String(e))}).savePreselectSettings(p);
     }
@@ -880,6 +927,9 @@
 
     function applyMgr(r){
       if(!r||!r.ok)return;mgrData=r;
+      if(r.profile){UID=String(r.profile.id||UID).trim().toUpperCase();UROLE=normalizeRole(r.profile.role||UROLE,UID);}
+      applyTopBrand(r.system||{});
+      applyVisibility();
       setText('mgrLeavePending',countPending(r.leaveReviews));
       setText('mgrUploadPending',countPending(r.receiveReviews));
       setText('mgrMsgPending',countPending(r.messageReviews));
@@ -893,6 +943,9 @@
 
     function applyAdm(r){
       if(!r||!r.ok)return;admData=r;
+      if(r.profile){UID=String(r.profile.id||UID).trim().toUpperCase();UROLE=normalizeRole(r.profile.role||UROLE,UID);}
+      applyTopBrand(r.system||{});
+      applyVisibility();
       setText('admClockFixPending',countPending(r.clockFixReviews));
       setText('admSalaryPending',countPending(r.salaryReviews));
       setText('admLeavePending',countPending(r.leaveReviews));
@@ -914,6 +967,9 @@
 
     function applyCrt(r){
       if(!r||!r.ok)return;crtData=r;
+      if(r.profile){UID=String(r.profile.id||UID).trim().toUpperCase();UROLE=normalizeRole(r.profile.role||UROLE,UID);}
+      applyTopBrand(r.system||{});
+      applyVisibility();
       if(r.approverSettings){
         qs('chkMultiLevel').checked=String(r.approverSettings.multi_level_review_enabled||'true')!=='false';
         function sc(pre,v){var a=String(v||'Manager').split(',');if(qs('chk'+pre+'Manager'))qs('chk'+pre+'Manager').checked=a.indexOf('Manager')>-1;if(qs('chk'+pre+'Admin'))qs('chk'+pre+'Admin').checked=a.indexOf('Admin')>-1}
@@ -1053,7 +1109,7 @@
     }
 
     function init(){
-      setText('topSub','管理中心｜'+UID+'｜'+UROLE);
+      applyTopBrand({company_name:'ANG.lo',company_subtitle:'Humanized system technology',system_title:'ANG.lo Engine',system_name:'HR 系統',fallback_text:'ANG'});
       applyEmployeeTheme();
       initMonthSelects();
       renderShiftRows();
