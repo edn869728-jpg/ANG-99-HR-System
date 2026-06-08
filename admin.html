@@ -526,17 +526,29 @@
         <div class="notice-item"><div class="item-title">Creator</div><div class="item-meta">審核流程、選休規則、班別、權限、系統 + 全部功能</div></div>
       </div>
 
-      <!-- 打卡位置驗證設定 -->
+      <!-- 分店打卡位置驗證設定 -->
       <div class="card">
-        <div class="mini-row"><h3>打卡位置驗證設定</h3><span class="badge ok">Creator</span></div>
+        <div class="mini-row"><h3>分店打卡位置驗證設定</h3><span class="badge ok">Creator</span></div>
+        <div class="notice-item" style="margin-bottom:10px">
+          <div class="item-title">這裡儲存的是「分店位置」</div>
+          <div class="item-meta">有分店ID就存該分店位置；沒有分店ID就存「總店」位置。員工打卡時會依自己的人員資料「分店ID」驗證。</div>
+        </div>
+        <div class="field-row">
+          <div><label class="label">分店ID（空白＝總店）</label><input type="text" id="clockBranchIdInput" placeholder="例如：puli / main" oninput="updateClockLocationDisplay()"></div>
+          <div><label class="label">顯示名稱</label><input type="text" id="clockBranchNameInput" placeholder="例如：埔里店 / 總店" oninput="updateClockLocationDisplay()"></div>
+        </div>
+        <div class="notice-item" style="margin-bottom:10px">
+          <div class="item-title" id="clockLocationTargetText">目前設定對象：總店</div>
+          <div class="item-meta">左上公司名稱不會在這裡被改動；這裡只處理打卡 GPS 位置。</div>
+        </div>
         <div class="check-row"><input type="checkbox" id="chkLocationRequired"><label for="chkLocationRequired">啟用上班/加班打卡位置驗證（外勤模式可略過）</label></div>
-        <label class="label">公司緯度（Latitude）</label>
+        <label class="label">分店緯度（Latitude）</label>
         <input type="number" id="clockLocationLat" step="0.000001" placeholder="例如：25.033964">
-        <label class="label">公司經度（Longitude）</label>
+        <label class="label">分店經度（Longitude）</label>
         <input type="number" id="clockLocationLng" step="0.000001" placeholder="例如：121.564468">
         <label class="label">允許距離（公尺，預設 200）</label>
         <input type="number" id="clockLocationRadius" placeholder="200" min="50" max="5000">
-        <button class="btn-main" type="button" onclick="saveClockLocationSettings()">儲存位置設定</button>
+        <button class="btn-main" type="button" onclick="saveClockLocationSettings()">儲存分店位置設定</button>
       </div>
     </section>
 
@@ -852,6 +864,13 @@
       var display=branchName||branchId||'總店';
       if(qs('mainTitleInput'))qs('mainTitleInput').value='ANG.lo Engine';
       if(qs('systemNameInput'))qs('systemNameInput').value=display;
+    }
+
+    function updateClockLocationDisplay(){
+      var branchName=(qs('clockBranchNameInput')&&qs('clockBranchNameInput').value.trim())||'';
+      var branchId=(qs('clockBranchIdInput')&&qs('clockBranchIdInput').value.trim())||'';
+      var display=branchName||branchId||'總店';
+      setText('clockLocationTargetText','目前設定對象：'+display);
     }
 
     // ==================== L型導航 ====================
@@ -1202,9 +1221,21 @@
     }
 
     function saveClockLocationSettings(){
-      if(!gas())return warn('非正式環境');loading('儲存中...');
+      if(!gas())return warn('非正式環境');
+      var branchId=(qs('clockBranchIdInput')&&qs('clockBranchIdInput').value.trim())||'';
+      var branchName=(qs('clockBranchNameInput')&&qs('clockBranchNameInput').value.trim())||'';
+      loading('儲存中...');
       google.script.run.withSuccessHandler(function(r){Swal.close();r&&r.ok?ok(r.message):err(r?r.message:'失敗')}).withFailureHandler(function(e){Swal.close();err(String(e))})
-        .saveSystemSettings({userId:UID,token:UTOKEN,settings:{clock_location_required:qs('chkLocationRequired').checked?'true':'false',clock_location_lat:(qs('clockLocationLat')||{}).value||'',clock_location_lng:(qs('clockLocationLng')||{}).value||'',clock_location_radius:(qs('clockLocationRadius')||{}).value||'200'}});
+        .saveClockLocationSettings({
+          userId:UID,
+          token:UTOKEN,
+          branchId:branchId,
+          branchName:branchName,
+          clock_location_required:qs('chkLocationRequired').checked?'true':'false',
+          clock_location_lat:(qs('clockLocationLat')||{}).value||'',
+          clock_location_lng:(qs('clockLocationLng')||{}).value||'',
+          clock_location_radius:(qs('clockLocationRadius')||{}).value||'200'
+        });
     }
 
     function handleLogoUpload(e){var f=e.target.files&&e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(ev){logoDataUrl=ev.target.result||''};r.readAsDataURL(f)}
@@ -1400,9 +1431,12 @@
       if(r.mixedMode!==undefined)qs('chkMixedMode').checked=r.mixedMode===true||r.mixedMode==='true';
       if(r.system){
         if(qs('chkLocationRequired'))qs('chkLocationRequired').checked=String(r.system.clock_location_required||'false')==='true';
+        if(qs('clockBranchIdInput'))qs('clockBranchIdInput').value=r.system.branch_id||'';
+        if(qs('clockBranchNameInput'))qs('clockBranchNameInput').value=r.system.branch_name||'';
         if(r.system.clock_location_lat&&qs('clockLocationLat'))qs('clockLocationLat').value=r.system.clock_location_lat;
         if(r.system.clock_location_lng&&qs('clockLocationLng'))qs('clockLocationLng').value=r.system.clock_location_lng;
         if(r.system.clock_location_radius&&qs('clockLocationRadius'))qs('clockLocationRadius').value=r.system.clock_location_radius;
+        updateClockLocationDisplay();
       }
     }
 

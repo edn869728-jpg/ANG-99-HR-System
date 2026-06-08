@@ -671,6 +671,22 @@
       margin-bottom:10px;
     }
 
+    .weekday-strip.is-month-mode{
+      grid-template-columns:repeat(7,minmax(0,1fr));
+      max-height:none;
+    }
+
+    .weekday-strip.is-month-mode .weekday-chip{
+      min-height:54px;
+      padding:9px 4px 8px;
+      border-radius:16px;
+    }
+
+    .week-tabs button{
+      white-space:pre-line;
+      line-height:1.25;
+    }
+
     .weekday-chip{
       border:none;
       border-radius:18px;
@@ -2798,15 +2814,89 @@
       syncLeaveSummary();
     }
 
-    function getScheduleDatesForOffset(offset){
-      const mode = (state.adminSalaryConfig && state.adminSalaryConfig.mode) || 'week';
+    function parseWeekStartDay_(value){
+      const raw = String(value || '').trim().toLowerCase();
+      if (!raw) return 1;
+      const n = Number(raw.replace(/[^\d]/g,''));
+      if (!isNaN(n) && n >= 0 && n <= 6) return n;
+      if (!isNaN(n) && n === 7) return 0;
+      if (/日|sun|sunday/.test(raw)) return 0;
+      if (/一|mon|monday/.test(raw)) return 1;
+      if (/二|tue|tuesday/.test(raw)) return 2;
+      if (/三|wed|wednesday/.test(raw)) return 3;
+      if (/四|thu|thursday/.test(raw)) return 4;
+      if (/五|fri|friday/.test(raw)) return 5;
+      if (/六|sat|saturday/.test(raw)) return 6;
+      return 1;
+    }
+
+    function parseMonthStartDate_(value){
+      const raw = String(value || '').trim();
+      const m = raw.match(/\d{1,2}/);
+      const n = m ? Number(m[0]) : 1;
+      if (!n || isNaN(n)) return 1;
+      return Math.max(1, Math.min(31, n));
+    }
+
+    function getScheduleMode_(){
+      const cfgMode = (state.adminSalaryConfig && state.adminSalaryConfig.mode) || '';
+      const psMode = (state.preselectSettings && state.preselectSettings.mode) || '';
+      return String(cfgMode || psMode || 'week').toLowerCase() === 'month' ? 'month' : 'week';
+    }
+
+    function getWeekStartSetting_(){
+      const cfg = state.adminSalaryConfig || {};
+      const ps = state.preselectSettings || {};
+      return cfg.weekStart || cfg.weekOpen || ps.weekOpen || ps.week_start || '週一';
+    }
+
+    function getMonthStartSetting_(){
+      const cfg = state.adminSalaryConfig || {};
+      const ps = state.preselectSettings || {};
+      return cfg.monthStart || cfg.monthOpen || ps.monthOpen || ps.month_start || '1號';
+    }
+
+    function addMonthsKeepDay_(date, add, preferredDay){
+      const y = date.getFullYear();
+      const m = date.getMonth() + add;
+      const max = new Date(y, m + 1, 0).getDate();
+      return new Date(y, m, Math.min(preferredDay, max));
+    }
+
+    function getSchedulePeriodStart_(offset){
+      const mode = getScheduleMode_();
       const now = new Date();
       now.setHours(0,0,0,0);
 
       if (mode === 'month'){
-        const monthDate = new Date(now.getFullYear(), now.getMonth() + offset, 1);
-        const start = new Date(monthDate.getFullYear(), monthDate.getMonth(), 1);
-        const end = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0);
+        const startDay = parseMonthStartDate_(getMonthStartSetting_());
+        let currentStart = new Date(now.getFullYear(), now.getMonth(), Math.min(startDay, new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate()));
+        currentStart.setHours(0,0,0,0);
+        if (now.getTime() < currentStart.getTime()){
+          const prevMax = new Date(now.getFullYear(), now.getMonth(), 0).getDate();
+          currentStart = new Date(now.getFullYear(), now.getMonth() - 1, Math.min(startDay, prevMax));
+          currentStart.setHours(0,0,0,0);
+        }
+        return addMonthsKeepDay_(currentStart, offset, startDay);
+      }
+
+      const startDow = parseWeekStartDay_(getWeekStartSetting_());
+      const diff = (now.getDay() - startDow + 7) % 7;
+      const start = new Date(now);
+      start.setDate(now.getDate() - diff + (offset * 7));
+      start.setHours(0,0,0,0);
+      return start;
+    }
+
+    function getScheduleDatesForOffset(offset){
+      const mode = getScheduleMode_();
+      const start = getSchedulePeriodStart_(offset);
+
+      if (mode === 'month'){
+        const startDay = parseMonthStartDate_(getMonthStartSetting_());
+        const nextStart = addMonthsKeepDay_(start, 1, startDay);
+        const end = new Date(nextStart);
+        end.setDate(nextStart.getDate() - 1);
         const list = [];
         const cursor = new Date(start);
         while (cursor <= end){
@@ -2816,36 +2906,36 @@
         return list;
       }
 
-      const day = now.getDay();
-      const mondayOffset = day === 0 ? -6 : 1 - day;
-      const weekStart = new Date(now);
-      weekStart.setDate(now.getDate() + mondayOffset + (offset * 7));
-
       return Array.from({ length:7 }, function(_, i){
-        const d = new Date(weekStart);
-        d.setDate(weekStart.getDate() + i);
+        const d = new Date(start);
+        d.setDate(start.getDate() + i);
         return d;
       });
     }
 
     function updateScheduleTitle(){
-      const mode = (state.adminSalaryConfig && state.adminSalaryConfig.mode) || 'week';
+      const mode = getScheduleMode_();
       const isMonth = mode === 'month';
       const dates0 = getScheduleDatesForOffset(0);
       const dates1 = getScheduleDatesForOffset(1);
       const currDates = state.scheduleWeekOffset === 0 ? dates0 : dates1;
 
       function formatR(list){
+        if (!list || !list.length) return '';
         return (list[0].getMonth()+1) + '/' + list[0].getDate() + '～' + (list[list.length-1].getMonth()+1) + '/' + list[list.length-1].getDate();
       }
 
       const label = isMonth
-        ? (state.scheduleWeekOffset === 0 ? '本月排班' : '下月排班')
-        : (state.scheduleWeekOffset === 0 ? '本週排班' : '下週排班');
+        ? (state.scheduleWeekOffset === 0 ? '本期月排班' : '下期月排班')
+        : (state.scheduleWeekOffset === 0 ? '本期週排班' : '下期週排班');
 
-      setText('t-0', (isMonth ? '本月排班\\n' : '本週排班\\n') + formatR(dates0));
-      setText('t-1', (isMonth ? '下月排班\\n' : '下週排班\\n') + formatR(dates1));
-      setText('schedule-calendar-title', label + '（' + formatR(currDates) + '）');
+      const ruleText = isMonth
+        ? '每月 ' + parseMonthStartDate_(getMonthStartSetting_()) + ' 號起'
+        : '每週' + ['日','一','二','三','四','五','六'][parseWeekStartDay_(getWeekStartSetting_())] + '起';
+
+      setText('t-0', (isMonth ? '本期月排班\\n' : '本期週排班\\n') + formatR(dates0));
+      setText('t-1', (isMonth ? '下期月排班\\n' : '下期週排班\\n') + formatR(dates1));
+      setText('schedule-calendar-title', label + '（' + formatR(currDates) + '｜' + ruleText + '）');
     }
 
     function syncWeekTabs(){
@@ -2864,7 +2954,7 @@
     }
 
     function checkIsPeriodLocked(offset){
-      const mode = (state.adminSalaryConfig && state.adminSalaryConfig.mode) || 'week';
+      const mode = getScheduleMode_();
       const now = new Date();
 
       if (mode === 'week'){
@@ -2887,6 +2977,7 @@
       const wrap = qs('weekday-strip');
       if (!wrap) return;
       wrap.innerHTML = '';
+      wrap.classList.toggle('is-month-mode', getScheduleMode_() === 'month');
 
       const today = new Date();
       today.setHours(0,0,0,0);
@@ -2921,7 +3012,7 @@
       }).join('、');
     }
 
-    function updateScheduleConfirmNote(){
+function updateScheduleConfirmNote(){
       const note = qs('schedule-confirm-note');
       if (!note) return;
       const current = getSelectedScheduleSummary();
@@ -2944,7 +3035,7 @@
         return;
       }
 
-      const mode = (state.adminSalaryConfig && state.adminSalaryConfig.mode) || (state.preselectSettings && state.preselectSettings.mode) || 'week';
+      const mode = getScheduleMode_();
       const payload = {
         id: state.employeeId,
         token: state.userToken,
