@@ -11,7 +11,7 @@ window.ANG_HR_CONFIG = {
   adminPage: "admin.html",
 
   // 後端 GAS Web App URL
-  gasApiUrl: "https://script.google.com/macros/s/AKfycbzqDeRMLmytvNREgOOiZGwkd9u2YefODc49xaTV4kW1X-Fxuk5-MlbLts9K0duT4iwF/exec",
+  gasApiUrl: "https://script.google.com/macros/s/AKfycbyVD-_tx9wFkggsuSnrL2T6HoyGPYuBQgoClr4GyxISaAeNfLVY32auEZDw2ihrXqJj/exec",
 
   // 建議正式上架填 Worker URL，例如：https://ang-hr-api.xxxx.workers.dev
   workerApiUrl: "https://ang-99-hr.edn869728.workers.dev/",
