@@ -585,23 +585,6 @@
     #cal-clock .fc-daygrid-event,#cal-upload .fc-daygrid-event{ margin-top:2px !important; border-radius:8px; padding:1px 4px; }
     #cal-clock .fc-h-event,#cal-upload .fc-h-event{ border:none; }
     #cal-clock .fc-event-title,#cal-upload .fc-event-title{ font-size:10px; font-weight:900; }
-    .fc .fc-daygrid-event-harness{
-      margin:0 0 3px !important;
-    }
-    .fc .fc-daygrid-event{
-      display:block !important;
-      white-space:normal !important;
-      overflow:hidden !important;
-      text-overflow:ellipsis !important;
-      border-radius:8px !important;
-      line-height:1.25 !important;
-    }
-    .fc .fc-event-title{
-      display:block !important;
-      white-space:normal !important;
-      overflow:hidden !important;
-      text-overflow:ellipsis !important;
-    }
 
     .trend-card{
       position:relative;
@@ -1414,6 +1397,48 @@
       }
     }
   </style>
+  <script src="config.js"></script>
+
+<script>
+(function(){
+  window.ANG_HR_CONFIG = window.ANG_HR_CONFIG || {};
+  function getParam(name){
+    try { return new URLSearchParams(window.location.search).get(name) || ''; } catch(e) { return ''; }
+  }
+  function cleanTemplate(value){
+    var s = String(value == null ? '' : value).trim();
+    if (!s || s.indexOf('<?') >= 0 || s.indexOf('?>') >= 0) return '';
+    return s;
+  }
+  function getDirBase(){
+    var href = String(window.location.href || '').split('#')[0].split('?')[0];
+    return href.replace(/\/[^\/]*$/, '');
+  }
+  function joinUrl(base, file){
+    base = String(base || '').replace(/\/+$/, '');
+    file = String(file || '').replace(/^\/+/, '');
+    return base + '/' + file;
+  }
+  function getApiUrl(){
+    var cfg = window.ANG_HR_CONFIG || {};
+    return getParam('api') || cfg.apiBaseUrl || cfg.workerApiUrl || cfg.gasApiUrl || '';
+  }
+  function getFrontendUrl(pageName){
+    var cfg = window.ANG_HR_CONFIG || {};
+    var base = cfg.frontendBaseUrl || getDirBase();
+    var file = pageName === 'admin' ? (cfg.adminPage || 'admin.html') : (cfg.employeePage || 'employee.html');
+    return joinUrl(base, file);
+  }
+  window.ANG_HR_UTILS = {
+    getParam:getParam,
+    cleanTemplate:cleanTemplate,
+    getApiUrl:getApiUrl,
+    getFrontendUrl:getFrontendUrl,
+    joinUrl:joinUrl
+  };
+})();
+</script>
+
 </head>
 <body data-active-page="home">
   <div class="topbar">
@@ -1912,14 +1937,19 @@
   </nav>
 
   <script>
-    const APP_CTX = {
-      id: '<?= typeof id !== "undefined" ? id : "" ?>',
-      token: '<?= typeof token !== "undefined" ? token : "" ?>',
-      page: '<?= typeof page !== "undefined" ? page : "" ?>',
-      role: '<?= typeof role !== "undefined" ? role : "" ?>',
-      name: '<?= typeof name !== "undefined" ? name : "" ?>',
-      nickname: '<?= typeof nickname !== "undefined" ? nickname : "" ?>'
-    };
+    const APP_CTX = (function(){
+      const u = window.ANG_HR_UTILS || {};
+      const q = u.getParam || function(){ return ''; };
+      const c = u.cleanTemplate || function(v){ return String(v || '').indexOf('<?') >= 0 ? '' : String(v || '').trim(); };
+      return {
+        id: String(q('id') || c('<?= typeof id !== "undefined" ? id : "" ?>') || '').trim().toUpperCase(),
+        token: String(q('token') || q('key') || c('<?= typeof token !== "undefined" ? token : "" ?>') || '').trim(),
+        page: String(q('page') || c('<?= typeof page !== "undefined" ? page : "" ?>') || '').trim(),
+        role: String(q('role') || c('<?= typeof role !== "undefined" ? role : "" ?>') || '').trim(),
+        name: String(q('name') || c('<?= typeof name !== "undefined" ? name : "" ?>') || '').trim(),
+        nickname: String(q('nickname') || c('<?= typeof nickname !== "undefined" ? nickname : "" ?>') || '').trim()
+      };
+    })();
 
     const HOURLY_RATE = 200;
 
@@ -1969,8 +1999,6 @@
       calendarData:{ scheduleEvents:[], clockEvents:[], salaryEvents:[], uploadEvents:[] },
       preselectSettings:{ mode:'week' },
       myPreselect:null,
-      preselectSelectedByOffset:{ 0:[], 1:[] },
-      preselectLabelsByOffset:{ 0:[], 1:[] },
       leaveRows:[],
       uploads:[],
       clockFix:[],
@@ -2348,7 +2376,12 @@
     return;
   }
 
-  const apiUrl = href.split('#')[0].split('?')[0];
+  const apiUrl = (window.ANG_HR_UTILS && window.ANG_HR_UTILS.getApiUrl ? window.ANG_HR_UTILS.getApiUrl() : href.split('#')[0].split('?')[0]);
+  if (!apiUrl){
+    showWarning('尚未設定後端 GAS API URL，請檢查 config.js');
+    if (callback) callback({ ok:false, message:'missing_api_url' });
+    return;
+  }
 
   if (window.Swal){
     Swal.fire({
@@ -2674,61 +2707,28 @@
       syncLeaveSummary();
     }
 
-    function getPreselectMode_(){
-      const m = String((state.preselectSettings && state.preselectSettings.mode) || (state.adminSalaryConfig && state.adminSalaryConfig.mode) || 'week').toLowerCase();
-      return m === 'month' ? 'month' : 'week';
-    }
-
-    function getWeekStartIndex_(){
-      const raw = String((state.preselectSettings && state.preselectSettings.weekOpen) || (state.adminSalaryConfig && state.adminSalaryConfig.weekStart) || '一').trim();
-      const ch = raw.match(/[日一二三四五六]/);
-      const map = { '日':0, '一':1, '二':2, '三':3, '四':4, '五':5, '六':6 };
-      return ch ? map[ch[0]] : 1;
-    }
-
-    function getMonthCycleStartDay_(){
-      const raw = String((state.preselectSettings && state.preselectSettings.monthOpen) || (state.adminSalaryConfig && state.adminSalaryConfig.monthStart) || '1').trim();
-      const m = raw.match(/\d{1,2}/);
-      const n = m ? Number(m[0]) : 1;
-      return Math.max(1, Math.min(31, isFinite(n) ? n : 1));
-    }
-
-    function daysInMonth_(year, monthIndex){
-      return new Date(year, monthIndex + 1, 0).getDate();
-    }
-
     function getScheduleDatesForOffset(offset){
-      const mode = getPreselectMode_();
+      const mode = (state.adminSalaryConfig && state.adminSalaryConfig.mode) || 'week';
       const now = new Date();
       now.setHours(0,0,0,0);
 
       if (mode === 'month'){
-        const startDay = getMonthCycleStartDay_();
-        let baseYear = now.getFullYear();
-        let baseMonth = now.getMonth();
-        const safeDay = Math.min(startDay, daysInMonth_(baseYear, baseMonth));
-        let start = new Date(baseYear, baseMonth, safeDay);
-        if (now < start){
-          baseMonth -= 1;
-          start = new Date(baseYear, baseMonth, Math.min(startDay, daysInMonth_(baseYear, baseMonth)));
-        }
-        start = new Date(start.getFullYear(), start.getMonth() + Number(offset || 0), Math.min(startDay, daysInMonth_(start.getFullYear(), start.getMonth() + Number(offset || 0))));
-        const nextStart = new Date(start.getFullYear(), start.getMonth() + 1, Math.min(startDay, daysInMonth_(start.getFullYear(), start.getMonth() + 1)));
+        const monthDate = new Date(now.getFullYear(), now.getMonth() + offset, 1);
+        const start = new Date(monthDate.getFullYear(), monthDate.getMonth(), 1);
+        const end = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0);
         const list = [];
         const cursor = new Date(start);
-        while (cursor < nextStart){
+        while (cursor <= end){
           list.push(new Date(cursor));
           cursor.setDate(cursor.getDate() + 1);
         }
         return list;
       }
 
-      const weekStartIndex = getWeekStartIndex_();
       const day = now.getDay();
-      let diff = weekStartIndex - day;
-      if (diff > 0) diff -= 7;
+      const mondayOffset = day === 0 ? -6 : 1 - day;
       const weekStart = new Date(now);
-      weekStart.setDate(now.getDate() + diff + (Number(offset || 0) * 7));
+      weekStart.setDate(now.getDate() + mondayOffset + (offset * 7));
 
       return Array.from({ length:7 }, function(_, i){
         const d = new Date(weekStart);
@@ -2738,23 +2738,22 @@
     }
 
     function updateScheduleTitle(){
-      const mode = getPreselectMode_();
+      const mode = (state.adminSalaryConfig && state.adminSalaryConfig.mode) || 'week';
       const isMonth = mode === 'month';
       const dates0 = getScheduleDatesForOffset(0);
       const dates1 = getScheduleDatesForOffset(1);
       const currDates = state.scheduleWeekOffset === 0 ? dates0 : dates1;
 
       function formatR(list){
-        if (!list || !list.length) return '';
         return (list[0].getMonth()+1) + '/' + list[0].getDate() + '～' + (list[list.length-1].getMonth()+1) + '/' + list[list.length-1].getDate();
       }
 
       const label = isMonth
-        ? (state.scheduleWeekOffset === 0 ? '本月選休' : '下月選休')
-        : (state.scheduleWeekOffset === 0 ? '本週選休' : '下週選休');
+        ? (state.scheduleWeekOffset === 0 ? '本月排班' : '下月排班')
+        : (state.scheduleWeekOffset === 0 ? '本週排班' : '下週排班');
 
-      setText('t-0', (isMonth ? '本月選休\n' : '本週選休\n') + formatR(dates0));
-      setText('t-1', (isMonth ? '下月選休\n' : '下週選休\n') + formatR(dates1));
+      setText('t-0', (isMonth ? '本月排班\\n' : '本週排班\\n') + formatR(dates0));
+      setText('t-1', (isMonth ? '下月排班\\n' : '下週排班\\n') + formatR(dates1));
       setText('schedule-calendar-title', label + '（' + formatR(currDates) + '）');
     }
 
@@ -2763,42 +2762,9 @@
       if (qs('t-1')) qs('t-1').classList.toggle('active', state.scheduleWeekOffset === 1);
     }
 
-    function normalizeSelectedIndexes_(arr){
-      const out = [];
-      if (!Array.isArray(arr)) return out;
-      arr.forEach(function(v, idx){
-        if (v === true) out.push(idx);
-        else if (typeof v === 'number' && isFinite(v)) out.push(v);
-      });
-      return out.filter(function(v, idx, self){ return v >= 0 && self.indexOf(v) === idx; }).sort(function(a,b){ return a - b; });
-    }
-
-    function getSavedPreselectIndexesForOffset_(offset){
-      const key = String(Number(offset || 0));
-      if (state.preselectSelectedByOffset && Array.isArray(state.preselectSelectedByOffset[key])){
-        return state.preselectSelectedByOffset[key].slice();
-      }
-      if (state.preselectSelectedByOffset && Array.isArray(state.preselectSelectedByOffset[offset])){
-        return state.preselectSelectedByOffset[offset].slice();
-      }
-      return [];
-    }
-
-    function applyPreselectSelectionForOffset_(offset){
-      state.selectedWeekdays = getSavedPreselectIndexesForOffset_(offset);
-      updateScheduleConfirmNote();
-    }
-
-    function cacheCurrentSelection_(){
-      const key = String(Number(state.scheduleWeekOffset || 0));
-      if (!state.preselectSelectedByOffset) state.preselectSelectedByOffset = { 0:[], 1:[] };
-      state.preselectSelectedByOffset[key] = (state.selectedWeekdays || []).slice().sort(function(a,b){ return a - b; });
-    }
-
     function toggleWeek(offset){
-      cacheCurrentSelection_();
       state.scheduleWeekOffset = offset;
-      applyPreselectSelectionForOffset_(offset);
+      state.selectedWeekdays = [];
       syncWeekTabs();
       updateScheduleTitle();
       renderWeekdayStrip();
@@ -2807,22 +2773,20 @@
     }
 
     function checkIsPeriodLocked(offset){
-      const mode = getPreselectMode_();
-      const my = state.myPreselect || {};
-      if (my.isOpen === false && Number(offset || 0) === 1) return true;
-
+      const mode = (state.adminSalaryConfig && state.adminSalaryConfig.mode) || 'week';
       const now = new Date();
+
       if (mode === 'week'){
         const lockDay = Number((state.adminSalaryConfig && state.adminSalaryConfig.lockWeekday) || 5);
         const currentDay = now.getDay() === 0 ? 7 : now.getDay();
         if (offset > 1) return true;
-        if (offset === 1 && currentDay > lockDay && my.isOpen === false) return true;
+        if (offset === 1 && currentDay > lockDay) return true;
         return false;
       }
 
-      const lockDate = Number((state.adminSalaryConfig && state.adminSalaryConfig.lockMonthDate) || 25);
+      const lockDate = Number((state.adminSalaryConfig && state.adminSalaryConfig.lockMonthDate) || 20);
       if (offset > 1) return true;
-      if (offset === 1 && now.getDate() > lockDate && my.isOpen === false) return true;
+      if (offset === 1 && now.getDate() > lockDate) return true;
       return false;
     }
 
@@ -2836,11 +2800,10 @@
       const today = new Date();
       today.setHours(0,0,0,0);
       const isPeriodLocked = checkIsPeriodLocked(state.scheduleWeekOffset);
-      const mode = getPreselectMode_();
 
       dates.forEach(function(dObj, idx){
         const isPastOrToday = dObj.getTime() <= today.getTime();
-        const isLocked = isPeriodLocked || (state.scheduleWeekOffset === 0 && isPastOrToday);
+        const isLocked = isPeriodLocked || isPastOrToday;
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'weekday-chip' + (state.selectedWeekdays.indexOf(idx) > -1 ? ' active' : '');
@@ -2850,14 +2813,11 @@
           if (isLocked) return;
           if (state.selectedWeekdays.indexOf(idx) > -1) state.selectedWeekdays = state.selectedWeekdays.filter(function(x){ return x !== idx; });
           else state.selectedWeekdays.push(idx);
-          cacheCurrentSelection_();
           renderWeekdayStrip();
           updateScheduleConfirmNote();
         };
         wrap.appendChild(btn);
       });
-
-      wrap.dataset.mode = mode;
     }
 
     function getSelectedScheduleSummary(){
@@ -2866,27 +2826,21 @@
       if (!indexes.length) return '';
       return indexes.map(function(idx){
         const d = dates[idx];
-        if (!d) return '';
         return ['週日','週一','週二','週三','週四','週五','週六'][d.getDay()] + ' ' + (d.getMonth()+1) + '/' + d.getDate();
-      }).filter(Boolean).join('、');
+      }).join('、');
     }
 
     function updateScheduleConfirmNote(){
       const note = qs('schedule-confirm-note');
       if (!note) return;
       const current = getSelectedScheduleSummary();
-      const modeText = getPreselectMode_() === 'month' ? '月選休' : '週選休';
       const saved = (state.scheduleConfirmMap && state.scheduleConfirmMap[state.scheduleWeekOffset]) || '';
       if (current){
-        note.innerText = modeText + '目前選擇：' + current + '｜按「確認日期選擇」完成這次選擇';
+        note.innerText = '目前選擇：' + current + '｜按「確認日期選擇」完成這次選擇';
         return;
       }
       if (saved){
         note.innerText = '上次確認：' + saved;
-        return;
-      }
-      if (state.myPreselect && state.myPreselect.isOpen === false){
-        note.innerText = state.myPreselect.reason || '目前不在選休開放時間';
         return;
       }
       note.innerText = '尚未選擇日期';
@@ -2899,8 +2853,7 @@
         return;
       }
 
-      cacheCurrentSelection_();
-      const mode = getPreselectMode_();
+      const mode = (state.adminSalaryConfig && state.adminSalaryConfig.mode) || (state.preselectSettings && state.preselectSettings.mode) || 'week';
       const payload = {
         id: state.employeeId,
         token: state.userToken,
@@ -2914,7 +2867,6 @@
       apiPost('employeePreselect', payload, function(res){
         if (res && res.ok){
           state.scheduleConfirmMap[state.scheduleWeekOffset] = summary;
-          cacheCurrentSelection_();
           updateScheduleConfirmNote();
           showSuccess(res.message || ('已確認：' + summary));
           loadBootstrapData();
@@ -3180,21 +3132,10 @@
         state.adminSalaryConfig.mode = String(state.preselectSettings.mode || 'week').toLowerCase() === 'month' ? 'month' : 'week';
       }
 
-      state.preselectSelectedByOffset = { 0:[], 1:[] };
-      state.preselectLabelsByOffset = { 0:[], 1:[] };
-      if (state.myPreselect){
-        if (state.myPreselect.selectedByOffset){
-          state.preselectSelectedByOffset[0] = normalizeSelectedIndexes_(state.myPreselect.selectedByOffset['0'] || state.myPreselect.selectedByOffset[0] || []);
-          state.preselectSelectedByOffset[1] = normalizeSelectedIndexes_(state.myPreselect.selectedByOffset['1'] || state.myPreselect.selectedByOffset[1] || []);
-        } else if (Array.isArray(state.myPreselect.selected)){
-          state.preselectSelectedByOffset[state.scheduleWeekOffset || 0] = normalizeSelectedIndexes_(state.myPreselect.selected);
-        }
-        if (state.myPreselect.labelsByOffset){
-          state.preselectLabelsByOffset[0] = state.myPreselect.labelsByOffset['0'] || state.myPreselect.labelsByOffset[0] || [];
-          state.preselectLabelsByOffset[1] = state.myPreselect.labelsByOffset['1'] || state.myPreselect.labelsByOffset[1] || [];
-        }
+      if (state.myPreselect && Array.isArray(state.myPreselect.selected)){
+        state.selectedWeekdays = [];
+        state.myPreselect.selected.forEach(function(v, idx){ if (v === true) state.selectedWeekdays.push(idx); });
       }
-      applyPreselectSelectionForOffset_(state.scheduleWeekOffset || 0);
 
       setText('helloName', '哈囉，' + currentDisplayName);
       setText('helloStatus', '今天狀態：' + (home.todayStatus || res.todayStatus || '正常出勤中'));

@@ -130,6 +130,48 @@
 
     @media(max-width:390px){.safe{padding:6px 6px 0}.card{padding:12px;border-radius:20px}.hello{font-size:20px}}
   </style>
+  <script src="config.js"></script>
+
+<script>
+(function(){
+  window.ANG_HR_CONFIG = window.ANG_HR_CONFIG || {};
+  function getParam(name){
+    try { return new URLSearchParams(window.location.search).get(name) || ''; } catch(e) { return ''; }
+  }
+  function cleanTemplate(value){
+    var s = String(value == null ? '' : value).trim();
+    if (!s || s.indexOf('<?') >= 0 || s.indexOf('?>') >= 0) return '';
+    return s;
+  }
+  function getDirBase(){
+    var href = String(window.location.href || '').split('#')[0].split('?')[0];
+    return href.replace(/\/[^\/]*$/, '');
+  }
+  function joinUrl(base, file){
+    base = String(base || '').replace(/\/+$/, '');
+    file = String(file || '').replace(/^\/+/, '');
+    return base + '/' + file;
+  }
+  function getApiUrl(){
+    var cfg = window.ANG_HR_CONFIG || {};
+    return getParam('api') || cfg.apiBaseUrl || cfg.workerApiUrl || cfg.gasApiUrl || '';
+  }
+  function getFrontendUrl(pageName){
+    var cfg = window.ANG_HR_CONFIG || {};
+    var base = cfg.frontendBaseUrl || getDirBase();
+    var file = pageName === 'admin' ? (cfg.adminPage || 'admin.html') : (cfg.employeePage || 'employee.html');
+    return joinUrl(base, file);
+  }
+  window.ANG_HR_UTILS = {
+    getParam:getParam,
+    cleanTemplate:cleanTemplate,
+    getApiUrl:getApiUrl,
+    getFrontendUrl:getFrontendUrl,
+    joinUrl:joinUrl
+  };
+})();
+</script>
+
 </head>
 <body>
 
@@ -293,10 +335,6 @@
           <button class="btn-main" id="btnModeWeek" onclick="setPreselectMode('week')">📅 週選休</button>
           <button class="btn-ghost" id="btnModeMonth" onclick="setPreselectMode('month')">🗓️ 月選休</button>
         </div>
-        <div class="check-row" style="margin-bottom:10px">
-          <input type="checkbox" id="chkScheduleCalendarShowOthers" checked>
-          <label for="chkScheduleCalendarShowOthers">員工排班月曆顯示其他人</label>
-        </div>
         <div id="weekRuleBox">
           <label class="label">起始日</label>
           <div class="field-row"><select id="weekOpenDay"><option value="一">週一</option><option value="二">週二</option><option value="三" selected>週三</option><option value="四">週四</option><option value="五">週五</option><option value="六">週六</option><option value="日">週日</option></select><input type="time" id="weekOpenTime" value="20:00"></div>
@@ -446,14 +484,19 @@
   </div>
 
   <script>
-    var CTX={
-      id:'<?= typeof id!=="undefined"?id:"" ?>',
-      token:'<?= typeof token!=="undefined"?token:"" ?>',
-      role:'<?= typeof role!=="undefined"?role:"" ?>',
-      name:'<?= typeof name!=="undefined"?name:"" ?>',
-      nickname:'<?= typeof nickname!=="undefined"?nickname:"" ?>',
-      webAppUrl:'<?= typeof webAppUrl!=="undefined"?webAppUrl:"" ?>'
-    };
+    var CTX=(function(){
+      var u=window.ANG_HR_UTILS||{};
+      var q=u.getParam||function(){return''};
+      var c=u.cleanTemplate||function(v){return String(v||'').indexOf('<?')>=0?'':String(v||'').trim()};
+      return {
+        id:String(q('id')||c('<?= typeof id!=="undefined"?id:"" ?>')||'').trim().toUpperCase(),
+        token:String(q('token')||q('key')||c('<?= typeof token!=="undefined"?token:"" ?>')||'').trim(),
+        role:String(q('role')||c('<?= typeof role!=="undefined"?role:"" ?>')||'').trim(),
+        name:String(q('name')||c('<?= typeof name!=="undefined"?name:"" ?>')||'').trim(),
+        nickname:String(q('nickname')||c('<?= typeof nickname!=="undefined"?nickname:"" ?>')||'').trim(),
+        webAppUrl:String((window.ANG_HR_CONFIG&&window.ANG_HR_CONFIG.apiBaseUrl)||q('api')||c('<?= typeof webAppUrl!=="undefined"?webAppUrl:"" ?>')||'').trim()
+      };
+    })();
     var UID=String(CTX.id||'').trim().toUpperCase();
     var UTOKEN=String(CTX.token||'').trim();
     var UROLE=normalizeRole(CTX.role||'Employee', UID);
@@ -477,6 +520,70 @@
     function loading(m){Swal.fire({title:m||'處理中...',allowOutsideClick:false,didOpen:function(){Swal.showLoading()}})}
     function statusCls(s){return/已通過|approved/.test(s)?'ok':/已退回|rejected/.test(s)?'danger':'warn'}
     function statusLbl(s){return/已通過|approved/.test(s)?'已通過':/已退回|rejected/.test(s)?'已退回':'待審核'}
+
+    function getApiUrl(){
+      return (window.ANG_HR_UTILS && window.ANG_HR_UTILS.getApiUrl ? window.ANG_HR_UTILS.getApiUrl() : (CTX.webAppUrl || '')).trim();
+    }
+
+    function normalizePayloadForApi(action,args){
+      var payload={};
+      if(args.length===1 && args[0] && typeof args[0]==='object' && !Array.isArray(args[0])){
+        payload=Object.assign({}, args[0]);
+      }else{
+        payload={ id:args[0]||UID, token:args[1]||UTOKEN };
+      }
+      payload.action=action;
+      if(!payload.id && payload.userId) payload.id=payload.userId;
+      if(!payload.userId && payload.id) payload.userId=payload.id;
+      if(!payload.token && payload.userToken) payload.token=payload.userToken;
+      return payload;
+    }
+
+    function installGithubGasBridge(){
+      if(window.google && google.script && google.script.run) return;
+      function createRunner(successHandler,failureHandler){
+        var runner={
+          withSuccessHandler:function(cb){ return createRunner(cb,failureHandler); },
+          withFailureHandler:function(cb){ return createRunner(successHandler,cb); }
+        };
+        return new Proxy(runner,{
+          get:function(target,prop){
+            if(prop in target) return target[prop];
+            return function(){
+              var apiUrl=getApiUrl();
+              if(!apiUrl){
+                var er=new Error('尚未設定後端 GAS API URL，請檢查 config.js');
+                if(failureHandler) failureHandler(er); else err(er.message);
+                return createRunner();
+              }
+              var args=Array.prototype.slice.call(arguments);
+              var payload=normalizePayloadForApi(String(prop),args);
+              fetch(apiUrl,{
+                method:'POST',
+                headers:{'Content-Type':'text/plain;charset=utf-8'},
+                body:JSON.stringify(payload)
+              })
+              .then(function(response){
+                if(!response.ok) throw new Error('HTTP_'+response.status);
+                return response.text();
+              })
+              .then(function(text){
+                var data={};
+                try{ data=text?JSON.parse(text):{}; }catch(e){ throw new Error('invalid_json_response'); }
+                if(successHandler) successHandler(data);
+              })
+              .catch(function(e){
+                if(failureHandler) failureHandler(e); else err(String(e&&e.message?e.message:e));
+              });
+              return createRunner();
+            };
+          }
+        });
+      }
+      window.google={script:{run:createRunner()}};
+    }
+    installGithubGasBridge();
+
 
 
     function normalizeRole(role,id){
@@ -517,14 +624,18 @@
     // ==================== L型導航 ====================
 
     function buildPageUrl(pageName){
-      var base = String(CTX.webAppUrl || window.location.href.split('#')[0].split('?')[0] || '').trim();
+      var targetPage = String(pageName || 'employee').toLowerCase();
+      var baseUrl = (window.ANG_HR_UTILS && window.ANG_HR_UTILS.getFrontendUrl)
+        ? window.ANG_HR_UTILS.getFrontendUrl(targetPage === 'admin' ? 'admin' : 'employee')
+        : window.location.href.split('#')[0].split('?')[0];
       var id = encodeURIComponent(String(UID || CTX.id || '').trim());
       var token = encodeURIComponent(String(UTOKEN || CTX.token || '').trim());
+      var role = encodeURIComponent(String(UROLE || CTX.role || '').trim());
       var ts = Date.now();
-      return base
-        + '?page=' + encodeURIComponent(pageName || 'employee')
-        + '&id=' + id
+      return baseUrl
+        + '?id=' + id
         + '&token=' + token
+        + '&role=' + role
         + '&_ts=' + ts;
     }
 
@@ -856,11 +967,6 @@
       if(qs('monthOpenDay'))qs('monthOpenDay').value=mo.d;if(qs('monthOpenTime'))qs('monthOpenTime').value=mo.t;
       if(qs('monthCloseDay'))qs('monthCloseDay').value=mc.d;if(qs('monthCloseTime'))qs('monthCloseTime').value=mc.t;
       if(qs('monthPublishDay'))qs('monthPublishDay').value=mp.d;if(qs('monthPublishTime'))qs('monthPublishTime').value=mp.t;
-      if(qs('chkScheduleCalendarShowOthers')){
-        var showOthers = s.scheduleCalendarShowOthers;
-        if(showOthers === undefined) showOthers = s.schedule_calendar_show_others;
-        qs('chkScheduleCalendarShowOthers').checked = String(showOthers === undefined ? 'true' : showOthers).toLowerCase() !== 'false';
-      }
     }
 
     function savePreselectSettingsFromUI(){
@@ -872,7 +978,6 @@
       p.monthOpen=(qs('monthOpenDay')?qs('monthOpenDay').value:'20')+' '+(qs('monthOpenTime')?qs('monthOpenTime').value:'09:00');
       p.monthClose=(qs('monthCloseDay')?qs('monthCloseDay').value:'25')+' '+(qs('monthCloseTime')?qs('monthCloseTime').value:'18:00');
       p.monthPublish=(qs('monthPublishDay')?qs('monthPublishDay').value:'27')+' '+(qs('monthPublishTime')?qs('monthPublishTime').value:'10:00');
-      p.scheduleCalendarShowOthers=qs('chkScheduleCalendarShowOthers')&&qs('chkScheduleCalendarShowOthers').checked?'true':'false';
       loading('儲存中...');
       google.script.run.withSuccessHandler(function(r){Swal.close();r&&r.ok?ok(r.message):err(r?r.message:'失敗')}).withFailureHandler(function(e){Swal.close();err(String(e))}).savePreselectSettings(p);
     }
