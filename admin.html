@@ -98,6 +98,18 @@
     .role-chip{display:inline-flex;align-items:center;gap:4px;padding:6px 9px;border-radius:999px;background:var(--soft);font-size:11px;font-weight:900;color:var(--text)}
     .role-arrow{text-align:center;font-size:16px;color:var(--emp-deep);font-weight:900;line-height:1;margin-top:-2px;margin-bottom:-2px}
 
+
+    /* === People 人員管理 === */
+    .people-list{display:flex;flex-direction:column;gap:8px}
+    .people-card{background:linear-gradient(180deg,#fff,rgba(var(--emp-rgb),.06));border:1px solid rgba(var(--emp-rgb),.10);border-radius:18px;padding:12px;box-shadow:0 8px 18px rgba(var(--emp-rgb),.04)}
+    .people-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px}
+    .people-name{font-size:15px;font-weight:900;line-height:1.25}
+    .people-meta{font-size:12px;color:var(--muted);font-weight:800;line-height:1.5;word-break:break-word}
+    .people-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
+    .bind-link-box{background:#f8fafc;border:1px dashed rgba(var(--emp-rgb),.30);border-radius:16px;padding:10px;font-size:12px;line-height:1.5;word-break:break-all;color:var(--text);margin-top:8px}
+    .people-toolbar{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+    @media(max-width:390px){.people-actions{grid-template-columns:1fr}.people-toolbar{grid-template-columns:1fr}}
+
     /* === 薪資明細 === */
     .salary-line{display:flex;align-items:center;gap:8px;padding:10px;background:var(--soft);border-radius:14px;margin-bottom:6px}
     .salary-line .sl-label{flex:0 0 auto;font-size:13px;font-weight:900;min-width:60px}
@@ -562,19 +574,61 @@
     <section id="page-personnel" class="page">
       <div class="hero">
         <div class="hero-top">
-          <div><div class="hello">People 人員</div><div class="hello-sub">員工資料、權限角色、名額與人員狀態</div></div>
-          <div class="hero-chip">People</div>
+          <div><div class="hello">People 人員</div><div class="hello-sub">新增員工、編輯資料、角色分店、手機綁定連結</div></div>
+          <div style="display:flex;align-items:center;gap:8px"><div class="hero-chip">People</div><button class="btn-sm" onclick="loadPeopleList()" style="background:rgba(255,255,255,.20);color:#fff;border:1px solid rgba(255,255,255,.25)">🔄 刷新</button></div>
         </div>
       </div>
+
       <div class="card">
-        <div class="mini-row"><h3>人員管理入口</h3><span class="badge ok">Admin</span></div>
-        <div class="notice-item">
-          <div class="item-title">這裡是 People 快捷頁</div>
-          <div class="item-meta">目前這份單檔版尚未拆出完整人員表格，所以先保留入口；之後可接員工資料、角色、部門、名額、啟用/停用、重設裝置綁定。</div>
+        <div class="mini-row"><h3>員工新增 / 編輯</h3><span class="badge ok">Admin</span></div>
+        <div class="notice-item" style="margin-bottom:10px">
+          <div class="item-title">新增員工後，可直接產生手機綁定登入連結</div>
+          <div class="item-meta">員工第一次打開連結後，APP / 手機會綁定該裝置；換手機時請先按「重設手機」。</div>
         </div>
-        <div class="tool-grid">
-          <button class="btn-ghost" onclick="navTo('creator')">權限 / 班別設定</button>
-          <button class="btn-ghost" onclick="loadAll()">重新載入資料</button>
+
+        <div class="people-toolbar">
+          <button class="btn-main" onclick="peopleNew()">＋ 新增員工</button>
+          <button class="btn-ghost" onclick="loadPeopleList()">重新載入人員</button>
+        </div>
+
+        <div class="field-row">
+          <div><label class="label">員編</label><input type="text" id="peopleEmpId" placeholder="空白會自動產生，例如 ANG0607"></div>
+          <div><label class="label">角色</label><select id="peopleRole"><option value="Employee">Employee</option><option value="Manager">Manager</option><option value="Admin">Admin</option><option value="Creator">Creator</option></select></div>
+        </div>
+        <div class="field-row">
+          <div><label class="label">姓名</label><input type="text" id="peopleName" placeholder="例如：米米"></div>
+          <div><label class="label">暱稱</label><input type="text" id="peopleNickname" placeholder="例如：小米"></div>
+        </div>
+        <div class="field-row">
+          <div><label class="label">分店ID</label><input type="text" id="peopleBranchId" placeholder="例如：puli"></div>
+          <div><label class="label">班別</label><input type="text" id="peopleShift" placeholder="A / B / C / D"></div>
+        </div>
+        <div class="field-row">
+          <div><label class="label">職稱</label><input type="text" id="peopleJobTitle" placeholder="例如：正職 / 兼職"></div>
+          <div><label class="label">部門</label><input type="text" id="peopleDept" placeholder="例如：外場 / 內場"></div>
+        </div>
+        <div class="field-row">
+          <div><label class="label">顏色</label><input type="color" id="peopleColor" value="#ff87e0" style="height:46px;padding:6px"></div>
+          <div><label class="label">啟用狀態</label><select id="peopleEnabled"><option value="true">啟用</option><option value="false">停用</option></select></div>
+        </div>
+
+        <div class="field-row" style="margin-top:4px">
+          <button class="btn-main" onclick="peopleSave()">儲存員工</button>
+          <button class="btn-ghost" onclick="peopleGenerateLink()">產生綁定連結</button>
+        </div>
+        <div class="field-row" style="margin-top:8px">
+          <button class="btn-soft" onclick="peopleResetDevice()">重設手機綁定</button>
+          <button class="btn-danger" onclick="peopleDisable()">停用此員工</button>
+        </div>
+
+        <div id="peopleBindBox" class="bind-link-box hidden"></div>
+      </div>
+
+      <div class="card">
+        <div class="mini-row"><h3>人員列表</h3><span class="badge" id="peopleCountBadge">0 人</span></div>
+        <input type="text" id="peopleSearch" placeholder="搜尋員編 / 姓名 / 分店 / 角色" oninput="renderPeopleList()">
+        <div id="peopleList" class="people-list">
+          <div class="notice-item"><div class="item-title">讀取中...</div></div>
         </div>
       </div>
     </section>
@@ -652,6 +706,8 @@
     var preselectMode='week';
     var shiftRows=[];
     var DEFAULT_SHIFT_COLOR='#4A90D9';
+    var peopleRows=[];
+    var peopleCurrentId='';
 
     function qs(id){return document.getElementById(id)}
     function setText(id,v){var e=qs(id);if(e)e.innerText=v==null?'':String(v)}
@@ -868,7 +924,7 @@
       var r=getRoleKey();
       if(r==='creator')return['home','admin','creator','manager','personnel','salary','data'];
       if(r==='admin')return['home','admin','manager','personnel','salary','data'];
-      if(r==='manager')return['home','manager','personnel','data'];
+      if(r==='manager')return['home','manager','data'];
       return[];
     }
 
@@ -1340,7 +1396,189 @@
       if(a.indexOf('manager')>-1)google.script.run.withSuccessHandler(applyMgr).withFailureHandler(function(){}).getManagerBootstrapData(UID,UTOKEN);
       if(a.indexOf('admin')>-1)google.script.run.withSuccessHandler(applyAdm).withFailureHandler(function(){}).getAdminBootstrapData(UID,UTOKEN);
       if(a.indexOf('creator')>-1)google.script.run.withSuccessHandler(applyCrt).withFailureHandler(function(){}).getCreatorBootstrapData(UID,UTOKEN);
+      if(a.indexOf('personnel')>-1)loadPeopleList();
     }
+
+
+    // ==================== People 人員管理 ====================
+
+    function peopleClearBindBox(){
+      var box=qs('peopleBindBox');
+      if(box){box.classList.add('hidden');box.innerHTML='';}
+    }
+
+    function peopleNew(){
+      peopleCurrentId='';
+      ['peopleEmpId','peopleName','peopleNickname','peopleBranchId','peopleShift','peopleJobTitle','peopleDept'].forEach(function(id){
+        var el=qs(id); if(el) el.value='';
+      });
+      if(qs('peopleRole'))qs('peopleRole').value='Employee';
+      if(qs('peopleColor'))qs('peopleColor').value='#ff87e0';
+      if(qs('peopleEnabled'))qs('peopleEnabled').value='true';
+      peopleClearBindBox();
+      var el=qs('peopleName'); if(el) el.focus();
+    }
+
+    function peopleFill(emp){
+      emp=emp||{};
+      peopleCurrentId=String(emp.id||'').trim().toUpperCase();
+      if(qs('peopleEmpId'))qs('peopleEmpId').value=peopleCurrentId;
+      if(qs('peopleName'))qs('peopleName').value=emp.name||'';
+      if(qs('peopleNickname'))qs('peopleNickname').value=emp.nickname||'';
+      if(qs('peopleRole'))qs('peopleRole').value=emp.role||'Employee';
+      if(qs('peopleBranchId'))qs('peopleBranchId').value=emp.branchId||emp.branch_id||'';
+      if(qs('peopleShift'))qs('peopleShift').value=emp.shift||'';
+      if(qs('peopleJobTitle'))qs('peopleJobTitle').value=emp.jobTitle||'';
+      if(qs('peopleDept'))qs('peopleDept').value=emp.dept||'';
+      if(qs('peopleColor'))qs('peopleColor').value=emp.color||'#ff87e0';
+      if(qs('peopleEnabled'))qs('peopleEnabled').value=(emp.enabled===false||String(emp.enabled).toLowerCase()==='false')?'false':'true';
+      peopleClearBindBox();
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+
+    function peoplePayload(){
+      return {
+        userId:UID,
+        token:UTOKEN,
+        empId:(qs('peopleEmpId')&&qs('peopleEmpId').value.trim().toUpperCase())||peopleCurrentId||'',
+        name:(qs('peopleName')&&qs('peopleName').value.trim())||'',
+        nickname:(qs('peopleNickname')&&qs('peopleNickname').value.trim())||'',
+        role:(qs('peopleRole')&&qs('peopleRole').value)||'Employee',
+        branchId:(qs('peopleBranchId')&&qs('peopleBranchId').value.trim())||'',
+        shift:(qs('peopleShift')&&qs('peopleShift').value.trim())||'',
+        jobTitle:(qs('peopleJobTitle')&&qs('peopleJobTitle').value.trim())||'',
+        dept:(qs('peopleDept')&&qs('peopleDept').value.trim())||'',
+        color:(qs('peopleColor')&&qs('peopleColor').value)||'#ff87e0',
+        enabled:(qs('peopleEnabled')&&qs('peopleEnabled').value)||'true'
+      };
+    }
+
+    function loadPeopleList(){
+      if(!gas())return;
+      var a=getAllowed();
+      if(a.indexOf('personnel')===-1)return;
+      var box=qs('peopleList');
+      if(box)box.innerHTML='<div class="notice-item"><div class="item-title">讀取中...</div></div>';
+      google.script.run
+        .withSuccessHandler(function(r){
+          if(!r||!r.ok){if(box)box.innerHTML='<div class="notice-item"><div class="item-title">讀取失敗</div><div class="item-meta">'+esc(r&&r.message||'')+'</div></div>';return}
+          peopleRows=Array.isArray(r.people)?r.people:[];
+          renderPeopleList();
+        })
+        .withFailureHandler(function(e){
+          if(box)box.innerHTML='<div class="notice-item"><div class="item-title">讀取失敗</div><div class="item-meta">'+esc(String(e))+'</div></div>';
+        })
+        .getPeopleManagementData({userId:UID,token:UTOKEN});
+    }
+
+    function renderPeopleList(){
+      var box=qs('peopleList'); if(!box)return;
+      var key=((qs('peopleSearch')&&qs('peopleSearch').value)||'').trim().toLowerCase();
+      var list=(peopleRows||[]).filter(function(p){
+        if(!key)return true;
+        return [p.id,p.name,p.nickname,p.role,p.branchId,p.branchName,p.dept,p.jobTitle,p.shift].join(' ').toLowerCase().indexOf(key)>-1;
+      });
+      if(qs('peopleCountBadge'))qs('peopleCountBadge').innerText=list.length+' 人';
+      if(!list.length){
+        box.innerHTML='<div class="notice-item"><div class="item-title">目前沒有符合的人員</div></div>';
+        return;
+      }
+      box.innerHTML=list.map(function(p){
+        var enabled=(p.enabled===false||String(p.enabled).toLowerCase()==='false')?false:true;
+        var device=p.specialdeviceid?'已綁定':'未綁定';
+        var badge=enabled?'<span class="badge ok">啟用</span>':'<span class="badge danger">停用</span>';
+        var idx=peopleRows.indexOf(p);
+        return '<div class="people-card">'+
+          '<div class="people-head"><div><div class="people-name">'+esc(p.name||p.nickname||p.id)+' <span style="font-size:12px;color:var(--muted)">('+esc(p.id)+')</span></div>'+
+          '<div class="people-meta">角色：'+esc(p.role||'Employee')+'｜分店：'+esc(p.branchName||p.branchId||'未設定')+'｜班別：'+esc(p.shift||'未設定')+'</div>'+
+          '<div class="people-meta">部門：'+esc(p.dept||'未設定')+'｜職稱：'+esc(p.jobTitle||'未設定')+'｜手機：'+device+'</div></div>'+badge+'</div>'+
+          '<div class="people-actions">'+
+          '<button class="btn-sm" onclick="peopleFill(peopleRows['+idx+'])">編輯</button>'+
+          '<button class="btn-sm" onclick="peopleGenerateLink(\''+esc(p.id)+'\')">綁定連結</button>'+
+          '<button class="btn-sm" onclick="peopleResetDevice(\''+esc(p.id)+'\')">重設手機</button>'+
+          '</div></div>';
+      }).join('');
+    }
+
+    function peopleSave(){
+      var p=peoplePayload();
+      if(!p.name && !p.nickname){warn('請填姓名或暱稱');return}
+      if(p.role==='Creator' && UROLE!=='Creator'){warn('只有 Creator 可以建立或設定 Creator');return}
+      google.script.run
+        .withSuccessHandler(function(r){
+          if(!r||!r.ok){err(r?r.message:'儲存失敗');return}
+          ok(r.message||'已儲存');
+          if(r.employee){peopleFill(r.employee);}
+          loadPeopleList();
+        })
+        .withFailureHandler(function(e){err(String(e))})
+        .saveEmployeeProfile(p);
+    }
+
+    function peopleDisable(){
+      var id=((qs('peopleEmpId')&&qs('peopleEmpId').value.trim().toUpperCase())||peopleCurrentId||'');
+      if(!id){warn('請先選擇員工');return}
+      if(id==='ANG0603'){warn('Creator ANG0603 不可停用');return}
+      if(qs('peopleEnabled'))qs('peopleEnabled').value='false';
+      peopleSave();
+    }
+
+    function peopleGenerateLink(empId){
+      var id=String(empId||((qs('peopleEmpId')&&qs('peopleEmpId').value.trim().toUpperCase())||peopleCurrentId||'')).trim().toUpperCase();
+      if(!id){warn('請先選擇或儲存員工');return}
+      google.script.run
+        .withSuccessHandler(function(r){
+          if(!r||!r.ok){err(r?r.message:'產生失敗');return}
+          var box=qs('peopleBindBox');
+          if(box){
+            box.classList.remove('hidden');
+            box.innerHTML='<b>手機綁定登入連結</b><br>'+esc(r.url||'')+
+              '<div class="field-row" style="margin-top:8px"><button class="btn-main" onclick="copyTextToClipboard(\''+String(r.url||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'")+'\')">複製連結</button><button class="btn-ghost" onclick="window.open(\''+String(r.url||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'")+'\',\'_blank\')">打開測試</button></div>';
+          }
+          ok('綁定連結已產生');
+          loadPeopleList();
+        })
+        .withFailureHandler(function(e){err(String(e))})
+        .generateEmployeeBindLink({userId:UID,token:UTOKEN,empId:id});
+    }
+
+    function peopleResetDevice(empId){
+      var id=String(empId||((qs('peopleEmpId')&&qs('peopleEmpId').value.trim().toUpperCase())||peopleCurrentId||'')).trim().toUpperCase();
+      if(!id){warn('請先選擇員工');return}
+      Swal.fire({title:'確認重設手機？',text:id+' 的舊手機綁定會被清空，需重新用綁定連結登入。',icon:'warning',showCancelButton:true,confirmButtonText:'重設',cancelButtonText:'取消'})
+        .then(function(x){
+          if(!x.isConfirmed)return;
+          google.script.run
+            .withSuccessHandler(function(r){
+              if(!r||!r.ok){err(r?r.message:'重設失敗');return}
+              ok(r.message||'已重設手機綁定');
+              if(r.url){
+                var box=qs('peopleBindBox');
+                if(box){box.classList.remove('hidden');box.innerHTML='<b>新綁定連結</b><br>'+esc(r.url);}
+              }
+              loadPeopleList();
+            })
+            .withFailureHandler(function(e){err(String(e))})
+            .resetEmployeeDeviceBinding({userId:UID,token:UTOKEN,empId:id,generateLink:true});
+        });
+    }
+
+    function copyTextToClipboard(text){
+      text=String(text||'');
+      if(navigator.clipboard&&navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).then(function(){ok('已複製');}).catch(function(){fallbackCopy_(text);});
+      }else{
+        fallbackCopy_(text);
+      }
+    }
+
+    function fallbackCopy_(text){
+      var ta=document.createElement('textarea');
+      ta.value=text;document.body.appendChild(ta);ta.select();
+      try{document.execCommand('copy');ok('已複製');}catch(e){warn('無法自動複製，請手動複製');}
+      document.body.removeChild(ta);
+    }
+
 
     // ==================== 薪資管理 ====================
 
