@@ -1933,7 +1933,7 @@
       <span>打卡記錄</span>
     </button>
 
-    <button class="nav-btn is-main active" id="nav-home" onclick="nav('home')">
+    <button class="nav-btn is-main active" id="nav-home" onclick="handleEmployeeHomeClick()">
       <i class="fa-solid fa-house"></i>
       <span>員工主頁</span>
     </button>
@@ -2004,6 +2004,8 @@
     const state = {
       employeeId:'',
       userToken:'',
+      userRole:'Employee',
+      canOpenAdmin:false,
       uploadType:'',
       salaryMode:'week',
       scheduleWeekOffset:0,
@@ -2362,6 +2364,60 @@
       }
     }
 
+
+
+    function normalizeRoleValue_(role, id){
+      const empId = String(id || state.employeeId || APP_CTX.id || '').trim().toUpperCase();
+      if (empId === 'ANG0603') return 'Creator';
+      const s = String(role || '').trim().toLowerCase();
+      if (s === 'creator' || s === 'owner' || s === 'superadmin' || s === 'super_admin' || s === '最高權限' || s === '創建者' || s === '建立者') return 'Creator';
+      if (s === 'admin' || s === 'administrator' || s === '管理員' || s === '系統管理員') return 'Admin';
+      if (s === 'manager' || s === '主管' || s === '店長' || s === '經理') return 'Manager';
+      return 'Employee';
+    }
+
+    function isManagementRole_(role){
+      return ['Creator','Admin','Manager'].indexOf(normalizeRoleValue_(role, state.employeeId)) > -1;
+    }
+
+    function setUserRole_(role){
+      state.userRole = normalizeRoleValue_(role, state.employeeId);
+      state.canOpenAdmin = isManagementRole_(state.userRole);
+      localStorage.setItem('ang_employee_role', state.userRole);
+      return state.userRole;
+    }
+
+    function buildFrontendPageUrl_(pageName){
+      const targetPage = String(pageName || 'employee').toLowerCase();
+      const u = window.ANG_HR_UTILS || {};
+      const base = u.getFrontendUrl
+        ? u.getFrontendUrl(targetPage === 'admin' ? 'admin' : 'employee')
+        : String(window.location.href || '').split('#')[0].split('?')[0];
+      const sep = base.indexOf('?') > -1 ? '&' : '?';
+      const params = [
+        'id=' + encodeURIComponent(String(state.employeeId || APP_CTX.id || '').trim().toUpperCase()),
+        'token=' + encodeURIComponent(String(state.userToken || APP_CTX.token || '').trim()),
+        'role=' + encodeURIComponent(String(state.userRole || APP_CTX.role || '').trim()),
+        '_ts=' + Date.now()
+      ];
+      return base + sep + params.join('&');
+    }
+
+    function goAdminFromEmployee_(){
+      const url = buildFrontendPageUrl_('admin');
+      try { window.location.replace(url); }
+      catch(err) { window.location.href = url; }
+    }
+
+    function handleEmployeeHomeClick(){
+      const isHomeActive = document.body.dataset.activePage === 'home' || (qs('page-home') && qs('page-home').classList.contains('active'));
+      if (isHomeActive && isManagementRole_(state.userRole || APP_CTX.role)) {
+        goAdminFromEmployee_();
+        return;
+      }
+      nav('home');
+    }
+
     function nav(id){
       document.querySelectorAll('.page').forEach(function(el){ el.classList.remove('active'); });
       document.querySelectorAll('.nav-btn').forEach(function(el){ el.classList.remove('active'); });
@@ -2459,6 +2515,7 @@
 
       state.employeeId = displayId;
       state.userToken = displayToken;
+      setUserRole_(p.role || APP_CTX.role || localStorage.getItem('ang_employee_role') || 'Employee');
 
       if (displayId) {
         localStorage.setItem('ang_employee_id', displayId);
@@ -3135,6 +3192,7 @@
 
       state.employeeId = p.id || state.employeeId;
       state.userToken = res.token || state.userToken;
+      setUserRole_(p.role || res.role || APP_CTX.role || state.userRole || 'Employee');
       state.workRecords = Array.isArray(res.workRecords) ? res.workRecords : state.workRecords;
       state.leaveRows = Array.isArray(res.leaveRows) ? res.leaveRows : [];
       state.uploads = Array.isArray(res.uploads) ? res.uploads : [];

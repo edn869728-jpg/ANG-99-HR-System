@@ -82,6 +82,22 @@
     .review-actions{display:flex;gap:8px;margin-top:10px}
     .review-actions button{flex:1}
 
+
+
+    /* === 權限圖標 === */
+    .perm-note{font-size:12px;font-weight:800;color:var(--muted);margin:-2px 0 10px}
+    .role-level-grid{display:grid;grid-template-columns:1fr;gap:10px}
+    .role-level-card{background:linear-gradient(180deg,#fff,rgba(var(--emp-rgb),.06));border:1px solid rgba(var(--emp-rgb),.10);border-radius:20px;padding:12px;box-shadow:0 8px 18px rgba(var(--emp-rgb),.04)}
+    .role-level-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+    .role-level-left{display:flex;align-items:center;gap:10px;min-width:0}
+    .role-icon{width:42px;height:42px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:var(--emp-gradient);color:#fff;box-shadow:0 8px 18px rgba(var(--emp-rgb),.18);font-size:18px;flex:0 0 auto}
+    .role-name{font-size:15px;font-weight:900;line-height:1.2}
+    .role-desc{font-size:11px;color:var(--muted);font-weight:800;line-height:1.35;margin-top:2px}
+    .role-tag{display:inline-flex;align-items:center;border-radius:999px;padding:6px 10px;font-size:10px;font-weight:900;background:#fff7ed;color:var(--emp-deep);border:1px solid rgba(var(--emp-rgb),.15);white-space:nowrap}
+    .role-features{display:flex;flex-wrap:wrap;gap:6px}
+    .role-chip{display:inline-flex;align-items:center;gap:4px;padding:6px 9px;border-radius:999px;background:var(--soft);font-size:11px;font-weight:900;color:var(--text)}
+    .role-arrow{text-align:center;font-size:16px;color:var(--emp-deep);font-weight:900;line-height:1;margin-top:-2px;margin-bottom:-2px}
+
     /* === 薪資明細 === */
     .salary-line{display:flex;align-items:center;gap:8px;padding:10px;background:var(--soft);border-radius:14px;margin-bottom:6px}
     .salary-line .sl-label{flex:0 0 auto;font-size:13px;font-weight:900;min-width:60px}
@@ -197,6 +213,45 @@
           <div class="hero-chip" id="homeChip">Home</div>
         </div>
       </div>
+
+      <div class="card">
+        <div class="mini-row"><h3>權限圖標</h3><span class="badge">階層</span></div>
+        <div class="perm-note">Creator ＞ Admin ＞ Manager ＞ Employee。首頁在員工頁再按一次會切到管理頁；管理頁再按首頁會回員工頁。</div>
+        <div class="role-level-grid">
+          <div class="role-level-card">
+            <div class="role-level-head">
+              <div class="role-level-left"><div class="role-icon"><i class="fa-solid fa-crown"></i></div><div><div class="role-name">Creator</div><div class="role-desc">最高權限｜可使用全部功能</div></div></div>
+              <div class="role-tag">全部權限</div>
+            </div>
+            <div class="role-features"><span class="role-chip">Manager 全部</span><span class="role-chip">Admin 全部</span><span class="role-chip">權限管理</span><span class="role-chip">班別設定</span><span class="role-chip">審核流程</span><span class="role-chip">系統設定</span></div>
+          </div>
+          <div class="role-arrow">↓</div>
+          <div class="role-level-card">
+            <div class="role-level-head">
+              <div class="role-level-left"><div class="role-icon"><i class="fa-solid fa-shield-halved"></i></div><div><div class="role-name">Admin</div><div class="role-desc">系統管理層｜包含 Manager 權限</div></div></div>
+              <div class="role-tag">11 顆功能</div>
+            </div>
+            <div class="role-features"><span class="role-chip">排班發布</span><span class="role-chip">請假審核</span><span class="role-chip">資料接收審核</span><span class="role-chip">通知發布</span><span class="role-chip">留言審核</span><span class="role-chip">打卡管理</span><span class="role-chip">補打卡審核</span><span class="role-chip">資料修改</span><span class="role-chip">薪資審核</span><span class="role-chip">提報期限設定</span><span class="role-chip">Logo / Title 設定</span></div>
+          </div>
+          <div class="role-arrow">↓</div>
+          <div class="role-level-card">
+            <div class="role-level-head">
+              <div class="role-level-left"><div class="role-icon"><i class="fa-solid fa-users-gear"></i></div><div><div class="role-name">Manager</div><div class="role-desc">現場主管層｜包含一般員工功能</div></div></div>
+              <div class="role-tag">5 顆功能</div>
+            </div>
+            <div class="role-features"><span class="role-chip">排班發布</span><span class="role-chip">請假審核</span><span class="role-chip">資料接收審核</span><span class="role-chip">通知發布</span><span class="role-chip">留言審核</span></div>
+          </div>
+          <div class="role-arrow">↓</div>
+          <div class="role-level-card">
+            <div class="role-level-head">
+              <div class="role-level-left"><div class="role-icon"><i class="fa-solid fa-user"></i></div><div><div class="role-name">Employee</div><div class="role-desc">一般員工｜日常使用功能</div></div></div>
+              <div class="role-tag">基礎功能</div>
+            </div>
+            <div class="role-features"><span class="role-chip">打卡</span><span class="role-chip">請假</span><span class="role-chip">排班查看</span><span class="role-chip">薪資查看</span><span class="role-chip">資料上傳</span></div>
+          </div>
+        </div>
+      </div>
+
       <!-- 薪資管理 -->
       <div class="card">
         <div class="mini-row"><h3>薪資管理</h3><span class="badge ok">設定</span></div>
