@@ -19,16 +19,15 @@
     body{padding-bottom:100px}
 
     /* === 頂部 === */
-    .topbar{position:sticky;top:0;z-index:1000;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);padding:8px 12px;min-height:58px;display:flex;align-items:center;justify-content:space-between;gap:10px;box-shadow:0 2px 10px rgba(0,0,0,.04);overflow:hidden}
-    .topbar-left{display:flex;align-items:center;gap:10px;min-width:0;flex:0 1 auto}
-    .topbar-right{text-align:right;flex:1 1 auto;min-width:0}
-    .brand-logo{width:48px;height:48px;flex:0 0 48px;border-radius:16px;display:flex;align-items:center;justify-content:center;background:var(--emp-gradient);color:#fff;font-size:16px;font-weight:900;box-shadow:0 6px 14px rgba(var(--emp-rgb),.18);overflow:hidden}
-    .brand-logo img{width:100%;height:100%;object-fit:contain;border-radius:16px;display:block}
-    .brand-title-main{font-size:14px;font-weight:900;color:var(--emp-deep);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:42vw}
-    .brand-title-sub{font-size:10px;font-weight:800;color:#9ca3af;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:42vw}
-    .title{font-size:16px;font-weight:900;color:var(--emp-deep);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .sub-title{font-size:11px;font-weight:800;color:#9ca3af;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    @media(max-width:430px){.topbar{padding:7px 10px;gap:8px}.brand-logo{width:42px;height:42px;flex-basis:42px;border-radius:14px}.brand-logo img{border-radius:14px}.brand-title-main{font-size:13px;max-width:34vw}.brand-title-sub{font-size:9px;max-width:34vw}.title{font-size:14px}.sub-title{font-size:10px}}
+    .topbar{position:sticky;top:0;z-index:1000;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);padding:8px 12px;min-height:58px;display:flex;align-items:center;justify-content:space-between;gap:10px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+    .topbar-left{display:flex;align-items:center;gap:10px}
+    .topbar-right{text-align:right;flex:1}
+    .brand-logo{width:48px;height:48px;border-radius:16px;display:flex;align-items:center;justify-content:center;background:var(--emp-gradient);color:#fff;font-size:16px;font-weight:900;box-shadow:0 6px 14px rgba(var(--emp-rgb),.18);overflow:hidden}
+    .brand-logo img{width:100%;height:100%;object-fit:cover}
+    .brand-title-main{font-size:14px;font-weight:900;color:var(--emp-deep)}
+    .brand-title-sub{font-size:10px;font-weight:800;color:#9ca3af}
+    .title{font-size:16px;font-weight:900;color:var(--emp-deep)}
+    .sub-title{font-size:11px;font-weight:800;color:#9ca3af}
 
     /* === 通用 === */
     .safe{padding:8px 8px 0}
@@ -452,7 +451,7 @@
     };
     var UID=String(CTX.id||'').trim().toUpperCase();
     var UTOKEN=String(CTX.token||'').trim();
-    var UROLE=normalizeRole(CTX.role||'Employee', UID);
+    var UROLE=String(CTX.role||'Employee').trim();
     var logoDataUrl='';
     var mgrData={},admData={},crtData={};
     var currentPage='home';
@@ -473,42 +472,6 @@
     function loading(m){Swal.fire({title:m||'處理中...',allowOutsideClick:false,didOpen:function(){Swal.showLoading()}})}
     function statusCls(s){return/已通過|approved/.test(s)?'ok':/已退回|rejected/.test(s)?'danger':'warn'}
     function statusLbl(s){return/已通過|approved/.test(s)?'已通過':/已退回|rejected/.test(s)?'已退回':'待審核'}
-
-
-    function normalizeRole(role,id){
-      var empId=String(id||UID||'').trim().toUpperCase();
-      if(empId==='ANG0603')return'Creator';
-      var s=String(role||'').trim().toLowerCase();
-      if(s==='creator'||s==='owner'||s==='superadmin'||s==='super_admin'||s==='最高權限'||s==='創建者'||s==='建立者')return'Creator';
-      if(s==='admin'||s==='administrator'||s==='管理員'||s==='系統管理員')return'Admin';
-      if(s==='manager'||s==='主管'||s==='店長'||s==='經理')return'Manager';
-      if(s==='employee'||s==='staff'||s==='member'||s==='員工'||s==='一般員工')return'Employee';
-      return role?String(role).trim():'Employee';
-    }
-
-    function setLogoValue(value){
-      var el=qs('brandLogo');
-      if(!el)return;
-      var v=String(value||'').trim();
-      if(/^https?:\/\//i.test(v)||/^data:image\//i.test(v)){
-        el.innerHTML='<img src="'+esc(v)+'" alt="logo">';
-      }else{
-        el.textContent=v||'ANG';
-      }
-    }
-
-    function applyTopBrand(system){
-      var s=system||{};
-      var companyName=s.company_name||s.brandTitleMain||s.main_title||'ANG.lo';
-      var companySub=s.company_subtitle||s.brandTitleSub||s.system_sub||'Humanized system technology';
-      var title=s.system_title||s.main_title||'ANG.lo Engine';
-      var sysName=s.system_name||'HR 系統';
-      setText('brandTitleMain',companyName);
-      setText('brandTitleSub',companySub);
-      setText('topTitle',title);
-      setText('topSub',sysName+'｜'+(UID||'USER'));
-      setLogoValue(s.logo_url||s.fallback_text||'ANG');
-    }
 
     // ==================== L型導航 ====================
 
@@ -596,7 +559,7 @@
         setText('topSub','主頁');
       }else if(page==='admin'){
         setText('topTitle','ANG.lo Engine');
-        setText('topSub','HR 系統｜'+(UID||'USER'));
+        setText('topSub','管理中心');
       }
     }
 
@@ -800,7 +763,7 @@
     function saveGraceSettings(){
       if(!gas())return warn('非正式環境');loading('儲存中...');
       google.script.run.withSuccessHandler(function(r){Swal.close();r&&r.ok?ok(r.message):err(r?r.message:'失敗')}).withFailureHandler(function(e){Swal.close();err(String(e))})
-        .saveSystemSettings({userId:UID,token:UTOKEN,settings:{clock_grace_before:qs('graceBeforeMin').value,clock_grace_after:qs('graceAfterMin').value}});
+        .saveSystemSettings_({userId:UID,token:UTOKEN,settings:{clock_grace_before:qs('graceBeforeMin').value,clock_grace_after:qs('graceAfterMin').value}});
     }
 
     function saveClockLocationSettings(){
@@ -814,7 +777,7 @@
     function saveBrandSettings(){
       if(!gas())return warn('非正式環境');loading('儲存中...');
       google.script.run.withSuccessHandler(function(r){Swal.close();r&&r.ok?ok(r.message):err(r?r.message:'失敗')}).withFailureHandler(function(e){Swal.close();err(String(e))})
-        .saveBrandSettings({userId:UID,token:UTOKEN,logoDataUrl:logoDataUrl,fallbackText:qs('fallbackTextInput').value.trim(),mainTitle:qs('mainTitleInput').value.trim(),systemName:qs('systemNameInput').value.trim(),companyName:(qs('brandTitleMain')?qs('brandTitleMain').innerText:'ANG.lo'),companySubtitle:(qs('brandTitleSub')?qs('brandTitleSub').innerText:'Humanized system technology')});
+        .saveBrandSettings({userId:UID,token:UTOKEN,logoDataUrl:logoDataUrl,fallbackText:qs('fallbackTextInput').value.trim(),mainTitle:qs('mainTitleInput').value.trim(),systemName:qs('systemNameInput').value.trim()});
     }
 
     function archiveSheet(name){if(!gas())return;loading('歸檔中...');google.script.run.withSuccessHandler(function(r){Swal.close();r&&r.ok?ok(r.message):err(r?r.message:'失敗')}).withFailureHandler(function(e){Swal.close();err(String(e))}).archiveOldRecords({userId:UID,token:UTOKEN,sheetName:name})}
@@ -917,9 +880,6 @@
 
     function applyMgr(r){
       if(!r||!r.ok)return;mgrData=r;
-      if(r.profile){UID=String(r.profile.id||UID).trim().toUpperCase();UROLE=normalizeRole(r.profile.role||UROLE,UID);}
-      applyTopBrand(r.system||{});
-      applyVisibility();
       setText('mgrLeavePending',countPending(r.leaveReviews));
       setText('mgrUploadPending',countPending(r.receiveReviews));
       setText('mgrMsgPending',countPending(r.messageReviews));
@@ -933,9 +893,6 @@
 
     function applyAdm(r){
       if(!r||!r.ok)return;admData=r;
-      if(r.profile){UID=String(r.profile.id||UID).trim().toUpperCase();UROLE=normalizeRole(r.profile.role||UROLE,UID);}
-      applyTopBrand(r.system||{});
-      applyVisibility();
       setText('admClockFixPending',countPending(r.clockFixReviews));
       setText('admSalaryPending',countPending(r.salaryReviews));
       setText('admLeavePending',countPending(r.leaveReviews));
@@ -957,9 +914,6 @@
 
     function applyCrt(r){
       if(!r||!r.ok)return;crtData=r;
-      if(r.profile){UID=String(r.profile.id||UID).trim().toUpperCase();UROLE=normalizeRole(r.profile.role||UROLE,UID);}
-      applyTopBrand(r.system||{});
-      applyVisibility();
       if(r.approverSettings){
         qs('chkMultiLevel').checked=String(r.approverSettings.multi_level_review_enabled||'true')!=='false';
         function sc(pre,v){var a=String(v||'Manager').split(',');if(qs('chk'+pre+'Manager'))qs('chk'+pre+'Manager').checked=a.indexOf('Manager')>-1;if(qs('chk'+pre+'Admin'))qs('chk'+pre+'Admin').checked=a.indexOf('Admin')>-1}
@@ -1099,7 +1053,7 @@
     }
 
     function init(){
-      applyTopBrand({company_name:'ANG.lo',company_subtitle:'Humanized system technology',system_title:'ANG.lo Engine',system_name:'HR 系統',fallback_text:'ANG'});
+      setText('topSub','管理中心｜'+UID+'｜'+UROLE);
       applyEmployeeTheme();
       initMonthSelects();
       renderShiftRows();
