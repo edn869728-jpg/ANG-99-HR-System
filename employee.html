@@ -1958,7 +1958,7 @@
         id: String(q('id') || c('<?= typeof id !== "undefined" ? id : "" ?>') || '').trim().toUpperCase(),
         token: String(q('token') || q('key') || c('<?= typeof token !== "undefined" ? token : "" ?>') || '').trim(),
         page: String(q('page') || c('<?= typeof page !== "undefined" ? page : "" ?>') || '').trim(),
-        role: String(q('role') || c('<?= typeof role !== "undefined" ? role : "" ?>') || '').trim(),
+        role: String(q('role') || localStorage.getItem('ang_user_role') || localStorage.getItem('ang_employee_role') || c('<?= typeof role !== "undefined" ? role : "" ?>') || '').trim(),
         name: String(q('name') || c('<?= typeof name !== "undefined" ? name : "" ?>') || '').trim(),
         nickname: String(q('nickname') || c('<?= typeof nickname !== "undefined" ? nickname : "" ?>') || '').trim()
       };
@@ -2384,6 +2384,7 @@
       state.userRole = normalizeRoleValue_(role, state.employeeId);
       state.canOpenAdmin = isManagementRole_(state.userRole);
       localStorage.setItem('ang_employee_role', state.userRole);
+      localStorage.setItem('ang_user_role', state.userRole);
       return state.userRole;
     }
 
