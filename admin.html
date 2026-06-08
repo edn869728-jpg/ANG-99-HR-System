@@ -500,19 +500,19 @@
           <div class="item-meta">例如：ANG.lo 這格會顯示「矽品精密」；Humanized system technology 這格會顯示「精密股份有限公司」。員工資料若有「分店ID」，會優先套用該分店設定。</div>
         </div>
         <label class="label">儲存範圍</label>
-        <select id="brandScope">
+        <select id="brandScope" onchange="updateRightBannerPreview()">
           <option value="global">全公司預設</option>
           <option value="branch">指定分店</option>
         </select>
         <div class="field-row">
-          <div><label class="label">分店ID</label><input type="text" id="branchIdInput" placeholder="例如：puli / yuchi / main"></div>
-          <div><label class="label">分店名稱</label><input type="text" id="branchNameInput" placeholder="例如：埔里店"></div>
+          <div><label class="label">分店ID</label><input type="text" id="branchIdInput" placeholder="例如：puli / yuchi / main" oninput="updateRightBannerPreview()"></div>
+          <div><label class="label">分店名稱</label><input type="text" id="branchNameInput" placeholder="例如：埔里店" oninput="updateRightBannerPreview()"></div>
         </div>
         <div class="field-row">
           <div><label class="label">公司名稱（左側第一行）</label><input type="text" id="companyNameInput" value="ANG.lo" placeholder="例如：矽品精密"></div>
           <div><label class="label">公司副名稱（左側第二行）</label><input type="text" id="companySubtitleInput" value="Humanized system technology" placeholder="例如：精密股份有限公司"></div>
         </div>
-        <div class="field-row"><div><label class="label">右側主標題</label><input type="text" id="mainTitleInput" value="ANG.lo Engine"></div><div><label class="label">系統名稱</label><input type="text" id="systemNameInput" value="HR 系統"></div></div>
+        <div class="field-row"><div><label class="label">右側主標題（固定不可改）</label><input type="text" id="mainTitleInput" value="ANG.lo Engine" readonly style="opacity:.72;cursor:not-allowed"></div><div><label class="label">右側第二行（自動：分店 / 總店）</label><input type="text" id="systemNameInput" value="總店" readonly style="opacity:.72;cursor:not-allowed"></div></div>
         <label class="label">無圖時文字</label><input type="text" id="fallbackTextInput" value="ANG">
         <label class="label">上傳 Logo</label><input type="file" id="logoUpload" accept="image/*" onchange="handleLogoUpload(event)">
         <button class="btn-main" style="margin-top:10px" onclick="saveBrandSettings()">儲存品牌 / 分店橫幅設定</button>
@@ -684,6 +684,9 @@
         role:String(q('role')||localStorage.getItem('ang_user_role')||localStorage.getItem('ang_employee_role')||c('<?= typeof role!=="undefined"?role:"" ?>')||'').trim(),
         name:String(q('name')||c('<?= typeof name!=="undefined"?name:"" ?>')||'').trim(),
         nickname:String(q('nickname')||c('<?= typeof nickname!=="undefined"?nickname:"" ?>')||'').trim(),
+        companyId:String(q('company_id')||q('companyId')||localStorage.getItem('ang_company_id')||'').trim(),
+        deviceId:String(q('device_id')||q('deviceId')||localStorage.getItem('ang_device_id')||'').trim(),
+        appMode:String(q('app')||localStorage.getItem('ang_app_mode')||'').trim(),
         webAppUrl:String((window.ANG_HR_CONFIG&&window.ANG_HR_CONFIG.apiBaseUrl)||q('api')||q('gas')||c('<?= typeof webAppUrl!=="undefined"?webAppUrl:"" ?>')||'').trim(),
         employeePageUrl:String((window.ANG_HR_CONFIG&&window.ANG_HR_CONFIG.employeePageUrl)||'./employee.html'),
         adminPageUrl:String((window.ANG_HR_CONFIG&&window.ANG_HR_CONFIG.adminPageUrl)||'./admin.html')
@@ -695,6 +698,9 @@
     if(UID)localStorage.setItem('ang_employee_id',UID);
     if(UTOKEN)localStorage.setItem('ang_employee_token',UTOKEN);
     if(UROLE){localStorage.setItem('ang_user_role',UROLE);localStorage.setItem('ang_employee_role',UROLE);}
+    if(CTX.companyId)localStorage.setItem('ang_company_id',CTX.companyId);
+    if(CTX.deviceId)localStorage.setItem('ang_device_id',CTX.deviceId);
+    if(CTX.appMode)localStorage.setItem('ang_app_mode',CTX.appMode);
     var logoDataUrl='';
     var mgrData={},admData={},crtData={};
     var currentTopSystem={};
@@ -829,7 +835,7 @@
       // 左側：公司名稱 / 公司副名稱。
       // 右側第一行：固定系統主標題，例如 ANG.lo Engine。
       // 右側第二行：顯示分店名稱｜員編，例如 迴龍店｜ANG0603。
-      var topTitle=s.system_title||s.main_title||'ANG.lo Engine';
+      var topTitle='ANG.lo Engine';
       var topBranch=branchName||branchId||'總店';
       var subParts=[];
       if(topBranch)subParts.push(topBranch);
@@ -837,6 +843,15 @@
       setText('topTitle',topTitle);
       setText('topSub',subParts.filter(Boolean).join('｜'));
       setLogoValue(s.logo_url||s.fallback_text||'ANG');
+      updateRightBannerPreview();
+    }
+
+    function updateRightBannerPreview(){
+      var branchName=(qs('branchNameInput')&&qs('branchNameInput').value.trim())||'';
+      var branchId=(qs('branchIdInput')&&qs('branchIdInput').value.trim())||'';
+      var display=branchName||branchId||'總店';
+      if(qs('mainTitleInput'))qs('mainTitleInput').value='ANG.lo Engine';
+      if(qs('systemNameInput'))qs('systemNameInput').value=display;
     }
 
     // ==================== L型導航 ====================
@@ -851,8 +866,15 @@
       var id=encodeURIComponent(String(UID||CTX.id||'').trim());
       var token=encodeURIComponent(String(UTOKEN||CTX.token||'').trim());
       var role=encodeURIComponent(String(UROLE||CTX.role||'').trim());
-      var ts=Date.now();
-      return base+'?id='+id+'&token='+token+'&role='+role+'&_ts='+ts;
+      var companyId=String(CTX.companyId||localStorage.getItem('ang_company_id')||'').trim();
+      var deviceId=String(CTX.deviceId||localStorage.getItem('ang_device_id')||'').trim();
+      var appMode=String(CTX.appMode||localStorage.getItem('ang_app_mode')||'').trim();
+      var q=['id='+id,'token='+token,'role='+role];
+      if(companyId)q.push('company_id='+encodeURIComponent(companyId));
+      if(deviceId)q.push('device_id='+encodeURIComponent(deviceId));
+      if(appMode)q.push('app='+encodeURIComponent(appMode));
+      q.push('_ts='+Date.now());
+      return base+'?'+q.join('&');
     }
 
     function hardGo(pageName){
@@ -1207,8 +1229,8 @@
           branchName:(qs('branchNameInput')&&qs('branchNameInput').value.trim())||'',
           logoDataUrl:logoDataUrl,
           fallbackText:(qs('fallbackTextInput')&&qs('fallbackTextInput').value.trim())||'ANG',
-          mainTitle:(qs('mainTitleInput')&&qs('mainTitleInput').value.trim())||'ANG.lo Engine',
-          systemName:(qs('systemNameInput')&&qs('systemNameInput').value.trim())||'HR 系統',
+          mainTitle:'ANG.lo Engine',
+          systemName:'總店',
           companyName:(qs('companyNameInput')&&qs('companyNameInput').value.trim())||'ANG.lo',
           companySubtitle:(qs('companySubtitleInput')&&qs('companySubtitleInput').value.trim())||'Humanized system technology'
         });
@@ -1345,12 +1367,12 @@
       if(r.system){
         if(qs('companyNameInput'))qs('companyNameInput').value=r.system.company_name||r.system.main_title||'ANG.lo';
         if(qs('companySubtitleInput'))qs('companySubtitleInput').value=r.system.company_subtitle||r.system.system_sub||'Humanized system technology';
-        if(qs('mainTitleInput'))qs('mainTitleInput').value=r.system.system_title||r.system.main_title||'ANG.lo Engine';
-        if(qs('systemNameInput'))qs('systemNameInput').value=r.system.system_name||'HR 系統';
+        if(qs('mainTitleInput'))qs('mainTitleInput').value='ANG.lo Engine';
         if(qs('fallbackTextInput'))qs('fallbackTextInput').value=r.system.fallback_text||'ANG';
         if(qs('branchIdInput'))qs('branchIdInput').value=r.system.branch_id||'';
         if(qs('branchNameInput'))qs('branchNameInput').value=r.system.branch_name||'';
         if(qs('brandScope'))qs('brandScope').value=r.system.branch_id?'branch':'global';
+        updateRightBannerPreview();
         if(r.system.clock_grace_before&&qs('graceBeforeMin'))qs('graceBeforeMin').value=r.system.clock_grace_before;
         if(r.system.clock_grace_after&&qs('graceAfterMin'))qs('graceAfterMin').value=r.system.clock_grace_after;
       }

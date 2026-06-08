@@ -1960,7 +1960,11 @@
         page: String(q('page') || c('<?= typeof page !== "undefined" ? page : "" ?>') || '').trim(),
         role: String(q('role') || localStorage.getItem('ang_user_role') || localStorage.getItem('ang_employee_role') || c('<?= typeof role !== "undefined" ? role : "" ?>') || '').trim(),
         name: String(q('name') || c('<?= typeof name !== "undefined" ? name : "" ?>') || '').trim(),
-        nickname: String(q('nickname') || c('<?= typeof nickname !== "undefined" ? nickname : "" ?>') || '').trim()
+        nickname: String(q('nickname') || c('<?= typeof nickname !== "undefined" ? nickname : "" ?>') || '').trim(),
+        companyId: String(q('company_id') || q('companyId') || localStorage.getItem('ang_company_id') || '').trim(),
+        deviceId: String(q('device_id') || q('deviceId') || localStorage.getItem('ang_device_id') || '').trim(),
+        appMode: String(q('app') || localStorage.getItem('ang_app_mode') || '').trim(),
+        bindMode: String(q('bind') || '').trim()
       };
     })();
 
@@ -2006,6 +2010,9 @@
       userToken:'',
       userRole:'Employee',
       canOpenAdmin:false,
+      companyId:'',
+      deviceId:'',
+      appMode:'',
       uploadType:'',
       salaryMode:'week',
       scheduleWeekOffset:0,
@@ -2395,12 +2402,18 @@
         ? u.getFrontendUrl(targetPage === 'admin' ? 'admin' : 'employee')
         : String(window.location.href || '').split('#')[0].split('?')[0];
       const sep = base.indexOf('?') > -1 ? '&' : '?';
+      const companyId = String(state.companyId || APP_CTX.companyId || localStorage.getItem('ang_company_id') || '').trim();
+      const deviceId = String(state.deviceId || APP_CTX.deviceId || localStorage.getItem('ang_device_id') || '').trim();
+      const appMode = String(state.appMode || APP_CTX.appMode || localStorage.getItem('ang_app_mode') || '').trim();
       const params = [
         'id=' + encodeURIComponent(String(state.employeeId || APP_CTX.id || '').trim().toUpperCase()),
         'token=' + encodeURIComponent(String(state.userToken || APP_CTX.token || '').trim()),
-        'role=' + encodeURIComponent(String(state.userRole || APP_CTX.role || '').trim()),
-        '_ts=' + Date.now()
+        'role=' + encodeURIComponent(String(state.userRole || APP_CTX.role || '').trim())
       ];
+      if (companyId) params.push('company_id=' + encodeURIComponent(companyId));
+      if (deviceId) params.push('device_id=' + encodeURIComponent(deviceId));
+      if (appMode) params.push('app=' + encodeURIComponent(appMode));
+      params.push('_ts=' + Date.now());
       return base + sep + params.join('&');
     }
 
@@ -2516,10 +2529,17 @@
 
       state.employeeId = displayId;
       state.userToken = displayToken;
+      state.companyId = String(APP_CTX.companyId || localStorage.getItem('ang_company_id') || '').trim();
+      state.deviceId = String(APP_CTX.deviceId || localStorage.getItem('ang_device_id') || '').trim();
+      state.appMode = String(APP_CTX.appMode || localStorage.getItem('ang_app_mode') || '').trim();
       setUserRole_(p.role || APP_CTX.role || localStorage.getItem('ang_employee_role') || 'Employee');
 
       if (displayId) {
         localStorage.setItem('ang_employee_id', displayId);
+        if (displayToken) localStorage.setItem('ang_employee_token', displayToken);
+        if (state.companyId) localStorage.setItem('ang_company_id', state.companyId);
+        if (state.deviceId) localStorage.setItem('ang_device_id', state.deviceId);
+        if (state.appMode) localStorage.setItem('ang_app_mode', state.appMode);
         setText('topBrandSub', `總店｜${displayId}`);
       } else {
         setText('topBrandSub', '總店｜讀取中');
@@ -3185,7 +3205,7 @@
 
       const companyName = s.company_name || s.brandTitleMain || s.main_title || 'ANG.lo';
       const companySubtitle = s.company_subtitle || s.brandTitleSub || s.system_sub || 'Humanized system technology';
-      const systemTitle = s.system_title || s.main_title || 'ANG.lo Engine';
+      const systemTitle = 'ANG.lo Engine';
       const branchName = s.branch_name || p.branchName || p.branch_name || '';
       const branchId = s.branch_id || p.branchId || p.branch_id || '';
       const branchDisplayName = branchName || branchId || '總店';
@@ -3193,6 +3213,12 @@
 
       state.employeeId = p.id || state.employeeId;
       state.userToken = res.token || state.userToken;
+      state.companyId = res.company_id || res.companyId || state.companyId || APP_CTX.companyId || '';
+      state.deviceId = res.device_id || res.deviceId || state.deviceId || APP_CTX.deviceId || '';
+      if (state.companyId) localStorage.setItem('ang_company_id', state.companyId);
+      if (state.deviceId) localStorage.setItem('ang_device_id', state.deviceId);
+      if (state.employeeId) localStorage.setItem('ang_employee_id', state.employeeId);
+      if (state.userToken) localStorage.setItem('ang_employee_token', state.userToken);
       setUserRole_(p.role || res.role || APP_CTX.role || state.userRole || 'Employee');
       state.workRecords = Array.isArray(res.workRecords) ? res.workRecords : state.workRecords;
       state.leaveRows = Array.isArray(res.leaveRows) ? res.leaveRows : [];
@@ -3259,9 +3285,13 @@
       if (!state.employeeId || !state.userToken) return;
       if (!/^https?:/i.test(String(window.location.href || ''))) return;
 
-      apiPost('employeeBootstrap', {
+      const actionName = (String(APP_CTX.bindMode || '') === '1' && state.deviceId) ? 'appBindLogin' : 'employeeBootstrap';
+      apiPost(actionName, {
         id: state.employeeId,
-        token: state.userToken
+        token: state.userToken,
+        company_id: state.companyId,
+        device_id: state.deviceId,
+        app: state.appMode || '1'
       }, function(res) {
         if (res && res.ok) {
           handleBootstrapData(res);
