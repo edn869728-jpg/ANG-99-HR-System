@@ -14,7 +14,7 @@ window.ANG_HR_CONFIG = {
   gasApiUrl: "https://script.google.com/macros/s/AKfycbzqDeRMLmytvNREgOOiZGwkd9u2YefODc49xaTV4kW1X-Fxuk5-MlbLts9K0duT4iwF/exec",
 
   // 建議正式上架填 Worker URL，例如：https://ang-hr-api.xxxx.workers.dev
-  workerApiUrl: "",
+  workerApiUrl: "https://ang-99-hr.edn869728.workers.dev/",
 
   get apiBaseUrl() {
     return this.workerApiUrl || this.gasApiUrl;
