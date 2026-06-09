@@ -1,6 +1,5 @@
-// ANG HR GitHub 前端設定｜強制指定資料來源版
-// 這版重點：不要先走 Cloudflare Worker，避免 Worker 還指到舊 GAS / 舊試算表。
-// 前端實際 API = gasApiUrl
+// ANG HR GitHub 前端設定｜正確 GAS URL 版
+// 這版重點：關閉 Worker，強制直接打你確認的正確 GAS Web App URL。
 window.ANG_HR_CONFIG = {
   plan: "premium",
   frontendMode: "github_pages",
@@ -8,17 +7,15 @@ window.ANG_HR_CONFIG = {
   employeePage: "employee.html",
   adminPage: "admin.html",
 
-  // 目前指定 HR GAS Web App URL
-  gasApiUrl: "https://script.google.com/macros/s/AKfycbyLqYPsz-wcA7fW8KA1OylkJvmiIlwyEpSaKB0ovUxsomRSjKmHTRToK-C5Uf-i3BjSPg/exec",
+  // 正確 GAS Web App URL
+  gasApiUrl: "https://script.google.com/macros/s/AKfycbyVD-_tx9wFkggsuSnrL2T6HoyGPYuBQgoClr4GyxISaAeNfLVY32auEZDw2ihrXqJj/exec",
 
-  // 關閉 Worker，避免讀到不知道哪一支後端
+  // 關閉 Worker，避免 Worker 指到舊後端 / 舊試算表
   workerApiUrl: "",
 
-  // 目前強制只用 GAS
   get apiBaseUrl() {
     return this.gasApiUrl;
   },
 
-  // 預期後端試算表
   expectedSpreadsheetId: "1qsyDiIj_0DdQx6tB0l_BXE5AYEiRrtSr9RqxdKaxato"
 };
