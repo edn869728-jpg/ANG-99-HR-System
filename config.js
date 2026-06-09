@@ -1,8 +1,6 @@
-// ANG HR｜GitHub 前端設定
-// 使用方式：
-// 1. GitHub Pages 上傳本資料夾所有檔案。
-// 2. 若直接呼叫 GAS 遇到 CORS，請先部署 cloudflare_worker_optional/worker.js，然後把 workerApiUrl 填入 Worker 網址。
-// 3. apiBaseUrl 會優先使用 workerApiUrl，其次使用 gasApiUrl。
+// ANG HR GitHub 前端設定｜強制指定資料來源版
+// 這版重點：不要先走 Cloudflare Worker，避免 Worker 還指到舊 GAS / 舊試算表。
+// 前端實際 API = gasApiUrl
 window.ANG_HR_CONFIG = {
   plan: "premium",
   frontendMode: "github_pages",
@@ -10,13 +8,17 @@ window.ANG_HR_CONFIG = {
   employeePage: "employee.html",
   adminPage: "admin.html",
 
-  // 後端 GAS Web App URL
-  gasApiUrl: "https://script.google.com/macros/s/AKfycbzqDeRMLmytvNREgOOiZGwkd9u2YefODc49xaTV4kW1X-Fxuk5-MlbLts9K0duT4iwF/exec",
+  // 目前指定 HR GAS Web App URL
+  gasApiUrl: "https://script.google.com/macros/s/AKfycbyLqYPsz-wcA7fW8KA1OylkJvmiIlwyEpSaKB0ovUxsomRSjKmHTRToK-C5Uf-i3BjSPg/exec",
 
-  // 建議正式上架填 Worker URL，例如：https://ang-hr-api.xxxx.workers.dev
-  workerApiUrl: "https://ang-99-hr.edn869728.workers.dev/",
+  // 關閉 Worker，避免讀到不知道哪一支後端
+  workerApiUrl: "",
 
+  // 目前強制只用 GAS
   get apiBaseUrl() {
-    return this.workerApiUrl || this.gasApiUrl;
-  }
+    return this.gasApiUrl;
+  },
+
+  // 預期後端試算表
+  expectedSpreadsheetId: "1qsyDiIj_0DdQx6tB0l_BXE5AYEiRrtSr9RqxdKaxato"
 };
