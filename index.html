@@ -16,7 +16,7 @@
     };
     window.ANG_HR_CONFIG = Object.assign({}, window.ANG_HR_DEFAULT_CONFIG, window.ANG_HR_CONFIG || {});
   </script>
-  <script src="config.js?v=20260610_google_ui_fixed"></script>
+  <script src="config.js?v=20260610_billing_check"></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <style>
     :root{
@@ -81,7 +81,11 @@
     .verify-panel{display:none;margin-top:12px}
     .verify-panel.active{display:block}
     .google-card{border:1px solid rgba(128,137,255,.20);background:#fff;border-radius:22px;padding:16px;margin-top:12px;box-shadow:0 10px 24px rgba(73,86,196,.08)}
-    .google-title{font-size:15px;font-weight:1000;margin:0 0 6px;color:#1f2937}
+    .verify-direct-block{margin-top:12px}
+    .verify-divider{display:flex;align-items:center;gap:12px;margin:18px 0 6px;color:#6b7280;font-size:13px;font-weight:1000}
+    .verify-divider:before,.verify-divider:after{content:"";height:1px;flex:1;background:rgba(128,137,255,.22)}
+    .verify-divider span{white-space:nowrap}
+    .google-title{font-size:15px;font-weight:1000;margin:0 0 10px;color:#1f2937}
     .google-sub{font-size:13px;line-height:1.6;color:#6b7280;font-weight:750;margin:0 0 12px}
     .google-button-wrap{display:flex;align-items:center;justify-content:center;min-height:44px}
     .google-fallback{display:none;margin-top:12px;border-radius:16px;padding:11px 12px;background:#fff7ed;color:#9a3412;border:1px solid #fed7aa;font-size:13px;font-weight:850;line-height:1.55}
@@ -141,7 +145,7 @@
             <button class="btn light" type="button" onclick="routeTo('activate')">員工一次性開通</button>
             <button class="btn dark" type="button" onclick="routeTo('register')">選擇方案</button>
           </div>
-          <div class="notice">申請新公司需完成 Email 驗證碼或 Google 驗證。出生年月日保留為基本資料，不作為唯一驗證。</div>
+          <div class="notice">申請新公司需完成 Email 驗證碼或 Google 驗證。登入與功能使用會同時檢查付款狀態，出生年月日只保留為基本資料。</div>
         </div>
         <div class="card">
           <h3>快速說明</h3>
@@ -234,23 +238,18 @@
           <h2>選擇方案</h2>
           <div class="muted">先選方案，再完成 Email 或 Google 驗證。驗證成功後才會建立公司與發放帳號。</div>
           <div class="plans" id="planBox">
-            <div class="plan active" data-plan="basic"><b>Basic</b><span>打卡、簡易排班、基本人員資料。首月體驗。</span></div>
-            <div class="plan" data-plan="plus"><b>Plus</b><span>排班、請假、審核、薪資整理。首月體驗。</span></div>
-            <div class="plan" data-plan="premium"><b>Premium</b><span>完整人資、分店、進階報表與權限。首月體驗。</span></div>
+            <div class="plan active" data-plan="basic"><b>Basic</b><span>打卡、簡易排班、基本人員資料。首月體驗，到期需付款。</span></div>
+            <div class="plan" data-plan="plus"><b>Plus</b><span>排班、請假、審核、薪資整理。首月體驗，到期需付款。</span></div>
+            <div class="plan" data-plan="premium"><b>Premium</b><span>完整人資、分店、進階報表與權限。首月體驗，到期需付款。</span></div>
           </div>
-          <div class="notice">有 ANG8963 發放的免付費特權 ID 才需要填。一般客戶不需要填。</div>
+          <div class="notice">付款狀態會由後端判斷。首月體驗、已付款啟用、ANG8963 免付費特權才可使用正式功能。有 ANG8963 發放的免付費特權 ID 才需要填。</div>
         </div>
 
         <div class="card">
           <h2>驗證方式</h2>
-          <div class="muted">一定要先完成驗證。Email 驗證碼或 Google 驗證二選一，完成其中一種才可以建立公司。</div>
+          <div class="muted">一定要完成其中一種驗證。可以先填 Email 收驗證碼，也可以直接使用下方 Google 帳號繼續。</div>
 
-          <div class="verify-tabs" role="tablist" aria-label="驗證方式">
-            <button class="verify-tab active" type="button" id="emailVerifyTab" onclick="chooseVerifyMethod('email')">Email 驗證碼</button>
-            <button class="verify-tab" type="button" id="googleVerifyTab" onclick="chooseVerifyMethod('google')">Google 驗證</button>
-          </div>
-
-          <div id="emailVerifyPanel" class="verify-panel active">
+          <div class="verify-direct-block">
             <div class="field"><label class="label">Email</label><input id="regEmail" type="email" autocomplete="email" placeholder="example@gmail.com"></div>
             <div class="row">
               <button class="btn gray" type="button" onclick="sendEmailCode()">寄送驗證碼</button>
@@ -260,15 +259,14 @@
             <div class="mini">Email 驗證成功後，這個 Email 會成為 verified_email，用來防止重複申請。</div>
           </div>
 
-          <div id="googleVerifyPanel" class="verify-panel">
-            <div class="google-card">
-              <p class="google-title">使用 Google 帳號繼續</p>
-              <p class="google-sub">點下面的官方 Google 按鈕，選擇 Google 帳號後會自動完成驗證，不需要手動輸入 Google ID 或 token。</p>
-              <div class="google-button-wrap" id="googleButtonBox"></div>
-              <div class="google-fallback" id="googleFallback">Google 驗證按鈕載入中。如果一直沒有出現，請確認這個網址已加入 Google OAuth Web Client ID 的授權來源。</div>
-            </div>
-            <div class="notice" id="googleNotice">Google Client ID 已內建，請直接使用官方 Google 按鈕完成驗證。</div>
+          <div class="verify-divider"><span>或</span></div>
+
+          <div class="google-card">
+            <p class="google-title">使用 Google 帳號繼續</p>
+            <div class="google-button-wrap" id="googleButtonBox"></div>
+            <div class="google-fallback" id="googleFallback">Google 驗證按鈕載入中。如果一直沒有出現，請確認這個網址已加入 Google OAuth Web Client ID 的授權來源。</div>
           </div>
+          <div class="notice" id="googleNotice">Google Client ID 已內建，請直接使用官方 Google 按鈕完成驗證。</div>
 
           <div id="verifyStatus" class="status"></div>
         </div>
@@ -385,6 +383,15 @@
         document.body.appendChild(script);
       });
     }
+    function showApiError(statusId, data, fallback){
+      const lines = [(data && data.message) || fallback || '操作失敗'];
+      if (data && data.payment_required) {
+        if (data.billing_status_label) lines.push('付款狀態：' + data.billing_status_label);
+        if (data.first_month_ends_at) lines.push('體驗到期：' + data.first_month_ends_at);
+        lines.push('請先完成付款、續費，或由 ANG8963 發放免付費特權。');
+      }
+      setStatus(statusId, 'err', lines);
+    }
     function routeTo(route){
       document.querySelectorAll('.section').forEach(function(el){ el.classList.remove('active'); });
       document.querySelectorAll('.nav button').forEach(function(el){ el.classList.toggle('active', el.getAttribute('data-route') === route); });
@@ -429,11 +436,6 @@
       });
     }
     function chooseVerifyMethod(method){
-      const isGoogle = method === 'google';
-      qs('emailVerifyTab').classList.toggle('active', !isGoogle);
-      qs('googleVerifyTab').classList.toggle('active', isGoogle);
-      qs('emailVerifyPanel').classList.toggle('active', !isGoogle);
-      qs('googleVerifyPanel').classList.toggle('active', isGoogle);
       clearStatus('verifyStatus');
     }
     function initGoogle(){
@@ -570,7 +572,7 @@
       }
       setStatus('adminStatus', 'info', '正在登入');
       api('adminLogin', payload).then(function(data){
-        if (!data || !data.ok) throw new Error((data && data.message) || '登入失敗');
+        if (!data || !data.ok) { showApiError('adminStatus', data, '登入失敗'); return; }
         localStorage.setItem('ang_hr_session_token', data.session_token || '');
         localStorage.setItem('ang_hr_company_id', data.company_id || '');
         localStorage.setItem('ang_hr_employee_id', data.employee_id || '');
@@ -579,7 +581,9 @@
           ['公司代號', data.company_id],
           ['員工編號', data.employee_id],
           ['姓名', data.name],
-          ['角色', data.role]
+          ['角色', data.role],
+          ['方案', data.plan_label || ''],
+          ['付款狀態', data.billing_status_label || '']
         ]);
       }).catch(function(err){
         setStatus('adminStatus', 'err', err.message || String(err));
@@ -618,7 +622,7 @@
       }
       setStatus('clockStatus', 'info', '正在送出打卡');
       api('clockByButton', payload).then(function(data){
-        if (!data || !data.ok) throw new Error((data && data.message) || '打卡失敗');
+        if (!data || !data.ok) { showApiError('clockStatus', data, '打卡失敗'); return; }
         setStatus('clockStatus', 'ok', [data.message || '打卡成功', data.created_at || '']);
       }).catch(function(err){
         setStatus('clockStatus', 'err', err.message || String(err));
@@ -637,7 +641,7 @@
       }
       setStatus('activateStatus', 'info', '正在開通');
       api('activateEmployee', payload).then(function(data){
-        if (!data || !data.ok) throw new Error((data && data.message) || '開通失敗');
+        if (!data || !data.ok) { showApiError('activateStatus', data, '開通失敗'); return; }
         localStorage.setItem('ang_hr_company_id', data.company_id || '');
         localStorage.setItem('ang_hr_employee_id', data.employee_id || '');
         setStatus('activateStatus', 'ok', '開通成功');
@@ -645,6 +649,7 @@
           ['公司代號', data.company_id],
           ['員工編號', data.employee_id],
           ['姓名', data.name || ''],
+          ['付款狀態', data.billing_status_label || ''],
           ['裝置', '已綁定']
         ]);
       }).catch(function(err){
