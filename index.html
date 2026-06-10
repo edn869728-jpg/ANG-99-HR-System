@@ -8,7 +8,7 @@
   <script>
     window.ANG_HR_DEFAULT_CONFIG = {
       appName: 'ANG HR System',
-      gasApiUrl: 'https://script.google.com/macros/s/AKfycbyLqYPsz-wcA7fW8KA1OylkJvmiIlwyEpSaKB0ovUxsomRSjKmHTRToK-C5Uf-i3BjSPg/exec',
+      gasApiUrl: 'https://script.google.com/macros/s/AKfycbyVD-_tx9wFkggsuSnrL2T6HoyGPYuBQgoClr4GyxISaAeNfLVY32auEZDw2ihrXqJj/exec',
       googleClientId: '466961332869-icjvb1i9b6q9ghiei0oslhffpcgp57v1.apps.googleusercontent.com',
       themeColors: ['#FF87E0', '#CCA4FF', '#8089FF', '#59DDFF'],
       defaultCompanyId: '',
@@ -16,7 +16,7 @@
     };
     window.ANG_HR_CONFIG = Object.assign({}, window.ANG_HR_DEFAULT_CONFIG, window.ANG_HR_CONFIG || {});
   </script>
-  <script src="config.js?v=20260610_1730"></script>
+  <script src="config.js?v=20260610_google_ui_fixed"></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <style>
     :root{
@@ -74,6 +74,18 @@
     .plan b{display:block;font-size:17px;margin-bottom:6px}
     .plan span{display:block;color:#6b7280;font-size:13px;line-height:1.55;font-weight:700}
     .notice{border-radius:18px;background:linear-gradient(135deg,rgba(255,135,224,.13),rgba(89,221,255,.15));border:1px solid rgba(128,137,255,.20);padding:12px 14px;color:#374151;font-size:13px;font-weight:800;line-height:1.65;margin-top:12px}
+
+    .verify-tabs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;background:#f4f6ff;border:1px solid rgba(128,137,255,.18);padding:7px;border-radius:20px}
+    .verify-tab{border:none;border-radius:15px;padding:12px 10px;cursor:pointer;font-weight:1000;background:transparent;color:#5b6472;box-shadow:none}
+    .verify-tab.active{background:#fff;color:#4f46e5;box-shadow:0 8px 18px rgba(128,137,255,.14)}
+    .verify-panel{display:none;margin-top:12px}
+    .verify-panel.active{display:block}
+    .google-card{border:1px solid rgba(128,137,255,.20);background:#fff;border-radius:22px;padding:16px;margin-top:12px;box-shadow:0 10px 24px rgba(73,86,196,.08)}
+    .google-title{font-size:15px;font-weight:1000;margin:0 0 6px;color:#1f2937}
+    .google-sub{font-size:13px;line-height:1.6;color:#6b7280;font-weight:750;margin:0 0 12px}
+    .google-button-wrap{display:flex;align-items:center;justify-content:center;min-height:44px}
+    .google-fallback{display:none;margin-top:12px;border-radius:16px;padding:11px 12px;background:#fff7ed;color:#9a3412;border:1px solid #fed7aa;font-size:13px;font-weight:850;line-height:1.55}
+    .google-fallback.show{display:block}
     .status{display:none;border-radius:18px;padding:13px 14px;margin-top:12px;font-size:14px;font-weight:900;line-height:1.65;border:1px solid transparent}
     .status.show{display:block}
     .status.ok{background:#ecfdf5;color:#065f46;border-color:#a7f3d0}
@@ -231,15 +243,33 @@
 
         <div class="card">
           <h2>驗證方式</h2>
-          <div class="muted">Email 驗證碼或 Google 驗證二選一。完成其中一種即可繼續建立公司。</div>
-          <div class="field"><label class="label">Email</label><input id="regEmail" type="email" autocomplete="email" placeholder="example@gmail.com"></div>
-          <div class="row">
-            <button class="btn gray" type="button" onclick="sendEmailCode()">寄送驗證碼</button>
-            <button class="btn light" type="button" onclick="verifyEmailCode()">確認驗證碼</button>
+          <div class="muted">一定要先完成驗證。Email 驗證碼或 Google 驗證二選一，完成其中一種才可以建立公司。</div>
+
+          <div class="verify-tabs" role="tablist" aria-label="驗證方式">
+            <button class="verify-tab active" type="button" id="emailVerifyTab" onclick="chooseVerifyMethod('email')">Email 驗證碼</button>
+            <button class="verify-tab" type="button" id="googleVerifyTab" onclick="chooseVerifyMethod('google')">Google 驗證</button>
           </div>
-          <div class="field"><label class="label">Email 驗證碼</label><input id="regEmailCode" inputmode="numeric" placeholder="6 位數驗證碼"></div>
-          <div class="notice" id="googleNotice">Google 驗證需先在 config.js 填入 Google OAuth Web Client ID。</div>
-          <div id="googleButtonBox" style="margin-top:12px"></div>
+
+          <div id="emailVerifyPanel" class="verify-panel active">
+            <div class="field"><label class="label">Email</label><input id="regEmail" type="email" autocomplete="email" placeholder="example@gmail.com"></div>
+            <div class="row">
+              <button class="btn gray" type="button" onclick="sendEmailCode()">寄送驗證碼</button>
+              <button class="btn light" type="button" onclick="verifyEmailCode()">確認驗證碼</button>
+            </div>
+            <div class="field"><label class="label">Email 驗證碼</label><input id="regEmailCode" inputmode="numeric" placeholder="6 位數驗證碼"></div>
+            <div class="mini">Email 驗證成功後，這個 Email 會成為 verified_email，用來防止重複申請。</div>
+          </div>
+
+          <div id="googleVerifyPanel" class="verify-panel">
+            <div class="google-card">
+              <p class="google-title">使用 Google 帳號繼續</p>
+              <p class="google-sub">點下面的官方 Google 按鈕，選擇 Google 帳號後會自動完成驗證，不需要手動輸入 Google ID 或 token。</p>
+              <div class="google-button-wrap" id="googleButtonBox"></div>
+              <div class="google-fallback" id="googleFallback">Google 驗證按鈕載入中。如果一直沒有出現，請確認這個網址已加入 Google OAuth Web Client ID 的授權來源。</div>
+            </div>
+            <div class="notice" id="googleNotice">Google Client ID 已內建，請直接使用官方 Google 按鈕完成驗證。</div>
+          </div>
+
           <div id="verifyStatus" class="status"></div>
         </div>
       </div>
@@ -398,20 +428,55 @@
         });
       });
     }
+    function chooseVerifyMethod(method){
+      const isGoogle = method === 'google';
+      qs('emailVerifyTab').classList.toggle('active', !isGoogle);
+      qs('googleVerifyTab').classList.toggle('active', isGoogle);
+      qs('emailVerifyPanel').classList.toggle('active', !isGoogle);
+      qs('googleVerifyPanel').classList.toggle('active', isGoogle);
+      clearStatus('verifyStatus');
+    }
     function initGoogle(){
       const id = String(CFG.googleClientId || '').trim();
-      if (!id || id.indexOf('請填入') >= 0) return;
-      qs('googleNotice').textContent = '可使用 Google 帳號完成驗證。';
+      const notice = qs('googleNotice');
+      const fallback = qs('googleFallback');
+      const buttonBox = qs('googleButtonBox');
+      if (!id || id.indexOf('請填入') >= 0) {
+        if (notice) notice.textContent = 'Google Client ID 尚未設定，請先使用 Email 驗證碼。';
+        if (fallback) {
+          fallback.textContent = 'Google Client ID 尚未設定，請先使用 Email 驗證碼。';
+          fallback.classList.add('show');
+        }
+        return;
+      }
+      if (notice) notice.textContent = 'Google Client ID 已內建，請點官方 Google 按鈕完成驗證。';
+      let waited = 0;
       const boot = function(){
         if (!window.google || !google.accounts || !google.accounts.id) {
-          setTimeout(boot, 500);
+          waited += 400;
+          if (fallback && waited >= 3200) fallback.classList.add('show');
+          setTimeout(boot, 400);
           return;
         }
+        if (fallback) fallback.classList.remove('show');
         google.accounts.id.initialize({
           client_id: id,
-          callback: handleGoogleCredential
+          callback: handleGoogleCredential,
+          auto_select: false,
+          cancel_on_tap_outside: true
         });
-        google.accounts.id.renderButton(qs('googleButtonBox'), { theme: 'outline', size: 'large', width: 320, text: 'continue_with' });
+        if (buttonBox) {
+          buttonBox.innerHTML = '';
+          google.accounts.id.renderButton(buttonBox, {
+            type: 'standard',
+            theme: 'outline',
+            size: 'large',
+            shape: 'pill',
+            width: Math.min(360, Math.max(260, buttonBox.clientWidth || 320)),
+            text: 'continue_with',
+            logo_alignment: 'left'
+          });
+        }
       };
       boot();
     }
@@ -421,7 +486,7 @@
         if (!data || !data.ok) throw new Error((data && data.message) || 'Google 驗證失敗');
         verifiedProfile = data.profile;
         if (verifiedProfile && verifiedProfile.email && qs('regEmail')) qs('regEmail').value = verifiedProfile.email;
-        setStatus('verifyStatus', 'ok', ['Google 驗證完成', verifiedProfile.email || '']);
+        setStatus('verifyStatus', 'ok', ['Google 驗證完成', verifiedProfile.email || '', '可以繼續填基本資料並建立公司']);
       }).catch(function(err){
         setStatus('verifyStatus', 'err', err.message || String(err));
       });
@@ -445,7 +510,7 @@
       api('verifyEmailCode', { email: email, code: code, device_id: getDeviceId() }).then(function(data){
         if (!data || !data.ok) throw new Error((data && data.message) || '驗證失敗');
         verifiedProfile = data.profile;
-        setStatus('verifyStatus', 'ok', ['Email 驗證完成', email]);
+        setStatus('verifyStatus', 'ok', ['Email 驗證完成', email, '可以繼續填基本資料並建立公司']);
       }).catch(function(err){
         setStatus('verifyStatus', 'err', err.message || String(err));
       });
