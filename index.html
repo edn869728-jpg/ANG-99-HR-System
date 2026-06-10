@@ -1,1360 +1,599 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#8089FF" />
   <title>ANG HR System</title>
+  <script src="config.js"></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <style>
     :root{
       --pink:#FF87E0;
       --purple:#CCA4FF;
-      --indigo:#8089FF;
+      --blue:#8089FF;
       --cyan:#59DDFF;
-      --bg:#f6f7ff;
+      --bg:#f7f8ff;
       --card:#ffffff;
       --text:#111827;
       --muted:#6b7280;
-      --line:#e6e8f5;
-      --soft:#f2f5ff;
-      --danger:#ef4444;
-      --ok:#10b981;
-      --shadow:0 18px 45px rgba(80,89,180,.14);
-      --gradient:linear-gradient(135deg,#FF87E0 0%,#CCA4FF 34%,#8089FF 68%,#59DDFF 100%);
-      --gradient-soft:linear-gradient(135deg,rgba(255,135,224,.16),rgba(204,164,255,.18),rgba(128,137,255,.16),rgba(89,221,255,.18));
+      --line:rgba(128,137,255,.20);
+      --shadow:0 18px 42px rgba(73,86,196,.14);
+      --radius:26px;
+      --gradient:linear-gradient(135deg,#FF87E0 0%,#CCA4FF 36%,#8089FF 70%,#59DDFF 100%);
     }
-
     *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-
-    html,body{
-      margin:0;
-      min-height:100%;
-      background:
-        radial-gradient(circle at 12% 8%,rgba(255,135,224,.26),transparent 32%),
-        radial-gradient(circle at 88% 16%,rgba(89,221,255,.28),transparent 30%),
-        radial-gradient(circle at 50% 96%,rgba(128,137,255,.20),transparent 34%),
-        var(--bg);
-      color:var(--text);
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;
-    }
-
-    body{
-      padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
-    }
-
-    button,input,select,textarea{
-      font-family:inherit;
-    }
-
-    .page{
-      width:100%;
-      max-width:1080px;
-      margin:0 auto;
-      padding:18px;
-    }
-
-    .hero{
-      position:relative;
-      overflow:hidden;
-      border-radius:32px;
-      padding:22px;
-      background:rgba(255,255,255,.84);
-      box-shadow:var(--shadow);
-      border:1px solid rgba(255,255,255,.72);
-      backdrop-filter:blur(18px);
-    }
-
-    .hero:before{
-      content:"";
-      position:absolute;
-      inset:-1px;
-      background:var(--gradient-soft);
-      opacity:.9;
-      pointer-events:none;
-    }
-
-    .hero-inner{
-      position:relative;
-      z-index:1;
-      display:grid;
-      grid-template-columns:1.04fr .96fr;
-      gap:18px;
-      align-items:stretch;
-    }
-
-    .brand-row{
-      display:flex;
-      align-items:center;
-      gap:14px;
-      margin-bottom:18px;
-    }
-
-    .brand-logo{
-      width:58px;
-      height:58px;
-      border-radius:20px;
-      background:var(--gradient);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      box-shadow:0 12px 30px rgba(128,137,255,.32);
-      color:white;
-      font-weight:1000;
-      letter-spacing:.5px;
-      position:relative;
-      overflow:hidden;
-      flex:0 0 auto;
-    }
-
-    .brand-logo:after{
-      content:"";
-      position:absolute;
-      width:54px;
-      height:54px;
-      border-radius:999px;
-      background:rgba(255,255,255,.24);
-      right:-22px;
-      top:-22px;
-    }
-
-    .brand-title{
-      margin:0;
-      font-size:24px;
-      line-height:1.05;
-      font-weight:1000;
-      letter-spacing:.2px;
-    }
-
-    .brand-sub{
-      margin-top:5px;
-      color:var(--muted);
-      font-size:13px;
-      font-weight:700;
-    }
-
-    .hero-title{
-      margin:0;
-      font-size:34px;
-      line-height:1.16;
-      font-weight:1000;
-      letter-spacing:-.8px;
-    }
-
-    .hero-desc{
-      margin:14px 0 0;
-      color:#4b5563;
-      font-size:15px;
-      line-height:1.75;
-      font-weight:650;
-    }
-
-    .quick-grid{
-      margin-top:22px;
-      display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:12px;
-    }
-
-    .quick-btn{
-      border:0;
-      min-height:86px;
-      border-radius:24px;
-      padding:16px;
-      background:#fff;
-      box-shadow:0 12px 28px rgba(40,48,110,.08);
-      border:1px solid rgba(230,232,245,.88);
-      cursor:pointer;
-      text-align:left;
-      transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease;
-    }
-
-    .quick-btn:active{
-      transform:scale(.985);
-    }
-
-    .quick-btn:hover{
-      box-shadow:0 16px 34px rgba(40,48,110,.12);
-      border-color:rgba(128,137,255,.38);
-    }
-
-    .quick-icon{
-      width:38px;
-      height:38px;
-      border-radius:16px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      color:white;
-      background:var(--gradient);
-      font-size:18px;
-      margin-bottom:10px;
-      box-shadow:0 10px 20px rgba(128,137,255,.22);
-    }
-
-    .quick-title{
-      font-size:16px;
-      font-weight:950;
-      margin-bottom:5px;
-    }
-
-    .quick-sub{
-      color:var(--muted);
-      font-size:12px;
-      line-height:1.45;
-      font-weight:700;
-    }
-
-    .status-panel{
-      border-radius:28px;
-      background:rgba(255,255,255,.78);
-      border:1px solid rgba(255,255,255,.75);
-      box-shadow:0 14px 36px rgba(40,48,110,.10);
-      padding:18px;
-      min-height:100%;
-      display:flex;
-      flex-direction:column;
-      justify-content:space-between;
-      gap:14px;
-    }
-
-    .status-card{
-      border-radius:22px;
-      padding:16px;
-      background:#fff;
-      border:1px solid var(--line);
-    }
-
-    .status-label{
-      color:var(--muted);
-      font-size:12px;
-      font-weight:850;
-      margin-bottom:6px;
-    }
-
-    .status-value{
-      font-size:20px;
-      font-weight:1000;
-      line-height:1.25;
-    }
-
-    .pill-row{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-    }
-
-    .pill{
-      padding:8px 10px;
-      border-radius:999px;
-      background:var(--soft);
-      border:1px solid var(--line);
-      color:#3f46a8;
-      font-size:12px;
-      font-weight:900;
-    }
-
-    .section{
-      margin-top:16px;
-      display:none;
-      border-radius:30px;
-      background:rgba(255,255,255,.90);
-      box-shadow:var(--shadow);
-      border:1px solid rgba(255,255,255,.72);
-      overflow:hidden;
-    }
-
-    .section.active{
-      display:block;
-    }
-
-    .section-head{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:12px;
-      padding:20px 20px 12px;
-    }
-
-    .section-title{
-      margin:0;
-      font-size:23px;
-      font-weight:1000;
-      line-height:1.22;
-    }
-
-    .section-desc{
-      margin:7px 0 0;
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.6;
-      font-weight:700;
-    }
-
-    .section-body{
-      padding:0 20px 20px;
-    }
-
-    .back-btn{
-      border:0;
-      background:#f3f4f8;
-      color:#374151;
-      border-radius:999px;
-      padding:10px 14px;
-      font-weight:900;
-      cursor:pointer;
-      white-space:nowrap;
-    }
-
-    .form-grid{
-      display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:12px;
-    }
-
-    .form-grid.one{
-      grid-template-columns:1fr;
-    }
-
-    .field{
-      display:flex;
-      flex-direction:column;
-      gap:7px;
-    }
-
-    .field label{
-      color:#374151;
-      font-size:13px;
-      font-weight:950;
-    }
-
-    .field input,.field select,.field textarea{
-      width:100%;
-      border:1px solid var(--line);
-      border-radius:18px;
-      padding:13px 14px;
-      background:#fff;
-      color:var(--text);
-      font-size:15px;
-      outline:none;
-      transition:border-color .16s ease,box-shadow .16s ease;
-    }
-
-    .field textarea{
-      min-height:78px;
-      resize:vertical;
-      line-height:1.5;
-    }
-
-    .field input:focus,.field select:focus,.field textarea:focus{
-      border-color:#8089FF;
-      box-shadow:0 0 0 4px rgba(128,137,255,.14);
-    }
-
-    .help-text{
-      color:var(--muted);
-      font-size:12px;
-      line-height:1.5;
-      font-weight:700;
-    }
-
-    .actions{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      margin-top:14px;
-      align-items:center;
-    }
-
-    .btn{
-      appearance:none;
-      border:0;
-      border-radius:18px;
-      padding:13px 17px;
-      font-size:14px;
-      font-weight:950;
-      cursor:pointer;
-      color:#fff;
-      background:var(--gradient);
-      box-shadow:0 12px 24px rgba(128,137,255,.24);
-      min-height:46px;
-    }
-
-    .btn.secondary{
-      background:#fff;
-      color:#343b8f;
-      border:1px solid rgba(128,137,255,.28);
-      box-shadow:0 10px 22px rgba(40,48,110,.08);
-    }
-
-    .btn.gray{
-      background:#f3f4f8;
-      color:#374151;
-      box-shadow:none;
-    }
-
-    .btn.danger{
-      background:#fee2e2;
-      color:#991b1b;
-      box-shadow:none;
-    }
-
-    .btn.full{
-      width:100%;
-    }
-
-    .btn:disabled{
-      opacity:.48;
-      cursor:not-allowed;
-    }
-
-    .tabs{
-      display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:10px;
-      margin-bottom:14px;
-    }
-
-    .tab-btn{
-      border:1px solid var(--line);
-      background:#fff;
-      border-radius:18px;
-      padding:13px 14px;
-      cursor:pointer;
-      font-size:14px;
-      font-weight:950;
-      color:#4b5563;
-    }
-
-    .tab-btn.active{
-      color:#fff;
-      border-color:transparent;
-      background:var(--gradient);
-      box-shadow:0 12px 24px rgba(128,137,255,.22);
-    }
-
-    .panel{
-      display:none;
-    }
-
-    .panel.active{
-      display:block;
-    }
-
-    .plans{
-      display:grid;
-      grid-template-columns:repeat(3,minmax(0,1fr));
-      gap:12px;
-      margin:14px 0;
-    }
-
-    .plan-card{
-      border:1px solid var(--line);
-      border-radius:24px;
-      padding:16px;
-      background:#fff;
-      cursor:pointer;
-      position:relative;
-      overflow:hidden;
-      transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease;
-    }
-
-    .plan-card.selected{
-      border-color:#8089FF;
-      box-shadow:0 16px 34px rgba(128,137,255,.17);
-      transform:translateY(-1px);
-    }
-
-    .plan-name{
-      font-size:18px;
-      font-weight:1000;
-      margin-bottom:6px;
-    }
-
-    .plan-price{
-      font-size:21px;
-      font-weight:1000;
-      margin-bottom:8px;
-    }
-
-    .plan-note{
-      color:var(--muted);
-      font-size:12px;
-      line-height:1.5;
-      font-weight:700;
-    }
-
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      padding:6px 9px;
-      border-radius:999px;
-      color:#343b8f;
-      background:#eef2ff;
-      font-size:12px;
-      font-weight:950;
-      margin-bottom:10px;
-    }
-
-    .message{
-      margin-top:14px;
-      padding:13px 14px;
-      border-radius:18px;
-      background:#f8fafc;
-      border:1px solid var(--line);
-      color:#374151;
-      font-size:13px;
-      line-height:1.65;
-      font-weight:750;
-      display:none;
-    }
-
-    .message.show{
-      display:block;
-    }
-
-    .message.ok{
-      border-color:rgba(16,185,129,.28);
-      background:#ecfdf5;
-      color:#065f46;
-    }
-
-    .message.error{
-      border-color:rgba(239,68,68,.24);
-      background:#fef2f2;
-      color:#991b1b;
-    }
-
-    .divider{
-      height:1px;
-      background:var(--line);
-      margin:16px 0;
-    }
-
-    .mini-card{
-      border:1px solid var(--line);
-      border-radius:22px;
-      padding:14px;
-      background:#fff;
-    }
-
-    .result-box{
-      margin-top:14px;
-      border-radius:24px;
-      background:linear-gradient(135deg,rgba(255,135,224,.14),rgba(89,221,255,.16));
-      border:1px solid rgba(128,137,255,.20);
-      padding:16px;
-      display:none;
-    }
-
-    .result-box.show{
-      display:block;
-    }
-
-    .result-title{
-      font-size:18px;
-      font-weight:1000;
-      margin-bottom:10px;
-    }
-
-    .result-row{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      padding:10px 0;
-      border-top:1px solid rgba(128,137,255,.18);
-      font-size:14px;
-      font-weight:800;
-    }
-
-    .result-row:first-of-type{
-      border-top:0;
-    }
-
-    .result-key{
-      color:#6b7280;
-    }
-
-    .result-value{
-      font-size:16px;
-      font-weight:1000;
-      text-align:right;
-      word-break:break-all;
-    }
-
-    .footer-note{
-      margin:16px auto 0;
-      text-align:center;
-      color:#6b7280;
-      font-size:12px;
-      font-weight:750;
-      line-height:1.5;
-    }
-
-    .hidden{
-      display:none!important;
-    }
-
-    @media (max-width:860px){
-      .page{padding:12px}
-      .hero{border-radius:28px;padding:16px}
-      .hero-inner{grid-template-columns:1fr}
-      .hero-title{font-size:28px}
-      .quick-grid{grid-template-columns:1fr}
-      .plans{grid-template-columns:1fr}
-      .form-grid{grid-template-columns:1fr}
-      .section-head{padding:18px 16px 10px}
-      .section-body{padding:0 16px 18px}
-    }
+    html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;color:var(--text);background:radial-gradient(circle at 12% 0%,rgba(255,135,224,.34),transparent 28%),radial-gradient(circle at 88% 4%,rgba(89,221,255,.38),transparent 30%),var(--bg)}
+    body{padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+    button,input,select,textarea{font:inherit}
+    .app{max-width:1080px;margin:0 auto;padding:18px 14px 34px}
+    .hero{position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.68);background:linear-gradient(145deg,rgba(255,255,255,.92),rgba(245,247,255,.78));border-radius:32px;padding:22px;box-shadow:var(--shadow);backdrop-filter:blur(16px)}
+    .hero:before{content:"";position:absolute;inset:-2px;background:var(--gradient);opacity:.16;filter:blur(22px);pointer-events:none}
+    .hero-inner{position:relative;display:flex;gap:18px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+    .brand{display:flex;align-items:center;gap:14px;min-width:0}
+    .logo{width:62px;height:62px;border-radius:22px;background:var(--gradient);box-shadow:0 12px 28px rgba(128,137,255,.34);display:grid;place-items:center;color:#fff;font-size:22px;font-weight:1000;letter-spacing:-.08em;border:3px solid rgba(255,255,255,.82)}
+    .brand h1{margin:0;font-size:28px;line-height:1.05;font-weight:1000;letter-spacing:-.04em}
+    .brand p{margin:8px 0 0;color:#556070;font-weight:700;font-size:14px;line-height:1.5}
+    .badge{border:1px solid rgba(128,137,255,.20);background:rgba(255,255,255,.74);border-radius:999px;padding:10px 14px;color:#4b5563;font-size:13px;font-weight:900;box-shadow:0 8px 20px rgba(128,137,255,.10)}
+    .nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:16px 0}
+    .nav button{border:none;border-radius:20px;background:#fff;color:#313946;padding:14px 12px;font-weight:1000;box-shadow:0 10px 26px rgba(73,86,196,.10);cursor:pointer;border:1px solid var(--line)}
+    .nav button.active{color:#fff;background:var(--gradient);box-shadow:0 14px 30px rgba(128,137,255,.28)}
+    .grid{display:grid;grid-template-columns:1.05fr .95fr;gap:16px}
+    .card{background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:0 12px 32px rgba(73,86,196,.10);backdrop-filter:blur(12px)}
+    .card h2{margin:0 0 8px;font-size:22px;line-height:1.18;letter-spacing:-.02em}
+    .card h3{margin:0 0 8px;font-size:18px;line-height:1.2}
+    .muted{color:var(--muted);font-size:14px;line-height:1.7;font-weight:650}
+    .actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
+    .btn{border:none;border-radius:18px;padding:14px 16px;min-height:50px;cursor:pointer;font-weight:1000;color:#fff;background:linear-gradient(135deg,#8089FF,#59DDFF);box-shadow:0 12px 28px rgba(128,137,255,.26)}
+    .btn.pink{background:linear-gradient(135deg,#FF87E0,#CCA4FF)}
+    .btn.dark{background:#111827;box-shadow:0 12px 28px rgba(17,24,39,.18)}
+    .btn.light{background:#fff;color:#4f46e5;border:1px solid rgba(128,137,255,.28);box-shadow:0 10px 24px rgba(128,137,255,.12)}
+    .btn.gray{background:#f2f4ff;color:#374151;box-shadow:none;border:1px solid rgba(128,137,255,.18)}
+    .btn:disabled{opacity:.55;cursor:not-allowed;box-shadow:none}
+    .section{display:none}
+    .section.active{display:block}
+    .field{margin-top:12px}
+    .label{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:13px;font-weight:1000;color:#374151;margin:0 0 7px}
+    input,select,textarea{width:100%;border:1px solid rgba(128,137,255,.22);background:#fff;border-radius:16px;padding:13px 14px;color:#111827;outline:none;box-shadow:0 4px 16px rgba(128,137,255,.06)}
+    input:focus,select:focus,textarea:focus{border-color:#8089FF;box-shadow:0 0 0 4px rgba(128,137,255,.13)}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .plans{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px}
+    .plan{border:1px solid rgba(128,137,255,.22);background:#fff;border-radius:22px;padding:14px;cursor:pointer;box-shadow:0 10px 24px rgba(73,86,196,.08)}
+    .plan.active{border-color:#8089FF;background:linear-gradient(145deg,rgba(255,135,224,.12),rgba(89,221,255,.14));box-shadow:0 12px 28px rgba(128,137,255,.18)}
+    .plan b{display:block;font-size:17px;margin-bottom:6px}
+    .plan span{display:block;color:#6b7280;font-size:13px;line-height:1.55;font-weight:700}
+    .notice{border-radius:18px;background:linear-gradient(135deg,rgba(255,135,224,.13),rgba(89,221,255,.15));border:1px solid rgba(128,137,255,.20);padding:12px 14px;color:#374151;font-size:13px;font-weight:800;line-height:1.65;margin-top:12px}
+    .status{display:none;border-radius:18px;padding:13px 14px;margin-top:12px;font-size:14px;font-weight:900;line-height:1.65;border:1px solid transparent}
+    .status.show{display:block}
+    .status.ok{background:#ecfdf5;color:#065f46;border-color:#a7f3d0}
+    .status.err{background:#fff1f2;color:#9f1239;border-color:#fecdd3}
+    .status.info{background:#eff6ff;color:#1e40af;border-color:#bfdbfe}
+    .result{display:none;margin-top:14px;border-radius:22px;padding:16px;background:#111827;color:#fff;box-shadow:0 14px 30px rgba(17,24,39,.20)}
+    .result.show{display:block}
+    .result .line{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.12);font-size:14px}
+    .result .line:last-child{border-bottom:none}
+    .result .key{color:#cbd5e1;font-weight:800}
+    .result .value{font-weight:1000;text-align:right;word-break:break-all}
+    .quick-list{display:grid;gap:10px;margin-top:12px}
+    .quick{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid rgba(128,137,255,.16);background:#fff;border-radius:18px;padding:12px 14px;cursor:pointer}
+    .quick strong{display:block;font-size:15px}
+    .quick small{display:block;color:#6b7280;font-weight:700;margin-top:3px;line-height:1.45}
+    .pill{display:inline-flex;align-items:center;border-radius:999px;background:rgba(128,137,255,.12);color:#4f46e5;font-weight:1000;font-size:12px;padding:6px 9px;white-space:nowrap}
+    .hidden{display:none!important}
+    .mini{font-size:12px;color:#6b7280;font-weight:750;line-height:1.55;margin-top:7px}
+    .footer{margin-top:18px;text-align:center;color:#7b8190;font-size:12px;font-weight:750;line-height:1.7}
+    @media(max-width:860px){.grid{grid-template-columns:1fr}.nav{grid-template-columns:repeat(2,minmax(0,1fr))}.plans{grid-template-columns:1fr}.actions{grid-template-columns:1fr}.row{grid-template-columns:1fr}.brand h1{font-size:24px}.logo{width:56px;height:56px}}
   </style>
 </head>
 <body>
-  <main class="page">
-    <section class="hero" id="homeSection">
+  <main class="app">
+    <section class="hero">
       <div class="hero-inner">
-        <div>
-          <div class="brand-row">
-            <div class="brand-logo">ANG</div>
-            <div>
-              <h1 class="brand-title">ANG HR System</h1>
-              <div class="brand-sub">智慧人資・排班・打卡・薪資</div>
-            </div>
-          </div>
-
-          <h2 class="hero-title">用一個入口完成打卡、登入、開通與方案啟用。</h2>
-          <p class="hero-desc">NFC 是主要打卡方式；沒有 NFC 的手機，也可以從這裡按打卡完成備援。新公司從選擇方案開始，首月體驗後再正式啟用。</p>
-
-          <div class="quick-grid">
-            <button class="quick-btn" type="button" data-section="clock">
-              <div class="quick-icon">⌚</div>
-              <div class="quick-title">打卡</div>
-              <div class="quick-sub">沒有 NFC 的手機可使用此入口完成打卡</div>
-            </button>
-            <button class="quick-btn" type="button" data-section="admin">
-              <div class="quick-icon">🛡</div>
-              <div class="quick-title">管理員登入</div>
-              <div class="quick-sub">公司代號、員編與密碼登入後台</div>
-            </button>
-            <button class="quick-btn" type="button" data-section="activate">
-              <div class="quick-icon">🔗</div>
-              <div class="quick-title">員工一次性開通</div>
-              <div class="quick-sub">使用公司提供的一次性連結綁定裝置</div>
-            </button>
-            <button class="quick-btn" type="button" data-section="plans">
-              <div class="quick-icon">✨</div>
-              <div class="quick-title">選擇方案</div>
-              <div class="quick-sub">Email 或 Google 驗證後建立公司</div>
-            </button>
+        <div class="brand">
+          <div class="logo">HR</div>
+          <div>
+            <h1>ANG HR System</h1>
+            <p>智慧人資・排班・打卡・薪資<br>首月體驗，正式開通。</p>
           </div>
         </div>
-
-        <aside class="status-panel">
-          <div class="status-card">
-            <div class="status-label">目前入口</div>
-            <div class="status-value">正式產品入口</div>
-            <p class="section-desc">不再以測試頁呈現，所有流程都從正式入口分流。</p>
-          </div>
-          <div class="status-card">
-            <div class="status-label">支援流程</div>
-            <div class="pill-row">
-              <span class="pill">NFC 打卡</span>
-              <span class="pill">備援打卡</span>
-              <span class="pill">管理登入</span>
-              <span class="pill">員工開通</span>
-              <span class="pill">方案啟用</span>
-            </div>
-          </div>
-          <div class="status-card">
-            <div class="status-label">驗證規則</div>
-            <div class="status-value">Email 或 Google 二選一</div>
-            <p class="section-desc">未完成驗證，不建立公司，也不發放初始帳密。</p>
-          </div>
-        </aside>
+        <div class="badge" id="apiBadge">尚未連線</div>
       </div>
     </section>
 
-    <section class="section" id="clockSection">
-      <div class="section-head">
-        <div>
-          <h2 class="section-title">打卡</h2>
-          <p class="section-desc">NFC 無法使用時，員工可從這裡輸入公司代號與帳密完成備援打卡。</p>
-        </div>
-        <button class="back-btn" type="button" data-back>回入口</button>
-      </div>
-      <div class="section-body">
-        <div class="form-grid">
-          <div class="field">
-            <label for="clockCompanyId">公司代號</label>
-            <input id="clockCompanyId" autocomplete="organization" placeholder="例如 ANGTEST1">
-          </div>
-          <div class="field">
-            <label for="clockEmployeeId">員工編號</label>
-            <input id="clockEmployeeId" autocomplete="username" placeholder="例如 ANG0603">
-          </div>
-          <div class="field">
-            <label for="clockPassword">密碼</label>
-            <input id="clockPassword" type="password" autocomplete="current-password" placeholder="輸入密碼">
-          </div>
-          <div class="field">
-            <label for="clockType">打卡動作</label>
-            <select id="clockType">
-              <option value="上班">上班</option>
-              <option value="下班">下班</option>
-              <option value="加班">加班</option>
-            </select>
-          </div>
-        </div>
-        <div class="actions">
-          <button class="btn" type="button" id="clockSubmitBtn">送出打卡</button>
-          <button class="btn secondary" type="button" id="fillSavedClockBtn">帶入已登入資料</button>
-        </div>
-        <div class="message" id="clockMsg"></div>
-      </div>
-    </section>
+    <nav class="nav" aria-label="入口功能">
+      <button type="button" data-route="home" class="active">入口</button>
+      <button type="button" data-route="clock">打卡</button>
+      <button type="button" data-route="admin">管理員登入</button>
+      <button type="button" data-route="register">選擇方案</button>
+    </nav>
 
-    <section class="section" id="adminSection">
-      <div class="section-head">
-        <div>
-          <h2 class="section-title">管理員登入</h2>
-          <p class="section-desc">登入後依公司方案分流到對應後台。</p>
-        </div>
-        <button class="back-btn" type="button" data-back>回入口</button>
-      </div>
-      <div class="section-body">
-        <div class="form-grid">
-          <div class="field">
-            <label for="adminCompanyId">公司代號</label>
-            <input id="adminCompanyId" autocomplete="organization" placeholder="例如 ANGTEST1">
-          </div>
-          <div class="field">
-            <label for="adminEmployeeId">員工編號</label>
-            <input id="adminEmployeeId" autocomplete="username" placeholder="例如 ANG0603">
-          </div>
-          <div class="field">
-            <label for="adminPassword">密碼</label>
-            <input id="adminPassword" type="password" autocomplete="current-password" placeholder="輸入密碼">
-          </div>
-        </div>
-        <div class="actions">
-          <button class="btn" type="button" id="adminLoginBtn">登入後台</button>
-        </div>
-        <div class="message" id="adminMsg"></div>
-      </div>
-    </section>
-
-    <section class="section" id="activateSection">
-      <div class="section-head">
-        <div>
-          <h2 class="section-title">員工一次性開通</h2>
-          <p class="section-desc">員工收到公司提供的一次性連結後，可在這裡完成帳號啟用與裝置綁定。</p>
-        </div>
-        <button class="back-btn" type="button" data-back>回入口</button>
-      </div>
-      <div class="section-body">
-        <div class="form-grid">
-          <div class="field">
-            <label for="activateCompanyId">公司代號</label>
-            <input id="activateCompanyId" placeholder="例如 ANGTEST1">
-          </div>
-          <div class="field">
-            <label for="activateEmployeeId">員工編號</label>
-            <input id="activateEmployeeId" placeholder="例如 ANG0601">
-          </div>
-          <div class="field">
-            <label for="activateToken">一次性開通碼</label>
-            <input id="activateToken" placeholder="貼上連結中的 token">
-          </div>
-        </div>
-        <div class="actions">
-          <button class="btn" type="button" id="activateBtn">完成開通</button>
-        </div>
-        <div class="message" id="activateMsg"></div>
-      </div>
-    </section>
-
-    <section class="section" id="plansSection">
-      <div class="section-head">
-        <div>
-          <h2 class="section-title">選擇方案</h2>
-          <p class="section-desc">超管理員必須先完成 Email 驗證或 Google 驗證，再填基本資料與選擇方案。</p>
-        </div>
-        <button class="back-btn" type="button" data-back>回入口</button>
-      </div>
-      <div class="section-body">
-        <div class="mini-card">
-          <div class="tabs">
-            <button class="tab-btn active" type="button" data-verify-tab="email">Email 驗證碼</button>
-            <button class="tab-btn" type="button" data-verify-tab="google">Google 驗證</button>
-          </div>
-
-          <div class="panel active" id="emailVerifyPanel">
-            <div class="form-grid">
-              <div class="field">
-                <label for="registerEmail">Email</label>
-                <input id="registerEmail" type="email" autocomplete="email" placeholder="you@example.com">
-              </div>
-              <div class="field">
-                <label for="emailCode">驗證碼</label>
-                <input id="emailCode" inputmode="numeric" placeholder="6 位數驗證碼">
-              </div>
-            </div>
-            <div class="actions">
-              <button class="btn secondary" type="button" id="sendEmailCodeBtn">寄送驗證碼</button>
-              <button class="btn" type="button" id="verifyEmailCodeBtn">確認驗證碼</button>
-            </div>
-          </div>
-
-          <div class="panel" id="googleVerifyPanel">
-            <div class="help-text">使用 Google 驗證後，系統會用 Google 回傳的 Email 與帳號識別碼防止重複申請。</div>
-            <div class="actions">
-              <div id="googleButtonBox"></div>
-              <button class="btn secondary hidden" type="button" id="googleManualBtn">重新載入 Google 驗證</button>
-            </div>
-          </div>
-
-          <div class="message" id="verifyMsg"></div>
-        </div>
-
-        <div class="divider"></div>
-
-        <div class="form-grid">
-          <div class="field">
-            <label for="ownerName">超管理員姓名</label>
-            <input id="ownerName" autocomplete="name" placeholder="請輸入姓名">
-          </div>
-          <div class="field">
-            <label for="ownerPhone">電話</label>
-            <input id="ownerPhone" autocomplete="tel" inputmode="tel" placeholder="請輸入聯絡電話">
-          </div>
-          <div class="field">
-            <label for="ownerBirthday">出生年月日</label>
-            <input id="ownerBirthday" type="date">
-          </div>
-          <div class="field">
-            <label for="companyName">公司中文名稱</label>
-            <input id="companyName" autocomplete="organization" placeholder="例如 逗花豆花">
-          </div>
-          <div class="field">
-            <label for="taxId">統一編號，可選</label>
-            <input id="taxId" inputmode="numeric" placeholder="可留空">
-          </div>
-          <div class="field">
-            <label for="privilegeId">特權 ID／優惠碼，可選</label>
-            <input id="privilegeId" autocomplete="off" placeholder="由 ANG 提供才需要填">
-            <div class="help-text">免付費特權只由後端判斷，沒有特權 ID 也可以正常選方案。</div>
-          </div>
-          <div class="field" style="grid-column:1/-1;">
-            <label for="companyAddress">聯絡地址，可選</label>
-            <textarea id="companyAddress" placeholder="可留空，正式啟用後也能再補"></textarea>
-          </div>
-        </div>
-
-        <div class="plans" id="planCards">
-          <div class="plan-card selected" data-plan="basic">
-            <div class="badge">首月體驗</div>
-            <div class="plan-name">Basic</div>
-            <div class="plan-price">基本版</div>
-            <div class="plan-note">適合小店先啟用打卡、員工資料與簡易排班。</div>
-          </div>
-          <div class="plan-card" data-plan="plus">
-            <div class="badge">首月體驗</div>
-            <div class="plan-name">Plus</div>
-            <div class="plan-price">進階版</div>
-            <div class="plan-note">適合需要排班、請假、審核與薪資計算的公司。</div>
-          </div>
-          <div class="plan-card" data-plan="premium">
-            <div class="badge">首月體驗</div>
-            <div class="plan-name">Premium</div>
-            <div class="plan-price">完整版</div>
-            <div class="plan-note">適合多分店、完整管理權限與進階報表。</div>
-          </div>
-        </div>
-
-        <div class="actions">
-          <button class="btn full" type="button" id="createCompanyBtn">建立公司並取得初始帳密</button>
-        </div>
-        <div class="message" id="registerMsg"></div>
-
-        <div class="result-box" id="resultBox">
-          <div class="result-title">公司已建立</div>
-          <div class="result-row"><span class="result-key">公司代號</span><span class="result-value" id="resultCompanyId">-</span></div>
-          <div class="result-row"><span class="result-key">登入帳號</span><span class="result-value" id="resultEmployeeId">-</span></div>
-          <div class="result-row"><span class="result-key">初始密碼</span><span class="result-value" id="resultPassword">-</span></div>
-          <div class="result-row"><span class="result-key">方案狀態</span><span class="result-value" id="resultPlanStatus">-</span></div>
+    <section id="home" class="section active">
+      <div class="grid">
+        <div class="card">
+          <h2>入口中心</h2>
+          <div class="muted">NFC 是主要打卡方式。沒有 NFC 的手機，可以使用這裡的打卡按鈕完成備援打卡。</div>
           <div class="actions">
-            <button class="btn" type="button" id="goAdminAfterCreateBtn">前往管理員登入</button>
+            <button class="btn" type="button" onclick="routeTo('clock')">打卡</button>
+            <button class="btn pink" type="button" onclick="routeTo('admin')">管理員登入</button>
+            <button class="btn light" type="button" onclick="routeTo('activate')">員工一次性開通</button>
+            <button class="btn dark" type="button" onclick="routeTo('register')">選擇方案</button>
+          </div>
+          <div class="notice">申請新公司需完成 Email 驗證碼或 Google 驗證。出生年月日保留為基本資料，不作為唯一驗證。</div>
+        </div>
+        <div class="card">
+          <h3>快速說明</h3>
+          <div class="quick-list">
+            <div class="quick" onclick="routeTo('clock')"><div><strong>手機沒有 NFC</strong><small>直接按打卡，送出位置與裝置資訊。</small></div><span class="pill">備援</span></div>
+            <div class="quick" onclick="routeTo('activate')"><div><strong>員工第一次使用</strong><small>使用公司提供的一次性連結綁定裝置。</small></div><span class="pill">開通</span></div>
+            <div class="quick" onclick="routeTo('register')"><div><strong>新公司開通</strong><small>選方案、驗證、建立公司與 Creator 帳號。</small></div><span class="pill">方案</span></div>
           </div>
         </div>
       </div>
     </section>
 
-    <div class="footer-note">ANG HR System｜入口頁色系已與系統主題一致｜NFC 與備援打卡並行</div>
+    <section id="clock" class="section">
+      <div class="grid">
+        <div class="card">
+          <h2>打卡</h2>
+          <div class="muted">給沒有 NFC 的手機使用。送出前會帶入位置、裝置 ID 與帳號資訊。</div>
+          <div class="row">
+            <div class="field"><label class="label">公司代號</label><input id="clockCompanyId" autocomplete="organization" placeholder="例如 ANGTEST1"></div>
+            <div class="field"><label class="label">員工編號</label><input id="clockEmployeeId" autocomplete="username" placeholder="例如 ANG0603"></div>
+          </div>
+          <div class="row">
+            <div class="field"><label class="label">密碼</label><input id="clockPassword" type="password" autocomplete="current-password" placeholder="例如 0603"></div>
+            <div class="field"><label class="label">打卡類型</label><select id="clockType"><option value="上班">上班</option><option value="下班">下班</option><option value="加班">加班</option></select></div>
+          </div>
+          <div class="row">
+            <button class="btn gray" type="button" onclick="getLocationForClock()">取得目前位置</button>
+            <button class="btn" type="button" onclick="submitClock()">送出打卡</button>
+          </div>
+          <div class="mini" id="locationText">尚未取得位置</div>
+          <div id="clockStatus" class="status"></div>
+        </div>
+        <div class="card">
+          <h3>NFC 打卡建議</h3>
+          <div class="muted">NFC 貼紙只放現場入口 token，不放員工個資。真正打卡要由後端檢查公司、員工、裝置、位置與 token。</div>
+          <div class="notice">安全順序：NFC 或打卡按鈕 → 讀取裝置 → 送出後端 → 驗證位置 → 寫入打卡紀錄。</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="admin" class="section">
+      <div class="grid">
+        <div class="card">
+          <h2>管理員登入</h2>
+          <div class="muted">登入時以公司代號、員工編號與密碼一起判斷，避免不同公司都使用 ANG0603 時互相衝突。</div>
+          <div class="field"><label class="label">公司代號</label><input id="adminCompanyId" placeholder="例如 ANGTEST1"></div>
+          <div class="field"><label class="label">員工編號</label><input id="adminEmployeeId" placeholder="例如 ANG0603"></div>
+          <div class="field"><label class="label">密碼</label><input id="adminPassword" type="password" placeholder="例如 0603"></div>
+          <button class="btn" type="button" style="width:100%;margin-top:14px" onclick="adminLogin()">登入</button>
+          <div id="adminStatus" class="status"></div>
+          <div id="adminResult" class="result"></div>
+        </div>
+        <div class="card">
+          <h3>初始體驗帳號</h3>
+          <div class="result show">
+            <div class="line"><span class="key">員工編號</span><span class="value">ANG0603</span></div>
+            <div class="line"><span class="key">初始密碼</span><span class="value">0603</span></div>
+            <div class="line"><span class="key">角色</span><span class="value">Creator</span></div>
+          </div>
+          <div class="notice">正式客戶後續可在後台修改帳密與新增管理員。</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="activate" class="section">
+      <div class="grid">
+        <div class="card">
+          <h2>員工一次性開通</h2>
+          <div class="muted">員工使用公司提供的連結或開通碼，完成裝置綁定。開通成功後，下次可直接進入員工頁。</div>
+          <div class="row">
+            <div class="field"><label class="label">公司代號</label><input id="actCompanyId" placeholder="例如 ANGTEST1"></div>
+            <div class="field"><label class="label">員工編號</label><input id="actEmployeeId" placeholder="例如 ANG0604"></div>
+          </div>
+          <div class="field"><label class="label">一次性開通碼</label><input id="actToken" placeholder="公司後台產生的一次性 token"></div>
+          <button class="btn" type="button" style="width:100%;margin-top:14px" onclick="activateEmployee()">完成開通</button>
+          <div id="activateStatus" class="status"></div>
+          <div id="activateResult" class="result"></div>
+        </div>
+        <div class="card">
+          <h3>連結格式</h3>
+          <div class="notice">入口網址後面可以帶公司、員編與 token，頁面會自動填入欄位。</div>
+          <div class="mini">例如：index.html#activate?company_id=ANGTEST1&employee_id=ANG0604&token=xxxx</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="register" class="section">
+      <div class="grid">
+        <div class="card">
+          <h2>選擇方案</h2>
+          <div class="muted">先選方案，再完成 Email 或 Google 驗證。驗證成功後才會建立公司與發放帳號。</div>
+          <div class="plans" id="planBox">
+            <div class="plan active" data-plan="basic"><b>Basic</b><span>打卡、簡易排班、基本人員資料。首月體驗。</span></div>
+            <div class="plan" data-plan="plus"><b>Plus</b><span>排班、請假、審核、薪資整理。首月體驗。</span></div>
+            <div class="plan" data-plan="premium"><b>Premium</b><span>完整人資、分店、進階報表與權限。首月體驗。</span></div>
+          </div>
+          <div class="notice">有免付費特權 ID 可在下方填入。一般客戶不需要填。</div>
+        </div>
+
+        <div class="card">
+          <h2>驗證方式</h2>
+          <div class="muted">Email 驗證碼或 Google 驗證二選一。完成其中一種即可繼續建立公司。</div>
+          <div class="field"><label class="label">Email</label><input id="regEmail" type="email" autocomplete="email" placeholder="example@gmail.com"></div>
+          <div class="row">
+            <button class="btn gray" type="button" onclick="sendEmailCode()">寄送驗證碼</button>
+            <button class="btn light" type="button" onclick="verifyEmailCode()">確認驗證碼</button>
+          </div>
+          <div class="field"><label class="label">Email 驗證碼</label><input id="regEmailCode" inputmode="numeric" placeholder="6 位數驗證碼"></div>
+          <div class="notice" id="googleNotice">Google 驗證需先在 config.js 填入 Google OAuth Web Client ID。</div>
+          <div id="googleButtonBox" style="margin-top:12px"></div>
+          <div id="verifyStatus" class="status"></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <h2>超管理員基本資料</h2>
+        <div class="muted">出生年月日是基本資料，不作為唯一申請判斷。防重複以 verified email 或 Google sub 為主。</div>
+        <div class="row">
+          <div class="field"><label class="label">公司中文名稱</label><input id="companyName" placeholder="例如 逗花豆花"></div>
+          <div class="field"><label class="label">申請人姓名</label><input id="adminName" autocomplete="name" placeholder="例如 米米"></div>
+        </div>
+        <div class="row">
+          <div class="field"><label class="label">電話</label><input id="adminPhone" inputmode="tel" autocomplete="tel" placeholder="例如 0912345678"></div>
+          <div class="field"><label class="label">出生年月日</label><input id="birthDate" type="date"></div>
+        </div>
+        <div class="row">
+          <div class="field"><label class="label">統一編號，可選</label><input id="taxId" inputmode="numeric" placeholder="可不填"></div>
+          <div class="field"><label class="label">特權 ID，可選</label><input id="privilegeId" placeholder="有特權 ID 再填"></div>
+        </div>
+        <div class="field"><label class="label">聯絡地址，可選</label><input id="address" placeholder="可不填"></div>
+        <button class="btn dark" type="button" style="width:100%;margin-top:14px" onclick="registerCompany()">建立公司並取得帳號</button>
+        <div id="registerStatus" class="status"></div>
+        <div id="registerResult" class="result"></div>
+      </div>
+    </section>
+
+    <div class="footer">ANG HR System｜入口、打卡、開通、方案註冊完整前端</div>
   </main>
 
   <script>
-    window.ANG_ENTRY_CONFIG = {
-      googleClientId: '<?= googleClientId ?>',
-      appBaseUrl: '<?= appBaseUrl ?>'
-    };
+    const CFG = window.ANG_HR_CONFIG || {};
+    let selectedPlan = 'basic';
+    let verifiedProfile = null;
+    let clockLocation = null;
 
-    const state = {
-      selectedPlan: 'basic',
-      verifyMethod: 'email',
-      verifySession: '',
-      verifiedEmail: '',
-      googleSub: '',
-      lastCreated: null,
-      googleReady: false
-    };
-
-    function $(id){
-      return document.getElementById(id);
-    }
-
-    function clean(v){
-      return String(v || '').trim();
-    }
-
-    function upper(v){
-      return clean(v).toUpperCase();
-    }
-
-    function showSection(name){
-      ['clock','admin','activate','plans'].forEach(function(key){
-        const el = $(key + 'Section');
-        if (el) el.classList.toggle('active', key === name);
-      });
-      const target = name ? $(name + 'Section') : $('homeSection');
-      if (target) target.scrollIntoView({behavior:'smooth',block:'start'});
-    }
-
-    function showMsg(id, parts, type){
-      const box = $(id);
-      if (!box) return;
-      const list = Array.isArray(parts) ? parts : [parts];
-      box.innerHTML = list.map(function(item){
-        return escapeHtml(String(item || ''));
-      }).join('<br>');
-      box.className = 'message show' + (type ? ' ' + type : '');
-    }
-
-    function clearMsg(id){
-      const box = $(id);
-      if (!box) return;
-      box.innerHTML = '';
-      box.className = 'message';
-    }
-
-    function escapeHtml(str){
-      return String(str || '')
-        .replace(/&/g,'&amp;')
-        .replace(/</g,'&lt;')
-        .replace(/>/g,'&gt;')
-        .replace(/"/g,'&quot;')
-        .replace(/'/g,'&#39;');
-    }
-
-    function setBusy(btnId, busy, text){
-      const btn = $(btnId);
-      if (!btn) return;
-      if (busy) {
-        btn.dataset.oldText = btn.textContent;
-        btn.textContent = text || '處理中...';
-        btn.disabled = true;
-      } else {
-        btn.textContent = btn.dataset.oldText || btn.textContent;
-        btn.disabled = false;
-      }
-    }
-
+    function qs(id){ return document.getElementById(id); }
     function getDeviceId(){
-      let id = localStorage.getItem('ang_device_id');
+      let id = localStorage.getItem('ang_hr_device_id');
       if (!id) {
-        id = 'DEV-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).slice(2,10).toUpperCase();
-        localStorage.setItem('ang_device_id', id);
+        id = 'dev_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 10);
+        localStorage.setItem('ang_hr_device_id', id);
       }
       return id;
     }
-
-    function callServer(fnName, payload){
-      return new Promise(function(resolve,reject){
-        if (!window.google || !google.script || !google.script.run) {
-          reject(new Error('目前不是 GAS HTMLService 環境，無法呼叫 google.script.run'));
+    function getApiUrl(){
+      const url = String(CFG.gasApiUrl || '').trim();
+      if (!url || url.indexOf('請貼上') >= 0) return '';
+      return url;
+    }
+    function setStatus(id, type, lines){
+      const el = qs(id);
+      if (!el) return;
+      el.className = 'status show ' + (type || 'info');
+      const arr = Array.isArray(lines) ? lines : [String(lines || '')];
+      el.innerHTML = arr.map(escapeHtml).join('<br>');
+    }
+    function clearStatus(id){
+      const el = qs(id);
+      if (!el) return;
+      el.className = 'status';
+      el.textContent = '';
+    }
+    function escapeHtml(value){
+      return String(value == null ? '' : value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+    }
+    function renderResult(id, rows){
+      const el = qs(id);
+      if (!el) return;
+      el.className = 'result show';
+      el.innerHTML = rows.map(function(row){
+        return '<div class="line"><span class="key">' + escapeHtml(row[0]) + '</span><span class="value">' + escapeHtml(row[1]) + '</span></div>';
+      }).join('');
+    }
+    function api(action, payload){
+      return new Promise(function(resolve, reject){
+        const base = getApiUrl();
+        if (!base) {
+          reject(new Error('尚未設定 GAS Web App URL'));
           return;
         }
-        google.script.run
-          .withSuccessHandler(function(res){ resolve(res); })
-          .withFailureHandler(function(err){ reject(err); })[fnName](payload || {});
+        const callbackName = 'angHrCb_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+        const script = document.createElement('script');
+        const params = new URLSearchParams();
+        params.set('action', action);
+        params.set('callback', callbackName);
+        params.set('payload', JSON.stringify(payload || {}));
+        const timer = setTimeout(function(){
+          cleanup();
+          reject(new Error('連線逾時'));
+        }, 25000);
+        function cleanup(){
+          clearTimeout(timer);
+          try { delete window[callbackName]; } catch(err) { window[callbackName] = undefined; }
+          if (script && script.parentNode) script.parentNode.removeChild(script);
+        }
+        window[callbackName] = function(res){
+          cleanup();
+          resolve(res);
+        };
+        script.onerror = function(){
+          cleanup();
+          reject(new Error('無法連線到 GAS'));
+        };
+        script.src = base + (base.indexOf('?') >= 0 ? '&' : '?') + params.toString();
+        document.body.appendChild(script);
       });
     }
-
-    function saveLoginSession(res){
-      if (!res || !res.ok) return;
-      if (res.company_id) localStorage.setItem('ang_company_id', res.company_id);
-      if (res.employee_id) localStorage.setItem('ang_employee_id', res.employee_id);
-      if (res.session_token) localStorage.setItem('ang_session_token', res.session_token);
-      if (res.name) localStorage.setItem('ang_employee_name', res.name);
-      if (res.role) localStorage.setItem('ang_role', res.role);
+    function routeTo(route){
+      document.querySelectorAll('.section').forEach(function(el){ el.classList.remove('active'); });
+      document.querySelectorAll('.nav button').forEach(function(el){ el.classList.toggle('active', el.getAttribute('data-route') === route); });
+      const target = qs(route);
+      if (target) target.classList.add('active');
+      location.hash = route;
+      window.scrollTo({top:0, behavior:'smooth'});
     }
-
-    function fillSavedLoginToClock(){
-      if ($('clockCompanyId')) $('clockCompanyId').value = localStorage.getItem('ang_company_id') || '';
-      if ($('clockEmployeeId')) $('clockEmployeeId').value = localStorage.getItem('ang_employee_id') || '';
-      if ($('clockPassword')) $('clockPassword').value = '';
+    function initRoutes(){
+      document.querySelectorAll('.nav button').forEach(function(btn){
+        btn.addEventListener('click', function(){ routeTo(btn.getAttribute('data-route')); });
+      });
+      const parsed = parseHashRoute();
+      applyHashParams(parsed.params);
+      routeTo(parsed.route || 'home');
     }
-
-    function applyUrlParams(){
-      const sp = new URLSearchParams(location.search);
-      const openToken = clean(sp.get('token') || sp.get('open_token') || sp.get('activate_token'));
-      const companyId = upper(sp.get('company_id') || sp.get('company') || '');
-      const employeeId = upper(sp.get('id') || sp.get('employee_id') || '');
-      const page = clean(sp.get('page')).toLowerCase();
-
-      if (companyId) {
-        ['clockCompanyId','adminCompanyId','activateCompanyId'].forEach(function(id){
-          if ($(id)) $(id).value = companyId;
+    function parseHashRoute(){
+      const raw = location.hash ? location.hash.slice(1) : 'home';
+      const parts = raw.split('?');
+      const route = parts[0] || 'home';
+      const params = new URLSearchParams(parts[1] || '');
+      return {route: route, params: params};
+    }
+    function applyHashParams(params){
+      const map = [
+        ['company_id','actCompanyId'], ['employee_id','actEmployeeId'], ['token','actToken'],
+        ['company_id','clockCompanyId'], ['employee_id','clockEmployeeId']
+      ];
+      map.forEach(function(pair){
+        const value = params.get(pair[0]);
+        const el = qs(pair[1]);
+        if (value && el && !el.value) el.value = value;
+      });
+    }
+    function initPlans(){
+      document.querySelectorAll('.plan').forEach(function(el){
+        el.addEventListener('click', function(){
+          document.querySelectorAll('.plan').forEach(function(x){ x.classList.remove('active'); });
+          el.classList.add('active');
+          selectedPlan = el.getAttribute('data-plan') || 'basic';
         });
-      }
-
-      if (employeeId) {
-        ['clockEmployeeId','adminEmployeeId','activateEmployeeId'].forEach(function(id){
-          if ($(id)) $(id).value = employeeId;
+      });
+    }
+    function initGoogle(){
+      const id = String(CFG.googleClientId || '').trim();
+      if (!id || id.indexOf('請填入') >= 0) return;
+      qs('googleNotice').textContent = '可使用 Google 帳號完成驗證。';
+      const boot = function(){
+        if (!window.google || !google.accounts || !google.accounts.id) {
+          setTimeout(boot, 500);
+          return;
+        }
+        google.accounts.id.initialize({
+          client_id: id,
+          callback: handleGoogleCredential
         });
-      }
-
-      if (openToken && $('activateToken')) {
-        $('activateToken').value = openToken;
-        showSection('activate');
-      } else if (page === 'clock') {
-        showSection('clock');
-      } else if (page === 'admin') {
-        showSection('admin');
-      } else if (page === 'plans' || page === 'register') {
-        showSection('plans');
-      }
-    }
-
-    async function requestEmailCode(){
-      clearMsg('verifyMsg');
-      const email = clean($('registerEmail').value).toLowerCase();
-      if (!email) {
-        showMsg('verifyMsg','請先輸入 Email。','error');
-        return;
-      }
-      setBusy('sendEmailCodeBtn', true, '寄送中...');
-      try {
-        const res = await callServer('requestEmailVerification', {email:email});
-        if (!res || !res.ok) throw new Error((res && res.message) || '寄送失敗');
-        state.verifyMethod = 'email';
-        state.verifySession = res.verify_session || '';
-        state.verifiedEmail = '';
-        state.googleSub = '';
-        showMsg('verifyMsg',['驗證碼已寄出。','請到信箱收信後輸入 6 位數驗證碼。'],'ok');
-      } catch (err) {
-        showMsg('verifyMsg', err.message || String(err), 'error');
-      } finally {
-        setBusy('sendEmailCodeBtn', false);
-      }
-    }
-
-    async function verifyEmailCode(){
-      clearMsg('verifyMsg');
-      const email = clean($('registerEmail').value).toLowerCase();
-      const code = clean($('emailCode').value);
-      if (!email || !code) {
-        showMsg('verifyMsg','請輸入 Email 與驗證碼。','error');
-        return;
-      }
-      setBusy('verifyEmailCodeBtn', true, '驗證中...');
-      try {
-        const res = await callServer('verifyEmailCode', {
-          email:email,
-          code:code,
-          verify_session:state.verifySession
-        });
-        if (!res || !res.ok) throw new Error((res && res.message) || '驗證失敗');
-        state.verifyMethod = 'email';
-        state.verifySession = res.verify_session || state.verifySession;
-        state.verifiedEmail = res.email || email;
-        state.googleSub = '';
-        showMsg('verifyMsg',['Email 驗證完成。','現在可以填寫基本資料並選擇方案。'],'ok');
-      } catch (err) {
-        showMsg('verifyMsg', err.message || String(err), 'error');
-      } finally {
-        setBusy('verifyEmailCodeBtn', false);
-      }
-    }
-
-    function initGoogleButton(){
-      const clientId = clean(window.ANG_ENTRY_CONFIG.googleClientId);
-      const box = $('googleButtonBox');
-      if (!box) return;
-      if (!clientId || clientId.indexOf('填入') >= 0) {
-        box.innerHTML = '<div class="message show error">尚未設定 Google OAuth Client ID。請先到程式碼.js 填入 GOOGLE_CLIENT_ID。</div>';
-        return;
-      }
-      if (!window.google || !google.accounts || !google.accounts.id) {
-        if ($('googleManualBtn')) $('googleManualBtn').classList.remove('hidden');
-        return;
-      }
-      if (state.googleReady) return;
-      google.accounts.id.initialize({
-        client_id: clientId,
-        callback: handleGoogleCredential
-      });
-      google.accounts.id.renderButton(box, {
-        theme:'outline',
-        size:'large',
-        shape:'pill',
-        text:'continue_with',
-        locale:'zh_TW'
-      });
-      state.googleReady = true;
-    }
-
-    async function handleGoogleCredential(response){
-      clearMsg('verifyMsg');
-      try {
-        const credential = response && response.credential ? response.credential : '';
-        if (!credential) throw new Error('Google 驗證沒有回傳 credential。');
-        const res = await callServer('verifyGoogleCredential', {credential:credential});
-        if (!res || !res.ok) throw new Error((res && res.message) || 'Google 驗證失敗');
-        state.verifyMethod = 'google';
-        state.verifySession = res.verify_session || '';
-        state.verifiedEmail = res.email || '';
-        state.googleSub = res.google_sub || '';
-        if ($('registerEmail') && res.email) $('registerEmail').value = res.email;
-        showMsg('verifyMsg',['Google 驗證完成。','已綁定：' + (res.email || 'Google 帳號')],'ok');
-      } catch (err) {
-        showMsg('verifyMsg', err.message || String(err), 'error');
-      }
-    }
-
-    function switchVerifyTab(type){
-      state.verifyMethod = type;
-      document.querySelectorAll('[data-verify-tab]').forEach(function(btn){
-        btn.classList.toggle('active', btn.dataset.verifyTab === type);
-      });
-      $('emailVerifyPanel').classList.toggle('active', type === 'email');
-      $('googleVerifyPanel').classList.toggle('active', type === 'google');
-      if (type === 'google') {
-        setTimeout(initGoogleButton, 80);
-      }
-    }
-
-    function selectPlan(plan){
-      state.selectedPlan = plan;
-      document.querySelectorAll('.plan-card').forEach(function(card){
-        card.classList.toggle('selected', card.dataset.plan === plan);
-      });
-    }
-
-    function collectRegisterPayload(){
-      return {
-        verify_method:state.verifyMethod,
-        verify_session:state.verifySession,
-        verified_email:state.verifiedEmail || clean($('registerEmail').value).toLowerCase(),
-        google_sub:state.googleSub,
-        owner_name:clean($('ownerName').value),
-        owner_phone:clean($('ownerPhone').value),
-        owner_birthday:clean($('ownerBirthday').value),
-        company_name:clean($('companyName').value),
-        tax_id:clean($('taxId').value),
-        company_address:clean($('companyAddress').value),
-        plan:state.selectedPlan,
-        privilege_id:clean($('privilegeId').value),
-        device_id:getDeviceId()
+        google.accounts.id.renderButton(qs('googleButtonBox'), { theme: 'outline', size: 'large', width: 320, text: 'continue_with' });
       };
+      boot();
     }
-
-    async function createCompany(){
-      clearMsg('registerMsg');
-      const payload = collectRegisterPayload();
-      const missing = [];
-      if (!payload.verify_session) missing.push('請先完成 Email 或 Google 驗證');
-      if (!payload.owner_name) missing.push('請輸入超管理員姓名');
-      if (!payload.owner_phone) missing.push('請輸入電話');
-      if (!payload.owner_birthday) missing.push('請輸入出生年月日');
-      if (!payload.company_name) missing.push('請輸入公司中文名稱');
-      if (missing.length) {
-        showMsg('registerMsg', missing, 'error');
+    function handleGoogleCredential(res){
+      setStatus('verifyStatus', 'info', '正在驗證 Google 帳號');
+      api('verifyGoogleCredential', { credential: res.credential, device_id: getDeviceId() }).then(function(data){
+        if (!data || !data.ok) throw new Error((data && data.message) || 'Google 驗證失敗');
+        verifiedProfile = data.profile;
+        if (verifiedProfile && verifiedProfile.email && qs('regEmail')) qs('regEmail').value = verifiedProfile.email;
+        setStatus('verifyStatus', 'ok', ['Google 驗證完成', verifiedProfile.email || '']);
+      }).catch(function(err){
+        setStatus('verifyStatus', 'err', err.message || String(err));
+      });
+    }
+    function sendEmailCode(){
+      const email = qs('regEmail').value.trim();
+      if (!email) { setStatus('verifyStatus', 'err', '請先輸入 Email'); return; }
+      setStatus('verifyStatus', 'info', '正在寄送驗證碼');
+      api('requestEmailCode', { email: email, device_id: getDeviceId() }).then(function(data){
+        if (!data || !data.ok) throw new Error((data && data.message) || '寄送失敗');
+        setStatus('verifyStatus', 'ok', ['驗證碼已寄出', '請到信箱查看 6 位數驗證碼']);
+      }).catch(function(err){
+        setStatus('verifyStatus', 'err', err.message || String(err));
+      });
+    }
+    function verifyEmailCode(){
+      const email = qs('regEmail').value.trim();
+      const code = qs('regEmailCode').value.trim();
+      if (!email || !code) { setStatus('verifyStatus', 'err', '請輸入 Email 與驗證碼'); return; }
+      setStatus('verifyStatus', 'info', '正在確認驗證碼');
+      api('verifyEmailCode', { email: email, code: code, device_id: getDeviceId() }).then(function(data){
+        if (!data || !data.ok) throw new Error((data && data.message) || '驗證失敗');
+        verifiedProfile = data.profile;
+        setStatus('verifyStatus', 'ok', ['Email 驗證完成', email]);
+      }).catch(function(err){
+        setStatus('verifyStatus', 'err', err.message || String(err));
+      });
+    }
+    function registerCompany(){
+      if (!verifiedProfile || !verifiedProfile.verify_token) {
+        setStatus('registerStatus', 'err', '請先完成 Email 驗證碼或 Google 驗證');
         return;
       }
-      setBusy('createCompanyBtn', true, '建立中...');
-      try {
-        const res = await callServer('registerSuperAdminCompany', payload);
-        if (!res || !res.ok) throw new Error((res && res.message) || '建立公司失敗');
-        state.lastCreated = res;
-        $('resultCompanyId').textContent = res.company_id || '-';
-        $('resultEmployeeId').textContent = res.employee_id || '-';
-        $('resultPassword').textContent = res.initial_password || '-';
-        $('resultPlanStatus').textContent = res.plan_status || '-';
-        $('resultBox').classList.add('show');
-        if ($('adminCompanyId')) $('adminCompanyId').value = res.company_id || '';
-        if ($('adminEmployeeId')) $('adminEmployeeId').value = res.employee_id || '';
-        showMsg('registerMsg',['建立成功。','請保存公司代號、登入帳號與初始密碼。'],'ok');
-      } catch (err) {
-        showMsg('registerMsg', err.message || String(err), 'error');
-      } finally {
-        setBusy('createCompanyBtn', false);
-      }
-    }
-
-    async function adminLogin(){
-      clearMsg('adminMsg');
       const payload = {
-        company_id:upper($('adminCompanyId').value),
-        employee_id:upper($('adminEmployeeId').value),
-        password:clean($('adminPassword').value),
-        device_id:getDeviceId()
+        plan: selectedPlan,
+        verify_token: verifiedProfile.verify_token,
+        verify_method: verifiedProfile.method,
+        company_name: qs('companyName').value.trim(),
+        admin_name: qs('adminName').value.trim(),
+        phone: qs('adminPhone').value.trim(),
+        birth_date: qs('birthDate').value.trim(),
+        tax_id: qs('taxId').value.trim(),
+        address: qs('address').value.trim(),
+        privilege_id: qs('privilegeId').value.trim(),
+        device_id: getDeviceId()
+      };
+      if (!payload.company_name || !payload.admin_name || !payload.phone || !payload.birth_date) {
+        setStatus('registerStatus', 'err', '請填公司名稱、姓名、電話與出生年月日');
+        return;
+      }
+      setStatus('registerStatus', 'info', '正在建立公司');
+      api('registerCompany', payload).then(function(data){
+        if (!data || !data.ok) throw new Error((data && data.message) || '建立失敗');
+        setStatus('registerStatus', 'ok', '公司已建立完成');
+        renderResult('registerResult', [
+          ['公司代號', data.company_id],
+          ['公司名稱', data.company_name],
+          ['方案', data.plan_label],
+          ['付款狀態', data.billing_status_label],
+          ['管理員帳號', data.employee_id],
+          ['初始密碼', data.password],
+          ['角色', data.role]
+        ]);
+        qs('adminCompanyId').value = data.company_id || '';
+        qs('adminEmployeeId').value = data.employee_id || '';
+        qs('adminPassword').value = data.password || '';
+      }).catch(function(err){
+        setStatus('registerStatus', 'err', err.message || String(err));
+      });
+    }
+    function adminLogin(){
+      const payload = {
+        company_id: qs('adminCompanyId').value.trim().toUpperCase(),
+        employee_id: qs('adminEmployeeId').value.trim().toUpperCase(),
+        password: qs('adminPassword').value,
+        device_id: getDeviceId()
       };
       if (!payload.company_id || !payload.employee_id || !payload.password) {
-        showMsg('adminMsg','請輸入公司代號、員工編號與密碼。','error');
+        setStatus('adminStatus', 'err', '請輸入公司代號、員工編號與密碼');
         return;
       }
-      setBusy('adminLoginBtn', true, '登入中...');
-      try {
-        const res = await callServer('adminLogin', payload);
-        if (!res || !res.ok) throw new Error((res && res.message) || '登入失敗');
-        saveLoginSession(res);
-        showMsg('adminMsg',['登入成功。','即將進入管理後台。'],'ok');
-        setTimeout(function(){
-          location.href = res.redirect_url || buildLocalPageUrl('admin', res.company_id, res.employee_id, res.session_token);
-        }, 650);
-      } catch (err) {
-        showMsg('adminMsg', err.message || String(err), 'error');
-      } finally {
-        setBusy('adminLoginBtn', false);
-      }
+      setStatus('adminStatus', 'info', '正在登入');
+      api('adminLogin', payload).then(function(data){
+        if (!data || !data.ok) throw new Error((data && data.message) || '登入失敗');
+        localStorage.setItem('ang_hr_session_token', data.session_token || '');
+        localStorage.setItem('ang_hr_company_id', data.company_id || '');
+        localStorage.setItem('ang_hr_employee_id', data.employee_id || '');
+        setStatus('adminStatus', 'ok', '登入成功');
+        renderResult('adminResult', [
+          ['公司代號', data.company_id],
+          ['員工編號', data.employee_id],
+          ['姓名', data.name],
+          ['角色', data.role]
+        ]);
+      }).catch(function(err){
+        setStatus('adminStatus', 'err', err.message || String(err));
+      });
     }
-
-    async function activateEmployee(){
-      clearMsg('activateMsg');
+    function getLocationForClock(){
+      if (!navigator.geolocation) {
+        qs('locationText').textContent = '此裝置不支援定位';
+        return;
+      }
+      qs('locationText').textContent = '正在取得位置';
+      navigator.geolocation.getCurrentPosition(function(pos){
+        clockLocation = {
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+          accuracy: pos.coords.accuracy
+        };
+        qs('locationText').textContent = '已取得位置，誤差約 ' + Math.round(pos.coords.accuracy || 0) + ' 公尺';
+      }, function(err){
+        qs('locationText').textContent = err && err.message ? err.message : '定位失敗';
+      }, { enableHighAccuracy:true, timeout:12000, maximumAge:30000 });
+    }
+    function submitClock(){
       const payload = {
-        company_id:upper($('activateCompanyId').value),
-        employee_id:upper($('activateEmployeeId').value),
-        token:clean($('activateToken').value),
-        device_id:getDeviceId()
+        company_id: qs('clockCompanyId').value.trim().toUpperCase(),
+        employee_id: qs('clockEmployeeId').value.trim().toUpperCase(),
+        password: qs('clockPassword').value,
+        clock_type: qs('clockType').value,
+        device_id: getDeviceId(),
+        source: 'manual_button',
+        location: clockLocation
+      };
+      if (!payload.company_id || !payload.employee_id || !payload.password) {
+        setStatus('clockStatus', 'err', '請輸入公司代號、員工編號與密碼');
+        return;
+      }
+      setStatus('clockStatus', 'info', '正在送出打卡');
+      api('clockByButton', payload).then(function(data){
+        if (!data || !data.ok) throw new Error((data && data.message) || '打卡失敗');
+        setStatus('clockStatus', 'ok', [data.message || '打卡成功', data.created_at || '']);
+      }).catch(function(err){
+        setStatus('clockStatus', 'err', err.message || String(err));
+      });
+    }
+    function activateEmployee(){
+      const payload = {
+        company_id: qs('actCompanyId').value.trim().toUpperCase(),
+        employee_id: qs('actEmployeeId').value.trim().toUpperCase(),
+        token: qs('actToken').value.trim(),
+        device_id: getDeviceId()
       };
       if (!payload.company_id || !payload.employee_id || !payload.token) {
-        showMsg('activateMsg','請輸入公司代號、員工編號與一次性開通碼。','error');
+        setStatus('activateStatus', 'err', '請輸入公司代號、員工編號與一次性開通碼');
         return;
       }
-      setBusy('activateBtn', true, '開通中...');
-      try {
-        const res = await callServer('activateEmployeeOneTimeLink', payload);
-        if (!res || !res.ok) throw new Error((res && res.message) || '開通失敗');
-        saveLoginSession(res);
-        showMsg('activateMsg',['開通完成。','此裝置已綁定，之後可直接進入員工頁。'],'ok');
-      } catch (err) {
-        showMsg('activateMsg', err.message || String(err), 'error');
-      } finally {
-        setBusy('activateBtn', false);
-      }
-    }
-
-    function getPosition(){
-      return new Promise(function(resolve){
-        if (!navigator.geolocation) {
-          resolve({ok:false,message:'此裝置不支援定位'});
-          return;
-        }
-        navigator.geolocation.getCurrentPosition(function(pos){
-          resolve({
-            ok:true,
-            lat:pos.coords.latitude,
-            lng:pos.coords.longitude,
-            accuracy:pos.coords.accuracy
-          });
-        }, function(err){
-          resolve({ok:false,message:err.message || '無法取得定位'});
-        }, {enableHighAccuracy:true,timeout:9000,maximumAge:15000});
+      setStatus('activateStatus', 'info', '正在開通');
+      api('activateEmployee', payload).then(function(data){
+        if (!data || !data.ok) throw new Error((data && data.message) || '開通失敗');
+        localStorage.setItem('ang_hr_company_id', data.company_id || '');
+        localStorage.setItem('ang_hr_employee_id', data.employee_id || '');
+        setStatus('activateStatus', 'ok', '開通成功');
+        renderResult('activateResult', [
+          ['公司代號', data.company_id],
+          ['員工編號', data.employee_id],
+          ['姓名', data.name || ''],
+          ['裝置', '已綁定']
+        ]);
+      }).catch(function(err){
+        setStatus('activateStatus', 'err', err.message || String(err));
       });
     }
-
-    async function submitClock(){
-      clearMsg('clockMsg');
-      const geo = await getPosition();
-      const payload = {
-        company_id:upper($('clockCompanyId').value),
-        employee_id:upper($('clockEmployeeId').value),
-        password:clean($('clockPassword').value),
-        session_token:localStorage.getItem('ang_session_token') || '',
-        clock_type:clean($('clockType').value),
-        device_id:getDeviceId(),
-        lat:geo.ok ? geo.lat : '',
-        lng:geo.ok ? geo.lng : '',
-        accuracy:geo.ok ? geo.accuracy : '',
-        geo_message:geo.ok ? '' : geo.message,
-        user_agent:navigator.userAgent
-      };
-      if (!payload.company_id || !payload.employee_id) {
-        showMsg('clockMsg','請輸入公司代號與員工編號。','error');
+    function initDefaults(){
+      ['clockCompanyId','adminCompanyId'].forEach(function(id){ if (CFG.defaultCompanyId) qs(id).value = CFG.defaultCompanyId; });
+      ['clockEmployeeId','adminEmployeeId'].forEach(function(id){ if (CFG.defaultEmployeeId) qs(id).value = CFG.defaultEmployeeId; });
+      const savedCompany = localStorage.getItem('ang_hr_company_id') || '';
+      const savedEmployee = localStorage.getItem('ang_hr_employee_id') || '';
+      if (savedCompany) ['clockCompanyId','adminCompanyId'].forEach(function(id){ if (!qs(id).value) qs(id).value = savedCompany; });
+      if (savedEmployee) ['clockEmployeeId','adminEmployeeId'].forEach(function(id){ if (!qs(id).value) qs(id).value = savedEmployee; });
+    }
+    function ping(){
+      const badge = qs('apiBadge');
+      if (!getApiUrl()) {
+        badge.textContent = '請設定 GAS URL';
         return;
       }
-      if (!payload.password && !payload.session_token) {
-        showMsg('clockMsg','請輸入密碼，或先登入後再使用備援打卡。','error');
-        return;
-      }
-      setBusy('clockSubmitBtn', true, '送出中...');
-      try {
-        const res = await callServer('entryClock', payload);
-        if (!res || !res.ok) throw new Error((res && res.message) || '打卡失敗');
-        saveLoginSession(res);
-        showMsg('clockMsg',[res.message || '打卡成功','時間：' + (res.clock_time || '')],'ok');
-      } catch (err) {
-        showMsg('clockMsg', err.message || String(err), 'error');
-      } finally {
-        setBusy('clockSubmitBtn', false);
-      }
-    }
-
-    function buildLocalPageUrl(page, companyId, employeeId, token){
-      const base = clean(window.ANG_ENTRY_CONFIG.appBaseUrl) || location.origin + location.pathname;
-      const sp = new URLSearchParams();
-      sp.set('page', page || 'admin');
-      if (companyId) sp.set('company_id', companyId);
-      if (employeeId) sp.set('id', employeeId);
-      if (token) sp.set('token', token);
-      return base + '?' + sp.toString();
-    }
-
-    function bindEvents(){
-      document.querySelectorAll('[data-section]').forEach(function(btn){
-        btn.addEventListener('click', function(){ showSection(btn.dataset.section); });
-      });
-      document.querySelectorAll('[data-back]').forEach(function(btn){
-        btn.addEventListener('click', function(){ showSection(''); });
-      });
-      document.querySelectorAll('[data-verify-tab]').forEach(function(btn){
-        btn.addEventListener('click', function(){ switchVerifyTab(btn.dataset.verifyTab); });
-      });
-      document.querySelectorAll('.plan-card').forEach(function(card){
-        card.addEventListener('click', function(){ selectPlan(card.dataset.plan); });
-      });
-      $('sendEmailCodeBtn').addEventListener('click', requestEmailCode);
-      $('verifyEmailCodeBtn').addEventListener('click', verifyEmailCode);
-      $('googleManualBtn').addEventListener('click', initGoogleButton);
-      $('createCompanyBtn').addEventListener('click', createCompany);
-      $('adminLoginBtn').addEventListener('click', adminLogin);
-      $('activateBtn').addEventListener('click', activateEmployee);
-      $('clockSubmitBtn').addEventListener('click', submitClock);
-      $('fillSavedClockBtn').addEventListener('click', fillSavedLoginToClock);
-      $('goAdminAfterCreateBtn').addEventListener('click', function(){
-        showSection('admin');
-        if (state.lastCreated) {
-          $('adminCompanyId').value = state.lastCreated.company_id || '';
-          $('adminEmployeeId').value = state.lastCreated.employee_id || '';
-          $('adminPassword').value = state.lastCreated.initial_password || '';
-        }
+      api('ping', { device_id:getDeviceId() }).then(function(res){
+        badge.textContent = res && res.ok ? '後端已連線' : '後端未確認';
+      }).catch(function(){
+        badge.textContent = '後端未連線';
       });
     }
-
     window.addEventListener('load', function(){
-      bindEvents();
-      applyUrlParams();
-      fillSavedLoginToClock();
-      setTimeout(initGoogleButton, 800);
+      initRoutes();
+      initPlans();
+      initDefaults();
+      initGoogle();
+      getDeviceId();
+      ping();
     });
   </script>
 </body>
