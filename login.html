@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>ANG HR 登入</title>
+  <script src="./config.js"></script>
+  <style>
+    :root{
+      --bg:#f6f7fb;
+      --card:#ffffff;
+      --text:#111827;
+      --muted:#6b7280;
+      --line:#e5e7eb;
+      --main:#ff7a21;
+      --deep:#c45a10;
+      --shadow:0 18px 45px rgba(17,24,39,.10);
+      --radius:26px;
+    }
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif}
+    body{display:flex;align-items:center;justify-content:center;padding:22px}
+    .wrap{width:100%;max-width:430px}
+    .brand{display:flex;align-items:center;gap:12px;margin:0 0 16px 2px}
+    .logo{width:48px;height:48px;border-radius:16px;background:linear-gradient(135deg,#ff8a2a,#ff6d1d);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:1000;box-shadow:0 14px 28px rgba(255,122,33,.25)}
+    .brand h1{margin:0;font-size:24px;line-height:1.1}
+    .brand p{margin:5px 0 0;color:var(--muted);font-size:13px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px}
+    .tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;background:#f3f4f6;border-radius:18px;padding:5px;margin-bottom:18px}
+    .tab{border:0;border-radius:14px;background:transparent;padding:11px 10px;font-weight:900;color:#6b7280}
+    .tab.active{background:#fff;color:var(--text);box-shadow:0 8px 20px rgba(17,24,39,.08)}
+    label{display:block;font-size:13px;font-weight:900;margin:14px 0 7px}
+    input{width:100%;height:48px;border:1px solid #d1d5db;border-radius:16px;padding:0 14px;font-size:16px;outline:none;background:#fff}
+    input:focus{border-color:var(--main);box-shadow:0 0 0 4px rgba(255,122,33,.12)}
+    .btn{width:100%;height:50px;border:0;border-radius:18px;background:linear-gradient(135deg,#ff8a2a,#ff6d1d);color:#fff;font-weight:1000;font-size:16px;margin-top:18px;box-shadow:0 14px 30px rgba(255,122,33,.25)}
+    .btn.secondary{background:#111827;box-shadow:none}
+    .btn:disabled{opacity:.55}
+    .hint{font-size:12px;color:var(--muted);line-height:1.6;margin-top:12px}
+    .status{margin-top:14px;border-radius:16px;padding:12px;background:#f9fafb;border:1px solid var(--line);font-size:13px;line-height:1.55;color:#374151;white-space:pre-wrap}
+    .status.ok{background:#ecfdf5;border-color:#a7f3d0;color:#065f46}
+    .status.err{background:#fef2f2;border-color:#fecaca;color:#991b1b}
+    .small{display:flex;gap:8px;margin-top:10px}
+    .small button{flex:1;border:1px solid var(--line);background:#fff;border-radius:14px;padding:10px;color:#374151;font-weight:800}
+    .hidden{display:none!important}
+    .foot{margin-top:14px;text-align:center;color:#9ca3af;font-size:12px}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <div class="brand">
+      <div class="logo">AN</div>
+      <div>
+        <h1>ANG HR</h1>
+        <p id="subTitle">APP 登入 / 裝置綁定</p>
+      </div>
+    </div>
+
+    <section class="card">
+      <div class="tabs">
+        <button id="tabAuto" class="tab active" type="button">APP 登入</button>
+        <button id="tabCreator" class="tab" type="button">帳密登入</button>
+      </div>
+
+      <div id="autoPanel">
+        <button id="autoBtn" class="btn" type="button">自動登入</button>
+        <div class="hint">
+          第一次請用管理端產生的專屬連結開啟 APP。綁定後 APP 會記住此手機裝置，之後進入會自動登入。
+        </div>
+      </div>
+
+      <div id="creatorPanel" class="hidden">
+        <label for="loginId">帳號 / 員編</label>
+        <input id="loginId" autocomplete="username" placeholder="例如 ANG0603" value="ANG0603" />
+
+        <label for="loginPw">密碼</label>
+        <input id="loginPw" autocomplete="current-password" type="password" placeholder="Creator 初始密碼：0603" />
+
+        <button id="loginBtn" class="btn" type="button">登入並綁定此裝置</button>
+        <div class="hint">
+          Creator 初始帳號：ANG0603。初始密碼：0603。之後可在「人員資料」的「密碼」欄改掉。
+        </div>
+      </div>
+
+      <div class="small">
+        <button id="diagBtn" type="button">診斷資料源</button>
+        <button id="clearBtn" type="button">清除本機登入</button>
+      </div>
+
+      <div id="status" class="status">準備中...</div>
+    </section>
+
+    <div class="foot" id="deviceFoot"></div>
+  </main>
+
+<script>
+(function(){
+  'use strict';
+
+  const CFG = window.ANG_HR_CONFIG || {};
+  const GAS = String(new URLSearchParams(location.search).get('gas') || CFG.apiBaseUrl || CFG.gasApiUrl || '').trim();
+  const FRONT = String(CFG.frontendBaseUrl || location.origin + location.pathname.replace(/\/[^\/]*$/, '')).replace(/\/+$/, '');
+  const EMPLOYEE_PAGE = CFG.employeePage || 'employee.html';
+  const ADMIN_PAGE = CFG.adminPage || 'admin.html';
+  const COMPANY_ID = new URLSearchParams(location.search).get('company_id') || localStorage.getItem('ang_company_id') || 'ang_99';
+
+  const $ = id => document.getElementById(id);
+  const qs = new URLSearchParams(location.search);
+
+  const state = {
+    deviceId: getDeviceId(),
+    id: qs.get('id') || localStorage.getItem('ang_login_id') || '',
+    token: qs.get('token') || localStorage.getItem('ang_login_token') || '',
+    role: qs.get('role') || localStorage.getItem('ang_login_role') || '',
+    bind: qs.get('bind') === '1'
+  };
+
+  $('deviceFoot').textContent = 'Device：' + state.deviceId;
+
+  function getDeviceId(){
+    try {
+      if (window.ANGHRApp && ANGHRApp.getDeviceId) {
+        const v = String(ANGHRApp.getDeviceId() || '').trim();
+        if (v) {
+          localStorage.setItem('ang_device_id', v);
+          return v;
+        }
+      }
+    } catch(e) {}
+
+    let v = qs.get('device_id') || localStorage.getItem('ang_device_id') || '';
+    if (!v) {
+      v = 'web-' + Date.now() + '-' + Math.random().toString(16).slice(2);
+      localStorage.setItem('ang_device_id', v);
+    }
+    return v;
+  }
+
+  function setStatus(msg, type){
+    const el = $('status');
+    el.textContent = msg || '';
+    el.className = 'status' + (type ? ' ' + type : '');
+  }
+
+  function setTab(which){
+    const creator = which === 'creator';
+    $('tabAuto').classList.toggle('active', !creator);
+    $('tabCreator').classList.toggle('active', creator);
+    $('autoPanel').classList.toggle('hidden', creator);
+    $('creatorPanel').classList.toggle('hidden', !creator);
+  }
+
+  async function api(action, payload){
+    if (!GAS) throw new Error('缺少 GAS API URL');
+    const res = await fetch(GAS, {
+      method:'POST',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify(Object.assign({
+        action,
+        company_id: COMPANY_ID,
+        device_id: state.deviceId,
+        deviceId: state.deviceId,
+        app: 1
+      }, payload || {}))
+    });
+    const text = await res.text();
+    try { return JSON.parse(text); }
+    catch(e){ throw new Error('GAS 回傳不是 JSON：' + text.slice(0, 160)); }
+  }
+
+  function saveLogin(data){
+    const profile = data.profile || {};
+    const id = data.id || data.empId || profile.id || state.id;
+    const token = data.token || state.token;
+    const role = data.role || profile.role || state.role || 'Employee';
+    if (id) localStorage.setItem('ang_login_id', String(id).toUpperCase());
+    if (token) localStorage.setItem('ang_login_token', token);
+    if (role) localStorage.setItem('ang_login_role', role);
+    localStorage.setItem('ang_company_id', COMPANY_ID);
+    localStorage.setItem('ang_device_id', state.deviceId);
+  }
+
+  function targetPage(role){
+    const r = String(role || '').toLowerCase();
+    if (r === 'creator' || r === 'admin' || r === 'manager') return ADMIN_PAGE;
+    return EMPLOYEE_PAGE;
+  }
+
+  function go(data){
+    const profile = data.profile || {};
+    const id = data.id || data.empId || profile.id || localStorage.getItem('ang_login_id') || state.id;
+    const token = data.token || localStorage.getItem('ang_login_token') || state.token;
+    const role = data.role || profile.role || localStorage.getItem('ang_login_role') || state.role || 'Employee';
+    const url = FRONT + '/' + targetPage(role)
+      + '?id=' + encodeURIComponent(id || '')
+      + '&token=' + encodeURIComponent(token || '')
+      + '&role=' + encodeURIComponent(role || '')
+      + '&company_id=' + encodeURIComponent(COMPANY_ID)
+      + '&device_id=' + encodeURIComponent(state.deviceId)
+      + '&app=1'
+      + '&_ts=' + Date.now();
+    location.replace(url);
+  }
+
+  async function bindByLink(){
+    if (!state.id || !state.token) return false;
+    setStatus('偵測到專屬連結，正在綁定此裝置...');
+    const data = await api('appBindLogin', {
+      id: state.id,
+      token: state.token,
+      role: state.role
+    });
+    if (!data.ok) throw new Error(data.message || '綁定失敗');
+    saveLogin(data);
+    setStatus(data.message || '綁定成功', 'ok');
+    setTimeout(()=>go(data), 450);
+    return true;
+  }
+
+  async function autoLogin(){
+    setStatus('自動登入中...');
+    const id = localStorage.getItem('ang_login_id') || state.id;
+    const token = localStorage.getItem('ang_login_token') || state.token;
+    const role = localStorage.getItem('ang_login_role') || state.role || '';
+
+    let data;
+    if (id && token) {
+      data = await api('appAutoLogin', { id, token, role });
+    } else if (id) {
+      data = await api('appDeviceAutoLogin', { id, role });
+    } else {
+      throw new Error('尚未綁定裝置，請先用專屬連結或 Creator 帳密登入');
+    }
+
+    if (!data.ok) throw new Error(data.message || '自動登入失敗');
+    saveLogin(data);
+    setStatus(data.message || '自動登入成功', 'ok');
+    setTimeout(()=>go(data), 350);
+  }
+
+  async function passwordLogin(){
+    const id = $('loginId').value.trim().toUpperCase();
+    const password = $('loginPw').value;
+    if (!id) return setStatus('請輸入帳號 / 員編', 'err');
+    if (!password) return setStatus('請輸入密碼', 'err');
+
+    setStatus('登入中...');
+    const data = await api('appPasswordLogin', { id, password });
+    if (!data.ok) throw new Error(data.message || '登入失敗');
+    saveLogin(data);
+    setStatus(data.message || '登入成功', 'ok');
+    setTimeout(()=>go(data), 450);
+  }
+
+  $('tabAuto').onclick = ()=>setTab('auto');
+  $('tabCreator').onclick = ()=>setTab('creator');
+  $('autoBtn').onclick = ()=>autoLogin().catch(err=>setStatus(err.message, 'err'));
+  $('loginBtn').onclick = ()=>passwordLogin().catch(err=>setStatus(err.message, 'err'));
+  $('diagBtn').onclick = ()=>location.href = FRONT + '/diagnostics.html?_ts=' + Date.now();
+  $('clearBtn').onclick = ()=>{
+    ['ang_login_id','ang_login_token','ang_login_role','ang_last_nfc_id','ang_last_nfc_text'].forEach(k=>localStorage.removeItem(k));
+    setStatus('已清除本機登入資料', 'ok');
+  };
+
+  $('loginPw').addEventListener('keydown', e => { if (e.key === 'Enter') $('loginBtn').click(); });
+
+  setStatus('GAS：' + GAS + '\nDevice：' + state.deviceId);
+
+  if (state.bind || (state.id && state.token)) {
+    bindByLink().catch(err=>setStatus(err.message, 'err'));
+  } else {
+    const savedId = localStorage.getItem('ang_login_id');
+    if (savedId) {
+      autoLogin().catch(err=>setStatus(err.message, 'err'));
+    } else {
+      setTab('creator');
+      setStatus('尚未綁定 APP。Creator 可先用帳密登入；員工請用管理端產生的專屬連結。');
+    }
+  }
+})();
+</script>
+</body>
+</html>

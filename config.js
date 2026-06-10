@@ -6,6 +6,7 @@ window.ANG_HR_CONFIG = {
   frontendBaseUrl: "https://edn869728-jpg.github.io/ANG-99-HR-System",
   employeePage: "employee.html",
   adminPage: "admin.html",
+  loginPage: "login.html",
 
   // 正確 GAS Web App URL
   gasApiUrl: "https://script.google.com/macros/s/AKfycbyVD-_tx9wFkggsuSnrL2T6HoyGPYuBQgoClr4GyxISaAeNfLVY32auEZDw2ihrXqJj/exec",
