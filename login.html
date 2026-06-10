@@ -265,12 +265,17 @@
 
   setStatus('GAS：' + GAS + '\nDevice：' + state.deviceId);
 
-  if (state.bind || (state.id && state.token)) {
+  // 0610 修正：
+  // login.html 不再因為 localStorage 有 id/token 就自動跳走。
+  // 只有明確 bind=1 的專屬綁定連結才會自動綁定後跳轉。
+  // 一般進入 login.html / index 轉 login.html 時，停留在登入頁，讓使用者自己按「自動登入」或帳密登入。
+  if (state.bind === true && state.id && state.token) {
     bindByLink().catch(err=>setStatus(err.message, 'err'));
   } else {
     const savedId = localStorage.getItem('ang_login_id');
     if (savedId) {
-      autoLogin().catch(err=>setStatus(err.message, 'err'));
+      setTab('auto');
+      setStatus('已偵測到本機登入資料。\n請按「自動登入」進入系統，或按「清除本機登入」重新綁定。');
     } else {
       setTab('creator');
       setStatus('尚未綁定 APP。Creator 可先用帳密登入；員工請用管理端產生的專屬連結。');
