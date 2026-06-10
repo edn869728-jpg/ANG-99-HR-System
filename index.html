@@ -28,6 +28,7 @@
     <button class="btn primary" onclick="goLogin()">登入 / 開通</button>
     <button class="btn dark" onclick="goTrial()">全功能免費體驗區</button>
     <button class="btn ghost" onclick="goDiag()">診斷資料來源</button>
+    <button class="btn ghost" onclick="goPlatform()">平台總管理</button>
     <div class="hint" id="hint"></div>
   </main>
 <script>
@@ -35,10 +36,6 @@
   const CFG = window.ANG_HR_CONFIG || {};
   const qs = new URLSearchParams(location.search);
   const deviceId = qs.get('device_id') || localStorage.getItem('ang_device_id') || '';
-  if (qs.get('nfc') === '1' || qs.get('nfc_id')) {
-    location.replace('./nfc_clock.html?' + qs.toString());
-    return;
-  }
   const companyCode = qs.get('company_code') || qs.get('company_id') || localStorage.getItem('ang_company_code') || CFG.defaultCompanyCode || '';
   document.getElementById('hint').textContent = 'Company：' + (companyCode || '未指定') + (deviceId ? '｜Device：' + deviceId : '');
 })();
@@ -50,6 +47,7 @@ function keepParams(page){
 function goLogin(){ location.href = keepParams('login.html'); }
 function goTrial(){ location.href = keepParams('trial.html'); }
 function goDiag(){ location.href = keepParams('diagnostics.html'); }
+function goPlatform(){ location.href = keepParams('platform_admin.html'); }
 </script>
 </body>
 </html>

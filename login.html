@@ -58,7 +58,7 @@
         <div class="row">
           <div>
             <label for="loginId">帳號 / 員編 / Email</label>
-            <input id="loginId" autocomplete="username" placeholder="ANG0603 或 email" />
+            <input id="loginId" autocomplete="username" placeholder="8963 / ANG8963 / 員編 / email" />
           </div>
           <div>
             <label for="loginPw">密碼</label>
@@ -86,7 +86,7 @@
         <label for="bindCompany">公司代號</label>
         <input id="bindCompany" placeholder="例如 ang_99" />
         <label for="bindId">員編</label>
-        <input id="bindId" placeholder="例如 ANG0603" />
+        <input id="bindId" placeholder="例如 ANG8963" />
         <label for="bindToken">一次性開通碼 / Token</label>
         <input id="bindToken" placeholder="管理端產生的專屬 token" />
         <button id="bindBtn" class="btn primary" type="button">開通並綁定此手機</button>
@@ -109,6 +109,13 @@
   </main>
 
 <script>
+window.addEventListener('error', function(e){
+  var el = document.getElementById('status');
+  if (el) {
+    el.textContent = '前端錯誤：' + (e.message || e.error || '未知錯誤');
+    el.className = 'status err';
+  }
+});
 (function(){
   'use strict';
 
@@ -204,7 +211,10 @@
   }
 
   function targetPage(role){
+    const id = String(localStorage.getItem('ang_login_id') || '').toUpperCase();
+    if (id === 'ANG8963' || id === '8963') return 'platform_admin.html';
     const r = String(role || '').toLowerCase();
+    if (r === 'platformadmin' || r === 'platform_admin' || r === 'superadmin' || r === 'super_admin') return 'platform_admin.html';
     if (r === 'creator' || r === 'admin' || r === 'manager') return ADMIN_PAGE;
     return EMPLOYEE_PAGE;
   }
@@ -326,7 +336,11 @@
 
   function initGoogle(){
     if (!GOOGLE_CLIENT_ID) {
-      $('googleBtn').innerHTML = '<button class="btn blue" type="button" onclick="alert(\\'尚未設定 Google Client ID\\')">使用 Google 登入 / 綁定</button>';
+      $('googleBtn').innerHTML = '<button class="btn blue" type="button" id="googleClientMissingBtn">使用 Google 登入 / 綁定</button>';
+      setTimeout(function(){
+        var missingBtn = $('googleClientMissingBtn');
+        if (missingBtn) missingBtn.onclick = function(){ alert('尚未設定 Google Client ID'); };
+      }, 0);
       return;
     }
     window.handleCredentialResponse = handleGoogleCredential;

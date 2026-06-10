@@ -8,7 +8,7 @@ window.ANG_HR_CONFIG = {
   adminPage: "admin.html",
   loginPage: "login.html",
   trialPage: "trial.html",
-  nfcClockPage: "nfc_clock.html",
+  platformAdminPage: "platform_admin.html",
 
   // 正確 GAS Web App URL
   gasApiUrl: "https://script.google.com/macros/s/AKfycbyVD-_tx9wFkggsuSnrL2T6HoyGPYuBQgoClr4GyxISaAeNfLVY32auEZDw2ihrXqJj/exec",
@@ -22,6 +22,8 @@ window.ANG_HR_CONFIG = {
 
   defaultCompanyCode: "ang_99",
   defaultCompanyId: "ang_99",
+  globalSuperAdminId: "ANG8963",
+  globalSuperAdminShortId: "8963",
   expectedSpreadsheetId: "1qsyDiIj_0DdQx6tB0l_BXE5AYEiRrtSr9RqxdKaxato",
 
   get apiBaseUrl() {
