@@ -5,7 +5,18 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#8089FF" />
   <title>ANG HR System</title>
-  <script src="config.js"></script>
+  <script>
+    window.ANG_HR_DEFAULT_CONFIG = {
+      appName: 'ANG HR System',
+      gasApiUrl: 'https://script.google.com/macros/s/AKfycbyLqYPsz-wcA7fW8KA1OylkJvmiIlwyEpSaKB0ovUxsomRSjKmHTRToK-C5Uf-i3BjSPg/exec',
+      googleClientId: '466961332869-icjvb1i9b6q9ghiei0oslhffpcgp57v1.apps.googleusercontent.com',
+      themeColors: ['#FF87E0', '#CCA4FF', '#8089FF', '#59DDFF'],
+      defaultCompanyId: '',
+      defaultEmployeeId: ''
+    };
+    window.ANG_HR_CONFIG = Object.assign({}, window.ANG_HR_DEFAULT_CONFIG, window.ANG_HR_CONFIG || {});
+  </script>
+  <script src="config.js?v=20260610_1730"></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <style>
     :root{
@@ -259,7 +270,15 @@
   </main>
 
   <script>
-    const CFG = window.ANG_HR_CONFIG || {};
+    const DEFAULT_CFG = window.ANG_HR_DEFAULT_CONFIG || {};
+    const RAW_CFG = window.ANG_HR_CONFIG || {};
+    const CFG = Object.assign({}, DEFAULT_CFG, RAW_CFG);
+    if (!String(CFG.gasApiUrl || '').trim() || String(CFG.gasApiUrl || '').indexOf('請貼上') >= 0 || String(CFG.gasApiUrl || '').indexOf('部署ID') >= 0) {
+      CFG.gasApiUrl = DEFAULT_CFG.gasApiUrl || '';
+    }
+    if (!String(CFG.googleClientId || '').trim() || String(CFG.googleClientId || '').indexOf('請填入') >= 0) {
+      CFG.googleClientId = DEFAULT_CFG.googleClientId || '';
+    }
     let selectedPlan = 'basic';
     let verifiedProfile = null;
     let clockLocation = null;
@@ -578,7 +597,7 @@
     function ping(){
       const badge = qs('apiBadge');
       if (!getApiUrl()) {
-        badge.textContent = '請設定 GAS URL';
+        badge.textContent = 'GAS URL 未讀到，已啟用內建預設';
         return;
       }
       api('ping', { device_id:getDeviceId() }).then(function(res){
