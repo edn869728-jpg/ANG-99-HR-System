@@ -16,7 +16,7 @@
     };
     window.ANG_HR_CONFIG = Object.assign({}, window.ANG_HR_DEFAULT_CONFIG, window.ANG_HR_CONFIG || {});
   </script>
-  <script src="config.js?v=20260610_app_width_clean"></script>
+  <script src="config.js?v=20260611_entry_screen_theme"></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <style>
     :root{
@@ -33,13 +33,11 @@
       --radius:26px;
       --gradient:linear-gradient(135deg,#FF87E0 0%,#CCA4FF 36%,#8089FF 70%,#59DDFF 100%);
     }
-    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;min-width:0}
-    html{width:100%;max-width:100%;overflow-x:hidden}
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
     html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;color:var(--text);background:radial-gradient(circle at 12% 0%,rgba(255,135,224,.34),transparent 28%),radial-gradient(circle at 88% 4%,rgba(89,221,255,.38),transparent 30%),var(--bg)}
-    body{width:100%;max-width:100%;overflow-x:hidden;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);position:relative}
-    button,input,select,textarea{font:inherit;max-width:100%}
-    img,svg,canvas,iframe{max-width:100%}
-    .app{width:100%;max-width:1080px;margin:0 auto;padding:18px 14px 34px;overflow-x:hidden}
+    body{padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+    button,input,select,textarea{font:inherit}
+    .app{max-width:1080px;margin:0 auto;padding:18px 14px 34px}
     .hero{position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.68);background:linear-gradient(145deg,rgba(255,255,255,.92),rgba(245,247,255,.78));border-radius:32px;padding:22px;box-shadow:var(--shadow);backdrop-filter:blur(16px)}
     .hero:before{content:"";position:absolute;inset:-2px;background:var(--gradient);opacity:.16;filter:blur(22px);pointer-events:none}
     .hero-inner{position:relative;display:flex;gap:18px;align-items:center;justify-content:space-between;flex-wrap:wrap}
@@ -51,6 +49,18 @@
     .nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:16px 0}
     .nav button{border:none;border-radius:20px;background:#fff;color:#313946;padding:14px 12px;font-weight:1000;box-shadow:0 10px 26px rgba(73,86,196,.10);cursor:pointer;border:1px solid var(--line)}
     .nav button.active{color:#fff;background:var(--gradient);box-shadow:0 14px 30px rgba(128,137,255,.28)}
+    .main-nav{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .hidden-nav{display:none}
+    .home-card{margin-top:16px}
+    .entry-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:16px}
+    .entry-card{appearance:none;text-align:left;border:1px solid rgba(128,137,255,.22);border-radius:26px;background:linear-gradient(145deg,rgba(255,255,255,.98),rgba(244,246,255,.92));padding:20px;cursor:pointer;box-shadow:0 14px 34px rgba(73,86,196,.12);color:#111827;min-height:178px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:10px}
+    .entry-card.enterprise{background:linear-gradient(145deg,rgba(255,255,255,.98),rgba(255,241,251,.92))}
+    .entry-card .entry-icon{width:52px;height:52px;border-radius:20px;display:grid;place-items:center;background:var(--gradient);color:#fff;font-size:25px;box-shadow:0 12px 26px rgba(128,137,255,.24)}
+    .entry-card strong{font-size:22px;font-weight:1000;letter-spacing:-.02em}
+    .entry-card small{display:block;color:#6b7280;font-size:14px;font-weight:800;line-height:1.55}
+    .qr-box{margin-top:14px;border:1px solid rgba(128,137,255,.22);border-radius:22px;padding:12px;background:#fff;box-shadow:0 10px 24px rgba(73,86,196,.08)}
+    .qr-box video{width:100%;max-height:320px;border-radius:16px;background:#111827;object-fit:cover}
+
     .grid{display:grid;grid-template-columns:1.05fr .95fr;gap:16px}
     .card{background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:0 12px 32px rgba(73,86,196,.10);backdrop-filter:blur(12px)}
     .card h2{margin:0 0 8px;font-size:22px;line-height:1.18;letter-spacing:-.02em}
@@ -83,23 +93,11 @@
     .verify-panel{display:none;margin-top:12px}
     .verify-panel.active{display:block}
     .google-card{border:1px solid rgba(128,137,255,.20);background:#fff;border-radius:22px;padding:16px;margin-top:12px;box-shadow:0 10px 24px rgba(73,86,196,.08)}
-    .verify-direct-block{margin-top:12px}
-    .verify-divider{display:flex;align-items:center;gap:12px;margin:18px 0 6px;color:#6b7280;font-size:13px;font-weight:1000}
-    .verify-divider:before,.verify-divider:after{content:"";height:1px;flex:1;background:rgba(128,137,255,.22)}
-    .verify-divider span{white-space:nowrap}
-    .google-title{font-size:15px;font-weight:1000;margin:0 0 10px;color:#1f2937}
+    .google-title{font-size:15px;font-weight:1000;margin:0 0 6px;color:#1f2937}
     .google-sub{font-size:13px;line-height:1.6;color:#6b7280;font-weight:750;margin:0 0 12px}
-    .google-button-wrap{display:flex;align-items:center;justify-content:center;min-height:44px;width:100%;max-width:100%;overflow:hidden}
-    .google-button-wrap>div,.google-button-wrap iframe,.g_id_signin,.g_id_signin iframe{max-width:100%!important}
+    .google-button-wrap{display:flex;align-items:center;justify-content:center;min-height:44px}
     .google-fallback{display:none;margin-top:12px;border-radius:16px;padding:11px 12px;background:#fff7ed;color:#9a3412;border:1px solid #fed7aa;font-size:13px;font-weight:850;line-height:1.55}
     .google-fallback.show{display:block}
-    .google-app-button{width:100%;border:1px solid rgba(128,137,255,.22);border-radius:999px;background:#fff;color:#1f2937;min-height:48px;padding:10px 16px;display:flex;align-items:center;justify-content:center;gap:12px;cursor:pointer;font-weight:1000;box-shadow:0 10px 24px rgba(73,86,196,.08)}
-    .google-app-button .gmark{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:18px;font-weight:1000;color:#4285f4;background:#fff}
-    .employee-summary{border:1px solid rgba(128,137,255,.20);border-radius:22px;background:linear-gradient(145deg,rgba(255,255,255,.96),rgba(244,247,255,.88));padding:14px;margin-top:12px;box-shadow:0 10px 24px rgba(73,86,196,.08)}
-    .employee-summary b{display:block;font-size:17px;margin-bottom:6px}
-    .employee-summary span{display:block;color:#6b7280;font-size:13px;line-height:1.55;font-weight:800}
-    .clock-panel-disabled{opacity:.72}
-    .clock-main-action{margin-top:14px;width:100%}
     .status{display:none;border-radius:18px;padding:13px 14px;margin-top:12px;font-size:14px;font-weight:900;line-height:1.65;border:1px solid transparent}
     .status.show{display:block}
     .status.ok{background:#ecfdf5;color:#065f46;border-color:#a7f3d0}
@@ -107,10 +105,10 @@
     .status.info{background:#eff6ff;color:#1e40af;border-color:#bfdbfe}
     .result{display:none;margin-top:14px;border-radius:22px;padding:16px;background:#111827;color:#fff;box-shadow:0 14px 30px rgba(17,24,39,.20)}
     .result.show{display:block}
-    .result .line{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.12);font-size:14px;flex-wrap:wrap}
+    .result .line{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.12);font-size:14px}
     .result .line:last-child{border-bottom:none}
     .result .key{color:#cbd5e1;font-weight:800}
-    .result .value{font-weight:1000;text-align:right;word-break:break-word;overflow-wrap:anywhere}
+    .result .value{font-weight:1000;text-align:right;word-break:break-all}
     .quick-list{display:grid;gap:10px;margin-top:12px}
     .quick{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid rgba(128,137,255,.16);background:#fff;border-radius:18px;padding:12px 14px;cursor:pointer}
     .quick strong{display:block;font-size:15px}
@@ -119,8 +117,297 @@
     .hidden{display:none!important}
     .mini{font-size:12px;color:#6b7280;font-weight:750;line-height:1.55;margin-top:7px}
     .footer{margin-top:18px;text-align:center;color:#7b8190;font-size:12px;font-weight:750;line-height:1.7}
-    @media(max-width:860px){.app{padding:14px 12px 28px}.grid{grid-template-columns:1fr}.nav{grid-template-columns:repeat(2,minmax(0,1fr))}.plans{grid-template-columns:1fr}.actions{grid-template-columns:1fr}.row{grid-template-columns:1fr}.hero{padding:18px;border-radius:28px}.card{padding:16px}.brand h1{font-size:24px}.logo{width:56px;height:56px}}
-    @media(max-width:390px){.app{padding-left:10px;padding-right:10px}.nav{gap:8px}.nav button{padding:13px 8px;font-size:14px}.hero{padding:16px}.card{padding:14px}.brand{gap:10px}.brand h1{font-size:22px}.logo{width:52px;height:52px}.btn{padding-left:12px;padding-right:12px}}
+
+
+    body[data-route="home"]{
+      background:#f1f5f9;
+      min-height:100vh;
+      overflow:hidden;
+    }
+    body[data-route="home"] .app{
+      max-width:none;
+      width:100%;
+      min-height:100vh;
+      padding:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    body[data-route="home"] .hero,
+    body[data-route="home"] .nav,
+    body[data-route="home"] .footer{
+      display:none;
+    }
+    body[data-route="home"] #home.section.active{
+      display:flex;
+      width:100%;
+      min-height:100vh;
+      align-items:center;
+      justify-content:center;
+    }
+    body[data-route="home"][data-theme="dark"]{
+      background:#000000;
+    }
+    .entry-screen{
+      --entry-body-bg:#f1f5f9;
+      --entry-app-bg:#ffffff;
+      --entry-app-shadow:0 15px 35px rgba(15,23,42,.10);
+      --entry-star-color:#ffffff;
+      --entry-star-opacity:0;
+      --entry-header-bg:linear-gradient(145deg,#E3F2FD 0%,#BBDEFB 50%,#90CAF9 100%);
+      --entry-logo-color:#0f172a;
+      --entry-pillar-bg:linear-gradient(180deg,#00E5FF 0%,#A900FF 100%);
+      --entry-pillar-shadow:none;
+      --entry-sub-color:#475569;
+      --entry-card-bg:#ffffff;
+      --entry-card-border:rgba(226,232,240,.90);
+      --entry-card-shadow:0 -16px 32px rgba(15,23,42,.08);
+      --entry-main-text:#0f172a;
+      --entry-primary-bg:linear-gradient(90deg,#00E5FF 0%,#A900FF 100%);
+      --entry-primary-text:#ffffff;
+      --entry-primary-shadow:0 6px 20px rgba(169,0,255,.25);
+      --entry-secondary-bg:#f8fafc;
+      --entry-secondary-text:#475569;
+      --entry-secondary-border:#e2e8f0;
+      --entry-help-text:#64748b;
+      --entry-toggle-bg:rgba(255,255,255,.72);
+      --entry-toggle-border:rgba(148,163,184,.32);
+      --entry-toggle-shadow:0 10px 24px rgba(15,23,42,.14);
+      --entry-toggle-icon-dim:rgba(71,85,105,.72);
+      --entry-toggle-thumb-bg:#ffffff;
+      --entry-toggle-thumb-shadow:0 6px 14px rgba(15,23,42,.18);
+      --entry-toggle-thumb-x:3px;
+    }
+    body[data-theme="dark"] .entry-screen{
+      --entry-app-bg:radial-gradient(circle at 50% 0%,#1a2a6c 0%,#111524 40%,#05050a 100%);
+      --entry-app-shadow:0 0 40px rgba(0,229,255,.10);
+      --entry-star-color:#ffffff;
+      --entry-star-opacity:.30;
+      --entry-header-bg:transparent;
+      --entry-logo-color:#ffffff;
+      --entry-pillar-shadow:0 0 20px rgba(0,229,255,.50);
+      --entry-sub-color:#8b9bb4;
+      --entry-card-bg:rgba(255,255,255,.03);
+      --entry-card-border:rgba(255,255,255,.08);
+      --entry-card-shadow:none;
+      --entry-main-text:#ffffff;
+      --entry-secondary-bg:rgba(255,255,255,.05);
+      --entry-secondary-text:#8b9bb4;
+      --entry-secondary-border:rgba(255,255,255,.10);
+      --entry-help-text:#5c6c8a;
+      --entry-toggle-bg:rgba(15,23,42,.46);
+      --entry-toggle-border:rgba(255,255,255,.14);
+      --entry-toggle-shadow:0 10px 24px rgba(0,0,0,.28);
+      --entry-toggle-icon-dim:rgba(226,232,240,.68);
+      --entry-toggle-thumb-bg:rgba(255,255,255,.16);
+      --entry-toggle-thumb-shadow:0 0 18px rgba(0,229,255,.18);
+      --entry-toggle-thumb-x:35px;
+    }
+    .entry-mobile-app-container{
+      width:100%;
+      max-width:400px;
+      height:100vh;
+      max-height:800px;
+      background:var(--entry-app-bg);
+      border-radius:24px;
+      box-shadow:var(--entry-app-shadow);
+      display:flex;
+      flex-direction:column;
+      position:relative;
+      overflow:hidden;
+      transition:background .25s ease,box-shadow .25s ease;
+    }
+    .entry-theme-toggle{
+      position:absolute;
+      top:16px;
+      right:16px;
+      width:64px;
+      height:32px;
+      padding:3px;
+      border:1px solid var(--entry-toggle-border);
+      border-radius:999px;
+      background:var(--entry-toggle-bg);
+      box-shadow:var(--entry-toggle-shadow);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      z-index:5;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      align-items:center;
+      cursor:pointer;
+      appearance:none;
+      -webkit-appearance:none;
+      transition:background .25s ease,border-color .25s ease,box-shadow .25s ease;
+    }
+    .entry-theme-toggle::before{
+      content:"";
+      position:absolute;
+      left:0;
+      top:3px;
+      width:26px;
+      height:26px;
+      border-radius:50%;
+      background:var(--entry-toggle-thumb-bg);
+      box-shadow:var(--entry-toggle-thumb-shadow);
+      transform:translateX(var(--entry-toggle-thumb-x));
+      transition:transform .25s ease,background .25s ease,box-shadow .25s ease;
+    }
+    .entry-theme-toggle span{
+      position:relative;
+      z-index:1;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      width:100%;
+      height:100%;
+      color:var(--entry-toggle-icon-dim);
+      user-select:none;
+      pointer-events:none;
+    }
+    .entry-theme-toggle svg{
+      width:15px;
+      height:15px;
+      display:block;
+      flex:0 0 15px;
+      stroke:currentColor;
+      fill:none;
+      stroke-width:2.1;
+      stroke-linecap:round;
+      stroke-linejoin:round;
+    }
+    body:not([data-theme="dark"]) .entry-theme-toggle .sun,
+    body[data-theme="dark"] .entry-theme-toggle .moon{
+      color:#0f172a;
+      text-shadow:none;
+    }
+    body[data-theme="dark"] .entry-theme-toggle .moon{
+      color:#ffffff;
+      filter:drop-shadow(0 0 5px rgba(255,255,255,.34));
+    }
+    .entry-stars{
+      position:absolute;
+      inset:0;
+      background-image:radial-gradient(1px 1px at 20px 30px,var(--entry-star-color),rgba(0,0,0,0)),radial-gradient(1px 1px at 40px 70px,var(--entry-star-color),rgba(0,0,0,0)),radial-gradient(1.5px 1.5px at 90px 40px,var(--entry-star-color),rgba(0,0,0,0));
+      background-size:200px 200px;
+      opacity:var(--entry-star-opacity);
+      z-index:0;
+      pointer-events:none;
+      transition:opacity .25s ease;
+    }
+    .entry-header-visual{
+      flex:.55;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      background:var(--entry-header-bg);
+      z-index:1;
+      padding-bottom:50px;
+      transition:background .25s ease;
+    }
+    .entry-logo-group{
+      display:flex;
+      align-items:center;
+      font-size:64px;
+      line-height:1;
+      font-weight:900;
+      color:var(--entry-logo-color);
+      letter-spacing:2px;
+      transition:color .25s ease;
+    }
+    .entry-logo-pillar{
+      width:20px;
+      height:64px;
+      background:var(--entry-pillar-bg);
+      margin:0 10px;
+      clip-path:polygon(0 0,100% 10%,100% 100%,0 90%);
+      box-shadow:var(--entry-pillar-shadow);
+      transition:box-shadow .25s ease;
+    }
+    .entry-logo-text-ang{
+      font-size:22px;
+      line-height:1.2;
+      color:var(--entry-logo-color);
+      letter-spacing:8px;
+      margin-top:16px;
+      font-weight:900;
+      transition:color .25s ease;
+    }
+    .entry-logo-text-sub{
+      font-size:13px;
+      line-height:1.2;
+      color:var(--entry-sub-color);
+      letter-spacing:4px;
+      margin-top:4px;
+      font-weight:800;
+      transition:color .25s ease;
+    }
+    .entry-action-area{
+      flex:.45;
+      padding:40px 24px;
+      background:var(--entry-card-bg);
+      backdrop-filter:blur(20px);
+      -webkit-backdrop-filter:blur(20px);
+      border-top:1px solid var(--entry-card-border);
+      border-radius:32px 32px 0 0;
+      box-shadow:var(--entry-card-shadow);
+      z-index:2;
+      margin-top:-40px;
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+      transition:background .25s ease,border-color .25s ease,box-shadow .25s ease;
+    }
+    .entry-greeting{
+      font-size:22px;
+      line-height:1.2;
+      font-weight:900;
+      color:var(--entry-main-text);
+      text-align:center;
+      margin-bottom:24px;
+      transition:color .25s ease;
+    }
+    .entry-btn{
+      width:100%;
+      min-height:58px;
+      padding:18px;
+      border-radius:16px;
+      font-size:18px;
+      line-height:1.2;
+      font-weight:900;
+      border:none;
+      cursor:pointer;
+      transition:transform .2s ease,box-shadow .25s ease,background .25s ease,color .25s ease,border-color .25s ease;
+      text-align:center;
+      font-family:inherit;
+    }
+    .entry-btn:active{transform:scale(.98)}
+    .entry-btn-primary{
+      background:var(--entry-primary-bg);
+      color:var(--entry-primary-text);
+      box-shadow:var(--entry-primary-shadow);
+    }
+    .entry-btn-secondary{
+      background:var(--entry-secondary-bg);
+      color:var(--entry-secondary-text);
+      border:2px solid var(--entry-secondary-border);
+    }
+    .entry-help-text{
+      text-align:center;
+      font-size:14px;
+      line-height:1.35;
+      font-weight:800;
+      color:var(--entry-help-text);
+      margin-top:4px;
+      transition:color .25s ease;
+    }
+    .entry-spacer{flex:1}
+    @media(max-width:480px){
+      .entry-mobile-app-container{max-width:none;border-radius:0;max-height:none;height:100vh}
+      .entry-action-area{padding:36px 22px}
+    }
+
+    @media(max-width:860px){.grid{grid-template-columns:1fr}.nav{grid-template-columns:repeat(2,minmax(0,1fr))}.entry-grid{grid-template-columns:1fr}.plans{grid-template-columns:1fr}.actions{grid-template-columns:1fr}.row{grid-template-columns:1fr}.brand h1{font-size:24px}.logo{width:56px;height:56px}}
   </style>
 </head>
 <body>
@@ -131,39 +418,105 @@
           <div class="logo">HR</div>
           <div>
             <h1>ANG HR System</h1>
-            <p>智慧人資・排班・打卡・薪資<br>首月體驗，正式開通。</p>
+            <p>智慧人資・排班・打卡・薪資<br>首月免費，正式開通。</p>
           </div>
         </div>
         <div class="badge" id="apiBadge">尚未連線</div>
       </div>
     </section>
 
-    <nav class="nav" aria-label="入口功能">
-      <button type="button" data-route="home" class="active">入口</button>
-      <button type="button" data-route="activate">員工開通</button>
-      <button type="button" data-route="admin">管理員登入</button>
-      <button type="button" data-route="register">選擇方案</button>
+    <nav class="nav main-nav hidden-nav" aria-label="主要入口">
+      <button type="button" data-route="employee" class="active">員工專區</button>
+      <button type="button" data-route="enterprise">企業管理與註冊</button>
     </nav>
 
-    <section id="home" class="section active">
+    <section id="home" class="section active entry-screen">
+      <div class="entry-mobile-app-container">
+        <div class="entry-stars"></div>
+
+        <button class="entry-theme-toggle" type="button" aria-label="切換日光與暗夜模式" aria-pressed="false" onclick="toggleEntryTheme()">
+          <span class="sun" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="4"></circle>
+              <path d="M12 2v2.2M12 19.8V22M4.93 4.93l1.56 1.56M17.51 17.51l1.56 1.56M2 12h2.2M19.8 12H22M4.93 19.07l1.56-1.56M17.51 6.49l1.56-1.56"></path>
+            </svg>
+          </span>
+          <span class="moon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M21 14.2A8.6 8.6 0 0 1 9.8 3a7.5 7.5 0 1 0 11.2 11.2z"></path>
+            </svg>
+          </span>
+        </button>
+
+        <div class="entry-header-visual">
+          <div class="entry-logo-group">
+            H <div class="entry-logo-pillar"></div> R
+          </div>
+          <div class="entry-logo-text-ang">ANG</div>
+          <div class="entry-logo-text-sub">HR SYSTEMS</div>
+        </div>
+
+        <div class="entry-action-area">
+          <div class="entry-greeting">歡迎登入系統</div>
+
+          <button class="entry-btn entry-btn-primary" type="button" onclick="routeTo('employee')">員工專區</button>
+          <div class="entry-help-text">首次使用請點擊專屬開通連結，或進入後輸入開通碼 / 掃描 QR Code。</div>
+
+          <div class="entry-spacer"></div>
+
+          <button class="entry-btn entry-btn-secondary" type="button" onclick="routeTo('enterprise')">企業管理與註冊</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="employee" class="section">
       <div class="grid">
         <div class="card">
-          <h2>入口中心</h2>
-          <div class="muted">這裡是正式入口。一般訪客先看方案或管理員登入；員工必須先用公司給的一次性連結完成開通，才會出現打卡入口。</div>
+          <h2>員工專區</h2>
+          <button class="btn light" type="button" onclick="routeTo('home')" style="margin:0 0 12px;padding:10px 14px;min-height:auto">回入口</button>
+          <div class="muted">員工不需要看到企業註冊流程。這裡只放員工會用到的打卡、開通與裝置綁定。</div>
           <div class="actions">
-            <button class="btn light" type="button" onclick="routeTo(&quot;activate&quot;)">員工一次性開通</button>
-            <button class="btn pink" type="button" onclick="routeTo('admin')">管理員登入</button>
-            <button class="btn dark" type="button" onclick="routeTo('register')">選擇方案</button>
+            <button class="btn" type="button" onclick="routeTo('clock')">打卡</button>
+            <button class="btn pink" type="button" onclick="routeTo('activate')">輸入開通碼</button>
+            <button class="btn light" type="button" onclick="startQrScan()">掃描 QR Code</button>
+            <button class="btn gray" type="button" onclick="fillSavedEmployee()">帶入已儲存資料</button>
           </div>
-          <div class="notice">NFC 是主要打卡方式。沒有 NFC 的手機，必須先完成員工開通或已有綁定資料，系統自動帶入公司與員工資料後，才會顯示備援打卡按鈕。</div>
-          <div id="homeEmployeeBox"></div>
+          <div class="notice">公司後台產生的一次性連結仍可直接開啟。員工專區是給沒有點連結、連結失效、換手機、紙本給碼或需要掃 QR 的備援入口。</div>
+          <div id="employeeStatus" class="status"></div>
+          <div id="qrScanBox" class="qr-box hidden">
+            <video id="qrVideo" playsinline muted></video>
+            <button class="btn gray" type="button" onclick="stopQrScan()" style="width:100%;margin-top:10px">停止掃描</button>
+          </div>
         </div>
         <div class="card">
-          <h3>快速說明</h3>
+          <h3>員工可以怎麼進入？</h3>
           <div class="quick-list">
-            <div class="quick" onclick="routeTo(&quot;activate&quot;)"><div><strong>員工第一次使用</strong><small>使用公司提供的一次性連結綁定裝置。完成後才可打卡。</small></div><span class="pill">開通</span></div>
-            <div class="quick" onclick="routeTo('admin')"><div><strong>已建立公司</strong><small>管理員用公司代號、員編與密碼進入後台。</small></div><span class="pill">登入</span></div>
-            <div class="quick" onclick="routeTo('register')"><div><strong>新公司開通</strong><small>選方案、驗證、建立公司與 Creator 帳號。</small></div><span class="pill">方案</span></div>
+            <div class="quick" onclick="routeTo('clock')"><div><strong>沒有 NFC</strong><small>按打卡，送出位置與裝置資訊。</small></div><span class="pill">打卡</span></div>
+            <div class="quick" onclick="routeTo('activate')"><div><strong>有一次性開通碼</strong><small>輸入公司代號、員編與開通碼。</small></div><span class="pill">開通</span></div>
+            <div class="quick" onclick="startQrScan()"><div><strong>公司給 QR Code</strong><small>掃描 QR Code 後自動帶入開通資料。</small></div><span class="pill">QR</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="enterprise" class="section">
+      <div class="grid">
+        <div class="card">
+          <h2>企業管理與註冊</h2>
+          <button class="btn light" type="button" onclick="routeTo('home')" style="margin:0 0 12px;padding:10px 14px;min-height:auto">回入口</button>
+          <div class="muted">企業端才顯示管理員登入、選擇方案與公司開通。新公司第一個月免費，但公司代號是正式代號，不再使用 ANGTEST。</div>
+          <div class="actions">
+            <button class="btn pink" type="button" onclick="routeTo('admin')">管理員登入</button>
+            <button class="btn dark" type="button" onclick="routeTo('register')">選擇方案 / 註冊</button>
+          </div>
+          <div class="notice">註冊公司必須完成 Email 驗證碼或 Google 驗證。出生年月日是基本資料，不作為唯一驗證依據。</div>
+        </div>
+        <div class="card">
+          <h3>企業端包含</h3>
+          <div class="quick-list">
+            <div class="quick" onclick="routeTo('admin')"><div><strong>管理員登入</strong><small>公司代號 + 員工編號 + 密碼。</small></div><span class="pill">登入</span></div>
+            <div class="quick" onclick="routeTo('register')"><div><strong>選擇方案</strong><small>Basic / Plus / Premium，第一個月免費。</small></div><span class="pill">方案</span></div>
+            <div class="quick" onclick="routeTo('register')"><div><strong>ANG8963 特權碼</strong><small>只能由 ANG8963 發送，使用後即失效。</small></div><span class="pill">特權</span></div>
           </div>
         </div>
       </div>
@@ -172,33 +525,28 @@
     <section id="clock" class="section">
       <div class="grid">
         <div class="card">
-          <h2>員工備援打卡</h2>
-          <div class="muted">此頁只給已開通的員工使用。公司代號與員工編號會由一次性連結或本機綁定資料自動帶入，不讓未綁定的人在入口頁看到一個不知道用途的打卡表單。</div>
-
-          <div id="clockGuard" class="notice">尚未偵測到已綁定員工。請先使用公司提供的一次性連結完成開通。</div>
-
-          <div id="clockBoundBox" class="hidden">
-            <div class="employee-summary">
-              <b id="clockEmployeeTitle">已綁定員工</b>
-              <span id="clockEmployeeSub">正在讀取員工資料</span>
-            </div>
-            <input id="clockCompanyId" type="hidden">
-            <input id="clockEmployeeId" type="hidden">
-            <input id="clockPassword" type="hidden">
-            <div class="field"><label class="label">打卡類型</label><select id="clockType"><option value="上班">上班</option><option value="下班">下班</option><option value="加班">加班</option></select></div>
-            <div class="row">
-              <button class="btn gray" type="button" onclick="getLocationForClock()">取得目前位置</button>
-              <button class="btn" type="button" onclick="submitClock()">送出打卡</button>
-            </div>
-            <div class="mini" id="locationText">尚未取得位置</div>
+          <h2>打卡</h2>
+          <button class="btn light" type="button" onclick="routeTo('employee')" style="margin:0 0 12px;padding:10px 14px;min-height:auto">回員工專區</button>
+          <div class="muted">給沒有 NFC 的手機使用。送出前會帶入位置、裝置 ID 與帳號資訊。</div>
+          <div class="row">
+            <div class="field"><label class="label">公司代號</label><input id="clockCompanyId" autocomplete="organization" placeholder="例如 ANGC1"></div>
+            <div class="field"><label class="label">員工編號</label><input id="clockEmployeeId" autocomplete="username" placeholder="例如 ANG0603"></div>
           </div>
-
+          <div class="row">
+            <div class="field"><label class="label">密碼</label><input id="clockPassword" type="password" autocomplete="current-password" placeholder="例如 0603"></div>
+            <div class="field"><label class="label">打卡類型</label><select id="clockType"><option value="上班">上班</option><option value="下班">下班</option><option value="加班">加班</option></select></div>
+          </div>
+          <div class="row">
+            <button class="btn gray" type="button" onclick="getLocationForClock()">取得目前位置</button>
+            <button class="btn" type="button" onclick="submitClock()">送出打卡</button>
+          </div>
+          <div class="mini" id="locationText">尚未取得位置</div>
           <div id="clockStatus" class="status"></div>
         </div>
         <div class="card">
-          <h3>NFC 與備援打卡</h3>
-          <div class="muted">NFC 仍是主要打卡方式。沒有 NFC 的手機，開通後可使用本頁備援打卡。未開通、未綁定、不是員工的人，不會在入口首頁直接看到打卡動作。</div>
-          <div class="notice">安全順序：一次性開通或 NFC → 綁定裝置 → 自動帶入員工資料 → 取得位置 → 後端檢查公司、員工、付款狀態、裝置與位置 → 寫入打卡紀錄。</div>
+          <h3>NFC 打卡建議</h3>
+          <div class="muted">NFC 貼紙只放現場入口 token，不放員工個資。真正打卡要由後端檢查公司、員工、裝置、位置與 token。</div>
+          <div class="notice">安全順序：NFC 或打卡按鈕 → 讀取裝置 → 送出後端 → 驗證位置 → 寫入打卡紀錄。</div>
         </div>
       </div>
     </section>
@@ -207,8 +555,9 @@
       <div class="grid">
         <div class="card">
           <h2>管理員登入</h2>
+          <button class="btn light" type="button" onclick="routeTo('enterprise')" style="margin:0 0 12px;padding:10px 14px;min-height:auto">回企業管理與註冊</button>
           <div class="muted">登入時以公司代號、員工編號與密碼一起判斷，避免不同公司都使用 ANG0603 時互相衝突。</div>
-          <div class="field"><label class="label">公司代號</label><input id="adminCompanyId" placeholder="例如 ANGTEST1"></div>
+          <div class="field"><label class="label">公司代號</label><input id="adminCompanyId" placeholder="例如 ANGC1"></div>
           <div class="field"><label class="label">員工編號</label><input id="adminEmployeeId" placeholder="例如 ANG0603"></div>
           <div class="field"><label class="label">密碼</label><input id="adminPassword" type="password" placeholder="例如 0603"></div>
           <button class="btn" type="button" style="width:100%;margin-top:14px" onclick="adminLogin()">登入</button>
@@ -230,13 +579,14 @@
     <section id="activate" class="section">
       <div class="grid">
         <div class="card">
-          <h2>員工一次性開通</h2>
+          <h2>員工開通 / 綁定</h2>
+          <button class="btn light" type="button" onclick="routeTo('employee')" style="margin:0 0 12px;padding:10px 14px;min-height:auto">回員工專區</button>
           <div class="muted">員工使用公司提供的連結或開通碼，完成裝置綁定。開通成功後，下次可直接進入員工頁。</div>
           <div class="row">
-            <div class="field"><label class="label">公司代號</label><input id="actCompanyId" placeholder="例如 ANGTEST1"></div>
+            <div class="field"><label class="label">公司代號</label><input id="actCompanyId" placeholder="例如 ANGC1"></div>
             <div class="field"><label class="label">員工編號</label><input id="actEmployeeId" placeholder="例如 ANG0604"></div>
           </div>
-          <div class="field"><label class="label">一次性開通碼</label><input id="actToken" placeholder="公司後台產生的一次性 token"></div>
+          <div class="field"><label class="label">一次性開通碼</label><input id="actToken" placeholder="公司後台產生的一次性開通碼或 QR token"></div>
           <button class="btn" type="button" style="width:100%;margin-top:14px" onclick="activateEmployee()">完成開通</button>
           <div id="activateStatus" class="status"></div>
           <div id="activateResult" class="result"></div>
@@ -244,7 +594,7 @@
         <div class="card">
           <h3>連結格式</h3>
           <div class="notice">入口網址後面可以帶公司、員編與 token，頁面會自動填入欄位。</div>
-          <div class="mini">例如：index.html#activate?company_id=ANGTEST1&employee_id=ANG0604&token=xxxx</div>
+          <div class="mini">例如：index.html#activate?company_id=ANGC1&employee_id=ANG0604&token=xxxx</div>
         </div>
       </div>
     </section>
@@ -253,20 +603,26 @@
       <div class="grid">
         <div class="card">
           <h2>選擇方案</h2>
+          <button class="btn light" type="button" onclick="routeTo('enterprise')" style="margin:0 0 12px;padding:10px 14px;min-height:auto">回企業管理與註冊</button>
           <div class="muted">先選方案，再完成 Email 或 Google 驗證。驗證成功後才會建立公司與發放帳號。</div>
           <div class="plans" id="planBox">
-            <div class="plan active" data-plan="basic"><b>Basic</b><span>打卡、簡易排班、基本人員資料。首月體驗，到期需付款。</span></div>
-            <div class="plan" data-plan="plus"><b>Plus</b><span>排班、請假、審核、薪資整理。首月體驗，到期需付款。</span></div>
-            <div class="plan" data-plan="premium"><b>Premium</b><span>完整人資、分店、進階報表與權限。首月體驗，到期需付款。</span></div>
+            <div class="plan active" data-plan="basic"><b>Basic</b><span>打卡、簡易排班、基本人員資料。首月免費。</span></div>
+            <div class="plan" data-plan="plus"><b>Plus</b><span>排班、請假、審核、薪資整理。首月免費。</span></div>
+            <div class="plan" data-plan="premium"><b>Premium</b><span>完整人資、分店、進階報表與權限。首月免費。</span></div>
           </div>
-          <div class="notice">付款狀態會由後端判斷。首月體驗、已付款啟用、ANG8963 免付費特權才可使用正式功能。有 ANG8963 發放的免付費特權 ID 才需要填。</div>
+          <div class="notice">有 ANG8963 發放的免付費特權 ID 才需要填。一般客戶不需要填。</div>
         </div>
 
         <div class="card">
           <h2>驗證方式</h2>
-          <div class="muted">一定要完成其中一種驗證。可以先填 Email 收驗證碼，也可以直接使用下方 Google 帳號繼續。</div>
+          <div class="muted">一定要先完成驗證。Email 驗證碼或 Google 驗證二選一，完成其中一種才可以建立公司。</div>
 
-          <div class="verify-direct-block">
+          <div class="verify-tabs" role="tablist" aria-label="驗證方式">
+            <button class="verify-tab active" type="button" id="emailVerifyTab" onclick="chooseVerifyMethod('email')">Email 驗證碼</button>
+            <button class="verify-tab" type="button" id="googleVerifyTab" onclick="chooseVerifyMethod('google')">Google 驗證</button>
+          </div>
+
+          <div id="emailVerifyPanel" class="verify-panel active">
             <div class="field"><label class="label">Email</label><input id="regEmail" type="email" autocomplete="email" placeholder="example@gmail.com"></div>
             <div class="row">
               <button class="btn gray" type="button" onclick="sendEmailCode()">寄送驗證碼</button>
@@ -276,16 +632,15 @@
             <div class="mini">Email 驗證成功後，這個 Email 會成為 verified_email，用來防止重複申請。</div>
           </div>
 
-          <div class="verify-divider"><span>或</span></div>
-
-          <div class="google-card">
-            <p class="google-title">使用 Google 帳號繼續</p>
-            <button class="google-app-button" type="button" id="googleAppButton" onclick="startGoogleFromApp()"><span class="gmark">G</span><span>使用 Google 帳號繼續</span></button>
-            <div class="mini">電腦瀏覽器會優先顯示官方 Google 按鈕；APP WebView 如果沒有顯示官方按鈕，會保留這顆備援按鈕。</div>
-            <div class="google-button-wrap" id="googleButtonBox"></div>
-            <div class="google-fallback" id="googleFallback">APP 內如果 Google 驗證按鈕沒有載入，請先使用 Email 驗證碼，或用手機瀏覽器開啟入口後再使用 Google 驗證。</div>
+          <div id="googleVerifyPanel" class="verify-panel">
+            <div class="google-card">
+              <p class="google-title">使用 Google 帳號繼續</p>
+              <p class="google-sub">點下面的官方 Google 按鈕，選擇 Google 帳號後會自動完成驗證，不需要手動輸入 Google ID 或 token。</p>
+              <div class="google-button-wrap" id="googleButtonBox"></div>
+              <div class="google-fallback" id="googleFallback">Google 驗證按鈕載入中。如果一直沒有出現，請確認這個網址已加入 Google OAuth Web Client ID 的授權來源。</div>
+            </div>
+            <div class="notice" id="googleNotice">Google Client ID 已內建，請直接使用官方 Google 按鈕完成驗證。</div>
           </div>
-          <div class="notice" id="googleNotice">Google Client ID 已內建。APP 內若官方按鈕被 WebView 擋住，仍可改用 Email 驗證碼完成開通。</div>
 
           <div id="verifyStatus" class="status"></div>
         </div>
@@ -313,7 +668,7 @@
       </div>
     </section>
 
-    <div class="footer">ANG HR System｜入口、打卡、開通、方案註冊完整前端</div>
+    <div class="footer">ANG HR System｜員工專區｜企業管理與註冊</div>
   </main>
 
   <script>
@@ -329,7 +684,6 @@
     let selectedPlan = 'basic';
     let verifiedProfile = null;
     let clockLocation = null;
-    let boundEmployee = null;
 
     function qs(id){ return document.getElementById(id); }
     function getDeviceId(){
@@ -403,22 +757,12 @@
         document.body.appendChild(script);
       });
     }
-    function showApiError(statusId, data, fallback){
-      const lines = [(data && data.message) || fallback || '操作失敗'];
-      if (data && data.payment_required) {
-        if (data.billing_status_label) lines.push('付款狀態：' + data.billing_status_label);
-        if (data.first_month_ends_at) lines.push('體驗到期：' + data.first_month_ends_at);
-        lines.push('請先完成付款、續費，或由 ANG8963 發放免付費特權。');
-      }
-      setStatus(statusId, 'err', lines);
-    }
     function routeTo(route){
+      document.body.dataset.route = route || 'home';
       document.querySelectorAll('.section').forEach(function(el){ el.classList.remove('active'); });
       document.querySelectorAll('.nav button').forEach(function(el){ el.classList.toggle('active', el.getAttribute('data-route') === route); });
       const target = qs(route);
       if (target) target.classList.add('active');
-      if (route === 'home') renderHomeEmployeeBox();
-      if (route === 'clock') refreshBoundEmployee(true);
       location.hash = route;
       window.scrollTo({top:0, behavior:'smooth'});
     }
@@ -458,106 +802,18 @@
       });
     }
     function chooseVerifyMethod(method){
+      const isGoogle = method === 'google';
+      qs('emailVerifyTab').classList.toggle('active', !isGoogle);
+      qs('googleVerifyTab').classList.toggle('active', isGoogle);
+      qs('emailVerifyPanel').classList.toggle('active', !isGoogle);
+      qs('googleVerifyPanel').classList.toggle('active', isGoogle);
       clearStatus('verifyStatus');
     }
-    function saveBoundEmployee(data){
-      if (!data) return;
-      localStorage.setItem('ang_hr_company_id', data.company_id || '');
-      localStorage.setItem('ang_hr_employee_id', data.employee_id || '');
-      localStorage.setItem('ang_hr_employee_name', data.name || '');
-      localStorage.setItem('ang_hr_employee_role', data.role || '');
-      localStorage.setItem('ang_hr_company_name', data.company_name || '');
-      localStorage.setItem('ang_hr_billing_status_label', data.billing_status_label || '');
-      boundEmployee = {
-        company_id: data.company_id || '',
-        employee_id: data.employee_id || '',
-        name: data.name || '',
-        role: data.role || '',
-        company_name: data.company_name || '',
-        billing_status_label: data.billing_status_label || ''
-      };
-      renderHomeEmployeeBox();
-      renderClockState();
-    }
-    function getLocalBoundEmployee(){
-      const companyId = localStorage.getItem('ang_hr_company_id') || '';
-      const employeeId = localStorage.getItem('ang_hr_employee_id') || '';
-      if (!companyId || !employeeId) return null;
-      return {
-        company_id: companyId,
-        employee_id: employeeId,
-        name: localStorage.getItem('ang_hr_employee_name') || '',
-        role: localStorage.getItem('ang_hr_employee_role') || '',
-        company_name: localStorage.getItem('ang_hr_company_name') || '',
-        billing_status_label: localStorage.getItem('ang_hr_billing_status_label') || ''
-      };
-    }
-    function hasEmployeeBinding(){
-      return !!(getLocalBoundEmployee() || boundEmployee);
-    }
-    function renderHomeEmployeeBox(){
-      const box = qs('homeEmployeeBox');
-      if (!box) return;
-      const emp = boundEmployee || getLocalBoundEmployee();
-      if (!emp) {
-        box.innerHTML = '<div class="employee-summary"><b>尚未綁定員工</b><span>員工使用一次性連結開通後，這裡才會出現備援打卡入口。</span></div>';
-        return;
-      }
-      box.innerHTML = '<div class="employee-summary"><b>已綁定：' + escapeHtml(emp.name || emp.employee_id) + '</b><span>' + escapeHtml((emp.company_name || emp.company_id) + '｜' + emp.employee_id + (emp.billing_status_label ? '｜' + emp.billing_status_label : '')) + '</span><button class="btn clock-main-action" type="button" onclick="routeTo(&quot;clock&quot;)">進入員工打卡</button></div>';
-    }
-    function renderClockState(){
-      const emp = boundEmployee || getLocalBoundEmployee();
-      const guard = qs('clockGuard');
-      const box = qs('clockBoundBox');
-      if (!emp) {
-        if (guard) {
-          guard.classList.remove('hidden');
-          guard.innerHTML = '尚未偵測到已綁定員工。請先使用公司提供的一次性連結完成開通。<br><button class="btn light clock-main-action" type="button" onclick="routeTo(&quot;activate&quot;)">前往員工開通</button>';
-        }
-        if (box) box.classList.add('hidden');
-        return;
-      }
-      if (guard) guard.classList.add('hidden');
-      if (box) box.classList.remove('hidden');
-      if (qs('clockCompanyId')) qs('clockCompanyId').value = emp.company_id || '';
-      if (qs('clockEmployeeId')) qs('clockEmployeeId').value = emp.employee_id || '';
-      if (qs('clockEmployeeTitle')) qs('clockEmployeeTitle').textContent = emp.name || emp.employee_id || '已綁定員工';
-      if (qs('clockEmployeeSub')) qs('clockEmployeeSub').textContent = (emp.company_name || emp.company_id || '') + '｜' + (emp.employee_id || '') + (emp.billing_status_label ? '｜' + emp.billing_status_label : '');
-    }
-    function refreshBoundEmployee(showLoading){
-      const local = getLocalBoundEmployee();
-      if (!local) {
-        boundEmployee = null;
-        renderHomeEmployeeBox();
-        renderClockState();
-        return;
-      }
-      boundEmployee = local;
-      renderHomeEmployeeBox();
-      renderClockState();
-      if (showLoading) setStatus('clockStatus', 'info', '正在確認員工綁定資料');
-      api('getBoundEmployeeForClock', {
-        company_id: local.company_id,
-        employee_id: local.employee_id,
-        device_id: getDeviceId()
-      }).then(function(data){
-        if (!data || !data.ok || !data.bound) {
-          if (showLoading) showApiError('clockStatus', data, '此裝置尚未完成員工開通');
-          return;
-        }
-        saveBoundEmployee(data.employee || data);
-        if (showLoading) clearStatus('clockStatus');
-      }).catch(function(err){
-        if (showLoading) setStatus('clockStatus', 'err', err.message || String(err));
-      });
-    }
-
     function initGoogle(){
       const id = String(CFG.googleClientId || '').trim();
       const notice = qs('googleNotice');
       const fallback = qs('googleFallback');
       const buttonBox = qs('googleButtonBox');
-      const appButton = qs('googleAppButton');
       if (!id || id.indexOf('請填入') >= 0) {
         if (notice) notice.textContent = 'Google Client ID 尚未設定，請先使用 Email 驗證碼。';
         if (fallback) {
@@ -566,13 +822,13 @@
         }
         return;
       }
-      if (notice) notice.textContent = 'Google Client ID 已內建。電腦會顯示官方 Google 按鈕；APP 內若沒有顯示，請按上方備援按鈕或改用 Email 驗證碼。';
+      if (notice) notice.textContent = 'Google Client ID 已內建，請點官方 Google 按鈕完成驗證。';
       let waited = 0;
       const boot = function(){
         if (!window.google || !google.accounts || !google.accounts.id) {
           waited += 400;
-          if (fallback && waited >= 2400) fallback.classList.add('show');
-          if (waited < 8000) setTimeout(boot, 400);
+          if (fallback && waited >= 3200) fallback.classList.add('show');
+          setTimeout(boot, 400);
           return;
         }
         if (fallback) fallback.classList.remove('show');
@@ -580,52 +836,22 @@
           client_id: id,
           callback: handleGoogleCredential,
           auto_select: false,
-          cancel_on_tap_outside: true,
-          use_fedcm_for_prompt: true
+          cancel_on_tap_outside: true
         });
         if (buttonBox) {
           buttonBox.innerHTML = '';
-          try {
-            google.accounts.id.renderButton(buttonBox, {
-              type: 'standard',
-              theme: 'outline',
-              size: 'large',
-              shape: 'pill',
-              width: Math.min(360, Math.max(260, buttonBox.clientWidth || 320)),
-              text: 'continue_with',
-              logo_alignment: 'left'
-            });
-            setTimeout(function(){
-              if (buttonBox && buttonBox.children && buttonBox.children.length > 0 && appButton) appButton.classList.add('hidden');
-            }, 600);
-          } catch(err) {
-            if (fallback) fallback.classList.add('show');
-          }
+          google.accounts.id.renderButton(buttonBox, {
+            type: 'standard',
+            theme: 'outline',
+            size: 'large',
+            shape: 'pill',
+            width: Math.min(360, Math.max(260, buttonBox.clientWidth || 320)),
+            text: 'continue_with',
+            logo_alignment: 'left'
+          });
         }
       };
       boot();
-    }
-    function startGoogleFromApp(){
-      const id = String(CFG.googleClientId || '').trim();
-      if (!id || id.indexOf('請填入') >= 0) {
-        setStatus('verifyStatus', 'err', 'Google Client ID 尚未設定，請使用 Email 驗證碼。');
-        return;
-      }
-      if (window.google && google.accounts && google.accounts.id) {
-        try {
-          google.accounts.id.prompt(function(notification){
-            if (!notification) return;
-            if (notification.isNotDisplayed && notification.isNotDisplayed()) {
-              setStatus('verifyStatus', 'err', ['APP 內 Google 驗證沒有顯示', '請改用 Email 驗證碼，或用手機瀏覽器開啟入口後再使用 Google 驗證。']);
-            }
-          });
-          return;
-        } catch(err) {
-          setStatus('verifyStatus', 'err', ['APP 內 Google 驗證無法啟動', '請改用 Email 驗證碼，或用手機瀏覽器開啟入口後再使用 Google 驗證。']);
-          return;
-        }
-      }
-      setStatus('verifyStatus', 'err', ['APP 內沒有載入 Google 驗證元件', '請先使用 Email 驗證碼完成開通，或用手機瀏覽器開啟入口後再使用 Google 驗證。']);
     }
     function handleGoogleCredential(res){
       setStatus('verifyStatus', 'info', '正在驗證 Google 帳號');
@@ -700,14 +926,6 @@
         qs('adminCompanyId').value = data.company_id || '';
         qs('adminEmployeeId').value = data.employee_id || '';
         qs('adminPassword').value = data.password || '';
-        saveBoundEmployee({
-          company_id: data.company_id || '',
-          company_name: data.company_name || '',
-          employee_id: data.employee_id || '',
-          name: qs('adminName').value.trim() || data.employee_id || '',
-          role: data.role || '',
-          billing_status_label: data.billing_status_label || ''
-        });
       }).catch(function(err){
         setStatus('registerStatus', 'err', err.message || String(err));
       });
@@ -725,17 +943,16 @@
       }
       setStatus('adminStatus', 'info', '正在登入');
       api('adminLogin', payload).then(function(data){
-        if (!data || !data.ok) { showApiError('adminStatus', data, '登入失敗'); return; }
+        if (!data || !data.ok) throw new Error((data && data.message) || '登入失敗');
         localStorage.setItem('ang_hr_session_token', data.session_token || '');
-        saveBoundEmployee(data);
+        localStorage.setItem('ang_hr_company_id', data.company_id || '');
+        localStorage.setItem('ang_hr_employee_id', data.employee_id || '');
         setStatus('adminStatus', 'ok', '登入成功');
         renderResult('adminResult', [
           ['公司代號', data.company_id],
           ['員工編號', data.employee_id],
           ['姓名', data.name],
-          ['角色', data.role],
-          ['方案', data.plan_label || ''],
-          ['付款狀態', data.billing_status_label || '']
+          ['角色', data.role]
         ]);
       }).catch(function(err){
         setStatus('adminStatus', 'err', err.message || String(err));
@@ -759,27 +976,22 @@
       }, { enableHighAccuracy:true, timeout:12000, maximumAge:30000 });
     }
     function submitClock(){
-      const emp = boundEmployee || getLocalBoundEmployee();
-      if (!emp) {
-        setStatus('clockStatus', 'err', '請先完成員工一次性開通，系統才會自動帶入打卡資料');
-        return;
-      }
       const payload = {
-        company_id: (qs('clockCompanyId').value || emp.company_id || '').trim().toUpperCase(),
-        employee_id: (qs('clockEmployeeId').value || emp.employee_id || '').trim().toUpperCase(),
-        password: qs('clockPassword').value || '',
+        company_id: qs('clockCompanyId').value.trim().toUpperCase(),
+        employee_id: qs('clockEmployeeId').value.trim().toUpperCase(),
+        password: qs('clockPassword').value,
         clock_type: qs('clockType').value,
         device_id: getDeviceId(),
         source: 'manual_button',
         location: clockLocation
       };
-      if (!payload.company_id || !payload.employee_id) {
-        setStatus('clockStatus', 'err', '沒有可用的員工綁定資料，請重新用一次性連結開通');
+      if (!payload.company_id || !payload.employee_id || !payload.password) {
+        setStatus('clockStatus', 'err', '請輸入公司代號、員工編號與密碼');
         return;
       }
       setStatus('clockStatus', 'info', '正在送出打卡');
       api('clockByButton', payload).then(function(data){
-        if (!data || !data.ok) { showApiError('clockStatus', data, '打卡失敗'); return; }
+        if (!data || !data.ok) throw new Error((data && data.message) || '打卡失敗');
         setStatus('clockStatus', 'ok', [data.message || '打卡成功', data.created_at || '']);
       }).catch(function(err){
         setStatus('clockStatus', 'err', err.message || String(err));
@@ -798,21 +1010,148 @@
       }
       setStatus('activateStatus', 'info', '正在開通');
       api('activateEmployee', payload).then(function(data){
-        if (!data || !data.ok) { showApiError('activateStatus', data, '開通失敗'); return; }
-        saveBoundEmployee(data);
-        setStatus('activateStatus', 'ok', ['開通成功', '員工資料已綁定，此裝置之後可直接使用備援打卡']);
+        if (!data || !data.ok) throw new Error((data && data.message) || '開通失敗');
+        localStorage.setItem('ang_hr_company_id', data.company_id || '');
+        localStorage.setItem('ang_hr_employee_id', data.employee_id || '');
+        setStatus('activateStatus', 'ok', '開通成功');
         renderResult('activateResult', [
           ['公司代號', data.company_id],
           ['員工編號', data.employee_id],
           ['姓名', data.name || ''],
-          ['付款狀態', data.billing_status_label || ''],
           ['裝置', '已綁定']
         ]);
-        setTimeout(function(){ routeTo('clock'); }, 800);
       }).catch(function(err){
         setStatus('activateStatus', 'err', err.message || String(err));
       });
     }
+    let qrStream = null;
+    let qrScanTimer = null;
+    let qrDetector = null;
+    function fillSavedEmployee(){
+      const savedCompany = localStorage.getItem('ang_hr_company_id') || '';
+      const savedEmployee = localStorage.getItem('ang_hr_employee_id') || '';
+      if (savedCompany) {
+        if (qs('clockCompanyId')) qs('clockCompanyId').value = savedCompany;
+        if (qs('actCompanyId')) qs('actCompanyId').value = savedCompany;
+      }
+      if (savedEmployee) {
+        if (qs('clockEmployeeId')) qs('clockEmployeeId').value = savedEmployee;
+        if (qs('actEmployeeId')) qs('actEmployeeId').value = savedEmployee;
+      }
+      if (!savedCompany && !savedEmployee) {
+        setStatus('employeeStatus', 'info', '目前沒有已儲存的員工資料');
+        return;
+      }
+      setStatus('employeeStatus', 'ok', '已帶入已儲存的員工資料');
+    }
+    function applyQrText(text){
+      const raw = String(text || '').trim();
+      if (!raw) return false;
+      try {
+        const url = new URL(raw, location.href);
+        const hash = url.hash ? url.hash.slice(1) : '';
+        const hashParts = hash.split('?');
+        const params = new URLSearchParams(hashParts[1] || url.search || '');
+        const companyId = params.get('company_id') || params.get('company') || '';
+        const employeeId = params.get('employee_id') || params.get('id') || '';
+        const token = params.get('token') || params.get('activation_token') || params.get('code') || '';
+        if (companyId && qs('actCompanyId')) qs('actCompanyId').value = companyId.toUpperCase();
+        if (employeeId && qs('actEmployeeId')) qs('actEmployeeId').value = employeeId.toUpperCase();
+        if (token && qs('actToken')) qs('actToken').value = token;
+        if (companyId || employeeId || token) {
+          stopQrScan();
+          routeTo('activate');
+          setStatus('activateStatus', 'ok', 'QR Code 已讀取，請確認資料後完成開通');
+          return true;
+        }
+      } catch(err) {}
+      const parts = raw.split('|').map(function(x){ return x.trim(); });
+      if (parts.length >= 3) {
+        if (qs('actCompanyId')) qs('actCompanyId').value = parts[0].toUpperCase();
+        if (qs('actEmployeeId')) qs('actEmployeeId').value = parts[1].toUpperCase();
+        if (qs('actToken')) qs('actToken').value = parts.slice(2).join('|');
+        stopQrScan();
+        routeTo('activate');
+        setStatus('activateStatus', 'ok', 'QR Code 已讀取，請確認資料後完成開通');
+        return true;
+      }
+      setStatus('employeeStatus', 'err', 'QR Code 格式不正確');
+      return false;
+    }
+    function startQrScan(){
+      routeTo('employee');
+      const box = qs('qrScanBox');
+      const video = qs('qrVideo');
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        setStatus('employeeStatus', 'err', '此裝置或瀏覽器不支援相機掃描，請改用一次性開通碼');
+        return;
+      }
+      if (!('BarcodeDetector' in window)) {
+        setStatus('employeeStatus', 'err', '此瀏覽器不支援即時 QR 掃描，請改用一次性開通碼');
+        return;
+      }
+      try {
+        qrDetector = new BarcodeDetector({ formats: ['qr_code'] });
+      } catch(err) {
+        setStatus('employeeStatus', 'err', 'QR 掃描器啟動失敗，請改用一次性開通碼');
+        return;
+      }
+      setStatus('employeeStatus', 'info', '正在開啟相機掃描 QR Code');
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false }).then(function(stream){
+        qrStream = stream;
+        if (box) box.classList.remove('hidden');
+        if (video) {
+          video.srcObject = stream;
+          video.play();
+        }
+        scanQrLoop();
+      }).catch(function(err){
+        setStatus('employeeStatus', 'err', err && err.message ? err.message : '無法開啟相機，請改用一次性開通碼');
+      });
+    }
+    function scanQrLoop(){
+      const video = qs('qrVideo');
+      if (!qrDetector || !video || !qrStream) return;
+      qrDetector.detect(video).then(function(codes){
+        if (codes && codes.length) {
+          const value = codes[0].rawValue || '';
+          if (applyQrText(value)) return;
+        }
+        qrScanTimer = setTimeout(scanQrLoop, 350);
+      }).catch(function(){
+        qrScanTimer = setTimeout(scanQrLoop, 650);
+      });
+    }
+    function stopQrScan(){
+      if (qrScanTimer) clearTimeout(qrScanTimer);
+      qrScanTimer = null;
+      if (qrStream) {
+        qrStream.getTracks().forEach(function(track){ track.stop(); });
+      }
+      qrStream = null;
+      const video = qs('qrVideo');
+      if (video) video.srcObject = null;
+      const box = qs('qrScanBox');
+      if (box) box.classList.add('hidden');
+    }
+
+    function applyEntryTheme(theme){
+      const isDark = theme === 'dark';
+      document.body.dataset.theme = isDark ? 'dark' : 'light';
+      const toggle = document.querySelector('.entry-theme-toggle');
+      if (toggle) toggle.setAttribute('aria-pressed', String(isDark));
+    }
+    function toggleEntryTheme(){
+      const nextTheme = document.body.dataset.theme === 'dark' ? 'light' : 'dark';
+      applyEntryTheme(nextTheme);
+      localStorage.setItem('ang-hr-theme', nextTheme);
+    }
+    function initEntryTheme(){
+      const savedTheme = localStorage.getItem('ang-hr-theme');
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      applyEntryTheme(savedTheme || (prefersDark ? 'dark' : 'light'));
+    }
+
     function initDefaults(){
       ['clockCompanyId','adminCompanyId'].forEach(function(id){ if (CFG.defaultCompanyId) qs(id).value = CFG.defaultCompanyId; });
       ['clockEmployeeId','adminEmployeeId'].forEach(function(id){ if (CFG.defaultEmployeeId) qs(id).value = CFG.defaultEmployeeId; });
@@ -834,12 +1173,12 @@
       });
     }
     window.addEventListener('load', function(){
+      initEntryTheme();
       initRoutes();
       initPlans();
       initDefaults();
       initGoogle();
       getDeviceId();
-      refreshBoundEmployee(false);
       ping();
     });
   </script>
