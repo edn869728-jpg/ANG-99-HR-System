@@ -8,184 +8,1015 @@
     :root{
       --body-bg:#d1d5db;
       --screen-bg:url("ang-entry-bg-day.png");
+
       --panel-bg:rgba(255,255,255,.94);
       --panel-border:rgba(226,232,240,.92);
       --panel-shadow:0 -14px 34px rgba(15,23,42,.10);
+
       --main-text:#0f172a;
       --muted-text:#64748b;
       --soft-text:#94a3b8;
+
       --input-bg:#f1f5f9;
       --input-border:#e2e8f0;
+
       --primary-bg:linear-gradient(90deg,#00d9ff 0%,#7c3cff 58%,#b000ff 100%);
       --primary-text:#ffffff;
       --primary-shadow:0 8px 24px rgba(124,60,255,.26);
+
       --secondary-bg:#f8fafc;
       --secondary-text:#475569;
       --secondary-border:#e2e8f0;
+
       --card-bg:rgba(255,255,255,.94);
       --card-border:rgba(226,232,240,.92);
       --line:rgba(148,163,184,.24);
+
       --toggle-bg:rgba(255,255,255,.74);
       --toggle-border:rgba(148,163,184,.34);
       --toggle-shadow:0 10px 24px rgba(15,23,42,.12);
       --toggle-icon-dim:rgba(71,85,105,.72);
       --toggle-thumb-bg:#ffffff;
       --toggle-thumb-shadow:0 6px 14px rgba(15,23,42,.16);
-      --toggle-thumb-x:3px;
+      --toggle-thumb-x:0px;
+
       --ease:cubic-bezier(.22,1,.36,1);
     }
 
     body[data-theme="dark"]{
       --body-bg:#a3a3a3;
       --screen-bg:url("ang-entry-bg-night.png");
+
       --panel-bg:rgba(18,25,42,.88);
       --panel-border:rgba(255,255,255,.08);
       --panel-shadow:none;
+
       --main-text:#ffffff;
       --muted-text:#cbd5e1;
       --soft-text:#8b9bb4;
+
       --input-bg:rgba(255,255,255,.07);
       --input-border:rgba(255,255,255,.10);
+
       --secondary-bg:rgba(255,255,255,.06);
       --secondary-text:#e5e7eb;
       --secondary-border:rgba(255,255,255,.08);
+
       --card-bg:rgba(18,25,42,.88);
       --card-border:rgba(255,255,255,.08);
       --line:rgba(255,255,255,.10);
+
       --toggle-bg:rgba(15,23,42,.52);
       --toggle-border:rgba(255,255,255,.12);
       --toggle-shadow:0 10px 24px rgba(0,0,0,.28);
       --toggle-icon-dim:rgba(226,232,240,.68);
       --toggle-thumb-bg:rgba(255,255,255,.15);
       --toggle-thumb-shadow:0 0 18px rgba(0,217,255,.16);
-      --toggle-thumb-x:35px;
+      --toggle-thumb-x:28px;
     }
 
-    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-    html,body{margin:0;width:100%;height:100%;overflow:hidden}
-    body{display:flex;align-items:center;justify-content:center;background:var(--body-bg);font-family:"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;color:var(--main-text);transition:background .25s ease}
-    button,input{font-family:inherit}
-    button{border:none;cursor:pointer}
+    *{
+      box-sizing:border-box;
+      -webkit-tap-highlight-color:transparent;
+    }
 
-    .phone{width:100%;max-width:400px;height:min(100vh,760px);position:relative;overflow:hidden;border-radius:24px;background:#05060b;box-shadow:0 18px 42px rgba(0,0,0,.28)}
-    .phone::before{content:"";position:absolute;inset:0;z-index:0;background-image:var(--screen-bg);background-size:cover;background-position:center center;background-repeat:no-repeat;transition:background-image .25s ease}
-    .phone::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(0,0,0,.08) 66%,rgba(0,0,0,.18) 100%);opacity:.55}
-    body:not([data-theme="dark"]) .phone::after{background:linear-gradient(180deg,rgba(255,255,255,.04) 0%,rgba(255,255,255,.02) 62%,rgba(15,23,42,.08) 100%);opacity:.70}
+    html,
+    body{
+      margin:0;
+      width:100%;
+      height:100%;
+      overflow:hidden;
+    }
 
-    .theme-toggle{position:absolute;top:14px;right:14px;width:58px;height:30px;padding:3px;border:1px solid var(--toggle-border);border-radius:999px;background:var(--toggle-bg);box-shadow:var(--toggle-shadow);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);z-index:40;display:grid;grid-template-columns:1fr 1fr;align-items:center;appearance:none;-webkit-appearance:none}
-    .theme-toggle::before{content:"";position:absolute;left:0;top:3px;width:24px;height:24px;border-radius:50%;background:var(--toggle-thumb-bg);box-shadow:var(--toggle-thumb-shadow);transform:translateX(var(--toggle-thumb-x));transition:transform .25s ease,background .25s ease}
-    .theme-toggle span{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;color:var(--toggle-icon-dim);pointer-events:none}
-    .theme-toggle svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}
-    body:not([data-theme="dark"]) .theme-toggle .sun{color:#0f172a}
-    body[data-theme="dark"] .theme-toggle .moon{color:#fff;filter:drop-shadow(0 0 5px rgba(255,255,255,.32))}
+    body{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:var(--body-bg);
+      font-family:"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;
+      color:var(--main-text);
+      transition:background .25s ease;
+    }
 
-    .view{position:absolute;inset:0;z-index:5;display:none;flex-direction:column}
-    .view.active{display:flex}
-    .top-space{flex:1;min-height:360px;transition:opacity .42s var(--ease),transform .42s var(--ease)}
-    .phone.expanded .top-space{opacity:.38;transform:translateY(-24px) scale(.96)}
+    button,
+    input{
+      font-family:inherit;
+    }
 
-    .panel{position:relative;z-index:8;margin-top:auto;min-height:264px;padding:28px 24px 24px;display:flex;flex-direction:column;background:var(--panel-bg);border-top:1px solid var(--panel-border);border-radius:28px 28px 0 0;box-shadow:var(--panel-shadow);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);transition:background .25s ease,border-color .25s ease,box-shadow .25s ease}
-    .home-title{margin:0 0 18px;color:var(--main-text);text-align:center;font-size:22px;line-height:1.2;font-weight:1000;transition:color .25s ease}
-    .btn{width:100%;min-height:52px;border:none;border-radius:16px;padding:14px 18px;font-size:16px;line-height:1.2;font-weight:1000;cursor:pointer;text-align:center;transition:transform .18s ease,background .25s ease,color .25s ease,border-color .25s ease,box-shadow .25s ease}
-    .btn:active{transform:scale(.98)}
-    .btn-primary{background:var(--primary-bg);color:var(--primary-text);box-shadow:var(--primary-shadow)}
-    .btn-secondary{background:var(--secondary-bg);color:var(--secondary-text);border:1px solid var(--secondary-border)}
-    .help-text{margin:8px 0 0;color:var(--muted-text);text-align:center;font-size:12px;line-height:1.35;font-weight:850;transition:color .25s ease}
-    .spacer{flex:1;min-height:12px}
-    .entry-top-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
-    .section-title{margin:0;color:var(--main-text);font-size:20px;line-height:1.2;font-weight:1000;letter-spacing:-.03em;transition:color .25s ease}
-    .back-btn{min-width:54px;height:34px;border:none;border-radius:999px;padding:0 14px;background:rgba(78,98,184,.45);color:#dbeafe;font-size:13px;font-weight:1000;cursor:pointer}
-    body:not([data-theme="dark"]) .back-btn{background:#e0e7ff;color:#4338ca}
-    .field{margin:10px 0 12px}
-    .input-wrap{display:flex;align-items:center;min-height:54px;padding:4px 6px 4px 16px;border-radius:18px;background:var(--input-bg);border:1px solid var(--input-border);transition:background .25s ease,border-color .25s ease,box-shadow .2s ease}
-    .input-wrap:focus-within{border-color:rgba(124,60,255,.62);box-shadow:0 0 0 4px rgba(124,60,255,.13)}
-    input{width:100%;border:none;outline:none;background:transparent;color:var(--main-text);font-size:16px;font-weight:1000;letter-spacing:.08em;padding:12px 0;text-transform:uppercase}
-    input::placeholder{color:var(--muted-text);opacity:.72;font-size:14px;font-weight:900;letter-spacing:0;text-transform:none}
-    .clear-btn{width:36px;height:36px;flex:0 0 auto;border:none;border-radius:14px;background:var(--secondary-bg);color:var(--secondary-text);font-size:18px;font-weight:1000;cursor:pointer}
-    .btn-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
-    .hint{margin-top:14px;color:var(--main-text);text-align:center;font-size:12px;line-height:1.45;font-weight:900;transition:color .25s ease}
-    .status{display:none;margin-top:10px;padding:10px 12px;border-radius:15px;font-size:13px;line-height:1.45;font-weight:900;text-align:center}
-    .status.show{display:block}
-    .status.info{background:rgba(59,130,246,.14);color:#bfdbfe;border:1px solid rgba(59,130,246,.18)}
-    .status.success{background:rgba(16,185,129,.14);color:#a7f3d0;border:1px solid rgba(16,185,129,.18)}
-    .status.error{background:rgba(239,68,68,.14);color:#fecaca;border:1px solid rgba(239,68,68,.18)}
-    body:not([data-theme="dark"]) .status.info{color:#2563eb}
-    body:not([data-theme="dark"]) .status.success{color:#059669}
-    body:not([data-theme="dark"]) .status.error{color:#dc2626}
-    .entry-mode{display:none}.entry-mode.active{display:block}
-    .profile{display:flex;align-items:center;gap:12px;margin-bottom:12px;padding:12px;border-radius:18px;background:var(--input-bg);border:1px solid var(--input-border)}
-    .avatar{width:44px;height:44px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;border-radius:16px;background:var(--primary-bg);color:#fff;font-size:16px;font-weight:1000}
-    .profile-name{color:var(--main-text);font-size:16px;font-weight:1000}
-    .profile-meta{margin-top:4px;color:var(--muted-text);font-size:12px;font-weight:850}
+    button{
+      border:none;
+      cursor:pointer;
+    }
 
-    .sheet-stage{position:absolute;left:0;right:0;bottom:0;z-index:8;height:190px;max-height:88vh;overflow:visible;transition:height .58s var(--ease)}
-    .phone.expanded .sheet-stage{height:82vh}
-    .sheet-carousel{width:100%;height:100%;display:flex;gap:14px;overflow-x:auto;overflow-y:visible;scroll-snap-type:x mandatory;scroll-padding-left:22px;padding:0 22px;-webkit-overflow-scrolling:touch;cursor:grab;scrollbar-width:none}
-    .sheet-carousel::-webkit-scrollbar{display:none}.sheet-carousel.dragging{cursor:grabbing;scroll-snap-type:none}
-    .plan-sheet{flex:0 0 auto;height:100%;scroll-snap-align:center;border-radius:32px 32px 0 0;background:var(--card-bg);border:1px solid var(--card-border);border-bottom:0;box-shadow:0 -14px 34px rgba(15,23,42,.10);backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px);overflow:hidden;display:flex;flex-direction:column;opacity:.58;transform:scale(.94) translateY(14px);transition:opacity .28s var(--ease),transform .28s var(--ease),box-shadow .28s var(--ease),background .28s ease;position:relative}
-    .plan-sheet.active{opacity:1;transform:scale(1) translateY(0);box-shadow:0 -18px 46px rgba(15,23,42,.15)}
-    body[data-theme="dark"] .plan-sheet.active{box-shadow:0 -18px 46px rgba(0,0,0,.24)}
-    .plan-sheet.login,.plan-sheet.basic{width:318px}.plan-sheet.plus{width:338px}.plan-sheet.premium{width:358px}
-    .plan-sheet::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 100% 0%,rgba(89,221,255,.18) 0%,rgba(89,221,255,0) 40%),radial-gradient(circle at 0% 100%,rgba(255,135,224,.13) 0%,rgba(255,135,224,0) 48%);pointer-events:none;z-index:0}
-    .sheet-handle-zone{width:100%;padding:12px 0 8px;display:flex;justify-content:center;flex:0 0 auto;cursor:pointer;position:relative;z-index:2}
-    .sheet-handle{width:44px;height:5px;border-radius:999px;background:rgba(100,116,139,.34)}
-    body[data-theme="dark"] .sheet-handle{background:rgba(255,255,255,.20)}
-    .sheet-summary{position:relative;z-index:2;padding:0 20px 14px;flex:0 0 auto}
-    .summary-main{display:flex;justify-content:space-between;align-items:flex-start;gap:14px}.summary-left{min-width:0;flex:1}.summary-right{flex:0 0 auto;text-align:right;padding-top:2px}
-    .title-line{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-    .sheet-title{margin:0;color:var(--main-text);font-size:24px;line-height:1.15;font-weight:1000;letter-spacing:-.7px}.plan-sheet.premium .sheet-title{font-size:30px;letter-spacing:-1px}
-    .sheet-tag{display:inline-flex;padding:6px 10px;border-radius:999px;background:rgba(128,137,255,.13);color:#8089ff;font-size:11px;line-height:1.2;font-weight:1000;white-space:nowrap}
-    .sheet-price{color:var(--main-text);font-size:22px;line-height:1.1;font-weight:1000;letter-spacing:-.8px;white-space:nowrap}.sheet-price span{display:block;margin-top:3px;color:var(--muted-text);font-size:11px;font-weight:850;letter-spacing:0}
-    .sheet-sub{margin:10px 0 0;color:var(--muted-text);font-size:13px;line-height:1.5;font-weight:800;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-    .mini-pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.mini-pill{padding:5px 8px;border-radius:999px;background:var(--secondary-bg);border:1px solid var(--secondary-border);color:var(--secondary-text);font-size:11px;font-weight:850}.phone:not(.expanded) .mini-pills{display:none}
-    .sheet-detail{position:relative;z-index:2;flex:1;min-height:0;overflow-y:auto;padding:0 20px 96px;opacity:0;transform:translateY(12px);pointer-events:none;transition:opacity .28s var(--ease),transform .28s var(--ease);scrollbar-width:none}.sheet-detail::-webkit-scrollbar{display:none}.phone.expanded .plan-sheet.active .sheet-detail{opacity:1;transform:translateY(0);pointer-events:auto}
-    .detail-block{margin-top:10px;padding-top:16px;border-top:1px solid var(--line)}.detail-title{margin:0 0 10px;color:var(--main-text);font-size:15px;font-weight:1000}.feature-list{display:grid;gap:10px;margin:0;padding:0;list-style:none}.feature-list li{color:var(--muted-text);font-size:14px;line-height:1.5;font-weight:800}.feature-list li::before{content:"✓";display:inline-flex;width:22px;color:#8089ff;font-weight:1000}.note{margin-top:20px;color:var(--muted-text);font-size:13px;line-height:1.65;font-weight:800;border-top:1px solid var(--line);padding-top:16px}
-    .bottom-action{position:absolute;left:18px;right:18px;bottom:14px;z-index:12;padding-top:16px;background:linear-gradient(180deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.86) 34%,rgba(255,255,255,.96) 100%);pointer-events:none;opacity:0;transform:translateY(18px);transition:opacity .28s var(--ease),transform .28s var(--ease)}
-    body[data-theme="dark"] .bottom-action{background:linear-gradient(180deg,rgba(18,25,42,0) 0%,rgba(18,25,42,.82) 34%,rgba(18,25,42,.96) 100%)}.phone.expanded .bottom-action{opacity:1;transform:translateY(0)}.bottom-action button{width:100%;min-height:54px;border-radius:18px;background:var(--primary-bg);color:#fff;font-size:16px;font-weight:1000;box-shadow:var(--primary-shadow);pointer-events:auto}
-    .dots{position:absolute;left:0;right:0;bottom:16px;z-index:13;display:flex;justify-content:center;gap:7px;pointer-events:auto;transition:bottom .36s var(--ease),opacity .24s var(--ease)}.phone.expanded .dots{bottom:76px;opacity:.82}.dot{width:7px;height:7px;border-radius:999px;background:rgba(100,116,139,.28);transition:width .26s var(--ease),background .26s var(--ease);cursor:pointer}.dot.active{width:22px;background:#8089ff}
+    .phone{
+      width:100%;
+      max-width:400px;
+      height:min(100vh,760px);
+      position:relative;
+      overflow:hidden;
+      border-radius:24px;
+      background:#05060b;
+      box-shadow:0 18px 42px rgba(0,0,0,.28);
+    }
 
-    @media (max-width:430px){body{align-items:stretch}.phone{max-width:none;max-height:none;height:100vh;border-radius:0}.top-space{min-height:380px}.sheet-carousel{scroll-padding-left:18px;padding-left:18px;padding-right:18px}.plan-sheet.login,.plan-sheet.basic{width:302px}.plan-sheet.plus{width:322px}.plan-sheet.premium{width:342px}.plan-sheet.premium .sheet-title{font-size:28px}}
-    @media (max-height:700px){.phone{height:100vh;border-radius:0}.top-space{min-height:320px}.panel{min-height:258px;padding:24px 22px 22px}.sheet-stage{height:188px}}
+    .phone::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      z-index:0;
+      background-image:var(--screen-bg);
+      background-size:cover;
+      background-position:center center;
+      background-repeat:no-repeat;
+      transition:background-image .25s ease;
+    }
+
+    .phone::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      z-index:1;
+      pointer-events:none;
+      background:linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(0,0,0,.08) 66%,rgba(0,0,0,.18) 100%);
+      opacity:.55;
+    }
+
+    body:not([data-theme="dark"]) .phone::after{
+      background:linear-gradient(180deg,rgba(255,255,255,.04) 0%,rgba(255,255,255,.02) 62%,rgba(15,23,42,.08) 100%);
+      opacity:.70;
+    }
+
+    .theme-toggle{
+      position:absolute;
+      top:14px;
+      right:14px;
+      width:58px;
+      height:30px;
+      padding:3px;
+      border:1px solid var(--toggle-border);
+      border-radius:999px;
+      background:var(--toggle-bg);
+      box-shadow:var(--toggle-shadow);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      z-index:40;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      align-items:center;
+      justify-items:center;
+      appearance:none;
+      -webkit-appearance:none;
+      overflow:hidden;
+    }
+
+    .theme-toggle::before{
+      content:"";
+      position:absolute;
+      left:3px;
+      top:3px;
+      width:24px;
+      height:24px;
+      border-radius:50%;
+      background:var(--toggle-thumb-bg);
+      box-shadow:var(--toggle-thumb-shadow);
+      transform:translateX(var(--toggle-thumb-x));
+      transition:transform .25s ease,background .25s ease,box-shadow .25s ease;
+    }
+
+    .theme-toggle span{
+      position:relative;
+      z-index:1;
+      width:24px;
+      height:24px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:var(--toggle-icon-dim);
+      pointer-events:none;
+    }
+
+    .theme-toggle svg{
+      width:14px;
+      height:14px;
+      stroke:currentColor;
+      fill:none;
+      stroke-width:2.1;
+      stroke-linecap:round;
+      stroke-linejoin:round;
+    }
+
+    body:not([data-theme="dark"]) .theme-toggle .sun{
+      color:#0f172a;
+    }
+
+    body[data-theme="dark"] .theme-toggle .moon{
+      color:#fff;
+      filter:drop-shadow(0 0 5px rgba(255,255,255,.32));
+    }
+
+    .view{
+      position:absolute;
+      inset:0;
+      z-index:5;
+      display:none;
+      flex-direction:column;
+    }
+
+    .view.active{
+      display:flex;
+    }
+
+    .top-space{
+      flex:1;
+      min-height:360px;
+      transition:opacity .42s var(--ease),transform .42s var(--ease);
+    }
+
+    .phone.expanded .top-space{
+      opacity:.38;
+      transform:translateY(-24px) scale(.96);
+    }
+
+    .panel{
+      position:relative;
+      z-index:8;
+      margin-top:auto;
+      min-height:264px;
+      padding:28px 24px 24px;
+      display:flex;
+      flex-direction:column;
+      background:var(--panel-bg);
+      border-top:1px solid var(--panel-border);
+      border-radius:28px 28px 0 0;
+      box-shadow:var(--panel-shadow);
+      backdrop-filter:blur(24px);
+      -webkit-backdrop-filter:blur(24px);
+      transition:background .25s ease,border-color .25s ease,box-shadow .25s ease;
+    }
+
+    .home-title{
+      margin:0 0 18px;
+      color:var(--main-text);
+      text-align:center;
+      font-size:22px;
+      line-height:1.2;
+      font-weight:1000;
+      transition:color .25s ease;
+    }
+
+    .btn{
+      width:100%;
+      min-height:52px;
+      border:none;
+      border-radius:16px;
+      padding:14px 18px;
+      font-size:16px;
+      line-height:1.2;
+      font-weight:1000;
+      cursor:pointer;
+      text-align:center;
+      transition:transform .18s ease,background .25s ease,color .25s ease,border-color .25s ease,box-shadow .25s ease;
+    }
+
+    .btn:active{
+      transform:scale(.98);
+    }
+
+    .btn-primary{
+      background:var(--primary-bg);
+      color:var(--primary-text);
+      box-shadow:var(--primary-shadow);
+    }
+
+    .btn-secondary{
+      background:var(--secondary-bg);
+      color:var(--secondary-text);
+      border:1px solid var(--secondary-border);
+    }
+
+    .help-text{
+      margin:8px 0 0;
+      color:var(--muted-text);
+      text-align:center;
+      font-size:12px;
+      line-height:1.35;
+      font-weight:850;
+      transition:color .25s ease;
+    }
+
+    .spacer{
+      flex:1;
+      min-height:12px;
+    }
+
+    .entry-top-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:10px;
+    }
+
+    .section-title{
+      margin:0;
+      color:var(--main-text);
+      font-size:20px;
+      line-height:1.2;
+      font-weight:1000;
+      letter-spacing:-.03em;
+      transition:color .25s ease;
+    }
+
+    .back-btn{
+      min-width:54px;
+      height:34px;
+      border:none;
+      border-radius:999px;
+      padding:0 14px;
+      background:rgba(78,98,184,.45);
+      color:#dbeafe;
+      font-size:13px;
+      font-weight:1000;
+      cursor:pointer;
+    }
+
+    body:not([data-theme="dark"]) .back-btn{
+      background:#e0e7ff;
+      color:#4338ca;
+    }
+
+    .field{
+      margin:10px 0 12px;
+    }
+
+    .input-wrap{
+      display:flex;
+      align-items:center;
+      min-height:54px;
+      padding:4px 6px 4px 16px;
+      border-radius:18px;
+      background:var(--input-bg);
+      border:1px solid var(--input-border);
+      transition:background .25s ease,border-color .25s ease,box-shadow .2s ease;
+    }
+
+    .input-wrap:focus-within{
+      border-color:rgba(124,60,255,.62);
+      box-shadow:0 0 0 4px rgba(124,60,255,.13);
+    }
+
+    input{
+      width:100%;
+      border:none;
+      outline:none;
+      background:transparent;
+      color:var(--main-text);
+      font-size:16px;
+      font-weight:1000;
+      letter-spacing:.08em;
+      padding:12px 0;
+      text-transform:uppercase;
+    }
+
+    input::placeholder{
+      color:var(--muted-text);
+      opacity:.72;
+      font-size:14px;
+      font-weight:900;
+      letter-spacing:0;
+      text-transform:none;
+    }
+
+    .clear-btn{
+      width:36px;
+      height:36px;
+      flex:0 0 auto;
+      border:none;
+      border-radius:14px;
+      background:var(--secondary-bg);
+      color:var(--secondary-text);
+      font-size:18px;
+      font-weight:1000;
+      cursor:pointer;
+    }
+
+    .btn-row{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:10px;
+    }
+
+    .hint{
+      margin-top:14px;
+      color:var(--main-text);
+      text-align:center;
+      font-size:12px;
+      line-height:1.45;
+      font-weight:900;
+      transition:color .25s ease;
+    }
+
+    .status{
+      display:none;
+      margin-top:10px;
+      padding:10px 12px;
+      border-radius:15px;
+      font-size:13px;
+      line-height:1.45;
+      font-weight:900;
+      text-align:center;
+    }
+
+    .status.show{
+      display:block;
+    }
+
+    .status.info{
+      background:rgba(59,130,246,.14);
+      color:#bfdbfe;
+      border:1px solid rgba(59,130,246,.18);
+    }
+
+    .status.success{
+      background:rgba(16,185,129,.14);
+      color:#a7f3d0;
+      border:1px solid rgba(16,185,129,.18);
+    }
+
+    .status.error{
+      background:rgba(239,68,68,.14);
+      color:#fecaca;
+      border:1px solid rgba(239,68,68,.18);
+    }
+
+    body:not([data-theme="dark"]) .status.info{
+      color:#2563eb;
+    }
+
+    body:not([data-theme="dark"]) .status.success{
+      color:#059669;
+    }
+
+    body:not([data-theme="dark"]) .status.error{
+      color:#dc2626;
+    }
+
+    .entry-mode{
+      display:none;
+    }
+
+    .entry-mode.active{
+      display:block;
+    }
+
+    .profile{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-bottom:12px;
+      padding:12px;
+      border-radius:18px;
+      background:var(--input-bg);
+      border:1px solid var(--input-border);
+    }
+
+    .avatar{
+      width:44px;
+      height:44px;
+      flex:0 0 auto;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:16px;
+      background:var(--primary-bg);
+      color:#fff;
+      font-size:16px;
+      font-weight:1000;
+    }
+
+    .profile-name{
+      color:var(--main-text);
+      font-size:16px;
+      font-weight:1000;
+    }
+
+    .profile-meta{
+      margin-top:4px;
+      color:var(--muted-text);
+      font-size:12px;
+      font-weight:850;
+    }
+
+    .sheet-stage{
+      position:absolute;
+      left:0;
+      right:0;
+      bottom:0;
+      z-index:8;
+      height:190px;
+      max-height:88vh;
+      overflow:visible;
+      transition:height .58s var(--ease);
+    }
+
+    .phone.expanded .sheet-stage{
+      height:82vh;
+    }
+
+    .sheet-carousel{
+      width:100%;
+      height:100%;
+      display:flex;
+      gap:14px;
+      overflow-x:auto;
+      overflow-y:visible;
+      scroll-snap-type:x mandatory;
+      scroll-padding-left:22px;
+      padding:0 22px;
+      -webkit-overflow-scrolling:touch;
+      cursor:grab;
+      scrollbar-width:none;
+    }
+
+    .sheet-carousel::-webkit-scrollbar{
+      display:none;
+    }
+
+    .sheet-carousel.dragging{
+      cursor:grabbing;
+      scroll-snap-type:none;
+    }
+
+    .plan-sheet{
+      flex:0 0 auto;
+      height:100%;
+      scroll-snap-align:center;
+      border-radius:32px 32px 0 0;
+      background:var(--card-bg);
+      border:1px solid var(--card-border);
+      border-bottom:0;
+      box-shadow:0 -14px 34px rgba(15,23,42,.10);
+      backdrop-filter:blur(26px);
+      -webkit-backdrop-filter:blur(26px);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      opacity:.58;
+      transform:scale(.94) translateY(14px);
+      transition:opacity .28s var(--ease),transform .28s var(--ease),box-shadow .28s var(--ease),background .28s ease;
+      position:relative;
+    }
+
+    .plan-sheet.active{
+      opacity:1;
+      transform:scale(1) translateY(0);
+      box-shadow:0 -18px 46px rgba(15,23,42,.15);
+    }
+
+    body[data-theme="dark"] .plan-sheet.active{
+      box-shadow:0 -18px 46px rgba(0,0,0,.24);
+    }
+
+    .plan-sheet.login,
+    .plan-sheet.basic{
+      width:318px;
+    }
+
+    .plan-sheet.plus{
+      width:338px;
+    }
+
+    .plan-sheet.premium{
+      width:358px;
+    }
+
+    .plan-sheet::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        radial-gradient(circle at 100% 0%,rgba(89,221,255,.18) 0%,rgba(89,221,255,0) 40%),
+        radial-gradient(circle at 0% 100%,rgba(255,135,224,.13) 0%,rgba(255,135,224,0) 48%);
+      pointer-events:none;
+      z-index:0;
+    }
+
+    .sheet-handle-zone{
+      width:100%;
+      padding:12px 0 8px;
+      display:flex;
+      justify-content:center;
+      flex:0 0 auto;
+      cursor:pointer;
+      position:relative;
+      z-index:2;
+    }
+
+    .sheet-handle{
+      width:44px;
+      height:5px;
+      border-radius:999px;
+      background:rgba(100,116,139,.34);
+    }
+
+    body[data-theme="dark"] .sheet-handle{
+      background:rgba(255,255,255,.20);
+    }
+
+    .sheet-summary{
+      position:relative;
+      z-index:2;
+      padding:0 20px 14px;
+      flex:0 0 auto;
+    }
+
+    .summary-main{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:14px;
+    }
+
+    .summary-left{
+      min-width:0;
+      flex:1;
+    }
+
+    .summary-right{
+      flex:0 0 auto;
+      text-align:right;
+      padding-top:2px;
+    }
+
+    .title-line{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .sheet-title{
+      margin:0;
+      color:var(--main-text);
+      font-size:24px;
+      line-height:1.15;
+      font-weight:1000;
+      letter-spacing:-.7px;
+    }
+
+    .plan-sheet.premium .sheet-title{
+      font-size:30px;
+      letter-spacing:-1px;
+    }
+
+    .sheet-tag{
+      display:inline-flex;
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(128,137,255,.13);
+      color:#8089ff;
+      font-size:11px;
+      line-height:1.2;
+      font-weight:1000;
+      white-space:nowrap;
+    }
+
+    .sheet-price{
+      color:var(--main-text);
+      font-size:22px;
+      line-height:1.1;
+      font-weight:1000;
+      letter-spacing:-.8px;
+      white-space:nowrap;
+    }
+
+    .sheet-price span{
+      display:block;
+      margin-top:3px;
+      color:var(--muted-text);
+      font-size:11px;
+      font-weight:850;
+      letter-spacing:0;
+    }
+
+    .sheet-sub{
+      margin:10px 0 0;
+      color:var(--muted-text);
+      font-size:13px;
+      line-height:1.5;
+      font-weight:800;
+      display:-webkit-box;
+      -webkit-line-clamp:2;
+      -webkit-box-orient:vertical;
+      overflow:hidden;
+    }
+
+    .mini-pills{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      margin-top:10px;
+    }
+
+    .mini-pill{
+      padding:5px 8px;
+      border-radius:999px;
+      background:var(--secondary-bg);
+      border:1px solid var(--secondary-border);
+      color:var(--secondary-text);
+      font-size:11px;
+      font-weight:850;
+    }
+
+    .phone:not(.expanded) .mini-pills{
+      display:none;
+    }
+
+    .sheet-detail{
+      position:relative;
+      z-index:2;
+      flex:1;
+      min-height:0;
+      overflow-y:auto;
+      padding:0 20px 8px;
+      opacity:0;
+      transform:translateY(12px);
+      pointer-events:none;
+      transition:opacity .28s var(--ease),transform .28s var(--ease);
+      scrollbar-width:none;
+    }
+
+    .sheet-detail::-webkit-scrollbar{
+      display:none;
+    }
+
+    .phone.expanded .plan-sheet.active .sheet-detail{
+      opacity:1;
+      transform:translateY(0);
+      pointer-events:auto;
+    }
+
+    .detail-block{
+      margin-top:10px;
+      padding-top:16px;
+      border-top:1px solid var(--line);
+    }
+
+    .detail-title{
+      margin:0 0 10px;
+      color:var(--main-text);
+      font-size:15px;
+      font-weight:1000;
+    }
+
+    .feature-list{
+      display:grid;
+      gap:10px;
+      margin:0;
+      padding:0;
+      list-style:none;
+    }
+
+    .feature-list li{
+      color:var(--muted-text);
+      font-size:14px;
+      line-height:1.5;
+      font-weight:800;
+    }
+
+    .feature-list li::before{
+      content:"✓";
+      display:inline-flex;
+      width:22px;
+      color:#8089ff;
+      font-weight:1000;
+    }
+
+    .note{
+      margin-top:20px;
+      color:var(--muted-text);
+      font-size:13px;
+      line-height:1.65;
+      font-weight:800;
+      border-top:1px solid var(--line);
+      padding-top:16px;
+    }
+
+    .sheet-action{
+      position:relative;
+      z-index:3;
+      flex:0 0 auto;
+      padding:10px 20px 20px;
+      display:none;
+      opacity:0;
+      transform:translateY(10px);
+      transition:opacity .24s var(--ease),transform .24s var(--ease);
+    }
+
+    .phone.expanded .plan-sheet.active .sheet-action{
+      display:block;
+      opacity:1;
+      transform:translateY(0);
+    }
+
+    .sheet-action button{
+      width:100%;
+      min-height:54px;
+      border-radius:18px;
+      background:var(--primary-bg);
+      color:#fff;
+      font-size:16px;
+      font-weight:1000;
+      box-shadow:var(--primary-shadow);
+    }
+
+    .dots{
+      position:absolute;
+      left:0;
+      right:0;
+      bottom:16px;
+      z-index:13;
+      display:flex;
+      justify-content:center;
+      gap:7px;
+      pointer-events:auto;
+      transition:opacity .24s var(--ease);
+    }
+
+    .phone.expanded .dots{
+      opacity:0;
+      pointer-events:none;
+    }
+
+    .dot{
+      width:7px;
+      height:7px;
+      border-radius:999px;
+      background:rgba(100,116,139,.28);
+      transition:width .26s var(--ease),background .26s var(--ease);
+      cursor:pointer;
+    }
+
+    .dot.active{
+      width:22px;
+      background:#8089ff;
+    }
+
+    @media (max-width:430px){
+      body{
+        align-items:stretch;
+      }
+
+      .phone{
+        max-width:none;
+        max-height:none;
+        height:100vh;
+        border-radius:0;
+      }
+
+      .top-space{
+        min-height:380px;
+      }
+
+      .sheet-carousel{
+        scroll-padding-left:18px;
+        padding-left:18px;
+        padding-right:18px;
+      }
+
+      .plan-sheet.login,
+      .plan-sheet.basic{
+        width:302px;
+      }
+
+      .plan-sheet.plus{
+        width:322px;
+      }
+
+      .plan-sheet.premium{
+        width:342px;
+      }
+
+      .plan-sheet.premium .sheet-title{
+        font-size:28px;
+      }
+    }
+
+    @media (max-height:700px){
+      .phone{
+        height:100vh;
+        border-radius:0;
+      }
+
+      .top-space{
+        min-height:320px;
+      }
+
+      .panel{
+        min-height:258px;
+        padding:24px 22px 22px;
+      }
+
+      .sheet-stage{
+        height:188px;
+      }
+    }
   </style>
 </head>
+
 <body data-theme="dark">
   <main class="phone" id="phone">
     <button class="theme-toggle" type="button" aria-label="切換日光與暗夜模式" aria-pressed="true">
-      <span class="sun" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2.2M12 19.8V22M4.93 4.93l1.56 1.56M17.51 17.51l1.56 1.56M2 12h2.2M19.8 12H22M4.93 19.07l1.56-1.56M17.51 6.49l1.56-1.56"></path></svg></span>
-      <span class="moon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 14.2A8.6 8.6 0 0 1 9.8 3a7.5 7.5 0 1 0 11.2 11.2z"></path></svg></span>
+      <span class="sun" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2.2M12 19.8V22M4.93 4.93l1.56 1.56M17.51 17.51l1.56 1.56M2 12h2.2M19.8 12H22M4.93 19.07l1.56-1.56M17.51 6.49l1.56-1.56"></path>
+        </svg>
+      </span>
+      <span class="moon" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="M21 14.2A8.6 8.6 0 0 1 9.8 3a7.5 7.5 0 1 0 11.2 11.2z"></path>
+        </svg>
+      </span>
     </button>
 
     <section id="homeView" class="view active">
       <div class="top-space"></div>
+
       <div class="panel">
         <h1 class="home-title">歡迎登入系統</h1>
+
         <button class="btn btn-primary" type="button" onclick="showEmployeeEntry('code')">員工專區</button>
         <div class="help-text">首次使用請點擊專屬開通連結</div>
+
         <div class="spacer"></div>
+
         <button class="btn btn-secondary" type="button" onclick="showManagerEntry()">企業管理與註冊</button>
       </div>
     </section>
 
     <section id="employeeEntryView" class="view">
       <div class="top-space"></div>
+
       <div class="panel">
         <div id="codeMode" class="entry-mode">
-          <div class="entry-top-row"><h1 class="section-title">輸入開通碼</h1><button class="back-btn" type="button" onclick="showHome()">返回</button></div>
-          <div class="field"><div class="input-wrap"><input id="activationCode" type="text" inputmode="text" autocomplete="one-time-code" placeholder="開通碼" maxlength="20" /><button class="clear-btn" type="button" onclick="clearCode()">×</button></div></div>
+          <div class="entry-top-row">
+            <h1 class="section-title">輸入開通碼</h1>
+            <button class="back-btn" type="button" onclick="showHome()">返回</button>
+          </div>
+
+          <div class="field">
+            <div class="input-wrap">
+              <input id="activationCode" type="text" inputmode="text" autocomplete="one-time-code" placeholder="開通碼" maxlength="20" />
+              <button class="clear-btn" type="button" onclick="clearCode()">×</button>
+            </div>
+          </div>
+
           <button class="btn btn-primary" type="button" onclick="submitActivationCode()">啟用此設備</button>
-          <div class="btn-row"><button class="btn btn-secondary" type="button" onclick="scanQrCode()">掃描 QR</button><button class="btn btn-secondary" type="button" onclick="contactHr()">聯絡 HR</button></div>
-          <div class="hint">換手機或無法登入，請聯絡管理員重發開通碼。</div><div id="codeStatus" class="status"></div>
+
+          <div class="btn-row">
+            <button class="btn btn-secondary" type="button" onclick="scanQrCode()">掃描 QR</button>
+            <button class="btn btn-secondary" type="button" onclick="contactHr()">聯絡 HR</button>
+          </div>
+
+          <div class="hint">換手機或無法登入，請聯絡管理員重發開通碼。</div>
+          <div id="codeStatus" class="status"></div>
         </div>
+
         <div id="bindMode" class="entry-mode">
-          <div class="entry-top-row"><h1 class="section-title">確認綁定</h1><button class="back-btn" type="button" onclick="showHome()">返回</button></div>
-          <div class="profile"><div class="avatar" id="bindAvatar">員</div><div><div class="profile-name" id="bindName">員工帳號</div><div class="profile-meta" id="bindMeta">即將綁定此設備</div></div></div>
+          <div class="entry-top-row">
+            <h1 class="section-title">確認綁定</h1>
+            <button class="back-btn" type="button" onclick="showHome()">返回</button>
+          </div>
+
+          <div class="profile">
+            <div class="avatar" id="bindAvatar">員</div>
+            <div>
+              <div class="profile-name" id="bindName">員工帳號</div>
+              <div class="profile-meta" id="bindMeta">即將綁定此設備</div>
+            </div>
+          </div>
+
           <button class="btn btn-primary" type="button" onclick="confirmBindByToken()">綁定此設備</button>
-          <div class="hint">綁定後，下次會自動登入。</div><div id="bindStatus" class="status"></div>
+
+          <div class="hint">綁定後，下次會自動登入。</div>
+          <div id="bindStatus" class="status"></div>
         </div>
+
         <div id="expiredMode" class="entry-mode">
-          <div class="entry-top-row"><h1 class="section-title">連結已失效</h1><button class="back-btn" type="button" onclick="showHome()">返回</button></div>
+          <div class="entry-top-row">
+            <h1 class="section-title">連結已失效</h1>
+            <button class="back-btn" type="button" onclick="showHome()">返回</button>
+          </div>
+
           <button class="btn btn-primary" type="button" onclick="showEmployeeEntry('code')">輸入開通碼</button>
-          <div class="btn-row"><button class="btn btn-secondary" type="button" onclick="scanQrCode()">掃描 QR</button><button class="btn btn-secondary" type="button" onclick="contactHr()">聯絡 HR</button></div>
+
+          <div class="btn-row">
+            <button class="btn btn-secondary" type="button" onclick="scanQrCode()">掃描 QR</button>
+            <button class="btn btn-secondary" type="button" onclick="contactHr()">聯絡 HR</button>
+          </div>
+
           <div class="hint">請向管理員索取新的開通碼。</div>
         </div>
       </div>
@@ -193,76 +1024,631 @@
 
     <section id="managerEntryView" class="view">
       <div class="top-space"></div>
+
       <section class="sheet-stage">
         <div class="sheet-carousel" id="sheetCarousel">
-          <article class="plan-sheet login active" data-key="login"><div class="sheet-handle-zone"><div class="sheet-handle"></div></div><div class="sheet-summary"><div class="summary-main"><div class="summary-left"><div class="title-line"><h2 class="sheet-title">企業管理登入</h2><div class="sheet-tag">現有客戶</div></div></div><div class="summary-right"><div class="sheet-price">登入 <span>管理後台</span></div></div></div><p class="sheet-sub">已有公司代碼與管理員帳號，請從這裡進入後台。</p><div class="mini-pills"><span class="mini-pill">公司代碼</span><span class="mini-pill">管理員</span><span class="mini-pill">Creator</span></div></div><div class="sheet-detail"><div class="detail-block"><h3 class="detail-title">登入後可管理</h3><ul class="feature-list"><li>員工資料與開通碼</li><li>排班、請假與補打卡審核</li><li>打卡紀錄與出勤狀態</li><li>薪資、公告與系統設定</li></ul></div><div class="note">若忘記公司代碼或管理員帳號，請聯絡 ANG HR 系統管理者。</div></div></article>
-          <article class="plan-sheet basic" data-key="basic"><div class="sheet-handle-zone"><div class="sheet-handle"></div></div><div class="sheet-summary"><div class="summary-main"><div class="summary-left"><div class="title-line"><h2 class="sheet-title">Basic</h2><div class="sheet-tag">基礎方案</div></div></div><div class="summary-right"><div class="sheet-price">NT$199 <span>/ 月</span></div></div></div><p class="sheet-sub">基本打卡、排班與員工資料。</p><div class="mini-pills"><span class="mini-pill">打卡</span><span class="mini-pill">排班</span><span class="mini-pill">員工資料</span></div></div><div class="sheet-detail"><div class="detail-block"><h3 class="detail-title">Basic 主要功能</h3><ul class="feature-list"><li>員工資料建立</li><li>NFC / QR / 按鈕備援打卡</li><li>本月打卡紀錄</li><li>基礎排班管理</li></ul></div><div class="note">適合單店或小型團隊先建立基本出勤流程。</div></div></article>
-          <article class="plan-sheet plus" data-key="plus"><div class="sheet-handle-zone"><div class="sheet-handle"></div></div><div class="sheet-summary"><div class="summary-main"><div class="summary-left"><div class="title-line"><h2 class="sheet-title">Plus</h2><div class="sheet-tag">推薦</div></div></div><div class="summary-right"><div class="sheet-price">NT$399 <span>/ 月</span></div></div></div><p class="sheet-sub">請假、補卡、審核與公告。</p><div class="mini-pills"><span class="mini-pill">請假</span><span class="mini-pill">補卡</span><span class="mini-pill">審核</span></div></div><div class="sheet-detail"><div class="detail-block"><h3 class="detail-title">Plus 主要功能</h3><ul class="feature-list"><li>Basic 全部功能</li><li>請假申請與審核</li><li>補打卡申請與審核</li><li>週排班 / 月排班</li><li>主管公告與員工留言</li></ul></div><div class="note">適合已經開始正式管理班表與審核流程的公司。</div></div></article>
-          <article class="plan-sheet premium" data-key="premium"><div class="sheet-handle-zone"><div class="sheet-handle"></div></div><div class="sheet-summary"><div class="summary-main"><div class="summary-left"><div class="title-line"><h2 class="sheet-title">Premium</h2><div class="sheet-tag">完整功能</div></div></div><div class="summary-right"><div class="sheet-price">NT$699 <span>/ 月</span></div></div></div><p class="sheet-sub">Premium 獨有的特色功能。</p><div class="mini-pills"><span class="mini-pill">薪資</span><span class="mini-pill">分店</span><span class="mini-pill">報表</span></div></div><div class="sheet-detail"><div class="detail-block"><h3 class="detail-title">Premium 獨有特色</h3><ul class="feature-list"><li>薪資試算與月結管理</li><li>分店資料分流與跨店查看</li><li>角色權限分層管理</li><li>完整出勤、工時與薪資報表</li><li>進階系統設定與管理儀表板</li></ul></div><div class="note">適合已經正式營運，需要完整人資、排班、出勤與薪資流程的公司。</div></div></article>
+          <article class="plan-sheet login active" data-key="login">
+            <div class="sheet-handle-zone">
+              <div class="sheet-handle"></div>
+            </div>
+
+            <div class="sheet-summary">
+              <div class="summary-main">
+                <div class="summary-left">
+                  <div class="title-line">
+                    <h2 class="sheet-title">企業管理登入</h2>
+                    <div class="sheet-tag">現有客戶</div>
+                  </div>
+                </div>
+                <div class="summary-right">
+                  <div class="sheet-price">登入 <span>管理後台</span></div>
+                </div>
+              </div>
+
+              <p class="sheet-sub">已有公司代碼與管理員帳號，請從這裡進入後台。</p>
+
+              <div class="mini-pills">
+                <span class="mini-pill">公司代碼</span>
+                <span class="mini-pill">管理員</span>
+                <span class="mini-pill">Creator</span>
+              </div>
+            </div>
+
+            <div class="sheet-detail">
+              <div class="detail-block">
+                <h3 class="detail-title">登入後可管理</h3>
+                <ul class="feature-list">
+                  <li>員工資料與開通碼</li>
+                  <li>排班、請假與補打卡審核</li>
+                  <li>打卡紀錄與出勤狀態</li>
+                  <li>薪資、公告與系統設定</li>
+                </ul>
+              </div>
+              <div class="note">若忘記公司代碼或管理員帳號，請聯絡 ANG HR 系統管理者。</div>
+            </div>
+
+            <div class="sheet-action">
+              <button type="button" data-action-key="login">企業管理登入</button>
+            </div>
+          </article>
+
+          <article class="plan-sheet basic" data-key="basic">
+            <div class="sheet-handle-zone">
+              <div class="sheet-handle"></div>
+            </div>
+
+            <div class="sheet-summary">
+              <div class="summary-main">
+                <div class="summary-left">
+                  <div class="title-line">
+                    <h2 class="sheet-title">Basic</h2>
+                    <div class="sheet-tag">基礎方案</div>
+                  </div>
+                </div>
+                <div class="summary-right">
+                  <div class="sheet-price">NT$199 <span>/ 月</span></div>
+                </div>
+              </div>
+
+              <p class="sheet-sub">基本打卡、排班與員工資料。</p>
+
+              <div class="mini-pills">
+                <span class="mini-pill">打卡</span>
+                <span class="mini-pill">排班</span>
+                <span class="mini-pill">員工資料</span>
+              </div>
+            </div>
+
+            <div class="sheet-detail">
+              <div class="detail-block">
+                <h3 class="detail-title">Basic 主要功能</h3>
+                <ul class="feature-list">
+                  <li>員工資料建立</li>
+                  <li>NFC / QR / 按鈕備援打卡</li>
+                  <li>本月打卡紀錄</li>
+                  <li>基礎排班管理</li>
+                </ul>
+              </div>
+              <div class="note">適合單店或小型團隊先建立基本出勤流程。</div>
+            </div>
+
+            <div class="sheet-action">
+              <button type="button" data-action-key="basic">選擇 Basic</button>
+            </div>
+          </article>
+
+          <article class="plan-sheet plus" data-key="plus">
+            <div class="sheet-handle-zone">
+              <div class="sheet-handle"></div>
+            </div>
+
+            <div class="sheet-summary">
+              <div class="summary-main">
+                <div class="summary-left">
+                  <div class="title-line">
+                    <h2 class="sheet-title">Plus</h2>
+                    <div class="sheet-tag">推薦</div>
+                  </div>
+                </div>
+                <div class="summary-right">
+                  <div class="sheet-price">NT$399 <span>/ 月</span></div>
+                </div>
+              </div>
+
+              <p class="sheet-sub">請假、補卡、審核與公告。</p>
+
+              <div class="mini-pills">
+                <span class="mini-pill">請假</span>
+                <span class="mini-pill">補卡</span>
+                <span class="mini-pill">審核</span>
+              </div>
+            </div>
+
+            <div class="sheet-detail">
+              <div class="detail-block">
+                <h3 class="detail-title">Plus 主要功能</h3>
+                <ul class="feature-list">
+                  <li>Basic 全部功能</li>
+                  <li>請假申請與審核</li>
+                  <li>補打卡申請與審核</li>
+                  <li>週排班 / 月排班</li>
+                  <li>主管公告與員工留言</li>
+                </ul>
+              </div>
+              <div class="note">適合已經開始正式管理班表與審核流程的公司。</div>
+            </div>
+
+            <div class="sheet-action">
+              <button type="button" data-action-key="plus">選擇 Plus</button>
+            </div>
+          </article>
+
+          <article class="plan-sheet premium" data-key="premium">
+            <div class="sheet-handle-zone">
+              <div class="sheet-handle"></div>
+            </div>
+
+            <div class="sheet-summary">
+              <div class="summary-main">
+                <div class="summary-left">
+                  <div class="title-line">
+                    <h2 class="sheet-title">Premium</h2>
+                    <div class="sheet-tag">完整功能</div>
+                  </div>
+                </div>
+                <div class="summary-right">
+                  <div class="sheet-price">NT$699 <span>/ 月</span></div>
+                </div>
+              </div>
+
+              <p class="sheet-sub">Premium 獨有的特色功能。</p>
+
+              <div class="mini-pills">
+                <span class="mini-pill">薪資</span>
+                <span class="mini-pill">分店</span>
+                <span class="mini-pill">報表</span>
+              </div>
+            </div>
+
+            <div class="sheet-detail">
+              <div class="detail-block">
+                <h3 class="detail-title">Premium 獨有特色</h3>
+                <ul class="feature-list">
+                  <li>薪資試算與月結管理</li>
+                  <li>分店資料分流與跨店查看</li>
+                  <li>角色權限分層管理</li>
+                  <li>完整出勤、工時與薪資報表</li>
+                  <li>進階系統設定與管理儀表板</li>
+                </ul>
+              </div>
+              <div class="note">適合已經正式營運，需要完整人資、排班、出勤與薪資流程的公司。</div>
+            </div>
+
+            <div class="sheet-action">
+              <button type="button" data-action-key="premium">選擇 Premium</button>
+            </div>
+          </article>
         </div>
-        <div class="dots" id="dots"><span class="dot active"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
-        <div class="bottom-action"><button type="button" id="mainAction">企業管理登入</button></div>
+
+        <div class="dots" id="dots">
+          <span class="dot active"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </div>
       </section>
     </section>
   </main>
 
   <script>
-    const APP_STATE={baseUrl:'',token:'',id:'',name:'',company:'',deviceId:''};
-    const phone=document.getElementById('phone');
-    const carousel=document.getElementById('sheetCarousel');
-    const sheets=Array.from(document.querySelectorAll('.plan-sheet'));
-    const dots=Array.from(document.querySelectorAll('.dot'));
-    const mainAction=document.getElementById('mainAction');
-    const actionText={login:'企業管理登入',basic:'選擇 Basic',plus:'選擇 Plus',premium:'選擇 Premium'};
+    const APP_STATE = {
+      baseUrl:'',
+      token:'',
+      id:'',
+      name:'',
+      company:'',
+      deviceId:''
+    };
+
+    const phone = document.getElementById('phone');
+    const carousel = document.getElementById('sheetCarousel');
+    const sheets = Array.from(document.querySelectorAll('.plan-sheet'));
+    const dots = Array.from(document.querySelectorAll('.dot'));
+    const sheetActionButtons = Array.from(document.querySelectorAll('[data-action-key]'));
 
     function init(){
-      APP_STATE.baseUrl=getBaseUrl();
-      const params=getParams();
-      APP_STATE.token=params.token||params.key||'';
-      APP_STATE.id=String(params.id||'').trim().toUpperCase();
-      APP_STATE.name=String(params.name||'').trim();
-      APP_STATE.company=String(params.company||params.company_id||'').trim();
-      APP_STATE.deviceId=getOrCreateDeviceId();
+      APP_STATE.baseUrl = getBaseUrl();
+
+      const params = getParams();
+      APP_STATE.token = params.token || params.key || '';
+      APP_STATE.id = String(params.id || '').trim().toUpperCase();
+      APP_STATE.name = String(params.name || '').trim();
+      APP_STATE.company = String(params.company || params.company_id || '').trim();
+      APP_STATE.deviceId = getOrCreateDeviceId();
+
       initTheme(params.theme);
       initManagerCarousel();
-      if(params.expired==='1'||params.status==='expired'){showEmployeeEntry('expired');return;}
-      if(APP_STATE.token){showEmployeeEntry('bind');return;}
+
+      if (params.expired === '1' || params.status === 'expired') {
+        showEmployeeEntry('expired');
+        return;
+      }
+
+      if (APP_STATE.token) {
+        showEmployeeEntry('bind');
+        return;
+      }
+
       showHome();
     }
 
     function initTheme(themeFromUrl){
-      const body=document.body;
-      const toggle=document.querySelector('.theme-toggle');
-      const storageKey='ang-hr-theme';
-      function applyTheme(theme){const isDark=theme==='dark'||theme==='night';body.dataset.theme=isDark?'dark':'light';toggle.setAttribute('aria-pressed',String(isDark));}
-      const savedTheme=localStorage.getItem(storageKey);
-      applyTheme(themeFromUrl||savedTheme||'dark');
-      toggle.addEventListener('click',function(){const nextTheme=body.dataset.theme==='dark'?'light':'dark';applyTheme(nextTheme);localStorage.setItem(storageKey,nextTheme);});
+      const body = document.body;
+      const toggle = document.querySelector('.theme-toggle');
+      const storageKey = 'ang-hr-theme';
+
+      function applyTheme(theme){
+        const isDark = theme === 'dark' || theme === 'night';
+        body.dataset.theme = isDark ? 'dark' : 'light';
+        toggle.setAttribute('aria-pressed',String(isDark));
+      }
+
+      const savedTheme = localStorage.getItem(storageKey);
+      applyTheme(themeFromUrl || savedTheme || 'dark');
+
+      toggle.addEventListener('click',function(){
+        const nextTheme = body.dataset.theme === 'dark' ? 'light' : 'dark';
+        applyTheme(nextTheme);
+        localStorage.setItem(storageKey,nextTheme);
+      });
     }
 
-    function getParams(){const sp=new URLSearchParams(window.location.search);const data={};sp.forEach(function(value,key){data[key]=String(value||'').trim();});return data;}
-    function getBaseUrl(){return window.location.origin+window.location.pathname;}
-    function getOrCreateDeviceId(){const key='ang_hr_device_id';let id=localStorage.getItem(key);if(!id){id='DEV-'+Date.now().toString(36).toUpperCase()+'-'+Math.random().toString(36).slice(2,10).toUpperCase();localStorage.setItem(key,id);}return id;}
-    function setView(viewId){['homeView','employeeEntryView','managerEntryView'].forEach(function(id){const el=document.getElementById(id);if(el)el.classList.remove('active');});const target=document.getElementById(viewId);if(target)target.classList.add('active');if(viewId!=='managerEntryView')phone.classList.remove('expanded');}
-    function setEntryMode(modeId){['codeMode','bindMode','expiredMode'].forEach(function(id){const el=document.getElementById(id);if(el)el.classList.remove('active');});const target=document.getElementById(modeId);if(target)target.classList.add('active');}
-    function showHome(){setView('homeView');}
-    function showEmployeeEntry(mode){setView('employeeEntryView');if(mode==='bind'){setEntryMode('bindMode');const displayName=APP_STATE.name||APP_STATE.id||'員工帳號';setText('bindAvatar',displayName.slice(0,1)||'員');setText('bindName',displayName);setText('bindMeta',APP_STATE.id?'員編：'+APP_STATE.id:'即將綁定此設備');return;}if(mode==='expired'){setEntryMode('expiredMode');return;}setEntryMode('codeMode');setStatus('codeStatus','','');setTimeout(function(){const input=document.getElementById('activationCode');if(input)input.focus();},160);}
-    function showManagerEntry(){setView('managerEntryView');setTimeout(function(){setActiveManagerSheet('login',true);},40);}
-    function setText(id,text){const el=document.getElementById(id);if(el)el.innerText=text;}
-    function setStatus(id,type,message){const box=document.getElementById(id);if(!box)return;box.className='status';if(!message){box.innerText='';return;}box.classList.add('show',type||'info');box.innerText=message;}
-    function clearCode(){const input=document.getElementById('activationCode');if(input){input.value='';input.focus();}setStatus('codeStatus','','');}
-    function normalizeCode(value){return String(value||'').trim().replace(/\s+/g,'').replace(/-/g,'').toUpperCase();}
-    function submitActivationCode(){const input=document.getElementById('activationCode');const code=normalizeCode(input?input.value:'');if(!code){setStatus('codeStatus','error','請輸入開通碼');return;}setStatus('codeStatus','info','驗證中...');if(window.google&&google.script&&google.script.run){google.script.run.withSuccessHandler(function(res){if(!res||!res.ok){setStatus('codeStatus','error',(res&&(res.message||res.msg))||'開通失敗');return;}handleBindSuccess(res);}).withFailureHandler(function(err){setStatus('codeStatus','error',err&&err.message?err.message:'連線失敗');}).activateEmployeeDevice({code:code,deviceId:APP_STATE.deviceId});return;}setTimeout(function(){setStatus('codeStatus','success','開通成功');},500);}
-    function confirmBindByToken(){if(!APP_STATE.token){setStatus('bindStatus','error','連結無效');return;}setStatus('bindStatus','info','綁定中...');if(window.google&&google.script&&google.script.run){google.script.run.withSuccessHandler(function(res){if(!res||!res.ok){setStatus('bindStatus','error',(res&&(res.message||res.msg))||'綁定失敗');return;}handleBindSuccess(res);}).withFailureHandler(function(err){setStatus('bindStatus','error',err&&err.message?err.message:'連線失敗');}).bindEmployeeDeviceByToken({id:APP_STATE.id,token:APP_STATE.token,deviceId:APP_STATE.deviceId});return;}setTimeout(function(){setStatus('bindStatus','success','綁定成功');},500);}
-    function handleBindSuccess(res){const id=String(res.id||res.employeeId||res.empId||APP_STATE.id||'').trim().toUpperCase();const name=String(res.name||res.employeeName||APP_STATE.name||id||'員工').trim();const loginToken=String(res.loginToken||res.token||'').trim();if(id)localStorage.setItem('emp_logged_in',id);if(name)localStorage.setItem('emp_name',name);if(loginToken)localStorage.setItem('emp_login_token',loginToken);localStorage.setItem('isLoggedIn','1');window.location.href=buildPageUrl('employee',id,loginToken);}
-    function buildPageUrl(page,id,token){let url=APP_STATE.baseUrl+'?page='+encodeURIComponent(page||'employee');if(id)url+='&id='+encodeURIComponent(id);if(token)url+='&token='+encodeURIComponent(token);return url;}
-    function scanQrCode(){setStatus('codeStatus','info','請使用 APP 掃描 QR');}
-    function contactHr(){const subject=encodeURIComponent('ANG HR 開通碼');const body=encodeURIComponent('您好，我需要重新取得 ANG HR 開通碼。');window.location.href='mailto:hr@example.com?subject='+subject+'&body='+body;}
-    function initManagerCarousel(){if(!carousel||!mainAction)return;sheets.forEach(function(sheet){sheet.addEventListener('click',function(e){const key=sheet.dataset.key||'login';setActiveManagerSheet(key,true);if(e.target.closest('.sheet-handle-zone'))phone.classList.toggle('expanded');});});dots.forEach(function(dot,index){dot.addEventListener('click',function(){const key=sheets[index].dataset.key||'login';setActiveManagerSheet(key,true);});});let scrollTimer=null;carousel.addEventListener('scroll',function(){if(scrollTimer)clearTimeout(scrollTimer);scrollTimer=setTimeout(detectActiveManagerSheet,90);},{passive:true});let isDown=false,startX=0,startY=0,scrollLeft=0;carousel.addEventListener('pointerdown',function(e){isDown=true;carousel.classList.add('dragging');startX=e.pageX;startY=e.pageY;scrollLeft=carousel.scrollLeft;carousel.setPointerCapture(e.pointerId);});carousel.addEventListener('pointermove',function(e){if(!isDown)return;const walkX=e.pageX-startX;const walkY=e.pageY-startY;if(Math.abs(walkX)>Math.abs(walkY))carousel.scrollLeft=scrollLeft-walkX;});carousel.addEventListener('pointerup',function(e){if(!isDown)return;const walkX=e.pageX-startX;const walkY=e.pageY-startY;isDown=false;carousel.classList.remove('dragging');carousel.releasePointerCapture(e.pointerId);if(Math.abs(walkY)>Math.abs(walkX)&&walkY<-34)phone.classList.add('expanded');if(Math.abs(walkY)>Math.abs(walkX)&&walkY>34)phone.classList.remove('expanded');setTimeout(detectActiveManagerSheet,120);});carousel.addEventListener('pointercancel',function(){isDown=false;carousel.classList.remove('dragging');setTimeout(detectActiveManagerSheet,120);});mainAction.addEventListener('click',function(){const active=document.querySelector('.plan-sheet.active');const key=active?active.dataset.key:'login';if(key==='login'){goAdminLogin();return;}goTrial(key);});}
-    function setActiveManagerSheet(key,shouldCenter){sheets.forEach(function(sheet,index){const active=sheet.dataset.key===key;sheet.classList.toggle('active',active);if(dots[index])dots[index].classList.toggle('active',active);if(active&&shouldCenter){sheet.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});}});mainAction.textContent=actionText[key]||'選擇方案';}
-    function detectActiveManagerSheet(){const rect=carousel.getBoundingClientRect();const centerX=rect.left+rect.width/2;let bestIndex=0,bestDistance=Infinity;sheets.forEach(function(sheet,index){const sheetRect=sheet.getBoundingClientRect();const sheetCenter=sheetRect.left+sheetRect.width/2;const distance=Math.abs(sheetCenter-centerX);if(distance<bestDistance){bestDistance=distance;bestIndex=index;}});const key=sheets[bestIndex].dataset.key||'login';setActiveManagerSheet(key,false);}
-    function goTrial(plan){let url=APP_STATE.baseUrl+'?page=trial';if(plan)url+='&plan='+encodeURIComponent(plan);window.location.href=url;}
-    function goAdminLogin(){window.location.href=APP_STATE.baseUrl+'?page=login&role=admin';}
+    function getParams(){
+      const sp = new URLSearchParams(window.location.search);
+      const data = {};
+      sp.forEach(function(value,key){
+        data[key] = String(value || '').trim();
+      });
+      return data;
+    }
+
+    function getBaseUrl(){
+      return window.location.origin + window.location.pathname;
+    }
+
+    function getOrCreateDeviceId(){
+      const key = 'ang_hr_device_id';
+      let id = localStorage.getItem(key);
+
+      if (!id) {
+        id = 'DEV-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).slice(2,10).toUpperCase();
+        localStorage.setItem(key,id);
+      }
+
+      return id;
+    }
+
+    function setView(viewId){
+      ['homeView','employeeEntryView','managerEntryView'].forEach(function(id){
+        const el = document.getElementById(id);
+        if (el) el.classList.remove('active');
+      });
+
+      const target = document.getElementById(viewId);
+      if (target) target.classList.add('active');
+
+      if (viewId !== 'managerEntryView') {
+        phone.classList.remove('expanded');
+      }
+    }
+
+    function setEntryMode(modeId){
+      ['codeMode','bindMode','expiredMode'].forEach(function(id){
+        const el = document.getElementById(id);
+        if (el) el.classList.remove('active');
+      });
+
+      const target = document.getElementById(modeId);
+      if (target) target.classList.add('active');
+    }
+
+    function showHome(){
+      setView('homeView');
+    }
+
+    function showEmployeeEntry(mode){
+      setView('employeeEntryView');
+
+      if (mode === 'bind') {
+        setEntryMode('bindMode');
+
+        const displayName = APP_STATE.name || APP_STATE.id || '員工帳號';
+        setText('bindAvatar',displayName.slice(0,1) || '員');
+        setText('bindName',displayName);
+        setText('bindMeta',APP_STATE.id ? '員編：' + APP_STATE.id : '即將綁定此設備');
+        return;
+      }
+
+      if (mode === 'expired') {
+        setEntryMode('expiredMode');
+        return;
+      }
+
+      setEntryMode('codeMode');
+      setStatus('codeStatus','','');
+
+      setTimeout(function(){
+        const input = document.getElementById('activationCode');
+        if (input) input.focus();
+      },160);
+    }
+
+    function showManagerEntry(){
+      setView('managerEntryView');
+      setTimeout(function(){
+        setActiveManagerSheet('login',true);
+      },40);
+    }
+
+    function setText(id,text){
+      const el = document.getElementById(id);
+      if (el) el.innerText = text;
+    }
+
+    function setStatus(id,type,message){
+      const box = document.getElementById(id);
+      if (!box) return;
+
+      box.className = 'status';
+
+      if (!message) {
+        box.innerText = '';
+        return;
+      }
+
+      box.classList.add('show',type || 'info');
+      box.innerText = message;
+    }
+
+    function clearCode(){
+      const input = document.getElementById('activationCode');
+
+      if (input) {
+        input.value = '';
+        input.focus();
+      }
+
+      setStatus('codeStatus','','');
+    }
+
+    function normalizeCode(value){
+      return String(value || '')
+        .trim()
+        .replace(/\s+/g,'')
+        .replace(/-/g,'')
+        .toUpperCase();
+    }
+
+    function submitActivationCode(){
+      const input = document.getElementById('activationCode');
+      const code = normalizeCode(input ? input.value : '');
+
+      if (!code) {
+        setStatus('codeStatus','error','請輸入開通碼');
+        return;
+      }
+
+      setStatus('codeStatus','info','驗證中...');
+
+      if (window.google && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(function(res){
+            if (!res || !res.ok) {
+              setStatus('codeStatus','error',(res && (res.message || res.msg)) || '開通失敗');
+              return;
+            }
+
+            handleBindSuccess(res);
+          })
+          .withFailureHandler(function(err){
+            setStatus('codeStatus','error',err && err.message ? err.message : '連線失敗');
+          })
+          .activateEmployeeDevice({
+            code:code,
+            deviceId:APP_STATE.deviceId
+          });
+        return;
+      }
+
+      setTimeout(function(){
+        setStatus('codeStatus','success','開通成功');
+      },500);
+    }
+
+    function confirmBindByToken(){
+      if (!APP_STATE.token) {
+        setStatus('bindStatus','error','連結無效');
+        return;
+      }
+
+      setStatus('bindStatus','info','綁定中...');
+
+      if (window.google && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(function(res){
+            if (!res || !res.ok) {
+              setStatus('bindStatus','error',(res && (res.message || res.msg)) || '綁定失敗');
+              return;
+            }
+
+            handleBindSuccess(res);
+          })
+          .withFailureHandler(function(err){
+            setStatus('bindStatus','error',err && err.message ? err.message : '連線失敗');
+          })
+          .bindEmployeeDeviceByToken({
+            id:APP_STATE.id,
+            token:APP_STATE.token,
+            deviceId:APP_STATE.deviceId
+          });
+        return;
+      }
+
+      setTimeout(function(){
+        setStatus('bindStatus','success','綁定成功');
+      },500);
+    }
+
+    function handleBindSuccess(res){
+      const id = String(res.id || res.employeeId || res.empId || APP_STATE.id || '').trim().toUpperCase();
+      const name = String(res.name || res.employeeName || APP_STATE.name || id || '員工').trim();
+      const loginToken = String(res.loginToken || res.token || '').trim();
+
+      if (id) localStorage.setItem('emp_logged_in',id);
+      if (name) localStorage.setItem('emp_name',name);
+      if (loginToken) localStorage.setItem('emp_login_token',loginToken);
+
+      localStorage.setItem('isLoggedIn','1');
+
+      window.location.href = buildPageUrl('employee',id,loginToken);
+    }
+
+    function buildPageUrl(page,id,token){
+      let url = APP_STATE.baseUrl + '?page=' + encodeURIComponent(page || 'employee');
+
+      if (id) url += '&id=' + encodeURIComponent(id);
+      if (token) url += '&token=' + encodeURIComponent(token);
+
+      return url;
+    }
+
+    function scanQrCode(){
+      setStatus('codeStatus','info','請使用 APP 掃描 QR');
+    }
+
+    function contactHr(){
+      const subject = encodeURIComponent('ANG HR 開通碼');
+      const body = encodeURIComponent('您好，我需要重新取得 ANG HR 開通碼。');
+      window.location.href = 'mailto:hr@example.com?subject=' + subject + '&body=' + body;
+    }
+
+    function initManagerCarousel(){
+      if (!carousel) return;
+
+      sheets.forEach(function(sheet){
+        sheet.addEventListener('click',function(e){
+          const key = sheet.dataset.key || 'login';
+          setActiveManagerSheet(key,true);
+
+          if (e.target.closest('.sheet-handle-zone')) {
+            phone.classList.toggle('expanded');
+          }
+        });
+      });
+
+      dots.forEach(function(dot,index){
+        dot.addEventListener('click',function(){
+          const key = sheets[index].dataset.key || 'login';
+          setActiveManagerSheet(key,true);
+        });
+      });
+
+      sheetActionButtons.forEach(function(button){
+        button.addEventListener('click',function(e){
+          e.stopPropagation();
+          const key = button.dataset.actionKey || 'login';
+
+          if (key === 'login') {
+            goAdminLogin();
+            return;
+          }
+
+          goTrial(key);
+        });
+      });
+
+      let scrollTimer = null;
+      carousel.addEventListener('scroll',function(){
+        if (scrollTimer) clearTimeout(scrollTimer);
+        scrollTimer = setTimeout(detectActiveManagerSheet,90);
+      },{passive:true});
+
+      let isDown = false;
+      let startX = 0;
+      let startY = 0;
+      let scrollLeft = 0;
+
+      carousel.addEventListener('pointerdown',function(e){
+        isDown = true;
+        carousel.classList.add('dragging');
+        startX = e.pageX;
+        startY = e.pageY;
+        scrollLeft = carousel.scrollLeft;
+        carousel.setPointerCapture(e.pointerId);
+      });
+
+      carousel.addEventListener('pointermove',function(e){
+        if (!isDown) return;
+
+        const walkX = e.pageX - startX;
+        const walkY = e.pageY - startY;
+
+        if (Math.abs(walkX) > Math.abs(walkY)) {
+          carousel.scrollLeft = scrollLeft - walkX;
+        }
+      });
+
+      carousel.addEventListener('pointerup',function(e){
+        if (!isDown) return;
+
+        const walkX = e.pageX - startX;
+        const walkY = e.pageY - startY;
+
+        isDown = false;
+        carousel.classList.remove('dragging');
+        carousel.releasePointerCapture(e.pointerId);
+
+        if (Math.abs(walkY) > Math.abs(walkX) && walkY < -34) phone.classList.add('expanded');
+        if (Math.abs(walkY) > Math.abs(walkX) && walkY > 34) phone.classList.remove('expanded');
+
+        setTimeout(detectActiveManagerSheet,120);
+      });
+
+      carousel.addEventListener('pointercancel',function(){
+        isDown = false;
+        carousel.classList.remove('dragging');
+        setTimeout(detectActiveManagerSheet,120);
+      });
+    }
+
+    function setActiveManagerSheet(key,shouldCenter){
+      sheets.forEach(function(sheet,index){
+        const active = sheet.dataset.key === key;
+        sheet.classList.toggle('active',active);
+        if (dots[index]) dots[index].classList.toggle('active',active);
+
+        if (active && shouldCenter) {
+          sheet.scrollIntoView({
+            behavior:'smooth',
+            inline:'center',
+            block:'nearest'
+          });
+        }
+      });
+    }
+
+    function detectActiveManagerSheet(){
+      const rect = carousel.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+
+      let bestIndex = 0;
+      let bestDistance = Infinity;
+
+      sheets.forEach(function(sheet,index){
+        const sheetRect = sheet.getBoundingClientRect();
+        const sheetCenter = sheetRect.left + sheetRect.width / 2;
+        const distance = Math.abs(sheetCenter - centerX);
+
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          bestIndex = index;
+        }
+      });
+
+      const key = sheets[bestIndex].dataset.key || 'login';
+      setActiveManagerSheet(key,false);
+    }
+
+    function goTrial(plan){
+      let url = APP_STATE.baseUrl + '?page=trial';
+      if (plan) url += '&plan=' + encodeURIComponent(plan);
+      window.location.href = url;
+    }
+
+    function goAdminLogin(){
+      window.location.href = APP_STATE.baseUrl + '?page=login&role=admin';
+    }
+
     window.addEventListener('load',init);
   </script>
 </body>
