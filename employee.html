@@ -1,64 +1,78 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>ANG Engine HR 系統</title>
-
-  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+  <title>ANG HR SYSTEMS｜ENTRY</title>
   <style>
     :root{
-      --bg:#f5f7fb;
-      --card:#ffffff;
-      --text:#111827;
-      --muted:#6b7280;
-      --line:#e5e7eb;
-      --soft:#f3f4f6;
-      --ok:#10b981;
-      --warn:#f59e0b;
-      --danger:#ef4444;
+      --body-bg:#d1d5db;
+      --screen-bg:url("ang-entry-bg-day.png");
 
-      --emp:#FF87E0;
-      --emp-deep:#B85DA3;
-      --emp-soft:rgba(255,135,224,.12);
-      --emp-soft2:rgba(255,135,224,.18);
-      --emp-text:#8F4C7E;
-      --emp-rgb:255,135,224;
-      --emp-angle:135deg;
-      --text-on-emp:#ffffff;
-      --emp-1:#FF87E0;
-      --emp-2:#CCA4FF;
-      --emp-3:#8089FF;
-      --emp-4:#59DDFF;
-      --emp-gradient:linear-gradient(var(--emp-angle), var(--emp-1) 0%, var(--emp-2) 33%, var(--emp-3) 66%, var(--emp-4) 100%);
+      --panel-bg:rgba(255,255,255,.94);
+      --panel-border:rgba(226,232,240,.92);
+      --panel-shadow:0 -14px 34px rgba(15,23,42,.10);
 
-      --schedule:#FF87E0;
-      --schedule-rgb:255,135,224;
-      --schedule-deep:#C04BB0;
-      --schedule-text:#8A2E7B;
-      --schedule-on:#ffffff;
+      --main-text:#0f172a;
+      --muted-text:#64748b;
+      --soft-text:#94a3b8;
 
-      --clock:#CCA4FF;
-      --clock-rgb:204,164,255;
-      --clock-deep:#8B5CCB;
-      --clock-text:#69439D;
-      --clock-on:#ffffff;
+      --input-bg:#f1f5f9;
+      --input-border:#e2e8f0;
 
-      --salary:#8089FF;
-      --salary-rgb:128,137,255;
-      --salary-deep:#5B66DB;
-      --salary-text:#4D56B5;
-      --salary-on:#ffffff;
+      --primary-bg:linear-gradient(90deg,#00d9ff 0%,#7c3cff 58%,#b000ff 100%);
+      --primary-text:#ffffff;
+      --primary-shadow:0 8px 24px rgba(124,60,255,.26);
 
-      --upload:#59DDFF;
-      --upload-rgb:89,221,255;
-      --upload-deep:#2E9CB8;
-      --upload-text:#246F83;
-      --upload-on:#ffffff;
+      --secondary-bg:#f8fafc;
+      --secondary-text:#475569;
+      --secondary-border:#e2e8f0;
+
+      --card-bg:rgba(255,255,255,.94);
+      --card-border:rgba(226,232,240,.92);
+      --line:rgba(148,163,184,.24);
+
+      --toggle-bg:rgba(255,255,255,.74);
+      --toggle-border:rgba(148,163,184,.34);
+      --toggle-shadow:0 10px 24px rgba(15,23,42,.12);
+      --toggle-icon-dim:rgba(71,85,105,.72);
+      --toggle-thumb-bg:#ffffff;
+      --toggle-thumb-shadow:0 6px 14px rgba(15,23,42,.16);
+      --toggle-thumb-x:0px;
+
+      --ease:cubic-bezier(.22,1,.36,1);
+    }
+
+    body[data-theme="dark"]{
+      --body-bg:#a3a3a3;
+      --screen-bg:url("ang-entry-bg-night.png");
+
+      --panel-bg:rgba(18,25,42,.88);
+      --panel-border:rgba(255,255,255,.08);
+      --panel-shadow:none;
+
+      --main-text:#ffffff;
+      --muted-text:#cbd5e1;
+      --soft-text:#8b9bb4;
+
+      --input-bg:rgba(255,255,255,.07);
+      --input-border:rgba(255,255,255,.10);
+
+      --secondary-bg:rgba(255,255,255,.06);
+      --secondary-text:#e5e7eb;
+      --secondary-border:rgba(255,255,255,.08);
+
+      --card-bg:rgba(18,25,42,.88);
+      --card-border:rgba(255,255,255,.08);
+      --line:rgba(255,255,255,.10);
+
+      --toggle-bg:rgba(15,23,42,.52);
+      --toggle-border:rgba(255,255,255,.12);
+      --toggle-shadow:0 10px 24px rgba(0,0,0,.28);
+      --toggle-icon-dim:rgba(226,232,240,.68);
+      --toggle-thumb-bg:rgba(255,255,255,.15);
+      --toggle-thumb-shadow:0 0 18px rgba(0,217,255,.16);
+      --toggle-thumb-x:28px;
     }
 
     *{
@@ -66,3854 +80,1578 @@
       -webkit-tap-highlight-color:transparent;
     }
 
-    html,body{
+    html,
+    body{
       margin:0;
-      padding:0;
-      background:var(--bg);
-      color:var(--text);
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      width:100%;
+      height:100%;
+      overflow:hidden;
     }
 
     body{
-      padding-bottom:96px;
-    }
-
-    .topbar{
-      position:sticky;
-      top:0;
-      z-index:1000;
-      background:rgba(255,255,255,.96);
-      -webkit-backdrop-filter:blur(12px);
-      backdrop-filter:blur(12px);
-      padding:8px 12px;
-      min-height:58px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      box-shadow:0 2px 10px rgba(0,0,0,.04);
-    }
-
-    .topbar-left{
-      min-width:0;
-      flex:0 0 auto;
-      display:flex;
-      align-items:center;
-      gap:10px;
-    }
-
-    .topbar-right{
-      text-align:right;
-      min-width:0;
-      flex:1 1 auto;
-      max-width:54%;
-    }
-
-    .brand-slot{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      min-width:0;
-    }
-
-    .brand-logo{
-      width:44px;
-      height:44px;
-      border-radius:16px;
       display:flex;
       align-items:center;
       justify-content:center;
-      background:var(--emp-gradient);
-      color:#fff;
-      font-size:13px;
-      line-height:1.05;
-      text-align:center;
-      font-weight:900;
-      box-shadow:0 8px 18px rgba(var(--emp-rgb),.18);
-      flex:0 0 auto;
-      overflow:hidden;
-      background-size:contain;
-      background-position:center;
-      background-repeat:no-repeat;
-      padding:2px;
-      white-space:normal;
-      word-break:break-word;
+      background:var(--body-bg);
+      font-family:"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;
+      color:var(--main-text);
+      transition:background .25s ease;
     }
 
-    .brand-logo img{
-      width:100%;
-      height:100%;
-      object-fit:contain;
-      border-radius:14px;
-      display:block;
+    button,
+    input{
+      font-family:inherit;
     }
 
-    .brand-title-wrap{
-      min-width:0;
-      display:flex;
-      flex-direction:column;
-      align-items:flex-start;
-      line-height:1.05;
-    }
-
-    .brand-title-main{
-      font-size:14px;
-      font-weight:900;
-      color:var(--emp-deep);
-      letter-spacing:.2px;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      max-width:38vw;
-    }
-
-    .brand-title-sub{
-      margin-top:3px;
-      font-size:10px;
-      font-weight:800;
-      color:#9ca3af;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      max-width:38vw;
-    }
-
-    .title{
-      font-size:16px;
-      font-weight:900;
-      line-height:1.05;
-      color:var(--emp-deep);
-      letter-spacing:.2px;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-
-    .sub-title{
-      margin-top:2px;
-      font-size:11px;
-      font-weight:800;
-      color:#9ca3af;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-
-    .safe{
-      width:100%;
-      padding:8px 8px 0;
-    }
-
-    .page{ display:none; }
-    .page.active{
-      display:block;
-      animation:fadeIn .22s ease;
-    }
-
-    @keyframes fadeIn{
-      from{opacity:0;transform:translateY(4px);}
-      to{opacity:1;transform:translateY(0);}
-    }
-
-    .card{
-      width:100%;
-      background:var(--card);
-      border-radius:22px;
-      padding:14px;
-      margin-bottom:10px;
-      box-shadow:0 8px 24px rgba(0,0,0,.05);
-      border:1px solid rgba(0,0,0,.03);
-      overflow:hidden;
-    }
-
-    .section-title{
-      font-size:17px;
-      font-weight:900;
-      margin:0 0 10px;
-      letter-spacing:.2px;
-    }
-
-    .label{
-      display:block;
-      font-size:13px;
-      color:var(--muted);
-      font-weight:900;
-      margin:0 0 7px;
-    }
-
-    input,select,textarea{
-      width:100%;
-      min-width:0;
+    button{
       border:none;
-      outline:none;
-      border-radius:16px;
-      background:var(--soft);
-      padding:13px 12px;
-      font:inherit;
-      color:var(--text);
-      margin-bottom:10px;
-    }
-
-    textarea{
-      resize:vertical;
-      min-height:86px;
-    }
-
-    .btn-main,.btn-ghost,.btn-soft{
-      border:none;
-      outline:none;
       cursor:pointer;
-      font:inherit;
-      transition:transform .15s ease, box-shadow .18s ease, background .18s ease, color .18s ease;
     }
 
-    .btn-main:active,.btn-ghost:active,.btn-soft:active,
-    .week-tabs button:active,.record-top-tabs button:active,
-    .upload-type-btn:active,.weekday-chip:active,.theme-color-btn:active{
-      transform:scale(.98);
-    }
-
-    .btn-main{
+    .phone{
       width:100%;
-      border-radius:18px;
-      padding:14px 14px;
-      background:var(--emp-gradient);
-      color:var(--text-on-emp);
-      font-weight:900;
-      font-size:15px;
-      box-shadow:0 12px 24px rgba(var(--emp-rgb),.22);
-    }
-
-    .btn-ghost{
-      width:100%;
-      border-radius:16px;
-      padding:13px 10px;
-      background:linear-gradient(var(--emp-angle), rgba(var(--emp-rgb),.18), rgba(var(--emp-rgb),.30));
-      color:var(--emp-deep);
-      font-size:14px;
-      font-weight:900;
-      line-height:1.2;
-      border:1px solid rgba(var(--emp-rgb),.22);
-      box-shadow:0 10px 22px rgba(var(--emp-rgb),.10);
-    }
-
-    .btn-soft{
-      width:100%;
-      border-radius:16px;
-      padding:13px;
-      background:linear-gradient(var(--emp-angle), rgba(var(--emp-rgb),.20), rgba(var(--emp-rgb),.34));
-      color:var(--emp-deep);
-      font-size:14px;
-      font-weight:900;
-      border:1px solid rgba(var(--emp-rgb),.18);
-      box-shadow:0 10px 22px rgba(var(--emp-rgb),.10);
-    }
-
-    .mini-row{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:8px;
-      margin-bottom:10px;
-    }
-
-    .mini-row h3{
-      margin:0;
-      font-size:16px;
-      font-weight:900;
-    }
-
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      border-radius:999px;
-      padding:6px 10px;
-      font-size:11px;
-      font-weight:900;
-      white-space:nowrap;
-      background:linear-gradient(180deg,#ffffff 0%, rgba(var(--emp-rgb),.14) 100%);
-      color:var(--emp-deep);
-      border:1px solid rgba(var(--emp-rgb),.14);
-    }
-
-    .badge.ok{ background:#ecfdf5; color:#047857; }
-    .badge.warn{ background:#fff7ed; color:#c2410c; }
-    .badge.danger{ background:#fef2f2; color:#b91c1c; }
-
-    .hero{
-      background:var(--emp-gradient);
-      color:#fff;
-      border-radius:24px;
-      padding:16px;
-      margin-bottom:10px;
-      box-shadow:0 12px 28px rgba(var(--emp-rgb),.22);
-    }
-
-    .hero-top{
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-start;
-      gap:10px;
-      margin-bottom:12px;
-    }
-
-    .hello{
-      font-size:22px;
-      font-weight:900;
-      line-height:1.1;
-    }
-
-    .hello-sub{
-      margin-top:5px;
-      font-size:12px;
-      font-weight:800;
-      opacity:.92;
-    }
-
-    .hero-chip{
-      flex:0 0 auto;
-      background:rgba(255,255,255,.17);
-      border:1px solid rgba(255,255,255,.15);
-      border-radius:999px;
-      padding:8px 12px;
-      font-size:11px;
-      font-weight:900;
-    }
-
-    .next-shift{
-      background:rgba(255,255,255,.14);
-      border:1px solid rgba(255,255,255,.16);
-      border-radius:18px;
-      padding:13px 14px;
-    }
-
-    .next-shift small{
-      display:block;
-      font-size:11px;
-      font-weight:800;
-      margin-bottom:5px;
-      opacity:.9;
-    }
-
-    .next-shift .big{
-      font-size:18px;
-      font-weight:900;
-      line-height:1.2;
-    }
-
-    .status-grid-3,.tool-grid,.leave-v4-qty,.time-pair,.week-tabs,.record-top-tabs{
-      display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:8px;
-    }
-
-    .status-grid-3{
-      grid-template-columns:repeat(3,minmax(0,1fr));
-      margin-bottom:10px;
-    }
-
-    .status-mini,.notice-item,.alert-item,.timeline-item,.record-item,.day-pay-item{
-      background:linear-gradient(180deg,#ffffff 0%, rgba(var(--emp-rgb),.06) 100%);
-      border:1px solid rgba(var(--emp-rgb),.10);
-      border-radius:18px;
-      padding:12px;
-      box-shadow:0 8px 18px rgba(var(--emp-rgb),.04);
-    }
-
-    .alert-item.warn{
-      background:#fffaf0;
-      border-color:#fde7bd;
-    }
-
-    .alert-item.danger{
-      background:#fff4f4;
-      border-color:#fecaca;
-    }
-
-    .status-mini{
-      min-width:0;
-      text-align:center;
-    }
-
-    .status-mini small{
-      display:block;
-      font-size:10px;
-      font-weight:900;
-      color:var(--muted);
-      margin-bottom:5px;
-    }
-
-    .status-mini .v{
-      font-size:16px;
-      font-weight:900;
-      color:var(--text);
-      line-height:1.15;
-      word-break:break-word;
-    }
-
-    .notice-list,.alert-list,.timeline-list,.record-list,.day-pay-list{
-      display:grid;
-      gap:8px;
-    }
-
-    .item-title{
-      font-size:14px;
-      font-weight:900;
-      line-height:1.35;
-      margin-bottom:4px;
-    }
-
-    .item-meta{
-      font-size:12px;
-      color:var(--muted);
-      line-height:1.5;
-      word-break:break-word;
-    }
-
-    .leave-guide{
-      background:#fffaf2;
-      border:1px solid #fde6b6;
-      border-radius:18px;
-      padding:12px;
-      margin-bottom:10px;
-    }
-
-    .leave-guide .g-title{
-      font-size:14px;
-      font-weight:900;
-      color:#b45309;
-      margin-bottom:4px;
-    }
-
-    .leave-guide .g-text{
-      font-size:12px;
-      color:var(--muted);
-      line-height:1.5;
-    }
-
-    .week-tabs button,.record-top-tabs button{
-      width:100%;
-      min-width:0;
-      border:none;
-      border-radius:16px;
-      padding:12px 8px;
-      background:linear-gradient(var(--emp-angle), rgba(var(--emp-rgb),.14), rgba(var(--emp-rgb),.24));
-      color:var(--emp-deep);
-      font-size:14px;
-      font-weight:900;
-      cursor:pointer;
-      white-space:pre-line;
-      line-height:1.25;
-      min-height:58px;
-      border:1px solid rgba(var(--emp-rgb),.16);
-      box-shadow:0 10px 20px rgba(var(--emp-rgb),.08);
-    }
-
-    .week-tabs button.active,.record-top-tabs button.active{
-      background:var(--emp-gradient);
-      color:var(--text-on-emp);
-      box-shadow:0 10px 20px rgba(var(--emp-rgb),.18);
-      border-color:transparent;
-    }
-
-    .calendar-title{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:8px;
-      margin-bottom:8px;
-    }
-
-    .calendar-title .t{
-      font-size:15px;
-      font-weight:900;
-      color:var(--emp-deep);
-    }
-
-    .calendar-title .s{
-      font-size:12px;
-      color:var(--muted);
-      font-weight:900;
-      white-space:nowrap;
-    }
-
-    .fc{
-      background:#fff;
-      border-radius:18px;
-      padding:8px;
-    }
-
-    .fc .fc-toolbar-title{
-      font-size:17px !important;
-      font-weight:900 !important;
-      color:var(--emp-deep);
-    }
-
-    .fc .fc-col-header-cell-cushion{
-      font-size:13px;
-      font-weight:900;
-      color:var(--emp-deep);
-      padding:6px 4px;
-    }
-
-    .fc .fc-daygrid-day-number{
-      font-size:13px;
-      font-weight:900;
-      color:var(--text);
-      padding:6px 7px;
-    }
-
-    .fc .fc-day-today{
-      background:rgba(var(--emp-rgb),.10) !important;
-    }
-
-    .fc .fc-button-primary{
-      background:var(--emp-gradient) !important;
-      color:var(--text-on-emp) !important;
-      border:none !important;
-      box-shadow:0 10px 20px rgba(var(--emp-rgb),.16) !important;
-    }
-
-    .fc .fc-view-harness,
-    .fc .fc-scroller{
-      height:auto !important;
-      overflow:visible !important;
-    }
-
-    .fc-daygrid-day-frame{
-      min-height:58px !important;
-    }
-
-    #cal-main,#cal-clock,#cal-salary-month,#cal-upload{
-      background:#fff;
-      border-radius:18px;
-      padding:8px;
-      min-height:320px;
-      box-shadow:inset 0 0 0 1px rgba(0,0,0,.03);
-    }
-
-    #cal-main .fc-daygrid-day-frame{ min-height:76px !important; }
-    #cal-clock .fc-daygrid-day-frame{ min-height:88px !important; }
-    #cal-clock .fc-daygrid-event,#cal-upload .fc-daygrid-event{ margin-top:2px !important; border-radius:8px; padding:1px 4px; }
-    #cal-clock .fc-h-event,#cal-upload .fc-h-event{ border:none; }
-    #cal-clock .fc-event-title,#cal-upload .fc-event-title{ font-size:10px; font-weight:900; }
-
-    .trend-card{
+      max-width:400px;
+      height:min(100vh,760px);
       position:relative;
       overflow:hidden;
-      background:#fff;
-      border-radius:22px;
-      padding:14px;
-      margin-bottom:10px;
-      box-shadow:0 8px 24px rgba(0,0,0,.05);
-      border:1px solid rgba(0,0,0,.03);
+      border-radius:24px;
+      background:#05060b;
+      box-shadow:0 18px 42px rgba(0,0,0,.28);
     }
 
-    .trend-card-soft{ background:linear-gradient(180deg,#fff 0%, rgba(var(--emp-rgb),.03) 100%); }
-
-    .trend-bg{
+    .phone::before{
+      content:"";
       position:absolute;
       inset:0;
-      pointer-events:none;
-      opacity:.48;
+      z-index:0;
+      background-image:var(--screen-bg);
+      background-size:cover;
+      background-position:center center;
+      background-repeat:no-repeat;
+      transition:background-image .25s ease;
     }
 
-    .trend-bg svg{ width:100%; height:100%; }
+    .phone::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      z-index:1;
+      pointer-events:none;
+      background:linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(0,0,0,.08) 66%,rgba(0,0,0,.18) 100%);
+      opacity:.55;
+    }
 
-    .trend-bg polyline{
+    body:not([data-theme="dark"]) .phone::after{
+      background:linear-gradient(180deg,rgba(255,255,255,.04) 0%,rgba(255,255,255,.02) 62%,rgba(15,23,42,.08) 100%);
+      opacity:.70;
+    }
+
+    .theme-toggle{
+      position:absolute;
+      top:14px;
+      right:14px;
+      width:58px;
+      height:30px;
+      padding:3px;
+      border:1px solid var(--toggle-border);
+      border-radius:999px;
+      background:var(--toggle-bg);
+      box-shadow:var(--toggle-shadow);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      z-index:40;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      align-items:center;
+      justify-items:center;
+      appearance:none;
+      -webkit-appearance:none;
+      overflow:hidden;
+    }
+
+    .theme-toggle::before{
+      content:"";
+      position:absolute;
+      left:3px;
+      top:3px;
+      width:24px;
+      height:24px;
+      border-radius:50%;
+      background:var(--toggle-thumb-bg);
+      box-shadow:var(--toggle-thumb-shadow);
+      transform:translateX(var(--toggle-thumb-x));
+      transition:transform .25s ease,background .25s ease,box-shadow .25s ease;
+    }
+
+    .theme-toggle span{
+      position:relative;
+      z-index:1;
+      width:24px;
+      height:24px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:var(--toggle-icon-dim);
+      pointer-events:none;
+    }
+
+    .theme-toggle svg{
+      width:14px;
+      height:14px;
+      stroke:currentColor;
       fill:none;
-      stroke:rgba(var(--emp-rgb),.30);
-      stroke-width:4;
+      stroke-width:2.1;
       stroke-linecap:round;
       stroke-linejoin:round;
     }
 
-    .trend-split{
+    body:not([data-theme="dark"]) .theme-toggle .sun{
+      color:#0f172a;
+    }
+
+    body[data-theme="dark"] .theme-toggle .moon{
+      color:#fff;
+      filter:drop-shadow(0 0 5px rgba(255,255,255,.32));
+    }
+
+    .view{
+      position:absolute;
+      inset:0;
+      z-index:5;
+      display:none;
+      flex-direction:column;
+    }
+
+    .view.active{
+      display:flex;
+    }
+
+    .top-space{
+      flex:1;
+      min-height:360px;
+      transition:opacity .42s var(--ease),transform .42s var(--ease);
+    }
+
+    .phone.expanded .top-space{
+      opacity:.38;
+      transform:translateY(-24px) scale(.96);
+    }
+
+    .panel{
       position:relative;
-      z-index:1;
-      display:grid;
-      grid-template-columns:1fr 1px 1fr;
-      gap:12px;
-      align-items:center;
-    }
-
-    .trend-cell .value{
-      font-size:26px;
-      color:var(--emp-deep);
-      font-weight:900;
-    }
-
-    .trend-cell small{
-      display:block;
-      color:var(--muted);
-      font-size:11px;
-      font-weight:900;
-      margin-bottom:6px;
-    }
-
-    .trend-cell .sub{
-      font-size:11px;
-      color:var(--muted);
-      margin-top:5px;
-    }
-
-    .trend-divider{
-      width:1px;
-      height:62px;
-      background:rgba(var(--emp-rgb),.15);
-    }
-
-    .weekday-strip{
-      display:grid;
-      grid-template-columns:repeat(7,minmax(0,1fr));
-      gap:6px;
-      margin-bottom:10px;
-    }
-
-    .weekday-strip.is-month-mode{
-      grid-template-columns:repeat(7,minmax(0,1fr));
-      max-height:none;
-    }
-
-    .weekday-strip.is-month-mode .weekday-chip{
-      min-height:54px;
-      padding:9px 4px 8px;
-      border-radius:16px;
-    }
-
-    .week-tabs button{
-      white-space:pre-line;
-      line-height:1.25;
-    }
-
-    .weekday-chip{
-      border:none;
-      border-radius:18px;
-      padding:11px 5px 10px;
-      background:linear-gradient(var(--emp-angle), rgba(var(--emp-rgb),.14), rgba(var(--emp-rgb),.26));
-      color:var(--emp-deep);
-      cursor:pointer;
+      z-index:8;
+      margin-top:auto;
+      min-height:264px;
+      padding:28px 24px 24px;
       display:flex;
       flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      gap:4px;
-      min-height:58px;
-      white-space:normal;
-      border:1px solid rgba(var(--emp-rgb),.18);
-      box-shadow:0 10px 20px rgba(var(--emp-rgb),.10);
-      transition:transform .15s ease, box-shadow .18s ease, background .18s ease, color .18s ease;
+      background:var(--panel-bg);
+      border-top:1px solid var(--panel-border);
+      border-radius:28px 28px 0 0;
+      box-shadow:var(--panel-shadow);
+      backdrop-filter:blur(24px);
+      -webkit-backdrop-filter:blur(24px);
+      transition:background .25s ease,border-color .25s ease,box-shadow .25s ease;
     }
 
-    .weekday-main{
-      font-size:13px;
-      line-height:1.1;
-      font-weight:900;
-    }
-
-    .weekday-date{
-      font-size:11px;
-      line-height:1;
-      font-weight:800;
-      opacity:.88;
-    }
-
-    .weekday-chip.active{
-      background:var(--emp-gradient);
-      color:var(--text-on-emp);
-      border-color:transparent;
-      box-shadow:0 14px 26px rgba(var(--emp-rgb),.20);
-    }
-
-    .weekday-chip.active .weekday-date{
-      opacity:.96;
-    }
-
-    .weekday-chip:disabled{
-      opacity:.55;
-      cursor:not-allowed;
-      background:linear-gradient(180deg,#f8fafc 0%, rgba(var(--emp-rgb),.08) 100%);
-      color:#94a3b8;
-      border:1px dashed rgba(var(--emp-rgb),.18);
-      box-shadow:none;
-    }
-
-    .leave-v4-time{
-      background:linear-gradient(180deg,#ffffff 0%, rgba(var(--schedule-rgb),.06) 100%);
-      border:1px solid rgba(var(--schedule-rgb),.14);
-      border-radius:22px;
-      padding:16px;
-      box-shadow:0 8px 18px rgba(var(--schedule-rgb),.05);
-      margin-bottom:12px;
-    }
-
-    .leave-v4-time .label{
-      display:block;
-      margin:0 0 10px;
-      font-size:15px;
-      font-weight:900;
-      color:var(--schedule-deep);
-    }
-
-    .leave-v4-grid{
-      display:grid;
-      grid-template-columns:1fr;
-      gap:12px;
-      margin-bottom:12px;
-    }
-
-    .time-grid{
-      display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:12px;
-      width:100%;
-    }
-
-    .time-grid input[type="date"]{
-      grid-column:1 / -1;
-      margin-bottom:0;
-    }
-
-    .time-grid select,.time-grid input{
-      margin-bottom:0;
-    }
-
-    #page-schedule .time-grid input[type="date"],
-    #page-schedule .time-grid select,
-    #page-clock .time-grid input[type="date"],
-    #page-clock .time-grid select{
-      height:60px;
-      border-radius:18px;
-      background:#f3f4f6;
-      border:1px solid rgba(var(--schedule-rgb),.14);
-      box-shadow:inset 0 1px 0 rgba(255,255,255,.7);
-      font-size:17px;
-      font-weight:900;
-      color:#1f2937;
-      padding:0 14px;
-    }
-
-    #page-clock .time-grid input[type="date"],
-    #page-clock .time-grid select{
-      border-color:rgba(var(--clock-rgb),.16);
-    }
-
-    .leave-v4-qty-card{
-      background:linear-gradient(180deg,#ffffff 0%, rgba(var(--schedule-rgb),.08) 100%);
-      border:1px solid rgba(var(--schedule-rgb),.14);
-      border-radius:22px;
-      padding:14px;
-    }
-
-    .leave-v4-qty-head{
-      font-size:18px;
-      font-weight:900;
-      margin:0 0 10px;
-      color:var(--schedule-deep);
-    }
-
-    .leave-v4-stepper{
-      display:grid;
-      grid-template-columns:44px minmax(0,1fr) 44px;
-      gap:8px;
-      align-items:center;
-    }
-
-    .leave-v4-stepper button{
-      width:44px;
-      height:44px;
-      border:none;
-      border-radius:16px;
-      cursor:pointer;
-      background:rgba(var(--schedule-rgb),.14);
-      color:var(--schedule-deep);
-      font-size:24px;
-      font-weight:900;
-    }
-
-    .leave-v4-inline-input{
+    .home-title{
+      margin:0 0 18px;
+      color:var(--main-text);
       text-align:center;
       font-size:22px;
-      padding:10px 8px;
-      margin:0;
-      background:rgba(var(--schedule-rgb),.08);
-      border:1px solid rgba(var(--schedule-rgb),.12);
-      color:var(--schedule-deep);
+      line-height:1.2;
+      font-weight:1000;
+      transition:color .25s ease;
     }
 
-    .leave-v4-hint{
-      margin-top:8px;
-      font-size:12px;
-      color:var(--muted);
-      line-height:1.5;
-      font-weight:700;
-    }
-
-    .leave-v4-summary{
-      background:linear-gradient(var(--emp-angle), rgba(var(--schedule-rgb),.96), rgba(var(--schedule-rgb),.72));
-      color:#fff;
-      border-radius:20px;
-      padding:16px;
-      margin-bottom:12px;
-      box-shadow:0 12px 26px rgba(var(--schedule-rgb),.18);
-    }
-
-    .leave-v4-summary small{
-      display:block;
-      font-size:12px;
-      font-weight:800;
-      opacity:.92;
-      margin-bottom:6px;
-    }
-
-    .leave-v4-summary .big{
-      font-size:30px;
-      font-weight:900;
-      line-height:1.1;
-    }
-
-    .leave-v4-summary .sub{
-      font-size:13px;
-      line-height:1.5;
-      font-weight:800;
-      opacity:.95;
-      margin-top:6px;
-      color:rgba(255,255,255,.96);
-    }
-
-    .leave-types-v4{
-      display:grid !important;
-      grid-template-columns:repeat(3,1fr) !important;
-      gap:8px !important;
-      padding:10px 0 !important;
-      width:100% !important;
-      margin-bottom:12px;
-    }
-
-    .leave-type-btn-v4{
-      width:auto !important;
-      min-width:0 !important;
-      max-width:none !important;
-      margin:0 !important;
-      padding:12px 4px !important;
-      text-align:center;
-      box-sizing:border-box;
-      background:linear-gradient(180deg,#ffffff 0%, rgba(var(--schedule-rgb),.12) 100%);
-      border:1px solid rgba(var(--schedule-rgb),.16);
-      border-radius:16px;
-      color:#be185d;
-      font:inherit;
-      font-size:14px !important;
-      font-weight:900;
-      cursor:pointer;
-      box-shadow:0 8px 18px rgba(var(--schedule-rgb),.05);
-    }
-
-    .leave-type-btn-v4 small{
-      display:block;
-      font-size:10px !important;
-      color:#9d174d;
-      margin-top:4px;
-      opacity:.8;
-      font-weight:800;
-    }
-
-    .leave-type-btn-v4.active{
-      background:linear-gradient(var(--emp-angle), rgba(var(--schedule-rgb),.96), rgba(var(--schedule-rgb),.72));
-      color:#fff;
-      box-shadow:0 10px 20px rgba(var(--schedule-rgb),.18);
-      border-color:transparent;
-    }
-
-    .leave-type-btn-v4.active small{
-      color:rgba(255,255,255,.9);
-    }
-
-    .salary-estimate-card{
-      background:var(--emp-gradient);
-      color:#fff;
-      border-radius:20px;
-      padding:14px;
-      margin-bottom:10px;
-      box-shadow:0 12px 26px rgba(var(--emp-rgb),.18);
-    }
-
-    .salary-estimate-card small{
-      display:block;
-      font-size:11px;
-      font-weight:800;
-      opacity:.92;
-      margin-bottom:6px;
-    }
-
-    .salary-estimate-card .big{
-      font-size:28px;
-      font-weight:900;
-      line-height:1.1;
-    }
-
-    .salary-estimate-card .sub{
-      font-size:11px;
-      line-height:1.45;
-      margin-top:6px;
-      opacity:.94;
-    }
-
-    .upload-type-list{
-      display:grid;
-      gap:8px;
-      margin-bottom:10px;
-    }
-
-    .upload-type-btn{
-      position:relative;
+    .btn{
       width:100%;
-      min-width:0;
+      min-height:52px;
       border:none;
-      border-radius:22px;
-      background:linear-gradient(180deg,#ffffff 0%, rgba(var(--upload-rgb),.14) 100%);
-      padding:18px 15px 18px 20px;
-      text-align:left;
-      font-size:21px;
-      font-weight:900;
-      color:var(--upload-deep);
-      cursor:pointer;
-      line-height:1.16;
-      border:1px solid rgba(var(--upload-rgb),.16);
-      box-shadow:0 12px 26px rgba(var(--upload-rgb),.08);
-      overflow:hidden;
-    }
-
-    .upload-type-btn::before{
-      content:'';
-      position:absolute;
-      left:0;
-      top:10px;
-      bottom:10px;
-      width:7px;
-      border-radius:0 999px 999px 0;
-      background:rgba(var(--upload-rgb),.34);
-    }
-
-    .upload-type-btn small{
-      display:block;
-      font-size:12.5px;
-      line-height:1.5;
-      color:#334155;
-      font-weight:800;
-      margin-top:7px;
-    }
-
-    .upload-type-btn.active{
-      background:var(--emp-gradient);
-      color:var(--text-on-emp);
-      box-shadow:0 14px 28px rgba(var(--emp-rgb),.20);
-      border-color:transparent;
-    }
-
-    .upload-type-btn.active small{
-      color:rgba(255,255,255,.92);
-    }
-
-    .upload-type-btn.active::before{
-      background:rgba(255,255,255,.92);
-    }
-
-    .upload-drop{
-      border:2px dashed rgba(var(--upload-rgb),.22);
-      border-radius:18px;
-      background:linear-gradient(180deg,#ffffff 0%, rgba(var(--upload-rgb),.06) 100%);
-      padding:18px 12px;
-      text-align:center;
-      margin-bottom:10px;
-      box-shadow:inset 0 0 0 1px rgba(var(--upload-rgb),.06);
-    }
-
-    .upload-drop i{
-      font-size:34px;
-      color:#d1d5db;
-      margin-bottom:8px;
-    }
-
-    .upload-file-name{
-      font-size:11px;
-      color:var(--upload-deep);
-      margin-bottom:8px;
-      word-break:break-word;
-    }
-
-    .reimbursement-box{
-      display:none;
-      background:linear-gradient(180deg,#ffffff 0%, rgba(var(--upload-rgb),.10) 100%);
-      border:1px solid rgba(var(--upload-rgb),.18);
       border-radius:16px;
-      padding:12px;
-      margin-bottom:10px;
-      box-shadow:0 8px 18px rgba(var(--upload-rgb),.06);
-    }
-
-    .theme-custom-grid{
-      display:grid;
-      grid-template-columns:repeat(4,minmax(0,1fr));
-      gap:8px;
-      margin-top:10px;
-    }
-
-    .theme-custom-item{
-      display:grid;
-      gap:6px;
-      margin:0;
-    }
-
-    .theme-custom-item span{
-      font-size:11px;
-      font-weight:900;
-      color:var(--muted);
-      text-align:center;
-    }
-
-    .theme-custom-item input[type="color"]{
-      width:100%;
-      height:52px;
-      padding:4px;
-      border-radius:14px;
-      background:#fff;
-      border:1px solid var(--line);
-      margin:0;
+      padding:14px 18px;
+      font-size:16px;
+      line-height:1.2;
+      font-weight:1000;
       cursor:pointer;
+      text-align:center;
+      transition:transform .18s ease,background .25s ease,color .25s ease,border-color .25s ease,box-shadow .25s ease;
     }
 
-    .theme-custom-row{
-      display:block;
-      margin-top:10px;
+    .btn:active{
+      transform:scale(.98);
     }
 
-    .theme-picker-card{
-      width:100%;
-      margin-top:10px;
-      margin-bottom:6px;
-      background:rgba(var(--emp-rgb),0.08);
-      border:1px solid rgba(var(--emp-rgb),0.18);
+    .btn-primary{
+      background:var(--primary-bg);
+      color:var(--primary-text);
+      box-shadow:var(--primary-shadow);
     }
 
-    .theme-picker-head{
+    .btn-secondary{
+      background:var(--secondary-bg);
+      color:var(--secondary-text);
+      border:1px solid var(--secondary-border);
+    }
+
+    .help-text{
+      margin:8px 0 0;
+      color:var(--muted-text);
+      text-align:center;
+      font-size:12px;
+      line-height:1.35;
+      font-weight:850;
+      transition:color .25s ease;
+    }
+
+    .spacer{
+      flex:1;
+      min-height:12px;
+    }
+
+    .entry-top-row{
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap:8px;
+      gap:12px;
       margin-bottom:10px;
     }
 
-    .theme-picker-title{
-      font-size:15px;
-      font-weight:900;
-      color:var(--emp-deep);
+    .section-title{
+      margin:0;
+      color:var(--main-text);
+      font-size:20px;
       line-height:1.2;
+      font-weight:1000;
+      letter-spacing:-.03em;
+      transition:color .25s ease;
     }
 
-    .theme-picker-sub{
-      margin-top:4px;
-      font-size:11px;
-      color:var(--muted);
-      font-weight:800;
-      line-height:1.35;
-    }
-
-    .theme-picker-badge{
-      flex:0 0 auto;
-      padding:6px 10px;
-      border-radius:999px;
-      background:#fff;
-      color:var(--emp-deep);
-      font-size:10px;
-      font-weight:900;
-      box-shadow:0 4px 12px rgba(0,0,0,.06);
-    }
-
-    .theme-picker-row{
-      display:grid;
-      grid-template-columns:repeat(4,minmax(0,1fr));
-      gap:8px;
-    }
-
-    .theme-angle-row{
-      display:grid;
-      grid-template-columns:56px minmax(0,1fr) 56px;
-      gap:8px;
-      align-items:center;
-      margin-top:10px;
-      margin-bottom:10px;
-    }
-
-    .theme-angle-btn{
-      width:56px;
-      height:56px;
+    .back-btn{
+      min-width:54px;
+      height:34px;
       border:none;
-      border-radius:18px;
-      background:#fff;
-      color:var(--emp-deep);
-      font-size:22px;
-      font-weight:900;
+      border-radius:999px;
+      padding:0 14px;
+      background:rgba(78,98,184,.45);
+      color:#dbeafe;
+      font-size:13px;
+      font-weight:1000;
       cursor:pointer;
-      box-shadow:0 8px 18px rgba(0,0,0,.08);
     }
 
-    .theme-angle-display{
-      min-width:0;
-      height:56px;
+    body:not([data-theme="dark"]) .back-btn{
+      background:#e0e7ff;
+      color:#4338ca;
+    }
+
+    .field{
+      margin:10px 0 12px;
+    }
+
+    .input-wrap{
+      display:flex;
+      align-items:center;
+      min-height:54px;
+      padding:4px 6px 4px 16px;
       border-radius:18px;
+      background:var(--input-bg);
+      border:1px solid var(--input-border);
+      transition:background .25s ease,border-color .25s ease,box-shadow .2s ease;
+    }
+
+    .input-wrap:focus-within{
+      border-color:rgba(124,60,255,.62);
+      box-shadow:0 0 0 4px rgba(124,60,255,.13);
+    }
+
+    input{
+      width:100%;
+      border:none;
+      outline:none;
+      background:transparent;
+      color:var(--main-text);
+      font-size:16px;
+      font-weight:1000;
+      letter-spacing:.08em;
+      padding:12px 0;
+      text-transform:uppercase;
+    }
+
+    input::placeholder{
+      color:var(--muted-text);
+      opacity:.72;
+      font-size:14px;
+      font-weight:900;
+      letter-spacing:0;
+      text-transform:none;
+    }
+
+    .clear-btn{
+      width:36px;
+      height:36px;
+      flex:0 0 auto;
+      border:none;
+      border-radius:14px;
+      background:var(--secondary-bg);
+      color:var(--secondary-text);
+      font-size:18px;
+      font-weight:1000;
+      cursor:pointer;
+    }
+
+    .btn-row{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:10px;
+    }
+
+    .hint{
+      margin-top:14px;
+      color:var(--main-text);
+      text-align:center;
+      font-size:12px;
+      line-height:1.45;
+      font-weight:900;
+      transition:color .25s ease;
+    }
+
+    .status{
+      display:none;
+      margin-top:10px;
+      padding:10px 12px;
+      border-radius:15px;
+      font-size:13px;
+      line-height:1.45;
+      font-weight:900;
+      text-align:center;
+    }
+
+    .status.show{
+      display:block;
+    }
+
+    .status.info{
+      background:rgba(59,130,246,.14);
+      color:#bfdbfe;
+      border:1px solid rgba(59,130,246,.18);
+    }
+
+    .status.success{
+      background:rgba(16,185,129,.14);
+      color:#a7f3d0;
+      border:1px solid rgba(16,185,129,.18);
+    }
+
+    .status.error{
+      background:rgba(239,68,68,.14);
+      color:#fecaca;
+      border:1px solid rgba(239,68,68,.18);
+    }
+
+    body:not([data-theme="dark"]) .status.info{
+      color:#2563eb;
+    }
+
+    body:not([data-theme="dark"]) .status.success{
+      color:#059669;
+    }
+
+    body:not([data-theme="dark"]) .status.error{
+      color:#dc2626;
+    }
+
+    .entry-mode{
+      display:none;
+    }
+
+    .entry-mode.active{
+      display:block;
+    }
+
+    .profile{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-bottom:12px;
+      padding:12px;
+      border-radius:18px;
+      background:var(--input-bg);
+      border:1px solid var(--input-border);
+    }
+
+    .avatar{
+      width:44px;
+      height:44px;
+      flex:0 0 auto;
       display:flex;
       align-items:center;
       justify-content:center;
-      text-align:center;
-      padding:0 10px;
-      background:var(--emp-gradient);
-      color:var(--text-on-emp);
-      font-size:12px;
-      font-weight:900;
-      box-shadow:inset 0 0 0 1px rgba(var(--emp-rgb),.14);
-    }
-
-    .theme-angle-display span{
-      display:block;
-      line-height:1.25;
-      word-break:break-word;
-    }
-
-    .theme-color-btn{
-      position:relative;
-      min-width:0;
-      width:100%;
-      height:58px;
-      border:none;
-      border-radius:18px;
-      cursor:pointer;
-      box-shadow:0 8px 18px rgba(0,0,0,.10);
-      transition:transform .15s ease, box-shadow .15s ease, outline .15s ease;
-    }
-
-    .theme-color-btn.active{
-      outline:3px solid #fff;
-      box-shadow:0 0 0 3px var(--emp), 0 10px 18px rgba(0,0,0,.18);
-    }
-
-    .theme-color-btn::after{
-      content:attr(data-label);
-      position:absolute;
-      left:50%;
-      bottom:6px;
-      transform:translateX(-50%);
-      font-size:10px;
-      font-weight:900;
-      color:var(--preview-label-color, #fff);
-      text-shadow:0 1px 2px rgba(0,0,0,.25);
-      white-space:nowrap;
-      pointer-events:none;
-    }
-
-    .schedule-confirm-wrap{
-      display:grid;
-      gap:8px;
-      margin-bottom:12px;
-    }
-
-    .schedule-confirm-note{
       border-radius:16px;
-      padding:10px 12px;
-      background:linear-gradient(180deg,#ffffff 0%, rgba(var(--schedule-rgb),.08) 100%);
-      border:1px dashed rgba(var(--schedule-rgb),.26);
-      color:var(--schedule-deep);
-      font-size:12px;
-      font-weight:900;
-      line-height:1.45;
+      background:var(--primary-bg);
+      color:#fff;
+      font-size:16px;
+      font-weight:1000;
     }
 
-    .nav{
-      position:fixed;
+    .profile-name{
+      color:var(--main-text);
+      font-size:16px;
+      font-weight:1000;
+    }
+
+    .profile-meta{
+      margin-top:4px;
+      color:var(--muted-text);
+      font-size:12px;
+      font-weight:850;
+    }
+
+    .sheet-stage{
+      position:absolute;
       left:0;
       right:0;
       bottom:0;
-      z-index:1200;
-      width:100%;
-      display:grid;
-      grid-template-columns:repeat(5,minmax(0,1fr));
-      gap:2px;
-      background:rgba(255,255,255,.96);
-      backdrop-filter:blur(14px);
-      padding:7px 4px calc(7px + env(safe-area-inset-bottom));
-      border-radius:20px 20px 0 0;
-      box-shadow:0 -5px 18px rgba(0,0,0,.08);
+      z-index:8;
+      height:190px;
+      max-height:88vh;
+      overflow:visible;
+      transition:height .58s var(--ease);
     }
 
-    .nav-btn{
-      min-width:0;
+    .phone.expanded .sheet-stage{
+      height:82vh;
+    }
+
+    .sheet-carousel{
       width:100%;
-      border:none;
-      background:linear-gradient(180deg,#ffffff 0%, rgba(var(--emp-rgb),.08) 100%);
-      padding:5px 1px;
-      min-height:56px;
+      height:100%;
+      display:flex;
+      gap:14px;
+      overflow-x:auto;
+      overflow-y:visible;
+      scroll-snap-type:x mandatory;
+      scroll-padding-left:22px;
+      padding:0 22px;
+      -webkit-overflow-scrolling:touch;
+      cursor:grab;
+      scrollbar-width:none;
+    }
+
+    .sheet-carousel::-webkit-scrollbar{
+      display:none;
+    }
+
+    .sheet-carousel.dragging{
+      cursor:grabbing;
+      scroll-snap-type:none;
+    }
+
+    .plan-sheet{
+      flex:0 0 auto;
+      height:100%;
+      scroll-snap-align:center;
+      border-radius:32px 32px 0 0;
+      background:var(--card-bg);
+      border:1px solid var(--card-border);
+      border-bottom:0;
+      box-shadow:0 -14px 34px rgba(15,23,42,.10);
+      backdrop-filter:blur(26px);
+      -webkit-backdrop-filter:blur(26px);
+      overflow:hidden;
       display:flex;
       flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      gap:3px;
-      color:#6b7280;
-      cursor:pointer;
-      overflow:hidden;
-      border-radius:16px;
-      transition:transform .15s ease, box-shadow .18s ease, background .18s ease, color .18s ease;
+      opacity:.58;
+      transform:scale(.94) translateY(14px);
+      transition:opacity .28s var(--ease),transform .28s var(--ease),box-shadow .28s var(--ease),background .28s ease;
+      position:relative;
     }
 
-    .nav-btn i{
-      font-size:18px;
-      line-height:1;
+    .plan-sheet.active{
+      opacity:1;
+      transform:scale(1) translateY(0);
+      box-shadow:0 -18px 46px rgba(15,23,42,.15);
+    }
+
+    body[data-theme="dark"] .plan-sheet.active{
+      box-shadow:0 -18px 46px rgba(0,0,0,.24);
+    }
+
+    .plan-sheet.login,
+    .plan-sheet.basic{
+      width:318px;
+    }
+
+    .plan-sheet.plus{
+      width:338px;
+    }
+
+    .plan-sheet.premium{
+      width:358px;
+    }
+
+    .plan-sheet::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        radial-gradient(circle at 100% 0%,rgba(89,221,255,.18) 0%,rgba(89,221,255,0) 40%),
+        radial-gradient(circle at 0% 100%,rgba(255,135,224,.13) 0%,rgba(255,135,224,0) 48%);
+      pointer-events:none;
+      z-index:0;
+    }
+
+    .sheet-handle-zone{
+      width:100%;
+      padding:12px 0 8px;
+      display:flex;
+      justify-content:center;
+      flex:0 0 auto;
+      cursor:pointer;
+      position:relative;
+      z-index:2;
+    }
+
+    .sheet-handle{
+      width:44px;
+      height:5px;
+      border-radius:999px;
+      background:rgba(100,116,139,.34);
+    }
+
+    body[data-theme="dark"] .sheet-handle{
+      background:rgba(255,255,255,.20);
+    }
+
+    .sheet-summary{
+      position:relative;
+      z-index:2;
+      padding:0 20px 14px;
       flex:0 0 auto;
     }
 
-    .nav-btn span{
-      display:block;
-      width:100%;
-      min-width:0;
-      font-size:10px;
-      line-height:1.1;
-      text-align:center;
-      font-weight:900;
-      white-space:normal;
-      word-break:break-word;
-      overflow-wrap:anywhere;
-    }
-
-    .nav-btn.active{
-      color:var(--emp-deep);
-      background:linear-gradient(var(--emp-angle), rgba(var(--emp-rgb),.16), rgba(var(--emp-rgb),.30));
-      box-shadow:0 10px 20px rgba(var(--emp-rgb),.10);
-    }
-
-    .nav-btn.is-main{
-      transform:translateY(-12px);
-      background:var(--emp-gradient);
-      color:#fff;
-      border-radius:999px;
-      min-height:64px;
-      box-shadow:0 10px 20px rgba(var(--emp-rgb),.22);
-    }
-
-    .nav-btn.is-main i{ font-size:20px; }
-    .nav-btn.is-main span{ font-size:9px; }
-
-    .desktop-grid,.desktop-grid-2{
-      display:block;
-    }
-
-    .record-item-top,.day-pay-top{
+    .summary-main{
       display:flex;
       justify-content:space-between;
       align-items:flex-start;
-      gap:8px;
-      margin-bottom:6px;
+      gap:14px;
     }
 
-    .record-date,.day-pay-date{
-      font-size:14px;
-      font-weight:900;
-      line-height:1.3;
+    .summary-left{
+      min-width:0;
+      flex:1;
     }
 
-    .record-hours,.day-pay-money{
-      font-size:13px;
-      font-weight:900;
-      color:var(--emp-deep);
+    .summary-right{
+      flex:0 0 auto;
+      text-align:right;
+      padding-top:2px;
+    }
+
+    .title-line{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .sheet-title{
+      margin:0;
+      color:var(--main-text);
+      font-size:24px;
+      line-height:1.15;
+      font-weight:1000;
+      letter-spacing:-.7px;
+    }
+
+    .plan-sheet.premium .sheet-title{
+      font-size:30px;
+      letter-spacing:-1px;
+    }
+
+    .sheet-tag{
+      display:inline-flex;
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(128,137,255,.13);
+      color:#8089ff;
+      font-size:11px;
+      line-height:1.2;
+      font-weight:1000;
       white-space:nowrap;
     }
 
-    #page-schedule .card{
-      background:linear-gradient(180deg,#ffffff 0%, rgba(var(--schedule-rgb),.035) 100%);
-      border-color:rgba(var(--schedule-rgb),.10);
-      box-shadow:0 10px 24px rgba(var(--schedule-rgb),.06);
+    .sheet-price{
+      color:var(--main-text);
+      font-size:22px;
+      line-height:1.1;
+      font-weight:1000;
+      letter-spacing:-.8px;
+      white-space:nowrap;
     }
 
-    #page-clock .card{
-      background:linear-gradient(180deg,#ffffff 0%, rgba(var(--clock-rgb),.035) 100%);
-      border-color:rgba(var(--clock-rgb),.10);
-      box-shadow:0 10px 24px rgba(var(--clock-rgb),.06);
+    .sheet-price span{
+      display:block;
+      margin-top:3px;
+      color:var(--muted-text);
+      font-size:11px;
+      font-weight:850;
+      letter-spacing:0;
     }
 
-    #page-salary .card{
-      background:linear-gradient(180deg,#ffffff 0%, rgba(var(--salary-rgb),.035) 100%);
-      border-color:rgba(var(--salary-rgb),.10);
-      box-shadow:0 10px 24px rgba(var(--salary-rgb),.06);
+    .sheet-sub{
+      margin:10px 0 0;
+      color:var(--muted-text);
+      font-size:13px;
+      line-height:1.5;
+      font-weight:800;
+      display:-webkit-box;
+      -webkit-line-clamp:2;
+      -webkit-box-orient:vertical;
+      overflow:hidden;
     }
 
-    #page-upload .card{
-      background:linear-gradient(180deg,#ffffff 0%, rgba(var(--upload-rgb),.035) 100%);
-      border-color:rgba(var(--upload-rgb),.10);
-      box-shadow:0 10px 24px rgba(var(--upload-rgb),.06);
+    .mini-pills{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      margin-top:10px;
     }
 
-    body[data-active-page="schedule"] #nav-schedule{
-      background:linear-gradient(var(--emp-angle), rgba(var(--schedule-rgb),.18), rgba(var(--schedule-rgb),.32));
-      color:var(--schedule-deep);
+    .mini-pill{
+      padding:5px 8px;
+      border-radius:999px;
+      background:var(--secondary-bg);
+      border:1px solid var(--secondary-border);
+      color:var(--secondary-text);
+      font-size:11px;
+      font-weight:850;
     }
 
-    body[data-active-page="clock"] #nav-clock{
-      background:linear-gradient(var(--emp-angle), rgba(var(--clock-rgb),.18), rgba(var(--clock-rgb),.32));
-      color:var(--clock-deep);
+    .phone:not(.expanded) .mini-pills{
+      display:none;
     }
 
-    body[data-active-page="salary"] #nav-salary{
-      background:linear-gradient(var(--emp-angle), rgba(var(--salary-rgb),.18), rgba(var(--salary-rgb),.32));
-      color:var(--salary-deep);
+    .sheet-detail{
+      position:relative;
+      z-index:2;
+      flex:1;
+      min-height:0;
+      overflow-y:auto;
+      padding:0 20px 96px;
+      opacity:0;
+      transform:translateY(12px);
+      pointer-events:none;
+      transition:opacity .28s var(--ease),transform .28s var(--ease);
+      scrollbar-width:none;
     }
 
-    body[data-active-page="upload"] #nav-upload{
-      background:linear-gradient(var(--emp-angle), rgba(var(--upload-rgb),.18), rgba(var(--upload-rgb),.32));
-      color:var(--upload-deep);
+    .sheet-detail::-webkit-scrollbar{
+      display:none;
     }
 
-    @media (max-width:640px){
-      .leave-v4-grid,.leave-v4-qty,.leave-types-v4{
-        grid-template-columns:1fr;
+    .phone.expanded .plan-sheet.active .sheet-detail{
+      opacity:1;
+      transform:translateY(0);
+      pointer-events:auto;
+    }
+
+    .detail-block{
+      margin-top:10px;
+      padding-top:16px;
+      border-top:1px solid var(--line);
+    }
+
+    .detail-title{
+      margin:0 0 10px;
+      color:var(--main-text);
+      font-size:15px;
+      font-weight:1000;
+    }
+
+    .feature-list{
+      display:grid;
+      gap:10px;
+      margin:0;
+      padding:0;
+      list-style:none;
+    }
+
+    .feature-list li{
+      color:var(--muted-text);
+      font-size:14px;
+      line-height:1.5;
+      font-weight:800;
+    }
+
+    .feature-list li::before{
+      content:"✓";
+      display:inline-flex;
+      width:22px;
+      color:#8089ff;
+      font-weight:1000;
+    }
+
+    .note{
+      margin-top:20px;
+      color:var(--muted-text);
+      font-size:13px;
+      line-height:1.65;
+      font-weight:800;
+      border-top:1px solid var(--line);
+      padding-top:16px;
+    }
+
+    .bottom-action{
+      position:absolute;
+      left:18px;
+      right:18px;
+      bottom:14px;
+      z-index:12;
+      padding-top:16px;
+      background:linear-gradient(180deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.86) 34%,rgba(255,255,255,.96) 100%);
+      pointer-events:none;
+      opacity:0;
+      transform:translateY(18px);
+      transition:opacity .28s var(--ease),transform .28s var(--ease);
+    }
+
+    body[data-theme="dark"] .bottom-action{
+      background:linear-gradient(180deg,rgba(18,25,42,0) 0%,rgba(18,25,42,.82) 34%,rgba(18,25,42,.96) 100%);
+    }
+
+    .phone.expanded .bottom-action{
+      opacity:1;
+      transform:translateY(0);
+    }
+
+    .bottom-action button{
+      width:100%;
+      min-height:54px;
+      border-radius:18px;
+      background:var(--primary-bg);
+      color:#fff;
+      font-size:16px;
+      font-weight:1000;
+      box-shadow:var(--primary-shadow);
+      pointer-events:auto;
+    }
+
+    .dots{
+      position:absolute;
+      left:0;
+      right:0;
+      bottom:16px;
+      z-index:13;
+      display:flex;
+      justify-content:center;
+      gap:7px;
+      pointer-events:auto;
+      transition:bottom .36s var(--ease),opacity .24s var(--ease);
+    }
+
+    .phone.expanded .dots{
+      bottom:76px;
+      opacity:.82;
+    }
+
+    .dot{
+      width:7px;
+      height:7px;
+      border-radius:999px;
+      background:rgba(100,116,139,.28);
+      transition:width .26s var(--ease),background .26s var(--ease);
+      cursor:pointer;
+    }
+
+    .dot.active{
+      width:22px;
+      background:#8089ff;
+    }
+
+    @media (max-width:430px){
+      body{
+        align-items:stretch;
       }
 
-      .time-grid{
-        gap:10px;
+      .phone{
+        max-width:none;
+        max-height:none;
+        height:100vh;
+        border-radius:0;
       }
 
-      #page-schedule .time-grid input[type="date"],
-      #page-schedule .time-grid select,
-      #page-clock .time-grid input[type="date"],
-      #page-clock .time-grid select{
-        height:56px;
-        font-size:16px;
-        border-radius:16px;
+      .top-space{
+        min-height:380px;
       }
 
-      .leave-v4-time{
-        padding:14px;
-        border-radius:20px;
-      }
-    }
-
-    @media (max-width:390px){
-      .safe{ padding:6px 6px 0; }
-      .card{ padding:12px; border-radius:20px; }
-      .hello{ font-size:20px; }
-      .theme-color-btn{ height:54px; border-radius:16px; }
-      .theme-color-btn::after{ font-size:9px; }
-      .theme-angle-row{ grid-template-columns:50px minmax(0,1fr) 50px; }
-      .theme-angle-btn,.theme-angle-display{ height:50px; border-radius:16px; }
-      .nav-btn span,.nav-btn.is-main span{ font-size:9px; }
-      .weekday-main{ font-size:12px; }
-      .weekday-date{ font-size:10px; }
-    }
-
-    @media (min-width:768px){
-      .safe{ padding:12px 14px 0; }
-      .desktop-grid{
-        display:grid;
-        grid-template-columns:1.1fr .9fr;
-        gap:12px;
-      }
-      .desktop-grid-2{
-        display:grid;
-        grid-template-columns:1fr 1fr;
-        gap:12px;
-      }
-      .nav{
+      .sheet-carousel{
+        scroll-padding-left:18px;
         padding-left:18px;
         padding-right:18px;
       }
+
+      .plan-sheet.login,
+      .plan-sheet.basic{
+        width:302px;
+      }
+
+      .plan-sheet.plus{
+        width:322px;
+      }
+
+      .plan-sheet.premium{
+        width:342px;
+      }
+
+      .plan-sheet.premium .sheet-title{
+        font-size:28px;
+      }
+    }
+
+    @media (max-height:700px){
+      .phone{
+        height:100vh;
+        border-radius:0;
+      }
+
+      .top-space{
+        min-height:320px;
+      }
+
+      .panel{
+        min-height:258px;
+        padding:24px 22px 22px;
+      }
+
+      .sheet-stage{
+        height:188px;
+      }
     }
   </style>
-  <script src="config.js"></script>
-
-<script>
-(function(){
-  window.ANG_HR_CONFIG = window.ANG_HR_CONFIG || {};
-  function getParam(name){
-    try { return new URLSearchParams(window.location.search).get(name) || ''; } catch(e) { return ''; }
-  }
-  function cleanTemplate(value){
-    var s = String(value == null ? '' : value).trim();
-    if (!s || s.indexOf('<?') >= 0 || s.indexOf('?>') >= 0) return '';
-    return s;
-  }
-  function getDirBase(){
-    var href = String(window.location.href || '').split('#')[0].split('?')[0];
-    return href.replace(/\/[^\/]*$/, '');
-  }
-  function joinUrl(base, file){
-    base = String(base || '').replace(/\/+$/, '');
-    file = String(file || '').replace(/^\/+/, '');
-    return base + '/' + file;
-  }
-  function getApiUrl(){
-    var cfg = window.ANG_HR_CONFIG || {};
-    return getParam('api') || cfg.apiBaseUrl || cfg.workerApiUrl || cfg.gasApiUrl || '';
-  }
-  function getFrontendUrl(pageName){
-    var cfg = window.ANG_HR_CONFIG || {};
-    var base = cfg.frontendBaseUrl || getDirBase();
-    var file = pageName === 'admin' ? (cfg.adminPage || 'admin.html') : (cfg.employeePage || 'employee.html');
-    return joinUrl(base, file);
-  }
-  window.ANG_HR_UTILS = {
-    getParam:getParam,
-    cleanTemplate:cleanTemplate,
-    getApiUrl:getApiUrl,
-    getFrontendUrl:getFrontendUrl,
-    joinUrl:joinUrl
-  };
-})();
-</script>
-
 </head>
-<body data-active-page="home">
-  <div class="topbar">
-    <div class="topbar-left">
-      <div class="brand-slot" id="brandSlot">
-        <div class="brand-logo" id="brandLogo">ANG</div>
-        <div class="brand-title-wrap">
-          <div class="brand-title-main" id="brandTitleMain">ANG.lo</div>
-          <div class="brand-title-sub" id="brandTitleSub">Humanized system technology</div>
-        </div>
-      </div>
-    </div>
-    <div class="topbar-right">
-      <div class="title" id="topBrandTitle">ANG.lo Engine</div>
-      <div class="sub-title" id="topBrandSub">HR 系統｜讀取中</div>
-    </div>
-  </div>
 
-  <div class="safe">
-    <section id="page-home" class="page active">
-      <div class="hero">
-        <div class="hero-top">
-          <div style="min-width:0;">
-            <div class="hello" id="helloName">哈囉，讀取中</div>
-            <div class="hello-sub" id="helloStatus">今天狀態：正常出勤中</div>
-          </div>
-          <div class="hero-chip" id="heroChip">標準版</div>
-        </div>
-        <div class="next-shift">
-          <small>下一個班別提醒</small>
-          <div class="big" id="home-next-shift">明天 08:00 上班</div>
-        </div>
-      </div>
+<body data-theme="dark">
+  <main class="phone" id="phone">
+    <button class="theme-toggle" type="button" aria-label="切換日光與暗夜模式" aria-pressed="true">
+      <span class="sun" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2.2M12 19.8V22M4.93 4.93l1.56 1.56M17.51 17.51l1.56 1.56M2 12h2.2M19.8 12H22M4.93 19.07l1.56-1.56M17.51 6.49l1.56-1.56"></path>
+        </svg>
+      </span>
+      <span class="moon" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="M21 14.2A8.6 8.6 0 0 1 9.8 3a7.5 7.5 0 1 0 11.2 11.2z"></path>
+        </svg>
+      </span>
+    </button>
 
-      <div class="trend-card">
-        <div class="trend-bg" aria-hidden="true">
-          <svg viewBox="0 0 320 120" preserveAspectRatio="none">
-            <polyline points="8,90 62,88 96,74 140,70 180,48 220,42 266,22 312,16"></polyline>
-          </svg>
-        </div>
-        <div class="trend-split">
-          <div class="trend-cell">
-            <small>本週薪資累計</small>
-            <div class="value" id="home-week-salary">$4,800</div>
-            <div class="sub">依目前已打卡資料統計</div>
-          </div>
-          <div class="trend-divider"></div>
-          <div class="trend-cell">
-            <small>本週工時</small>
-            <div class="value" id="home-week-hours">24h</div>
-            <div class="sub">含已完成日工時</div>
-          </div>
-        </div>
-      </div>
+    <section id="homeView" class="view active">
+      <div class="top-space"></div>
 
-      <div class="trend-card trend-card-soft">
-        <div class="trend-bg" aria-hidden="true">
-          <svg viewBox="0 0 320 120" preserveAspectRatio="none">
-            <polyline points="8,102 54,98 94,92 138,76 182,64 220,54 260,44 312,26"></polyline>
-          </svg>
-        </div>
-        <div class="trend-split">
-          <div class="trend-cell">
-            <small>本月薪資累計</small>
-            <div class="value" id="home-month-salary">$19,200</div>
-            <div class="sub">未含特殊加給</div>
-          </div>
-          <div class="trend-divider"></div>
-          <div class="trend-cell">
-            <small>本月工時</small>
-            <div class="value" id="home-month-hours">96h</div>
-            <div class="sub">整月累計</div>
-          </div>
-        </div>
-      </div>
+      <div class="panel">
+        <h1 class="home-title">歡迎登入系統</h1>
 
-      <div class="status-grid-3">
-        <div class="status-mini">
-          <small>明天</small>
-          <div class="v" id="home-tomorrow-status">上班</div>
-        </div>
-        <div class="status-mini">
-          <small>後天</small>
-          <div class="v" id="home-after-status">休息</div>
-        </div>
-        <div class="status-mini">
-          <small>異常件數</small>
-          <div class="v" id="home-pending-count">2件</div>
-        </div>
-      </div>
+        <button class="btn btn-primary" type="button" onclick="showEmployeeEntry('code')">員工專區</button>
+        <div class="help-text">首次使用請點擊專屬開通連結</div>
 
-      <div class="desktop-grid">
-        <div>
-          <div class="card">
-            <div class="mini-row">
-              <h3>提醒事項</h3>
-              <span class="badge warn">請留意</span>
-            </div>
-            <div class="alert-list" id="home-alert-list">
-              <div class="alert-item warn">
-                <div class="item-title">3/28 打卡紀錄異常</div>
-                <div class="item-meta">下班打卡缺漏，請補卡或上傳補卡證明。</div>
-              </div>
-              <div class="alert-item danger">
-                <div class="item-title">3/26 外勤未附位置資訊</div>
-                <div class="item-meta">若為外勤作業，請補上位置資訊與作業紀錄。</div>
-              </div>
+        <div class="spacer"></div>
+
+        <button class="btn btn-secondary" type="button" onclick="showManagerEntry()">企業管理與註冊</button>
+      </div>
+    </section>
+
+    <section id="employeeEntryView" class="view">
+      <div class="top-space"></div>
+
+      <div class="panel">
+        <div id="codeMode" class="entry-mode">
+          <div class="entry-top-row">
+            <h1 class="section-title">輸入開通碼</h1>
+            <button class="back-btn" type="button" onclick="showHome()">返回</button>
+          </div>
+
+          <div class="field">
+            <div class="input-wrap">
+              <input id="activationCode" type="text" inputmode="text" autocomplete="one-time-code" placeholder="開通碼" maxlength="20" />
+              <button class="clear-btn" type="button" onclick="clearCode()">×</button>
             </div>
           </div>
 
-          <div class="card">
-            <div class="mini-row">
-              <h3>主管通知</h3>
-              <span class="badge ok">最新</span>
-            </div>
-            <div class="notice-list" id="home-notice-list">
-              <div class="notice-item">
-                <div class="item-title">本週班表已更新</div>
-                <div class="item-meta">請確認下週排班與休假異動，若有問題請今天回報。</div>
-              </div>
-              <div class="notice-item">
-                <div class="item-title">月底結算提醒</div>
-                <div class="item-meta">代墊收據、公費請款、外勤作業紀錄請於月底前補齊。</div>
-              </div>
+          <button class="btn btn-primary" type="button" onclick="submitActivationCode()">啟用此設備</button>
+
+          <div class="btn-row">
+            <button class="btn btn-secondary" type="button" onclick="scanQrCode()">掃描 QR</button>
+            <button class="btn btn-secondary" type="button" onclick="contactHr()">聯絡 HR</button>
+          </div>
+
+          <div class="hint">換手機或無法登入，請聯絡管理員重發開通碼。</div>
+          <div id="codeStatus" class="status"></div>
+        </div>
+
+        <div id="bindMode" class="entry-mode">
+          <div class="entry-top-row">
+            <h1 class="section-title">確認綁定</h1>
+            <button class="back-btn" type="button" onclick="showHome()">返回</button>
+          </div>
+
+          <div class="profile">
+            <div class="avatar" id="bindAvatar">員</div>
+            <div>
+              <div class="profile-name" id="bindName">員工帳號</div>
+              <div class="profile-meta" id="bindMeta">即將綁定此設備</div>
             </div>
           </div>
+
+          <button class="btn btn-primary" type="button" onclick="confirmBindByToken()">綁定此設備</button>
+
+          <div class="hint">綁定後，下次會自動登入。</div>
+          <div id="bindStatus" class="status"></div>
         </div>
 
-        <div>
-          <div class="card">
-            <div class="mini-row">
-              <h3>近期動態</h3>
-              <span class="badge">摘要</span>
-            </div>
-            <div class="timeline-list" id="home-timeline-list">
-              <div class="timeline-item">
-                <div class="item-title">今天 08:01 已完成上班打卡</div>
-                <div class="item-meta">來源：office_nfc</div>
-              </div>
-              <div class="timeline-item">
-                <div class="item-title">昨天 16:03 已完成下班打卡</div>
-                <div class="item-meta">工時 8.0h｜日薪 $1,600</div>
-              </div>
-              <div class="timeline-item">
-                <div class="item-title">前天為排休</div>
-                <div class="item-meta">無出勤紀錄</div>
-              </div>
-            </div>
+        <div id="expiredMode" class="entry-mode">
+          <div class="entry-top-row">
+            <h1 class="section-title">連結已失效</h1>
+            <button class="back-btn" type="button" onclick="showHome()">返回</button>
           </div>
-        </div>
-      </div>
 
-      <div class="card">
-        <div class="mini-row">
-          <h3>留言交流</h3>
-          <span class="badge">主管可審核</span>
-        </div>
-        <textarea id="messageInput" placeholder="寫下建議、提醒或想跟主管說的話"></textarea>
-        <button class="btn-main" type="button" onclick="submitMessage()">送出留言</button>
-        <div class="notice-list" id="message-board" style="margin-top:10px;"></div>
-      </div>
+          <button class="btn btn-primary" type="button" onclick="showEmployeeEntry('code')">輸入開通碼</button>
 
-      <div class="card theme-picker-card">
-        <div class="theme-picker-head">
-          <div>
-            <div class="theme-picker-title">主題顏色</div>
-            <div class="theme-picker-sub">下面四格都可自訂，整體漸層會直接用這四種顏色去跑</div>
+          <div class="btn-row">
+            <button class="btn btn-secondary" type="button" onclick="scanQrCode()">掃描 QR</button>
+            <button class="btn btn-secondary" type="button" onclick="contactHr()">聯絡 HR</button>
           </div>
-          <div class="theme-picker-badge" id="themeNameBadge">自訂四色</div>
-        </div>
 
-        <div class="theme-picker-row" id="themePreviewRow">
-          <button class="theme-color-btn active" type="button" onclick="applyVariation(0)"></button>
-          <button class="theme-color-btn" type="button" onclick="applyVariation(1)"></button>
-          <button class="theme-color-btn" type="button" onclick="applyVariation(2)"></button>
-          <button class="theme-color-btn" type="button" onclick="applyVariation(3)"></button>
-        </div>
-
-        <div class="theme-angle-row">
-          <button class="theme-angle-btn" type="button" onclick="rotateThemeAngle(-1)" aria-label="漸層方向往左轉">↺</button>
-          <div class="theme-angle-display" id="themeAngleDisplay"><span>左上 → 右下</span></div>
-          <button class="theme-angle-btn" type="button" onclick="rotateThemeAngle(1)" aria-label="漸層方向往右轉">↻</button>
-        </div>
-
-        <div class="theme-custom-grid">
-          <label class="theme-custom-item">
-            <span>色1</span>
-            <input type="color" id="themeColor1" value="#FF87E0" oninput="updateThemeColor(0,this.value)">
-          </label>
-          <label class="theme-custom-item">
-            <span>色2</span>
-            <input type="color" id="themeColor2" value="#CCA4FF" oninput="updateThemeColor(1,this.value)">
-          </label>
-          <label class="theme-custom-item">
-            <span>色3</span>
-            <input type="color" id="themeColor3" value="#8089FF" oninput="updateThemeColor(2,this.value)">
-          </label>
-          <label class="theme-custom-item">
-            <span>色4</span>
-            <input type="color" id="themeColor4" value="#59DDFF" oninput="updateThemeColor(3,this.value)">
-          </label>
-        </div>
-
-        <div class="theme-custom-row">
-          <button class="btn-soft" type="button" onclick="resetThemePreset()">套回預設四色</button>
+          <div class="hint">請向管理員索取新的開通碼。</div>
         </div>
       </div>
     </section>
 
-    <section id="page-schedule" class="page">
-      <div class="card">
-        <div class="week-tabs">
-          <button id="t-0" class="active" onclick="toggleWeek(0)">本週排班</button>
-          <button id="t-1" onclick="toggleWeek(1)">下週排班</button>
-        </div>
+    <section id="managerEntryView" class="view">
+      <div class="top-space"></div>
 
-        <div class="weekday-strip" id="weekday-strip"></div>
-
-        <div class="schedule-confirm-wrap">
-          <button class="btn-soft" type="button" onclick="confirmScheduleSelection()">確認日期選擇</button>
-          <div class="schedule-confirm-note" id="schedule-confirm-note">尚未選擇日期</div>
-        </div>
-
-        <div class="calendar-title" style="margin-bottom:10px;">
-          <div class="t" id="schedule-calendar-title">本週排班月曆</div>
-          <div class="s">固定顯示</div>
-        </div>
-        <div id="cal-main" style="margin-bottom:12px;"></div>
-
-        <div class="leave-guide">
-          <div class="g-title">請假申請說明</div>
-          <div class="g-text">
-            假別保留 12 個按鈕式選項。<br>
-            開始 / 結束改成日期 + 小時 + 分鐘分開選，分鐘固定 5 分鐘一格。<br>
-            天數只整數；時數可 0.5，並會同步回推結束時間。
-          </div>
-        </div>
-
-        <h3 class="section-title">假別申請</h3>
-
-        <div id="leave-type-grid-v4" class="leave-types-v4"></div>
-
-        <div class="leave-v4-time">
-          <label class="label">開始</label>
-          <div class="time-grid">
-            <input type="date" id="leave-start-date">
-            <select id="leave-start-hour"></select>
-            <select id="leave-start-minute"></select>
-          </div>
-        </div>
-
-        <div class="leave-v4-time">
-          <label class="label">結束</label>
-          <div class="time-grid">
-            <input type="date" id="leave-end-date">
-            <select id="leave-end-hour"></select>
-            <select id="leave-end-minute"></select>
-          </div>
-        </div>
-
-        <div class="leave-v4-qty">
-          <div class="leave-v4-qty-card">
-            <div class="leave-v4-qty-head">請假天數</div>
-            <div class="leave-v4-stepper">
-              <button type="button" id="leave-day-minus">－</button>
-              <input class="leave-v4-inline-input" id="leave-days-input" inputmode="numeric" value="1">
-              <button type="button" id="leave-day-plus">＋</button>
+      <section class="sheet-stage">
+        <div class="sheet-carousel" id="sheetCarousel">
+          <article class="plan-sheet login active" data-key="login">
+            <div class="sheet-handle-zone">
+              <div class="sheet-handle"></div>
             </div>
-            <div class="leave-v4-hint">以 1 天為單位，不出現 0.5 天。</div>
-          </div>
 
-          <div class="leave-v4-qty-card">
-            <div class="leave-v4-qty-head">時數</div>
-            <div class="leave-v4-stepper">
-              <button type="button" id="leave-hour-minus">－</button>
-              <input class="leave-v4-inline-input" id="leave-hours-input" inputmode="decimal" value="0.0">
-              <button type="button" id="leave-hour-plus">＋</button>
+            <div class="sheet-summary">
+              <div class="summary-main">
+                <div class="summary-left">
+                  <div class="title-line">
+                    <h2 class="sheet-title">企業管理登入</h2>
+                    <div class="sheet-tag">現有客戶</div>
+                  </div>
+                </div>
+                <div class="summary-right">
+                  <div class="sheet-price">登入 <span>管理後台</span></div>
+                </div>
+              </div>
+
+              <p class="sheet-sub">已有公司代碼與管理員帳號，請從這裡進入後台。</p>
+
+              <div class="mini-pills">
+                <span class="mini-pill">公司代碼</span>
+                <span class="mini-pill">管理員</span>
+                <span class="mini-pill">Creator</span>
+              </div>
             </div>
-            <div class="leave-v4-hint">可用 0.5 小時，例如 1.5、2.5、4.5。</div>
-          </div>
+
+            <div class="sheet-detail">
+              <div class="detail-block">
+                <h3 class="detail-title">登入後可管理</h3>
+                <ul class="feature-list">
+                  <li>員工資料與開通碼</li>
+                  <li>排班、請假與補打卡審核</li>
+                  <li>打卡紀錄與出勤狀態</li>
+                  <li>薪資、公告與系統設定</li>
+                </ul>
+              </div>
+              <div class="note">若忘記公司代碼或管理員帳號，請聯絡 ANG HR 系統管理者。</div>
+            </div>
+          </article>
+
+          <article class="plan-sheet basic" data-key="basic">
+            <div class="sheet-handle-zone">
+              <div class="sheet-handle"></div>
+            </div>
+
+            <div class="sheet-summary">
+              <div class="summary-main">
+                <div class="summary-left">
+                  <div class="title-line">
+                    <h2 class="sheet-title">Basic</h2>
+                    <div class="sheet-tag">基礎方案</div>
+                  </div>
+                </div>
+                <div class="summary-right">
+                  <div class="sheet-price">NT$199 <span>/ 月</span></div>
+                </div>
+              </div>
+
+              <p class="sheet-sub">基本打卡、排班與員工資料。</p>
+
+              <div class="mini-pills">
+                <span class="mini-pill">打卡</span>
+                <span class="mini-pill">排班</span>
+                <span class="mini-pill">員工資料</span>
+              </div>
+            </div>
+
+            <div class="sheet-detail">
+              <div class="detail-block">
+                <h3 class="detail-title">Basic 主要功能</h3>
+                <ul class="feature-list">
+                  <li>員工資料建立</li>
+                  <li>NFC / QR / 按鈕備援打卡</li>
+                  <li>本月打卡紀錄</li>
+                  <li>基礎排班管理</li>
+                </ul>
+              </div>
+              <div class="note">適合單店或小型團隊先建立基本出勤流程。</div>
+            </div>
+          </article>
+
+          <article class="plan-sheet plus" data-key="plus">
+            <div class="sheet-handle-zone">
+              <div class="sheet-handle"></div>
+            </div>
+
+            <div class="sheet-summary">
+              <div class="summary-main">
+                <div class="summary-left">
+                  <div class="title-line">
+                    <h2 class="sheet-title">Plus</h2>
+                    <div class="sheet-tag">推薦</div>
+                  </div>
+                </div>
+                <div class="summary-right">
+                  <div class="sheet-price">NT$399 <span>/ 月</span></div>
+                </div>
+              </div>
+
+              <p class="sheet-sub">請假、補卡、審核與公告。</p>
+
+              <div class="mini-pills">
+                <span class="mini-pill">請假</span>
+                <span class="mini-pill">補卡</span>
+                <span class="mini-pill">審核</span>
+              </div>
+            </div>
+
+            <div class="sheet-detail">
+              <div class="detail-block">
+                <h3 class="detail-title">Plus 主要功能</h3>
+                <ul class="feature-list">
+                  <li>Basic 全部功能</li>
+                  <li>請假申請與審核</li>
+                  <li>補打卡申請與審核</li>
+                  <li>週排班 / 月排班</li>
+                  <li>主管公告與員工留言</li>
+                </ul>
+              </div>
+              <div class="note">適合已經開始正式管理班表與審核流程的公司。</div>
+            </div>
+          </article>
+
+          <article class="plan-sheet premium" data-key="premium">
+            <div class="sheet-handle-zone">
+              <div class="sheet-handle"></div>
+            </div>
+
+            <div class="sheet-summary">
+              <div class="summary-main">
+                <div class="summary-left">
+                  <div class="title-line">
+                    <h2 class="sheet-title">Premium</h2>
+                    <div class="sheet-tag">完整功能</div>
+                  </div>
+                </div>
+                <div class="summary-right">
+                  <div class="sheet-price">NT$699 <span>/ 月</span></div>
+                </div>
+              </div>
+
+              <p class="sheet-sub">Premium 獨有的特色功能。</p>
+
+              <div class="mini-pills">
+                <span class="mini-pill">薪資</span>
+                <span class="mini-pill">分店</span>
+                <span class="mini-pill">報表</span>
+              </div>
+            </div>
+
+            <div class="sheet-detail">
+              <div class="detail-block">
+                <h3 class="detail-title">Premium 獨有特色</h3>
+                <ul class="feature-list">
+                  <li>薪資試算與月結管理</li>
+                  <li>分店資料分流與跨店查看</li>
+                  <li>角色權限分層管理</li>
+                  <li>完整出勤、工時與薪資報表</li>
+                  <li>進階系統設定與管理儀表板</li>
+                </ul>
+              </div>
+              <div class="note">適合已經正式營運，需要完整人資、排班、出勤與薪資流程的公司。</div>
+            </div>
+          </article>
         </div>
 
-        <div class="leave-v4-summary">
-          <small>即時換算結果</small>
-          <div class="big" id="leave-v4-summary-text">1 天 0 小時</div>
-          <div class="sub" id="leave-v4-summary-sub">共 8.0 小時｜會同步回上方結束時間</div>
+        <div class="dots" id="dots">
+          <span class="dot active"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
         </div>
 
-        <label class="label">請假事由 / 補充說明</label>
-        <textarea id="leave-reason" placeholder="例如：看診、家庭因素、個人事務、陪同家人等"></textarea>
-
-        <button class="btn-main" onclick="submitLeave()">確認送出</button>
-      </div>
+        <div class="bottom-action">
+          <button type="button" id="mainAction">企業管理登入</button>
+        </div>
+      </section>
     </section>
-
-    <section id="page-clock" class="page">
-      <div class="card">
-        <div class="calendar-title">
-          <div>
-            <div class="t">打卡月曆</div>
-            <div class="item-meta">切換上方內容時，下方月曆固定顯示</div>
-          </div>
-          <div class="s">異常紅字</div>
-        </div>
-        <div id="cal-clock"></div>
-      </div>
-
-      <div class="card">
-        <div class="record-top-tabs">
-          <button id="clock-tab-record" class="active" onclick="switchClockTab('record')">打卡記錄</button>
-          <button id="clock-tab-apply" onclick="switchClockTab('apply')">補打卡申請</button>
-        </div>
-
-        <div id="clock-record-view">
-          <div class="mini-row">
-            <h3>實際打卡紀錄</h3>
-            <span class="badge ok">月曆同步</span>
-          </div>
-          <div class="record-list" id="clock-record-list"></div>
-        </div>
-
-        <div id="clock-apply-view" style="display:none;">
-          <div class="mini-row">
-            <h3>補打卡申請</h3>
-            <button class="btn-soft" type="button" onclick="pickUploadType('補卡證明','例如：補卡日期、上下班別、補卡原因')">補卡證明</button>
-          </div>
-
-          <label class="label">打卡類型</label>
-          <select id="clock-type">
-            <option>上班</option>
-            <option>下班</option>
-            <option>加班</option>
-          </select>
-
-          <label class="label">補打卡時間</label>
-          <div class="time-grid">
-            <input type="date" id="clock-fix-date">
-            <select id="clock-fix-hour"></select>
-            <select id="clock-fix-minute"></select>
-          </div>
-
-          <label class="label">補打卡原因</label>
-          <textarea id="clock-note" placeholder="例如：漏刷、機器異常、主管通知補登"></textarea>
-
-          <button class="btn-main" onclick="saveClockRecord()">確認補登</button>
-        </div>
-      </div>
-    </section>
-
-    <section id="page-salary" class="page">
-      <div class="card">
-        <div class="mini-row">
-          <h3>薪資預估</h3>
-          <span class="badge ok">管理端設定</span>
-        </div>
-        <div class="notice-item" style="margin-bottom:10px;">
-          <div class="item-title">薪資計算週期</div>
-          <div class="item-meta" id="salary-cycle-display">由管理員設定｜週結｜週一起算</div>
-        </div>
-
-        <div class="salary-estimate-card">
-          <small id="salary-estimate-label">一週預估</small>
-          <div class="big" id="salary-estimate-value">$4,800</div>
-          <div class="sub" id="salary-estimate-note">依目前已完成打卡資料統計。</div>
-        </div>
-
-        <label class="label">已發薪資</label>
-        <select id="salary-history-select" onchange="showSalaryHistoryDetail()"></select>
-        <div class="item-meta" id="salary-history-detail">選取一筆已發薪資後，這裡會顯示摘要。</div>
-      </div>
-
-      <div class="desktop-grid-2">
-        <div class="card">
-          <div class="calendar-title">
-            <div class="t">月曆檢視</div>
-            <div class="s">顯示班別 / 休假 / 薪資</div>
-          </div>
-          <div id="cal-salary-month"></div>
-        </div>
-
-        <div class="card">
-          <div class="mini-row">
-            <h3>每日薪資紀錄</h3>
-            <span class="badge ok">已出勤日</span>
-          </div>
-          <div class="day-pay-list" id="salary-day-pay-list"></div>
-        </div>
-      </div>
-    </section>
-
-    <section id="page-upload" class="page">
-      <div class="card">
-        <div class="calendar-title">
-          <div>
-            <div class="t">資料上傳月曆</div>
-            <div class="item-meta">顯示請假、補證明、代墊、收據、外勤與審核狀態</div>
-          </div>
-          <div class="s">真資料</div>
-        </div>
-        <div id="cal-upload"></div>
-      </div>
-
-      <div class="card">
-        <h3 class="section-title">資料上傳中心</h3>
-
-        <div class="tool-grid" style="margin-bottom:10px;">
-          <button class="btn-ghost" type="button" onclick="getLocation()">傳送位置資訊</button>
-          <button class="btn-ghost" type="button" onclick="toggleReimbursement()">費用請款</button>
-        </div>
-
-        <div class="upload-type-list">
-          <button class="upload-type-btn" id="upload-type-補卡證明" onclick="pickUploadType('補卡證明','例如：補卡日期、上下班別、補卡原因')">
-            補卡證明
-            <small>用於漏刷、機器異常、補登上下班紀錄</small>
-          </button>
-
-          <button class="upload-type-btn" id="upload-type-公費請款（預先發）" onclick="pickUploadType('公費請款（預先發）','例如：用途、預估金額、使用日期')">
-            公費請款（預先發）
-            <small>先行申請公費用途與預估金額</small>
-          </button>
-
-          <button class="upload-type-btn" id="upload-type-醫生證明" onclick="pickUploadType('醫生證明','例如：就診日期、診所名稱、請假日期')">
-            醫生證明
-            <small>看診、病假、診斷相關證明</small>
-          </button>
-
-          <button class="upload-type-btn" id="upload-type-代墊收據" onclick="pickUploadType('代墊收據','例如：代墊項目、金額、日期')">
-            代墊收據
-            <small>交通、購買、工作支出收據</small>
-          </button>
-
-          <button class="upload-type-btn" id="upload-type-作業紀錄" onclick="pickUploadType('作業紀錄','例如：工作內容、完成時間、現場狀況')">
-            作業紀錄
-            <small>現場照片、執行情況、補件說明</small>
-          </button>
-
-          <button class="upload-type-btn" id="upload-type-位置資訊（外勤回報用）" onclick="pickUploadType('位置資訊（外勤回報用）','例如：外勤地點、到達時間、工作內容')">
-            位置資訊（外勤回報用）
-            <small>外勤地點、到點紀錄與位置資訊</small>
-          </button>
-        </div>
-
-        <label class="label">已選項目</label>
-        <input type="text" id="u-type" placeholder="請先點選上方項目">
-
-        <label class="label">補充說明</label>
-        <textarea id="u-note" placeholder="請輸入補充說明"></textarea>
-
-        <div id="reimbursement-box" class="reimbursement-box">
-          <label class="label">請款金額</label>
-          <input type="number" id="r-amount" placeholder="輸入金額">
-
-          <label class="label">請款項目</label>
-          <input type="text" id="r-item" placeholder="例如：車資、文具、採買">
-        </div>
-
-        <label class="label">上傳檔案（照片 / 影片 / PDF）</label>
-        <input type="file" id="u-file" accept="image/*,video/*,application/pdf" style="display:none" onchange="updateFileName(this)">
-
-        <div class="upload-drop">
-          <i class="fa-solid fa-cloud-arrow-up"></i>
-          <div id="f-name" class="upload-file-name">尚未選擇檔案</div>
-          <button class="btn-ghost" type="button" onclick="document.getElementById('u-file').click()">選擇檔案</button>
-        </div>
-
-        <button class="btn-main" onclick="submitUpload()">確認並上傳雲端</button>
-      </div>
-    </section>
-  </div>
-
-  <nav class="nav">
-    <button class="nav-btn" id="nav-schedule" onclick="nav('schedule')">
-      <i class="fa-solid fa-calendar-check"></i>
-      <span>請假排班</span>
-    </button>
-
-    <button class="nav-btn" id="nav-clock" onclick="nav('clock')">
-      <i class="fa-solid fa-clock-rotate-left"></i>
-      <span>打卡記錄</span>
-    </button>
-
-    <button class="nav-btn is-main active" id="nav-home" onclick="handleEmployeeHomeClick()">
-      <i class="fa-solid fa-house"></i>
-      <span>員工主頁</span>
-    </button>
-
-    <button class="nav-btn" id="nav-salary" onclick="nav('salary')">
-      <i class="fa-solid fa-money-check-dollar"></i>
-      <span>薪資明細</span>
-    </button>
-
-    <button class="nav-btn" id="nav-upload" onclick="nav('upload')">
-      <i class="fa-solid fa-file-arrow-up"></i>
-      <span>資料上傳</span>
-    </button>
-  </nav>
+  </main>
 
   <script>
-    const APP_CTX = (function(){
-      const u = window.ANG_HR_UTILS || {};
-      const q = u.getParam || function(){ return ''; };
-      const c = u.cleanTemplate || function(v){ return String(v || '').indexOf('<?') >= 0 ? '' : String(v || '').trim(); };
-      return {
-        id: String(q('id') || c('<?= typeof id !== "undefined" ? id : "" ?>') || '').trim().toUpperCase(),
-        token: String(q('token') || q('key') || c('<?= typeof token !== "undefined" ? token : "" ?>') || '').trim(),
-        page: String(q('page') || c('<?= typeof page !== "undefined" ? page : "" ?>') || '').trim(),
-        role: String(q('role') || localStorage.getItem('ang_user_role') || localStorage.getItem('ang_employee_role') || c('<?= typeof role !== "undefined" ? role : "" ?>') || '').trim(),
-        name: String(q('name') || c('<?= typeof name !== "undefined" ? name : "" ?>') || '').trim(),
-        nickname: String(q('nickname') || c('<?= typeof nickname !== "undefined" ? nickname : "" ?>') || '').trim(),
-        companyId: String(q('company_id') || q('companyId') || localStorage.getItem('ang_company_id') || '').trim(),
-        deviceId: String(q('device_id') || q('deviceId') || localStorage.getItem('ang_device_id') || '').trim(),
-        appMode: String(q('app') || localStorage.getItem('ang_app_mode') || '').trim(),
-        bindMode: String(q('bind') || '').trim()
-      };
-    })();
-
-    const HOURLY_RATE = 200;
-
-    const defaultThemeColors = ['#FF87E0','#CCA4FF','#8089FF','#59DDFF'];
-
-    const gradientVariations = [
-      { order:[0,1,2,3], name:'順向' },
-      { order:[0,2,1,3], name:'交錯' },
-      { order:[0,3,1,2], name:'分散' },
-      { order:[3,2,1,0], name:'反向' }
-    ];
-
-    const themeAngles = [
-      { deg:'0deg', label:'左 → 右' },
-      { deg:'45deg', label:'左下 → 右上' },
-      { deg:'90deg', label:'上 → 下' },
-      { deg:'135deg', label:'左上 → 右下' },
-      { deg:'180deg', label:'右 → 左' },
-      { deg:'225deg', label:'右上 → 左下' },
-      { deg:'270deg', label:'下 → 上' },
-      { deg:'315deg', label:'右下 → 左上' }
-    ];
-
-    const leaveTypes = [
-      { key:'事假', tip:'建議提前申請', raw:'事假' },
-      { key:'病假', tip:'可補件後申請', raw:'病假' },
-      { key:'特休', tip:'依年資額度', raw:'特休' },
-      { key:'生理假', tip:'依規定使用', raw:'生理假' },
-      { key:'家庭照顧假', tip:'家庭照顧相關', raw:'家庭照顧假' },
-      { key:'婚假', tip:'依制度天數', raw:'婚假' },
-      { key:'公傷假', tip:'職災 / 公傷使用', raw:'公傷假' },
-      { key:'公務假', tip:'公務指派使用', raw:'公假' },
-      { key:'安胎假', tip:'依醫療需求', raw:'安胎假' },
-      { key:'陪產檢假', tip:'依規定使用', raw:'陪產檢假' },
-      { key:'陪伴告別假', tip:'畫面委婉顯示', raw:'喪假' },
-      { key:'育嬰留停', tip:'長天期流程', raw:'育嬰留停' }
-    ];
-
-    const state = {
-      employeeId:'',
-      userToken:'',
-      userRole:'Employee',
-      canOpenAdmin:false,
-      companyId:'',
-      deviceId:'',
-      appMode:'',
-      uploadType:'',
-      salaryMode:'week',
-      scheduleWeekOffset:0,
-      clockTab:'record',
-      events:[],
-      calendarData:{ scheduleEvents:[], clockEvents:[], salaryEvents:[], uploadEvents:[] },
-      preselectSettings:{ mode:'week' },
-      myPreselect:null,
-      leaveRows:[],
-      uploads:[],
-      clockFix:[],
-      selectedWeekdays:[],
-      scheduleConfirmMap:{ 0:'', 1:'' },
-      messages:[],
-      themeColors:defaultThemeColors.slice(),
-      activeThemeSlot:0,
-      themeAngleIndex:3,
-      selectedLeaveType:'事假',
-      leaveDays:1,
-      leaveHours:0,
-      leaveV4Bound:false,
-      workRecords:[
-        { date:'2026-03-24', weekday:'週一', inTime:'08:00', outTime:'16:00', hours:8, note:'正常打卡' },
-        { date:'2026-03-25', weekday:'週二', inTime:'08:02', outTime:'16:05', hours:8, note:'正常打卡' },
-        { date:'2026-03-26', weekday:'週三', inTime:'08:01', outTime:'16:00', hours:8, note:'外勤未附位置資訊' },
-        { date:'2026-03-27', weekday:'週四', inTime:'08:11', outTime:'', hours:0, note:'下班漏打異常' }
-      ],
-      salaryHistory:[
-        { key:'week-2026-12', label:'2026年第12週薪資', amount:8400, issueDate:'2026/03/29', detail:'本週已發，含正常工時與加班費。' },
-        { key:'week-2026-11', label:'2026年第11週薪資', amount:7900, issueDate:'2026/03/22', detail:'本週已發，含外勤補貼。' },
-        { key:'month-2026-02', label:'2026年2月薪資', amount:31200, issueDate:'2026/03/05', detail:'2月月薪已發，含代墊核銷。' }
-      ],
-      adminSalaryConfig:{
-        mode:'week',
-        weekStart:'週一',
-        monthStart:'1號',
-        lockWeekday:5,
-        lockMonthDate:20
-      }
+    const APP_STATE = {
+      baseUrl:'',
+      token:'',
+      id:'',
+      name:'',
+      company:'',
+      deviceId:''
     };
 
-    let calMain = null;
-    let calSalaryMonth = null;
-    let calClock = null;
-    let calUpload = null;
-    let currentVariation = Number(localStorage.getItem('ang_theme_variation') || 0);
+    const phone = document.getElementById('phone');
+    const carousel = document.getElementById('sheetCarousel');
+    const sheets = Array.from(document.querySelectorAll('.plan-sheet'));
+    const dots = Array.from(document.querySelectorAll('.dot'));
+    const mainAction = document.getElementById('mainAction');
 
-    function qs(id){ return document.getElementById(id); }
+    const actionText = {
+      login:'企業管理登入',
+      basic:'選擇 Basic',
+      plus:'選擇 Plus',
+      premium:'選擇 Premium'
+    };
 
-    function setText(id, value){
-      const el = qs(id);
-      if (el) el.innerText = value === undefined || value === null ? '' : String(value);
+    function init(){
+      APP_STATE.baseUrl = getBaseUrl();
+
+      const params = getParams();
+      APP_STATE.token = params.token || params.key || '';
+      APP_STATE.id = String(params.id || '').trim().toUpperCase();
+      APP_STATE.name = String(params.name || '').trim();
+      APP_STATE.company = String(params.company || params.company_id || '').trim();
+      APP_STATE.deviceId = getOrCreateDeviceId();
+
+      initTheme(params.theme);
+      initManagerCarousel();
+
+      if (params.expired === '1' || params.status === 'expired') {
+        showEmployeeEntry('expired');
+        return;
+      }
+
+      if (APP_STATE.token) {
+        showEmployeeEntry('bind');
+        return;
+      }
+
+      showHome();
     }
 
-    function showSuccess(msg){
-      if (window.Swal) Swal.fire('成功', msg || '已完成', 'success');
-      else alert(msg || '已完成');
-    }
+    function initTheme(themeFromUrl){
+      const body = document.body;
+      const toggle = document.querySelector('.theme-toggle');
+      const storageKey = 'ang-hr-theme';
 
-    function showError(msg){
-      if (window.Swal) Swal.fire('錯誤', msg || '操作失敗', 'error');
-      else alert(msg || '操作失敗');
-    }
+      function applyTheme(theme){
+        const isDark = theme === 'dark' || theme === 'night';
+        body.dataset.theme = isDark ? 'dark' : 'light';
+        toggle.setAttribute('aria-pressed',String(isDark));
+      }
 
-    function showWarning(msg){
-      if (window.Swal) Swal.fire('提醒', msg || '請確認資料', 'warning');
-      else alert(msg || '請確認資料');
-    }
+      const savedTheme = localStorage.getItem(storageKey);
+      applyTheme(themeFromUrl || savedTheme || 'dark');
 
-    function formatMoney(v){
-      const n = Number(v || 0);
-      return '$' + n.toLocaleString('zh-TW');
-    }
-
-    function formatHours(v){
-      const n = Number(v || 0);
-      if (!isFinite(n)) return '0h';
-      return (Number.isInteger(n) ? n : n.toFixed(2).replace(/\\.00$/, '').replace(/(\\.\\d)0$/, '$1')) + 'h';
-    }
-
-    function pad2(n){ return String(n).padStart(2,'0'); }
-
-    function dateKey(d){
-      return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
-    }
-
-    function parseYmd(ymd){
-      if (!ymd) return null;
-      const m = String(ymd).match(/^(\\d{4})-(\\d{2})-(\\d{2})$/);
-      if (!m) return null;
-      return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]), 12, 0, 0, 0);
-    }
-
-    function startOfWeekMonday(d){
-      const x = new Date(d);
-      x.setHours(0,0,0,0);
-      const day = x.getDay();
-      const diff = day === 0 ? -6 : 1 - day;
-      x.setDate(x.getDate() + diff);
-      return x;
-    }
-
-    function endOfWeekMonday(d){
-      const x = startOfWeekMonday(d);
-      x.setDate(x.getDate() + 6);
-      x.setHours(23,59,59,999);
-      return x;
-    }
-
-    function startOfMonth(d){
-      return new Date(d.getFullYear(), d.getMonth(), 1, 0, 0, 0, 0);
-    }
-
-    function endOfMonth(d){
-      return new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59, 999);
-    }
-
-    function roundHalfStep_(n){
-      return Math.round(Number(n || 0) * 2) / 2;
-    }
-
-    function escapeHtml(s){
-      return String(s || '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
+      toggle.addEventListener('click',function(){
+        const nextTheme = body.dataset.theme === 'dark' ? 'light' : 'dark';
+        applyTheme(nextTheme);
+        localStorage.setItem(storageKey,nextTheme);
+      });
     }
 
     function getParams(){
-      const out = {
-        name:'', nickname:'', id:'', token:'', role:'', chip:'', status:'', next:'', theme:'', key:'', salaryMode:'', salaryWeekStart:'', salaryMonthStart:''
-      };
-      try{
-        const p = new URLSearchParams(window.location.search);
-        Object.keys(out).forEach(key => out[key] = p.get(key) || '');
-      }catch(err){}
-      return out;
-    }
-
-    function getDisplayName(){
-      return String(APP_CTX.nickname || APP_CTX.name || state.profileName || localStorage.getItem('ang_employee_name') || state.employeeId || '員工').trim() || '員工';
-    }
-
-    function themeStorageKey(type){
-      const id = String(state.employeeId || localStorage.getItem('ang_employee_id') || 'ANG0000').trim() || 'ANG0000';
-      return 'ang_theme_' + id + '_' + type;
-    }
-
-    function getStoredThemeValue(type, fallbackKey){
-      return localStorage.getItem(themeStorageKey(type)) || (fallbackKey ? localStorage.getItem(fallbackKey) : '') || '';
-    }
-
-    function normalizeHex(hex, fallback){
-      const value = String(hex || '').trim();
-      if (/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(value)) return value.toUpperCase();
-      return fallback || '#FF87E0';
-    }
-
-    function hexToRgb(hex){
-      const h = normalizeHex(hex).replace('#','');
-      const full = h.length === 3 ? h.split('').map(x => x + x).join('') : h;
-      const num = parseInt(full,16);
-      const r = (num >> 16) & 255;
-      const g = (num >> 8) & 255;
-      const b = num & 255;
-      return r + ',' + g + ',' + b;
-    }
-
-    function shiftColor(hex, amt){
-      const h = normalizeHex(hex).replace('#','');
-      const full = h.length === 3 ? h.split('').map(x => x + x).join('') : h;
-      const num = parseInt(full,16);
-      const r = Math.max(0, Math.min(255, (num >> 16) + amt));
-      const g = Math.max(0, Math.min(255, ((num >> 8) & 255) + amt));
-      const b = Math.max(0, Math.min(255, (num & 255) + amt));
-      return '#' + ((r << 16) | (g << 8) | b).toString(16).padStart(6,'0').toUpperCase();
-    }
-
-    function getContrastColor(hex){
-      const h = normalizeHex(hex).replace('#','');
-      const full = h.length === 3 ? h.split('').map(x => x + x).join('') : h;
-      const num = parseInt(full,16);
-      const r = (num >> 16) & 255;
-      const g = (num >> 8) & 255;
-      const b = num & 255;
-      const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
-      return yiq >= 150 ? '#111827' : '#ffffff';
-    }
-
-    function getVariationPalette(palette, variationIndex){
-      const v = gradientVariations[variationIndex] || gradientVariations[0];
-      return v.order.map(i => palette[i]);
-    }
-
-    function buildGradientCss(palette, variationIndex, angleDeg){
-      const c = getVariationPalette(palette, variationIndex);
-      return 'linear-gradient(' + angleDeg + ', ' + c[0] + ' 0%, ' + c[1] + ' 33%, ' + c[2] + ' 66%, ' + c[3] + ' 100%)';
-    }
-
-    function setAccentVars(root, prefix, color){
-      const rgb = hexToRgb(color);
-      const on = getContrastColor(color);
-      const isLight = on === '#111827';
-      const deep = shiftColor(color, isLight ? -72 : -24);
-      const text = shiftColor(color, isLight ? -86 : -60);
-      root.style.setProperty('--' + prefix, color);
-      root.style.setProperty('--' + prefix + '-rgb', rgb);
-      root.style.setProperty('--' + prefix + '-on', on);
-      root.style.setProperty('--' + prefix + '-deep', deep);
-      root.style.setProperty('--' + prefix + '-text', text);
-      root.style.setProperty('--' + prefix + '-soft', 'rgba(' + rgb + ', .10)');
-      root.style.setProperty('--' + prefix + '-soft2', 'rgba(' + rgb + ', .18)');
-    }
-
-    function getCurrentThemeAngle(){
-      const inlineAngle = document.documentElement.style.getPropertyValue('--emp-angle').trim();
-      return inlineAngle || '135deg';
-    }
-
-    function syncThemeInputs(){
-      ['themeColor1','themeColor2','themeColor3','themeColor4'].forEach(function(id, idx){
-        const el = qs(id);
-        if (el) el.value = normalizeHex((state.themeColors || defaultThemeColors)[idx] || defaultThemeColors[idx], defaultThemeColors[idx]);
+      const sp = new URLSearchParams(window.location.search);
+      const data = {};
+      sp.forEach(function(value,key){
+        data[key] = String(value || '').trim();
       });
+      return data;
     }
 
-    function refreshThemePreviewButtons(){
-      const palette = (state.themeColors || defaultThemeColors).slice(0, 4);
-      while (palette.length < 4) palette.push(defaultThemeColors[palette.length]);
-      const angle = getCurrentThemeAngle();
-
-      document.querySelectorAll('#themePreviewRow .theme-color-btn').forEach(function(btn, idx){
-        const vPalette = getVariationPalette(palette, idx);
-        btn.style.background = buildGradientCss(palette, idx, angle);
-        btn.style.setProperty('--preview-label-color', getContrastColor(vPalette[0]));
-        btn.setAttribute('data-label', gradientVariations[idx].name);
-        btn.classList.toggle('active', idx === currentVariation);
-      });
+    function getBaseUrl(){
+      return window.location.origin + window.location.pathname;
     }
 
-    function syncThemeAngleDisplay(){
-      const el = qs('themeAngleDisplay');
-      if (!el) return;
-      const currentDeg = getCurrentThemeAngle();
-      const target = themeAngles.find(function(x){ return x.deg === currentDeg; }) || themeAngles[3];
-      el.innerHTML = '<span>漸層方向｜' + target.label + '</span>';
-    }
+    function getOrCreateDeviceId(){
+      const key = 'ang_hr_device_id';
+      let id = localStorage.getItem(key);
 
-    function applyThemeColors(colors, save){
-      const palette = (Array.isArray(colors) ? colors : defaultThemeColors).slice(0, 4).map(function(c, idx){
-        return normalizeHex(c, defaultThemeColors[idx]);
-      });
-      while (palette.length < 4) palette.push(defaultThemeColors[palette.length]);
-      state.themeColors = palette;
-
-      const root = document.documentElement;
-      const displayColors = getVariationPalette(palette, currentVariation);
-      const angle = getCurrentThemeAngle();
-      const primaryRgb = hexToRgb(palette[0]);
-      const textOnEmp = getContrastColor(displayColors[0]);
-      const isLightBase = getContrastColor(palette[0]) === '#111827';
-      const empDeep = shiftColor(palette[0], isLightBase ? -72 : -24);
-      const empText = shiftColor(palette[0], isLightBase ? -86 : -60);
-
-      root.style.setProperty('--emp', palette[0]);
-      root.style.setProperty('--emp-deep', empDeep);
-      root.style.setProperty('--emp-soft', 'rgba(' + primaryRgb + ', .12)');
-      root.style.setProperty('--emp-soft2', 'rgba(' + primaryRgb + ', .18)');
-      root.style.setProperty('--emp-text', empText);
-      root.style.setProperty('--emp-rgb', primaryRgb);
-      root.style.setProperty('--emp-1', displayColors[0]);
-      root.style.setProperty('--emp-2', displayColors[1]);
-      root.style.setProperty('--emp-3', displayColors[2]);
-      root.style.setProperty('--emp-4', displayColors[3]);
-      root.style.setProperty('--text-on-emp', textOnEmp);
-      root.style.setProperty('--emp-gradient', buildGradientCss(palette, currentVariation, angle));
-
-      setAccentVars(root, 'schedule', palette[0]);
-      setAccentVars(root, 'clock', palette[1]);
-      setAccentVars(root, 'salary', palette[2]);
-      setAccentVars(root, 'upload', palette[3]);
-
-      const badge = qs('themeNameBadge');
-      if (badge) badge.innerText = '自訂四色｜' + gradientVariations[currentVariation].name;
-
-      if (save){
-        localStorage.setItem(themeStorageKey('colors'), JSON.stringify(palette));
-        localStorage.setItem('ang_theme_colors', JSON.stringify(palette));
-        localStorage.setItem('ang_theme_variation', String(currentVariation));
+      if (!id) {
+        id = 'DEV-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).slice(2,10).toUpperCase();
+        localStorage.setItem(key,id);
       }
 
-      syncThemeInputs();
-      refreshThemePreviewButtons();
-      syncThemeAngleDisplay();
-      refreshCalendars();
+      return id;
     }
 
-    function setThemeAngle(deg, save){
-      const target = themeAngles.find(function(x){ return x.deg === deg; }) || themeAngles[3];
-      const root = document.documentElement;
-      root.style.setProperty('--emp-angle', target.deg);
-      state.themeAngleIndex = themeAngles.findIndex(function(x){ return x.deg === target.deg; });
-      if (save){
-        localStorage.setItem(themeStorageKey('angle'), target.deg);
-        localStorage.setItem('ang_theme_angle', target.deg);
-      }
-      root.style.setProperty('--emp-gradient', buildGradientCss(state.themeColors || defaultThemeColors, currentVariation, target.deg));
-      refreshThemePreviewButtons();
-      syncThemeAngleDisplay();
-      refreshCalendars();
-    }
-
-    function applyVariation(index){
-      currentVariation = Math.max(0, Math.min(index, gradientVariations.length - 1));
-      localStorage.setItem('ang_theme_variation', String(currentVariation));
-      applyThemeColors(state.themeColors, true);
-    }
-
-    function rotateThemeAngle(step){
-      const currentDeg = getCurrentThemeAngle();
-      let index = themeAngles.findIndex(function(x){ return x.deg === currentDeg; });
-      if (index < 0) index = 3;
-      index = (index + step + themeAngles.length) % themeAngles.length;
-      setThemeAngle(themeAngles[index].deg, true);
-    }
-
-    function updateThemeColor(index, value){
-      const palette = (state.themeColors || defaultThemeColors).slice(0, 4);
-      while (palette.length < 4) palette.push(defaultThemeColors[palette.length]);
-      palette[index] = normalizeHex(value, defaultThemeColors[index]);
-      state.themeColors = palette;
-      applyThemeColors(state.themeColors, true);
-    }
-
-    function resetThemePreset(){
-      state.themeColors = defaultThemeColors.slice();
-      currentVariation = 0;
-      setThemeAngle('135deg', true);
-      applyThemeColors(defaultThemeColors, true);
-    }
-
-    function setLogo(source) {
-      const brandLogoEl = document.getElementById('brandLogo');
-      if (!brandLogoEl) return;
-
-      const value = String(source || '').trim();
-      const isImageUrl = /^https?:\/\/|^data:image/i.test(value);
-
-      if (isImageUrl) {
-        brandLogoEl.innerHTML = '<img src="' + value.replace(/"/g, '&quot;') + '" alt="logo">';
-      } else {
-        const shortText = value && value.length <= 6 ? value : 'ANG';
-        brandLogoEl.textContent = shortText || 'ANG';
-      }
-    }
-
-
-
-    function normalizeRoleValue_(role, id){
-      const empId = String(id || state.employeeId || APP_CTX.id || '').trim().toUpperCase();
-      if (empId === 'ANG0603') return 'Creator';
-      const s = String(role || '').trim().toLowerCase();
-      if (s === 'creator' || s === 'owner' || s === 'superadmin' || s === 'super_admin' || s === '最高權限' || s === '創建者' || s === '建立者') return 'Creator';
-      if (s === 'admin' || s === 'administrator' || s === '管理員' || s === '系統管理員') return 'Admin';
-      if (s === 'manager' || s === '主管' || s === '店長' || s === '經理') return 'Manager';
-      return 'Employee';
-    }
-
-    function isManagementRole_(role){
-      return ['Creator','Admin','Manager'].indexOf(normalizeRoleValue_(role, state.employeeId)) > -1;
-    }
-
-    function setUserRole_(role){
-      state.userRole = normalizeRoleValue_(role, state.employeeId);
-      state.canOpenAdmin = isManagementRole_(state.userRole);
-      localStorage.setItem('ang_employee_role', state.userRole);
-      localStorage.setItem('ang_user_role', state.userRole);
-      return state.userRole;
-    }
-
-    function buildFrontendPageUrl_(pageName){
-      const targetPage = String(pageName || 'employee').toLowerCase();
-      const u = window.ANG_HR_UTILS || {};
-      const base = u.getFrontendUrl
-        ? u.getFrontendUrl(targetPage === 'admin' ? 'admin' : 'employee')
-        : String(window.location.href || '').split('#')[0].split('?')[0];
-      const sep = base.indexOf('?') > -1 ? '&' : '?';
-      const companyId = String(state.companyId || APP_CTX.companyId || localStorage.getItem('ang_company_id') || '').trim();
-      const deviceId = String(state.deviceId || APP_CTX.deviceId || localStorage.getItem('ang_device_id') || '').trim();
-      const appMode = String(state.appMode || APP_CTX.appMode || localStorage.getItem('ang_app_mode') || '').trim();
-      const params = [
-        'id=' + encodeURIComponent(String(state.employeeId || APP_CTX.id || '').trim().toUpperCase()),
-        'token=' + encodeURIComponent(String(state.userToken || APP_CTX.token || '').trim()),
-        'role=' + encodeURIComponent(String(state.userRole || APP_CTX.role || '').trim())
-      ];
-      if (companyId) params.push('company_id=' + encodeURIComponent(companyId));
-      if (deviceId) params.push('device_id=' + encodeURIComponent(deviceId));
-      if (appMode) params.push('app=' + encodeURIComponent(appMode));
-      params.push('_ts=' + Date.now());
-      return base + sep + params.join('&');
-    }
-
-    function goAdminFromEmployee_(){
-      const url = buildFrontendPageUrl_('admin');
-      try { window.location.replace(url); }
-      catch(err) { window.location.href = url; }
-    }
-
-    function handleEmployeeHomeClick(){
-      const isHomeActive = document.body.dataset.activePage === 'home' || (qs('page-home') && qs('page-home').classList.contains('active'));
-      if (isHomeActive && isManagementRole_(state.userRole || APP_CTX.role)) {
-        goAdminFromEmployee_();
-        return;
-      }
-      nav('home');
-    }
-
-    function nav(id){
-      document.querySelectorAll('.page').forEach(function(el){ el.classList.remove('active'); });
-      document.querySelectorAll('.nav-btn').forEach(function(el){ el.classList.remove('active'); });
-
-      const pageEl = qs('page-' + id);
-      const navEl = qs('nav-' + id);
-      if (pageEl) pageEl.classList.add('active');
-      if (navEl) navEl.classList.add('active');
-
-      document.body.dataset.activePage = id;
-
-      if (id === 'schedule' && calMain) calMain.render();
-      if (id === 'salary' && calSalaryMonth) calSalaryMonth.render();
-      if (id === 'clock' && calClock) calClock.render();
-      if (id === 'upload' && calUpload) calUpload.render();
-    }
-
-    function apiPost(action, payload, callback){
-  const finalPayload = Object.assign({}, payload || {}, { action: action });
-
-  const href = String(window.location.href || '');
-  if (!/^https?:/i.test(href)){
-    showWarning('目前不是正式網站環境，無法送出資料。');
-    if (callback) callback({ ok:false, message:'not_in_web_environment' });
-    return;
-  }
-
-  const apiUrl = (window.ANG_HR_UTILS && window.ANG_HR_UTILS.getApiUrl ? window.ANG_HR_UTILS.getApiUrl() : href.split('#')[0].split('?')[0]);
-  if (!apiUrl){
-    showWarning('尚未設定後端 GAS API URL，請檢查 config.js');
-    if (callback) callback({ ok:false, message:'missing_api_url' });
-    return;
-  }
-
-  if (window.Swal){
-    Swal.fire({
-      title:'處理中...',
-      allowOutsideClick:false,
-      didOpen:function(){ Swal.showLoading(); }
-    });
-  }
-
-  const controller = new AbortController();
-  const timer = setTimeout(function(){
-    controller.abort();
-  }, 20000);
-
-  fetch(apiUrl, {
-    method:'POST',
-    headers:{ 'Content-Type':'text/plain;charset=utf-8' },
-    body:JSON.stringify(finalPayload),
-    signal: controller.signal
-  })
-  .then(function(response){
-    if (!response.ok) throw new Error('HTTP_' + response.status);
-    return response.text();
-  })
-  .then(function(text){
-    let data = null;
-    try {
-      data = text ? JSON.parse(text) : {};
-    } catch (err) {
-      console.error('API parse error:', text);
-      throw new Error('invalid_json_response');
-    }
-
-    if (data && !data.ok && data.message) {
-      showError(data.message);
-    }
-
-    if (callback) callback(data);
-  })
-  .catch(function(err){
-    console.error('API Error:', err);
-    if (err && err.name === 'AbortError') {
-      showError('系統連線逾時');
-      if (callback) callback({ ok:false, message:'timeout' });
-      return;
-    }
-    showError('系統連線發生錯誤或逾時');
-    if (callback) callback({ ok:false, message:'network_error' });
-  })
-  .finally(function(){
-    clearTimeout(timer);
-    if (window.Swal) Swal.close();
-  });
-}
-
-    function applyParamsFromUrl() {
-      const p = getParams();
-
-      const displayId = String(p.id || APP_CTX.id || localStorage.getItem('ang_employee_id') || '').trim().toUpperCase();
-      const displayToken = String(p.token || APP_CTX.token || '').trim();
-      const currentDisplayName = APP_CTX.nickname || p.nickname || p.name || '員工';
-
-      state.employeeId = displayId;
-      state.userToken = displayToken;
-      state.companyId = String(APP_CTX.companyId || localStorage.getItem('ang_company_id') || '').trim();
-      state.deviceId = String(APP_CTX.deviceId || localStorage.getItem('ang_device_id') || '').trim();
-      state.appMode = String(APP_CTX.appMode || localStorage.getItem('ang_app_mode') || '').trim();
-      setUserRole_(p.role || APP_CTX.role || localStorage.getItem('ang_employee_role') || 'Employee');
-
-      if (displayId) {
-        localStorage.setItem('ang_employee_id', displayId);
-        if (displayToken) localStorage.setItem('ang_employee_token', displayToken);
-        if (state.companyId) localStorage.setItem('ang_company_id', state.companyId);
-        if (state.deviceId) localStorage.setItem('ang_device_id', state.deviceId);
-        if (state.appMode) localStorage.setItem('ang_app_mode', state.appMode);
-        setText('topBrandSub', `總店｜${displayId}`);
-      } else {
-        setText('topBrandSub', '總店｜讀取中');
-      }
-
-      setText('helloName', `哈囉，${currentDisplayName}`);
-
-      setText('brandTitleMain', '公司名稱');
-      setText('brandTitleSub', '公司副名稱');
-      setText('topBrandTitle', 'ANG.lo Engine');
-
-      setLogo('ANG');
-
-      setText('heroChip', '讀取中');
-      setText('helloStatus', '今天狀態：讀取中');
-      setText('home-next-shift', '讀取中');
-
-      const savedColors = getStoredThemeValue('colors', 'ang_theme_colors');
-      if (savedColors) {
-        try {
-          const parsed = JSON.parse(savedColors);
-          if (Array.isArray(parsed) && parsed.length === 4) {
-            state.themeColors = parsed.map(normalizeHex);
-          }
-        } catch (err) {}
-      }
-
-      const savedAngle = getStoredThemeValue('angle', 'ang_theme_angle') || '135deg';
-      setThemeAngle(savedAngle, false);
-      applyThemeColors(state.themeColors, false);
-    }
-
-    function fillHourMinuteSelect_(hourId, minuteId){
-      const hourEl = qs(hourId);
-      const minuteEl = qs(minuteId);
-      if (!hourEl || !minuteEl) return;
-
-      hourEl.innerHTML = '';
-      minuteEl.innerHTML = '';
-
-      for (let h = 0; h < 24; h++){
-        const hh = String(h).padStart(2,'0');
-        const op = document.createElement('option');
-        op.value = hh;
-        op.textContent = hh + ' 點';
-        hourEl.appendChild(op);
-      }
-
-      for (let m = 0; m < 60; m += 5){
-        const mm = String(m).padStart(2,'0');
-        const op = document.createElement('option');
-        op.value = mm;
-        op.textContent = mm + ' 分';
-        minuteEl.appendChild(op);
-      }
-    }
-
-    function setDateTimeToInputs_(dateId, hourId, minuteId, dateObj){
-      const dateEl = qs(dateId);
-      const hourEl = qs(hourId);
-      const minuteEl = qs(minuteId);
-      if (!dateEl || !hourEl || !minuteEl) return;
-
-      const d = new Date(dateObj);
-      d.setSeconds(0, 0);
-
-      let mins = Math.round(d.getMinutes() / 5) * 5;
-      if (mins >= 60){
-        d.setHours(d.getHours() + 1);
-        mins = 0;
-      }
-      d.setMinutes(mins, 0, 0);
-
-      const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
-      dateEl.value = local.toISOString().slice(0,10);
-      hourEl.value = String(d.getHours()).padStart(2,'0');
-      minuteEl.value = String(d.getMinutes()).padStart(2,'0');
-    }
-
-    function getDateTimeFromInputs_(dateId, hourId, minuteId){
-      const dateEl = qs(dateId);
-      const hourEl = qs(hourId);
-      const minuteEl = qs(minuteId);
-      if (!dateEl || !hourEl || !minuteEl || !dateEl.value) return null;
-      const dt = new Date(dateEl.value + 'T' + hourEl.value + ':' + minuteEl.value + ':00');
-      return isNaN(dt.getTime()) ? null : dt;
-    }
-
-    function normalizeLeaveV4Inputs_(){
-      const dayInput = qs('leave-days-input');
-      const hourInput = qs('leave-hours-input');
-      if (!dayInput || !hourInput) return;
-
-      let d = parseInt(dayInput.value || '0', 10);
-      if (isNaN(d) || d < 0) d = 0;
-      dayInput.value = String(d);
-
-      let h = parseFloat(hourInput.value || '0') || 0;
-      if (h < 0) h = 0;
-      h = roundHalfStep_(h);
-      hourInput.value = h.toFixed(1);
-
-      state.leaveDays = d;
-      state.leaveHours = h;
-    }
-
-    function renderLeaveGrid(){
-      const wrap = qs('leave-type-grid-v4');
-      if (!wrap) return;
-
-      if (!state.selectedLeaveType) state.selectedLeaveType = leaveTypes[0].key;
-      wrap.innerHTML = '';
-
-      leaveTypes.forEach(function(item){
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'leave-type-btn-v4' + (state.selectedLeaveType === item.key ? ' active' : '');
-        btn.innerHTML = escapeHtml(item.key) + '<small>' + escapeHtml(item.tip || '') + '</small>';
-        btn.onclick = function(){
-          state.selectedLeaveType = item.key;
-          renderLeaveGrid();
-          syncLeaveSummary();
-        };
-        wrap.appendChild(btn);
-      });
-    }
-
-    function syncLeaveSummary(){
-      normalizeLeaveV4Inputs_();
-
-      const summaryText = qs('leave-v4-summary-text');
-      const summarySub = qs('leave-v4-summary-sub');
-      if (!summaryText || !summarySub) return;
-
-      const start = getDateTimeFromInputs_('leave-start-date','leave-start-hour','leave-start-minute');
-      const totalHours = (Number(state.leaveDays || 0) * 8) + Number(state.leaveHours || 0);
-
-      if (start){
-        const end = new Date(start.getTime() + totalHours * 3600000);
-        setDateTimeToInputs_('leave-end-date','leave-end-hour','leave-end-minute', end);
-      }
-
-      const hourText = Number(state.leaveHours || 0) % 1 === 0
-        ? Number(state.leaveHours || 0).toFixed(0)
-        : Number(state.leaveHours || 0).toFixed(1);
-
-      summaryText.innerText = Number(state.leaveDays || 0) + ' 天 ' + hourText + ' 小時';
-      summarySub.innerText = '共 ' + totalHours.toFixed(1) + ' 小時｜' + (state.selectedLeaveType || '事假') + '｜會同步回上方結束時間';
-    }
-
-    function syncLeaveV4FromRange_(){
-      const start = getDateTimeFromInputs_('leave-start-date','leave-start-hour','leave-start-minute');
-      const end = getDateTimeFromInputs_('leave-end-date','leave-end-hour','leave-end-minute');
-
-      if (!start || !end || end <= start){
-        syncLeaveSummary();
-        return;
-      }
-
-      const totalHours = roundHalfStep_((end.getTime() - start.getTime()) / 3600000);
-      const days = Math.floor(totalHours / 8);
-      const hours = roundHalfStep_(totalHours - (days * 8));
-
-      state.leaveDays = days;
-      state.leaveHours = hours;
-
-      if (qs('leave-days-input')) qs('leave-days-input').value = String(days);
-      if (qs('leave-hours-input')) qs('leave-hours-input').value = hours.toFixed(1);
-
-      const summaryText = qs('leave-v4-summary-text');
-      const summarySub = qs('leave-v4-summary-sub');
-      if (summaryText) summaryText.innerText = days + ' 天 ' + (hours % 1 === 0 ? hours.toFixed(0) : hours.toFixed(1)) + ' 小時';
-      if (summarySub) summarySub.innerText = '共 ' + totalHours.toFixed(1) + ' 小時｜' + (state.selectedLeaveType || '事假') + '｜會同步回上方結束時間';
-    }
-
-    function bindLeaveV4_(){
-      if (state.leaveV4Bound) return;
-      state.leaveV4Bound = true;
-
-      ['leave-start-date','leave-start-hour','leave-start-minute','leave-end-date','leave-end-hour','leave-end-minute'].forEach(function(id){
-        const el = qs(id);
-        if (el){
-          el.addEventListener('change', syncLeaveV4FromRange_);
-          el.addEventListener('input', syncLeaveV4FromRange_);
-        }
+    function setView(viewId){
+      ['homeView','employeeEntryView','managerEntryView'].forEach(function(id){
+        const el = document.getElementById(id);
+        if (el) el.classList.remove('active');
       });
 
-      ['leave-days-input','leave-hours-input'].forEach(function(id){
-        const el = qs(id);
-        if (el){
-          el.addEventListener('change', syncLeaveSummary);
-          el.addEventListener('input', syncLeaveSummary);
-        }
-      });
-
-      if (qs('leave-day-minus')){
-        qs('leave-day-minus').onclick = function(){
-          state.leaveDays = Math.max(0, Number(state.leaveDays || 0) - 1);
-          if (qs('leave-days-input')) qs('leave-days-input').value = String(state.leaveDays);
-          syncLeaveSummary();
-        };
-      }
-
-      if (qs('leave-day-plus')){
-        qs('leave-day-plus').onclick = function(){
-          state.leaveDays = Number(state.leaveDays || 0) + 1;
-          if (qs('leave-days-input')) qs('leave-days-input').value = String(state.leaveDays);
-          syncLeaveSummary();
-        };
-      }
-
-      if (qs('leave-hour-minus')){
-        qs('leave-hour-minus').onclick = function(){
-          state.leaveHours = Math.max(0, roundHalfStep_(Number(state.leaveHours || 0) - 0.5));
-          if (qs('leave-hours-input')) qs('leave-hours-input').value = state.leaveHours.toFixed(1);
-          syncLeaveSummary();
-        };
-      }
-
-      if (qs('leave-hour-plus')){
-        qs('leave-hour-plus').onclick = function(){
-          state.leaveHours = roundHalfStep_(Number(state.leaveHours || 0) + 0.5);
-          if (qs('leave-hours-input')) qs('leave-hours-input').value = state.leaveHours.toFixed(1);
-          syncLeaveSummary();
-        };
-      }
-    }
-
-    function initDefaults(){
-      fillHourMinuteSelect_('leave-start-hour','leave-start-minute');
-      fillHourMinuteSelect_('leave-end-hour','leave-end-minute');
-      fillHourMinuteSelect_('clock-fix-hour','clock-fix-minute');
-
-      const now = new Date();
-      now.setSeconds(0,0);
-
-      let mins = Math.ceil(now.getMinutes() / 5) * 5;
-      const start = new Date(now);
-      if (mins >= 60) start.setHours(start.getHours() + 1, 0, 0, 0);
-      else start.setMinutes(mins, 0, 0);
-
-      const end = new Date(start.getTime() + 8 * 3600000);
-
-      setDateTimeToInputs_('leave-start-date','leave-start-hour','leave-start-minute', start);
-      setDateTimeToInputs_('leave-end-date','leave-end-hour','leave-end-minute', end);
-      setDateTimeToInputs_('clock-fix-date','clock-fix-hour','clock-fix-minute', start);
-
-      state.leaveDays = 1;
-      state.leaveHours = 0;
-
-      if (qs('leave-days-input')) qs('leave-days-input').value = '1';
-      if (qs('leave-hours-input')) qs('leave-hours-input').value = '0.0';
-
-      bindLeaveV4_();
-      renderLeaveGrid();
-      syncLeaveSummary();
-    }
-
-    function parseWeekStartDay_(value){
-      const raw = String(value || '').trim().toLowerCase();
-      if (!raw) return 1;
-      const n = Number(raw.replace(/[^\d]/g,''));
-      if (!isNaN(n) && n >= 0 && n <= 6) return n;
-      if (!isNaN(n) && n === 7) return 0;
-      if (/日|sun|sunday/.test(raw)) return 0;
-      if (/一|mon|monday/.test(raw)) return 1;
-      if (/二|tue|tuesday/.test(raw)) return 2;
-      if (/三|wed|wednesday/.test(raw)) return 3;
-      if (/四|thu|thursday/.test(raw)) return 4;
-      if (/五|fri|friday/.test(raw)) return 5;
-      if (/六|sat|saturday/.test(raw)) return 6;
-      return 1;
-    }
-
-    function parseMonthStartDate_(value){
-      const raw = String(value || '').trim();
-      const m = raw.match(/\d{1,2}/);
-      const n = m ? Number(m[0]) : 1;
-      if (!n || isNaN(n)) return 1;
-      return Math.max(1, Math.min(31, n));
-    }
-
-    function getScheduleMode_(){
-      const cfgMode = (state.adminSalaryConfig && state.adminSalaryConfig.mode) || '';
-      const psMode = (state.preselectSettings && state.preselectSettings.mode) || '';
-      return String(cfgMode || psMode || 'week').toLowerCase() === 'month' ? 'month' : 'week';
-    }
-
-    function getWeekStartSetting_(){
-      const cfg = state.adminSalaryConfig || {};
-      const ps = state.preselectSettings || {};
-      return cfg.weekStart || cfg.weekOpen || ps.weekOpen || ps.week_start || '週一';
-    }
-
-    function getMonthStartSetting_(){
-      const cfg = state.adminSalaryConfig || {};
-      const ps = state.preselectSettings || {};
-      return cfg.monthStart || cfg.monthOpen || ps.monthOpen || ps.month_start || '1號';
-    }
-
-    function addMonthsKeepDay_(date, add, preferredDay){
-      const y = date.getFullYear();
-      const m = date.getMonth() + add;
-      const max = new Date(y, m + 1, 0).getDate();
-      return new Date(y, m, Math.min(preferredDay, max));
-    }
-
-    function getSchedulePeriodStart_(offset){
-      const mode = getScheduleMode_();
-      const now = new Date();
-      now.setHours(0,0,0,0);
-
-      if (mode === 'month'){
-        const startDay = parseMonthStartDate_(getMonthStartSetting_());
-        let currentStart = new Date(now.getFullYear(), now.getMonth(), Math.min(startDay, new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate()));
-        currentStart.setHours(0,0,0,0);
-        if (now.getTime() < currentStart.getTime()){
-          const prevMax = new Date(now.getFullYear(), now.getMonth(), 0).getDate();
-          currentStart = new Date(now.getFullYear(), now.getMonth() - 1, Math.min(startDay, prevMax));
-          currentStart.setHours(0,0,0,0);
-        }
-        return addMonthsKeepDay_(currentStart, offset, startDay);
-      }
-
-      const startDow = parseWeekStartDay_(getWeekStartSetting_());
-      const diff = (now.getDay() - startDow + 7) % 7;
-      const start = new Date(now);
-      start.setDate(now.getDate() - diff + (offset * 7));
-      start.setHours(0,0,0,0);
-      return start;
-    }
-
-    function getScheduleDatesForOffset(offset){
-      const mode = getScheduleMode_();
-      const start = getSchedulePeriodStart_(offset);
-
-      if (mode === 'month'){
-        const startDay = parseMonthStartDate_(getMonthStartSetting_());
-        const nextStart = addMonthsKeepDay_(start, 1, startDay);
-        const end = new Date(nextStart);
-        end.setDate(nextStart.getDate() - 1);
-        const list = [];
-        const cursor = new Date(start);
-        while (cursor <= end){
-          list.push(new Date(cursor));
-          cursor.setDate(cursor.getDate() + 1);
-        }
-        return list;
-      }
-
-      return Array.from({ length:7 }, function(_, i){
-        const d = new Date(start);
-        d.setDate(start.getDate() + i);
-        return d;
-      });
-    }
-
-    function updateScheduleTitle(){
-      const mode = getScheduleMode_();
-      const isMonth = mode === 'month';
-      const dates0 = getScheduleDatesForOffset(0);
-      const dates1 = getScheduleDatesForOffset(1);
-      const currDates = state.scheduleWeekOffset === 0 ? dates0 : dates1;
-
-      function formatR(list){
-        if (!list || !list.length) return '';
-        return (list[0].getMonth()+1) + '/' + list[0].getDate() + '～' + (list[list.length-1].getMonth()+1) + '/' + list[list.length-1].getDate();
-      }
-
-      const label = isMonth
-        ? (state.scheduleWeekOffset === 0 ? '本期月排班' : '下期月排班')
-        : (state.scheduleWeekOffset === 0 ? '本期週排班' : '下期週排班');
-
-      const ruleText = isMonth
-        ? '每月 ' + parseMonthStartDate_(getMonthStartSetting_()) + ' 號起'
-        : '每週' + ['日','一','二','三','四','五','六'][parseWeekStartDay_(getWeekStartSetting_())] + '起';
-
-      setText('t-0', (isMonth ? '本期月排班\\n' : '本期週排班\\n') + formatR(dates0));
-      setText('t-1', (isMonth ? '下期月排班\\n' : '下期週排班\\n') + formatR(dates1));
-      setText('schedule-calendar-title', label + '（' + formatR(currDates) + '｜' + ruleText + '）');
-    }
-
-    function syncWeekTabs(){
-      if (qs('t-0')) qs('t-0').classList.toggle('active', state.scheduleWeekOffset === 0);
-      if (qs('t-1')) qs('t-1').classList.toggle('active', state.scheduleWeekOffset === 1);
-    }
-
-    function toggleWeek(offset){
-      state.scheduleWeekOffset = offset;
-      state.selectedWeekdays = [];
-      syncWeekTabs();
-      updateScheduleTitle();
-      renderWeekdayStrip();
-      updateScheduleConfirmNote();
-      refreshCalendars();
-    }
-
-    function checkIsPeriodLocked(offset){
-      const mode = getScheduleMode_();
-      const now = new Date();
-
-      if (mode === 'week'){
-        const lockDay = Number((state.adminSalaryConfig && state.adminSalaryConfig.lockWeekday) || 5);
-        const currentDay = now.getDay() === 0 ? 7 : now.getDay();
-        if (offset > 1) return true;
-        if (offset === 1 && currentDay > lockDay) return true;
-        return false;
-      }
-
-      const lockDate = Number((state.adminSalaryConfig && state.adminSalaryConfig.lockMonthDate) || 20);
-      if (offset > 1) return true;
-      if (offset === 1 && now.getDate() > lockDate) return true;
-      return false;
-    }
-
-    function renderWeekdayStrip(){
-      const dates = getScheduleDatesForOffset(state.scheduleWeekOffset);
-      const names = ['週日','週一','週二','週三','週四','週五','週六'];
-      const wrap = qs('weekday-strip');
-      if (!wrap) return;
-      wrap.innerHTML = '';
-      wrap.classList.toggle('is-month-mode', getScheduleMode_() === 'month');
-
-      const today = new Date();
-      today.setHours(0,0,0,0);
-      const isPeriodLocked = checkIsPeriodLocked(state.scheduleWeekOffset);
-
-      dates.forEach(function(dObj, idx){
-        const isPastOrToday = dObj.getTime() <= today.getTime();
-        const isLocked = isPeriodLocked || isPastOrToday;
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'weekday-chip' + (state.selectedWeekdays.indexOf(idx) > -1 ? ' active' : '');
-        if (isLocked) btn.disabled = true;
-        btn.innerHTML = '<span class="weekday-main">' + names[dObj.getDay()] + '</span><span class="weekday-date">' + (dObj.getMonth()+1) + '/' + dObj.getDate() + '</span>';
-        btn.onclick = function(){
-          if (isLocked) return;
-          if (state.selectedWeekdays.indexOf(idx) > -1) state.selectedWeekdays = state.selectedWeekdays.filter(function(x){ return x !== idx; });
-          else state.selectedWeekdays.push(idx);
-          renderWeekdayStrip();
-          updateScheduleConfirmNote();
-        };
-        wrap.appendChild(btn);
-      });
-    }
-
-    function getSelectedScheduleSummary(){
-      const dates = getScheduleDatesForOffset(state.scheduleWeekOffset);
-      const indexes = (state.selectedWeekdays || []).slice().sort(function(a,b){ return a - b; });
-      if (!indexes.length) return '';
-      return indexes.map(function(idx){
-        const d = dates[idx];
-        return ['週日','週一','週二','週三','週四','週五','週六'][d.getDay()] + ' ' + (d.getMonth()+1) + '/' + d.getDate();
-      }).join('、');
-    }
-
-function updateScheduleConfirmNote(){
-      const note = qs('schedule-confirm-note');
-      if (!note) return;
-      const current = getSelectedScheduleSummary();
-      const saved = (state.scheduleConfirmMap && state.scheduleConfirmMap[state.scheduleWeekOffset]) || '';
-      if (current){
-        note.innerText = '目前選擇：' + current + '｜按「確認日期選擇」完成這次選擇';
-        return;
-      }
-      if (saved){
-        note.innerText = '上次確認：' + saved;
-        return;
-      }
-      note.innerText = '尚未選擇日期';
-    }
-
-    function confirmScheduleSelection(){
-      const summary = getSelectedScheduleSummary();
-      if (!summary){
-        showWarning('請先選擇日期');
-        return;
-      }
-
-      const mode = getScheduleMode_();
-      const payload = {
-        id: state.employeeId,
-        token: state.userToken,
-        mode: mode,
-        weekOffset: mode === 'week' ? state.scheduleWeekOffset : 0,
-        monthOffset: mode === 'month' ? state.scheduleWeekOffset : 0,
-        weekdays: mode === 'week' ? state.selectedWeekdays.slice() : [],
-        monthDays: mode === 'month' ? state.selectedWeekdays.slice() : []
-      };
-
-      apiPost('employeePreselect', payload, function(res){
-        if (res && res.ok){
-          state.scheduleConfirmMap[state.scheduleWeekOffset] = summary;
-          updateScheduleConfirmNote();
-          showSuccess(res.message || ('已確認：' + summary));
-          loadBootstrapData();
-        }
-      });
-    }
-
-    function findRecordByDate(records, ymd){
-      const list = Array.isArray(records) ? records : [];
-      for (let i = 0; i < list.length; i++){
-        if (String(list[i].date || '') === ymd) return list[i];
-      }
-      return null;
-    }
-
-    function getRecordStatus(rec){
-      if (!rec) return '今日無打卡';
-      const hasIn = !!String(rec.inTime || '').trim();
-      const hasOut = !!String(rec.outTime || '').trim();
-      if (hasIn && hasOut) return '已完成出勤';
-      if (hasIn && !hasOut) return '上班中';
-      if (!hasIn && hasOut) return '打卡異常';
-      return '今日無打卡';
-    }
-
-    function getFutureStatus(targetDate, records, leaveRows){
-      const ymd = dateKey(targetDate);
-      const rec = findRecordByDate(records, ymd);
-      if (rec) return getRecordStatus(rec);
-
-      const leaveList = Array.isArray(leaveRows) ? leaveRows : [];
-      for (let i = 0; i < leaveList.length; i++){
-        const row = leaveList[i] || {};
-        if (String(row.status || '') === '已退回') continue;
-        const start = parseYmd(row.startDate);
-        const end = parseYmd(row.endDate || row.startDate);
-        if (!start || !end) continue;
-        if (targetDate >= start && targetDate <= end) return '請假';
-      }
-      return '未排定';
-    }
-
-    function sumHoursBetween(records, startDate, endDate){
-      const list = Array.isArray(records) ? records : [];
-      let total = 0;
-      for (let i = 0; i < list.length; i++){
-        const rec = list[i] || {};
-        const d = parseYmd(rec.date);
-        if (!d) continue;
-        if (d >= startDate && d <= endDate) total += Number(rec.hours || 0);
-      }
-      return Math.round(total * 100) / 100;
-    }
-
-    function countPending(list){
-      const arr = Array.isArray(list) ? list : [];
-      return arr.filter(function(item){
-        const s = String((item && item.status) || '');
-        return s === '待審核' || s.toLowerCase() === 'pending';
-      }).length;
-    }
-
-    function formatYmdZh(ymd){
-      const parts = String(ymd || '').split('-');
-      return parts.length === 3 ? (Number(parts[1]) + '/' + Number(parts[2])) : String(ymd || '');
-    }
-
-    function isClockAbnormal(rec){
-      return !rec.inTime || !rec.outTime || String(rec.note || '').indexOf('異常') > -1 || String(rec.note || '').indexOf('漏打') > -1 || String(rec.note || '').indexOf('未附') > -1;
-    }
-
-    function sumHours(records){
-      return (Array.isArray(records) ? records : []).reduce(function(sum, r){
-        return sum + Number((r && r.hours) || 0);
-      }, 0);
-    }
-
-    function getWeekHours(){
-      const now = new Date();
-      return sumHoursBetween(state.workRecords, startOfWeekMonday(now), endOfWeekMonday(now));
-    }
-
-    function getMonthHours(){
-      const now = new Date();
-      return sumHoursBetween(state.workRecords, startOfMonth(now), endOfMonth(now));
-    }
-
-    function getEmployeeColor(){
-      return getComputedStyle(document.documentElement).getPropertyValue('--emp').trim() || '#FF87E0';
-    }
-
-    function getEmployeeTextColor(){
-      return getComputedStyle(document.documentElement).getPropertyValue('--emp-text').trim() || '#8A2E7B';
-    }
-
-    function getEmployeeRgb(){
-      return getComputedStyle(document.documentElement).getPropertyValue('--emp-rgb').trim() || '255,135,224';
-    }
-
-    function buildTopCardData(payload){
-      const profile = payload && payload.profile ? payload.profile : {};
-      const system = payload && payload.system ? payload.system : {};
-      const workRecords = Array.isArray(payload && payload.workRecords) ? payload.workRecords : [];
-      const leaveRows = Array.isArray(payload && payload.leaveRows) ? payload.leaveRows : [];
-      const uploads = Array.isArray(payload && payload.uploads) ? payload.uploads : [];
-      const clockFix = Array.isArray(payload && payload.clockFix) ? payload.clockFix : [];
-
-      const now = new Date();
-      const todayKey = dateKey(now);
-      const todayRecord = findRecordByDate(workRecords, todayKey);
-
-      const tomorrow = new Date(now);
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      tomorrow.setHours(12, 0, 0, 0);
-
-      const afterTomorrow = new Date(now);
-      afterTomorrow.setDate(afterTomorrow.getDate() + 2);
-      afterTomorrow.setHours(12, 0, 0, 0);
-
-      const weekHours = sumHoursBetween(workRecords, startOfWeekMonday(now), endOfWeekMonday(now));
-      const monthHours = sumHoursBetween(workRecords, startOfMonth(now), endOfMonth(now));
-
-      const hourlyRate = Number(system.hourly_rate || 0) || Number(system.base_hourly_rate || 0) || HOURLY_RATE;
-      const weekSalary = Math.round(weekHours * hourlyRate);
-      const monthSalary = Math.round(monthHours * hourlyRate);
-
-      const todayStatus = payload.todayStatus || getRecordStatus(todayRecord);
-      const tomorrowStatus = payload.tomorrowStatus || getFutureStatus(tomorrow, workRecords, leaveRows);
-      const afterTomorrowStatus = payload.afterTomorrowStatus || getFutureStatus(afterTomorrow, workRecords, leaveRows);
-
-      let nextShift = payload.nextShift || '未排定';
-      if (!payload.nextShift){
-        if (tomorrowStatus === '請假') nextShift = '明天 請假';
-        else if (tomorrowStatus === '未排定') nextShift = '明天 未排定';
-        else nextShift = '明天 ' + tomorrowStatus;
-      }
-
-      return {
-        profile:{
-          id:profile.id || state.employeeId,
-          name:profile.name || profile.nickname || getDisplayName(),
-          nickname:profile.nickname || profile.name || getDisplayName(),
-          role:profile.role || APP_CTX.role || '員工',
-          chip:profile.chip || profile.role || APP_CTX.role || '標準版'
-        },
-        system:{
-          main_title:system.main_title || 'ANG.lo',
-          system_sub:system.system_sub || (profile.role || APP_CTX.role || '員工模式'),
-          logo_url:system.logo_url || ''
-        },
-        todayStatus:todayStatus,
-        nextShift:nextShift,
-        weekSalary:weekSalary,
-        weekHours:weekHours,
-        monthSalary:monthSalary,
-        monthHours:monthHours,
-        tomorrowStatus:tomorrowStatus,
-        afterTomorrowStatus:afterTomorrowStatus,
-        pendingCount:payload.pendingCount || countPending(leaveRows) + countPending(uploads) + countPending(clockFix)
-      };
-    }
-
-    function renderHomeTopCards(payload){
-      const data = buildTopCardData(payload || {});
-      const displayName = String(data.profile.nickname || data.profile.name || getDisplayName() || '員工').trim() || '員工';
-
-      state.profileName = displayName;
-      localStorage.setItem('ang_employee_name', displayName);
-
-      setText('helloName', '哈囉，' + displayName);
-      setText('helloStatus', '今天狀態：' + (data.todayStatus || '正常出勤中'));
-      setText('heroChip', data.profile.chip || '標準版');
-      setText('home-next-shift', data.nextShift || '讀取中');
-
-      setText('brandTitleMain', (data.system && (data.system.company_name || data.system.main_title)) || '公司名稱');
-      setText('brandTitleSub', (data.system && (data.system.company_subtitle || data.system.system_sub)) || '公司副名稱');
-      const topBranchName = (data.system && data.system.branch_name) || (data.profile && (data.profile.branchName || data.profile.branch_name)) || '';
-      const topBranchId = (data.system && data.system.branch_id) || (data.profile && (data.profile.branchId || data.profile.branch_id)) || '';
-      const topSystemTitle = data.system && data.system.system_title || 'ANG.lo Engine';
-      const topBranch = topBranchName || topBranchId || '總店';
-      setText('topBrandTitle', topSystemTitle);
-      setText('topBrandSub', [topBranch, data.profile.id || state.employeeId || 'USER'].filter(Boolean).join('｜'));
-      setLogo((data.system && data.system.logo_url) || 'ANG');
-
-      setText('home-week-salary', formatMoney(data.weekSalary || 0));
-      setText('home-week-hours', formatHours(data.weekHours || 0));
-      setText('home-month-salary', formatMoney(data.monthSalary || 0));
-      setText('home-month-hours', formatHours(data.monthHours || 0));
-      setText('home-tomorrow-status', data.tomorrowStatus || '未排定');
-      setText('home-after-status', data.afterTomorrowStatus || '未排定');
-      setText('home-pending-count', String(data.pendingCount || 0) + '件');
-    }
-
-    function renderHomeList(targetId, items, emptyTitle, emptyText, variant){
-      const box = qs(targetId);
-      if (!box) return;
-      const list = Array.isArray(items) ? items : [];
-
-      if (!list.length){
-        box.innerHTML = '<div class="' + (variant || 'notice-item') + '"><div class="item-title">' + escapeHtml(emptyTitle) + '</div><div class="item-meta">' + escapeHtml(emptyText) + '</div></div>';
-        return;
-      }
-
-      box.innerHTML = list.map(function(item){
-        const title = item.title || item.subject || item.text || '未命名';
-        const meta = item.meta || item.message || item.desc || item.note || '';
-        const cls = item.level === 'danger' ? 'alert-item danger' : item.level === 'warn' ? 'alert-item warn' : (variant || 'notice-item');
-        return '<div class="' + cls + '"><div class="item-title">' + escapeHtml(title) + '</div><div class="item-meta">' + escapeHtml(meta) + '</div></div>';
-      }).join('');
-    }
-
-    function renderMessages(items){
-      const box = qs('message-board');
-      if (!box) return;
-
-      const list = Array.isArray(items) ? items : [];
-      if (!list.length){
-        box.innerHTML = '<div class="notice-item"><div class="item-title">目前沒有留言</div><div class="item-meta">送出後會顯示在這裡。</div></div>';
-        return;
-      }
-
-      box.innerHTML = list.map(function(item){
-        return '<div class="notice-item"><div class="item-title">' + escapeHtml(item.author || '我') + '｜' + escapeHtml(item.status || '') + '</div><div class="item-meta">' + escapeHtml(item.text || '') + '</div></div>';
-      }).join('');
-    }
-
-    function showHomeError(msg){
-      const text = String(msg || '載入失敗');
-      setText('topBrandSub', '總店｜錯誤');
-      setText('helloName', '哈囉，錯誤');
-      setText('helloStatus', '今天狀態：' + text);
-      setText('heroChip', '錯誤');
-      setText('home-next-shift', text);
-      console.error(text);
-    }
-
-    function handleBootstrapData(res) {
-      if (!res || !res.ok) return;
-
-      const p = res.profile || {};
-      const s = res.system || {};
-      const home = res.home || {};
-
-      const currentDisplayName = p.nickname || p.name || '員工';
-
-      const companyName = s.company_name || s.brandTitleMain || s.main_title || 'ANG.lo';
-      const companySubtitle = s.company_subtitle || s.brandTitleSub || s.system_sub || 'Humanized system technology';
-      const systemTitle = 'ANG.lo Engine';
-      const branchName = s.branch_name || p.branchName || p.branch_name || '';
-      const branchId = s.branch_id || p.branchId || p.branch_id || '';
-      const branchDisplayName = branchName || branchId || '總店';
-      const fallbackText = s.fallback_text || 'ANG';
-
-      state.employeeId = p.id || state.employeeId;
-      state.userToken = res.token || state.userToken;
-      state.companyId = res.company_id || res.companyId || state.companyId || APP_CTX.companyId || '';
-      state.deviceId = res.device_id || res.deviceId || state.deviceId || APP_CTX.deviceId || '';
-      if (state.companyId) localStorage.setItem('ang_company_id', state.companyId);
-      if (state.deviceId) localStorage.setItem('ang_device_id', state.deviceId);
-      if (state.employeeId) localStorage.setItem('ang_employee_id', state.employeeId);
-      if (state.userToken) localStorage.setItem('ang_employee_token', state.userToken);
-      setUserRole_(p.role || res.role || APP_CTX.role || state.userRole || 'Employee');
-      state.workRecords = Array.isArray(res.workRecords) ? res.workRecords : state.workRecords;
-      state.leaveRows = Array.isArray(res.leaveRows) ? res.leaveRows : [];
-      state.uploads = Array.isArray(res.uploads) ? res.uploads : [];
-      state.clockFix = Array.isArray(res.clockFix) ? res.clockFix : [];
-      state.messages = Array.isArray(res.messages) ? res.messages : state.messages;
-      state.salaryHistory = Array.isArray(res.salaryHistory) ? res.salaryHistory : state.salaryHistory;
-      state.calendarData = res.calendarData || { scheduleEvents:[], clockEvents:[], salaryEvents:[], uploadEvents:[] };
-      state.preselectSettings = res.preselectSettings || state.preselectSettings || { mode:'week' };
-      state.myPreselect = res.myPreselect || null;
-
-      if (res.adminSalaryConfig){
-        state.adminSalaryConfig = Object.assign({}, state.adminSalaryConfig || {}, res.adminSalaryConfig);
-      }
-      if (state.preselectSettings && state.preselectSettings.mode){
-        state.adminSalaryConfig.mode = String(state.preselectSettings.mode || 'week').toLowerCase() === 'month' ? 'month' : 'week';
-      }
-
-      if (state.myPreselect && Array.isArray(state.myPreselect.selected)){
-        state.selectedWeekdays = [];
-        state.myPreselect.selected.forEach(function(v, idx){ if (v === true) state.selectedWeekdays.push(idx); });
-      }
-
-      setText('helloName', '哈囉，' + currentDisplayName);
-      setText('helloStatus', '今天狀態：' + (home.todayStatus || res.todayStatus || '正常出勤中'));
-
-      setText('brandTitleMain', companyName);
-      setText('brandTitleSub', companySubtitle);
-
-      setText('topBrandTitle', systemTitle);
-      setText('topBrandSub', [branchDisplayName, (p.id || 'USER')].filter(Boolean).join('｜'));
-
-      setLogo(s.logo_url || fallbackText);
-
-      setText('heroChip', p.chip || p.role || '標準版');
-      setText('home-next-shift', home.nextShift || res.nextShift || '讀取中');
-
-      setText('home-week-salary', formatMoney(home.weekSalary != null ? home.weekSalary : res.weekSalary));
-      setText('home-week-hours', formatHours(home.weekHours != null ? home.weekHours : res.weekHours));
-      setText('home-month-salary', formatMoney(home.monthSalary != null ? home.monthSalary : res.monthSalary));
-      setText('home-month-hours', formatHours(home.monthHours != null ? home.monthHours : res.monthHours));
-
-      setText('home-tomorrow-status', home.tomorrowStatus || res.tomorrowStatus || '未排定');
-      setText('home-after-status', home.afterTomorrowStatus || res.afterTomorrowStatus || '未排定');
-      setText('home-pending-count', String((home.pendingCount != null ? home.pendingCount : res.pendingCount) || 0) + '件');
-
-      renderHomeList('home-alert-list', home.alerts || res.alerts || [], '目前沒有提醒', '有異常或待補資料時會顯示在這裡。', 'alert-item');
-      renderHomeList('home-notice-list', home.notices || res.notices || [], '目前沒有主管通知', '主管公告發布後會顯示在這裡。', 'notice-item');
-      renderHomeList('home-timeline-list', home.timeline || res.timeline || [], '目前沒有近期動態', '打卡、請假、審核狀態會顯示在這裡。', 'timeline-item');
-
-      seedCalendarEvents(state.leaveRows);
-      updateScheduleTitle();
-      syncWeekTabs();
-      renderWeekdayStrip();
-      updateScheduleConfirmNote();
-      refreshCalendars();
-      renderMessageBoard();
-      renderClockRecordList();
-      renderSalaryDayPayList();
-      syncSalaryEstimate();
-    }
-
-    function loadBootstrapData(){
-      if (!state.employeeId || !state.userToken) return;
-      if (!/^https?:/i.test(String(window.location.href || ''))) return;
-
-      const actionName = (String(APP_CTX.bindMode || '') === '1' && state.deviceId) ? 'appBindLogin' : 'employeeBootstrap';
-      apiPost(actionName, {
-        id: state.employeeId,
-        token: state.userToken,
-        company_id: state.companyId,
-        device_id: state.deviceId,
-        app: state.appMode || '1'
-      }, function(res) {
-        if (res && res.ok) {
-          handleBootstrapData(res);
-        } else {
-          showHomeError((res && res.message) || '讀取失敗');
-        }
-      });
-    }
-
-    function renderClockRecordList(){
-      const wrap = qs('clock-record-list');
-      if (!wrap) return;
-      wrap.innerHTML = '';
-
-      (state.workRecords || []).forEach(function(rec){
-        const pay = Math.round(Number(rec.hours || 0) * HOURLY_RATE);
-        const el = document.createElement('div');
-        el.className = 'record-item';
-        el.innerHTML = '' +
-          '<div class="record-item-top">' +
-            '<div class="record-date">' + escapeHtml(formatYmdZh(rec.date)) + ' ' + escapeHtml(rec.weekday || '') + '</div>' +
-            '<div class="record-hours">' + escapeHtml(isClockAbnormal(rec) ? '異常' : (Number(rec.hours || 0) + 'h')) + '</div>' +
-          '</div>' +
-          '<div class="time-pair">' +
-            '<div class="notice-item"><div class="item-meta">上班</div><div class="item-title">' + escapeHtml(rec.inTime || '—') + '</div></div>' +
-            '<div class="notice-item"><div class="item-meta">下班</div><div class="item-title">' + escapeHtml(rec.outTime || '—') + '</div></div>' +
-          '</div>' +
-          '<div class="item-meta" style="margin-top:8px;">日薪 ' + formatMoney(pay) + '｜' + escapeHtml(rec.note || '正常打卡') + '</div>';
-        wrap.appendChild(el);
-      });
-
-      if (!wrap.innerHTML){
-        wrap.innerHTML = '<div class="record-item"><div class="item-title">目前沒有打卡資料</div><div class="item-meta">打卡後會顯示在這裡。</div></div>';
-      }
-    }
-
-    function renderSalaryDayPayList(){
-      const wrap = qs('salary-day-pay-list');
-      if (!wrap) return;
-      wrap.innerHTML = '';
-
-      (state.workRecords || []).forEach(function(rec){
-        const pay = Math.round(Number(rec.hours || 0) * HOURLY_RATE);
-        const el = document.createElement('div');
-        el.className = 'day-pay-item';
-        el.innerHTML = '' +
-          '<div class="day-pay-top">' +
-            '<div class="day-pay-date">' + escapeHtml(formatYmdZh(rec.date)) + ' ' + escapeHtml(rec.weekday || '') + '</div>' +
-            '<div class="day-pay-money">' + formatMoney(pay) + '</div>' +
-          '</div>' +
-          '<div class="item-meta">工時 ' + escapeHtml(String(Number(rec.hours || 0))) + 'h｜' + escapeHtml(rec.inTime || '—') + ' - ' + escapeHtml(rec.outTime || '—') + '</div>';
-        wrap.appendChild(el);
-      });
-
-      if (!wrap.innerHTML){
-        wrap.innerHTML = '<div class="day-pay-item"><div class="item-title">目前沒有薪資資料</div><div class="item-meta">出勤後會在這裡顯示。</div></div>';
-      }
-    }
-
-    function renderMessageBoard(){
-      renderMessages(state.messages);
-    }
-
-    function renderHomeSummary(){
-      const weekHours = getWeekHours();
-      const monthHours = getMonthHours();
-      const weekSalary = weekHours * HOURLY_RATE;
-      const monthSalary = monthHours * HOURLY_RATE;
-
-      setText('home-week-hours', formatHours(weekHours));
-      setText('home-month-hours', formatHours(monthHours));
-      setText('home-week-salary', formatMoney(weekSalary));
-      setText('home-month-salary', formatMoney(monthSalary));
-
-      const abnormalCount = (state.workRecords || []).filter(function(r){
-        return String((r && r.note) || '').indexOf('異常') > -1 || String((r && r.note) || '').indexOf('未附') > -1;
-      }).length;
-      setText('home-pending-count', String(abnormalCount) + '件');
-    }
-
-    function submitMessage(){
-      const input = qs('messageInput');
-      const text = input ? input.value.trim() : '';
-      if (!text){
-        showWarning('請先輸入留言');
-        return;
-      }
-
-      apiPost('employeeMessage', {
-        id:state.employeeId,
-        token:state.userToken,
-        text:text
-      }, function(res){
-        if (res && res.ok){
-          if (input) input.value = '';
-          showSuccess(res.message || '留言已送出');
-          loadBootstrapData();
-        }
-      });
-    }
-
-    function submitLeave(){
-      const reason = qs('leave-reason') ? qs('leave-reason').value.trim() : '';
-      const start = getDateTimeFromInputs_('leave-start-date','leave-start-hour','leave-start-minute');
-      const end = getDateTimeFromInputs_('leave-end-date','leave-end-hour','leave-end-minute');
-
-      if (!start || !end){
-        showWarning('請先選擇開始 / 結束時間');
-        return;
-      }
-
-      if (end <= start){
-        showWarning('結束時間必須大於開始時間');
-        return;
-      }
-
-      normalizeLeaveV4Inputs_();
-
-      const selected = leaveTypes.find(function(item){ return item.key === state.selectedLeaveType; });
-      if (!selected){
-        showWarning('請先選擇假別');
-        return;
-      }
-
-      apiPost('employeeLeave', {
-        id:state.employeeId,
-        token:state.userToken,
-        startDate:qs('leave-start-date').value,
-        endDate:qs('leave-end-date').value,
-        startDateTime:qs('leave-start-date').value + ' ' + qs('leave-start-hour').value + ':' + qs('leave-start-minute').value,
-        endDateTime:qs('leave-end-date').value + ' ' + qs('leave-end-hour').value + ':' + qs('leave-end-minute').value,
-        days:Number(state.leaveDays || 0),
-        hours:Number(state.leaveHours || 0),
-        reason:reason,
-        items:[{
-          display:selected.key,
-          raw:selected.raw,
-          days:Number(state.leaveDays || 0),
-          hours:Number(state.leaveHours || 0)
-        }]
-      }, function(res){
-        if (res && res.ok){
-          if (qs('leave-reason')) qs('leave-reason').value = '';
-          state.selectedLeaveType = '事假';
-          state.leaveDays = 1;
-          state.leaveHours = 0;
-          if (qs('leave-days-input')) qs('leave-days-input').value = '1';
-          if (qs('leave-hours-input')) qs('leave-hours-input').value = '0.0';
-          renderLeaveGrid();
-          syncLeaveSummary();
-          showSuccess(res.message || '請假申請已送出');
-          loadBootstrapData();
-        }
-      });
-    }
-
-    function switchClockTab(tab){
-      state.clockTab = tab;
-      if (qs('clock-tab-record')) qs('clock-tab-record').className = tab === 'record' ? 'active' : '';
-      if (qs('clock-tab-apply')) qs('clock-tab-apply').className = tab === 'apply' ? 'active' : '';
-      if (qs('clock-record-view')) qs('clock-record-view').style.display = tab === 'record' ? '' : 'none';
-      if (qs('clock-apply-view')) qs('clock-apply-view').style.display = tab === 'apply' ? '' : 'none';
-    }
-
-    function saveClockRecord(){
-      const type = qs('clock-type') ? qs('clock-type').value : '';
-      const note = qs('clock-note') ? qs('clock-note').value.trim() : '';
-      const date = qs('clock-fix-date') ? qs('clock-fix-date').value : '';
-      const hour = qs('clock-fix-hour') ? qs('clock-fix-hour').value : '';
-      const minute = qs('clock-fix-minute') ? qs('clock-fix-minute').value : '';
-
-      if (!date){
-        showWarning('請先選擇補打卡日期');
-        return;
-      }
-
-      apiPost('employeeClockFix', {
-        id:state.employeeId,
-        token:state.userToken,
-        type:type,
-        timeVal:date + 'T' + hour + ':' + minute,
-        note:note
-      }, function(res){
-        if (res && res.ok){
-          if (qs('clock-note')) qs('clock-note').value = '';
-          showSuccess(res.message || '補打卡申請已送出');
-          loadBootstrapData();
-        }
-      });
-    }
-
-    function fillSalaryHistorySelect(){
-      const sel = qs('salary-history-select');
-      if (!sel) return;
-      sel.innerHTML = '';
-      const cfg = state.adminSalaryConfig || { mode:'week' };
-      const filtered = (state.salaryHistory || []).filter(function(item){
-        return cfg.mode === 'week' ? String(item.key || '').startsWith('week-') : String(item.key || '').startsWith('month-');
-      });
-
-      filtered.forEach(function(item){
-        const op = document.createElement('option');
-        op.value = item.key;
-        op.textContent = item.label;
-        sel.appendChild(op);
-      });
-
-      showSalaryHistoryDetail();
-    }
-
-    function showSalaryHistoryDetail(){
-      const sel = qs('salary-history-select');
-      const detail = qs('salary-history-detail');
-      if (!sel || !detail) return;
-      if (!sel.value){
-        detail.innerText = '選取一筆已發薪資後，這裡會顯示摘要。';
-        return;
-      }
-
-      const item = (state.salaryHistory || []).find(function(x){ return x.key === sel.value; });
-      if (!item){
-        detail.innerText = '查無資料';
-        return;
-      }
-
-      detail.innerText = item.label + '｜' + formatMoney(item.amount) + '｜發薪日 ' + item.issueDate + '｜' + item.detail;
-    }
-
-    function updateSalaryCycleDisplay(){
-      const el = qs('salary-cycle-display');
-      if (!el) return;
-      const cfg = state.adminSalaryConfig || { mode:'week', weekStart:'週一', monthStart:'1號' };
-      el.innerText = cfg.mode === 'month'
-        ? '由管理員設定｜月結｜每月 ' + cfg.monthStart + ' 起算'
-        : '由管理員設定｜週結｜' + cfg.weekStart + ' 起算';
-    }
-
-    function syncSalaryEstimate(){
-      const weekPay = getWeekHours() * HOURLY_RATE;
-      const monthPay = getMonthHours() * HOURLY_RATE;
-      const cfg = state.adminSalaryConfig || { mode:'week', weekStart:'週一', monthStart:'1號' };
-      const isMonth = cfg.mode === 'month';
-
-      setText('salary-estimate-label', isMonth ? '一個月預估' : '一週預估');
-      setText('salary-estimate-value', formatMoney(isMonth ? monthPay : weekPay));
-      setText('salary-estimate-note', isMonth ? ('依管理員設定的每月 ' + cfg.monthStart + ' 起算區間估算。') : ('依管理員設定的 ' + cfg.weekStart + ' 起算區間估算。'));
-      updateSalaryCycleDisplay();
-      fillSalaryHistorySelect();
-      showSalaryHistoryDetail();
-    }
-
-    function pickUploadType(type, hint){
-      nav('upload');
-      state.uploadType = type;
-      if (qs('u-type')) qs('u-type').value = type;
-      if (qs('u-note')) qs('u-note').placeholder = hint || '請輸入補充說明';
-
-      document.querySelectorAll('.upload-type-btn').forEach(function(el){ el.classList.remove('active'); });
-      const target = qs('upload-type-' + type);
+      const target = document.getElementById(viewId);
       if (target) target.classList.add('active');
 
-      if (qs('reimbursement-box')){
-        qs('reimbursement-box').style.display = type === '公費請款（預先發）' ? 'block' : 'none';
+      if (viewId !== 'managerEntryView') {
+        phone.classList.remove('expanded');
       }
     }
 
-    function toggleReimbursement(){
-      const box = qs('reimbursement-box');
+    function setEntryMode(modeId){
+      ['codeMode','bindMode','expiredMode'].forEach(function(id){
+        const el = document.getElementById(id);
+        if (el) el.classList.remove('active');
+      });
+
+      const target = document.getElementById(modeId);
+      if (target) target.classList.add('active');
+    }
+
+    function showHome(){
+      setView('homeView');
+    }
+
+    function showEmployeeEntry(mode){
+      setView('employeeEntryView');
+
+      if (mode === 'bind') {
+        setEntryMode('bindMode');
+
+        const displayName = APP_STATE.name || APP_STATE.id || '員工帳號';
+        setText('bindAvatar',displayName.slice(0,1) || '員');
+        setText('bindName',displayName);
+        setText('bindMeta',APP_STATE.id ? '員編：' + APP_STATE.id : '即將綁定此設備');
+        return;
+      }
+
+      if (mode === 'expired') {
+        setEntryMode('expiredMode');
+        return;
+      }
+
+      setEntryMode('codeMode');
+      setStatus('codeStatus','','');
+
+      setTimeout(function(){
+        const input = document.getElementById('activationCode');
+        if (input) input.focus();
+      },160);
+    }
+
+    function showManagerEntry(){
+      setView('managerEntryView');
+      setTimeout(function(){
+        setActiveManagerSheet('login',true);
+      },40);
+    }
+
+    function setText(id,text){
+      const el = document.getElementById(id);
+      if (el) el.innerText = text;
+    }
+
+    function setStatus(id,type,message){
+      const box = document.getElementById(id);
       if (!box) return;
-      box.style.display = box.style.display === 'block' ? 'none' : 'block';
-    }
 
-    function updateFileName(input){
-      const file = input && input.files && input.files[0] ? input.files[0] : null;
-      setText('f-name', file ? file.name : '尚未選擇檔案');
-    }
+      box.className = 'status';
 
-    function getLocation(){
-      if (!navigator.geolocation){
-        showWarning('此裝置不支援定位');
+      if (!message) {
+        box.innerText = '';
         return;
       }
 
-      navigator.geolocation.getCurrentPosition(function(pos){
-        const txt = '位置：' + pos.coords.latitude.toFixed(4) + ', ' + pos.coords.longitude.toFixed(4);
-        const current = qs('u-note') ? qs('u-note').value.trim() : '';
-        if (qs('u-note')) qs('u-note').value = current ? (current + '\\n' + txt) : txt;
-        if (qs('u-type') && !qs('u-type').value){
-          pickUploadType('位置資訊（外勤回報用）','例如：外勤地點、到達時間、工作內容');
-        }
-        showSuccess('已取得位置資訊');
-      }, function(){
-        showError('無法取得位置資訊');
-      });
+      box.classList.add('show',type || 'info');
+      box.innerText = message;
     }
 
-    function submitUpload(){
-      const type = qs('u-type') ? qs('u-type').value.trim() : '';
-      const note = qs('u-note') ? qs('u-note').value.trim() : '';
-      const fileInput = qs('u-file');
-      const file = fileInput && fileInput.files ? fileInput.files[0] : null;
+    function clearCode(){
+      const input = document.getElementById('activationCode');
 
-      if (!type){
-        showWarning('請先選擇上傳項目');
+      if (input) {
+        input.value = '';
+        input.focus();
+      }
+
+      setStatus('codeStatus','','');
+    }
+
+    function normalizeCode(value){
+      return String(value || '')
+        .trim()
+        .replace(/\s+/g,'')
+        .replace(/-/g,'')
+        .toUpperCase();
+    }
+
+    function submitActivationCode(){
+      const input = document.getElementById('activationCode');
+      const code = normalizeCode(input ? input.value : '');
+
+      if (!code) {
+        setStatus('codeStatus','error','請輸入開通碼');
         return;
       }
 
-      const extraPayload = {};
-      if (type === '公費請款（預先發）'){
-        extraPayload.amount = qs('r-amount') ? qs('r-amount').value.trim() : '';
-        extraPayload.item = qs('r-item') ? qs('r-item').value.trim() : '';
-      }
+      setStatus('codeStatus','info','驗證中...');
 
-      function sendPayload(payload){
-        apiPost('employeeUpload', Object.assign({
-          id:state.employeeId,
-          token:state.userToken,
-          type:type,
-          note:note
-        }, extraPayload, payload || {}), function(res){
-          if (res && res.ok){
-            if (qs('u-type')) qs('u-type').value = '';
-            if (qs('u-note')) qs('u-note').value = '';
-            if (qs('u-file')) qs('u-file').value = '';
-            if (qs('r-amount')) qs('r-amount').value = '';
-            if (qs('r-item')) qs('r-item').value = '';
-            setText('f-name', '尚未選擇檔案');
-            document.querySelectorAll('.upload-type-btn').forEach(function(el){ el.classList.remove('active'); });
-            showSuccess(res.message || '資料已送出');
-            loadBootstrapData();
-          }
-        });
-      }
+      if (window.google && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(function(res){
+            if (!res || !res.ok) {
+              setStatus('codeStatus','error',(res && (res.message || res.msg)) || '開通失敗');
+              return;
+            }
 
-      if (file){
-        const reader = new FileReader();
-        reader.onload = function(e){
-          const result = String((e && e.target && e.target.result) || '');
-          const base64Data = result.indexOf(',') > -1 ? result.split(',')[1] : result;
-          sendPayload({
-            fileName:file.name,
-            fileMime:file.type,
-            fileData:base64Data
+            handleBindSuccess(res);
+          })
+          .withFailureHandler(function(err){
+            setStatus('codeStatus','error',err && err.message ? err.message : '連線失敗');
+          })
+          .activateEmployeeDevice({
+            code:code,
+            deviceId:APP_STATE.deviceId
           });
-        };
-        reader.readAsDataURL(file);
-      }else{
-        sendPayload({});
+        return;
       }
+
+      setTimeout(function(){
+        setStatus('codeStatus','success','開通成功');
+      },500);
     }
 
-    function seedCalendarEvents(leaveRows){
-      state.events = [];
+    function confirmBindByToken(){
+      if (!APP_STATE.token) {
+        setStatus('bindStatus','error','連結無效');
+        return;
+      }
 
-      (state.workRecords || []).forEach(function(item){
-        const note = String(item.note || '');
-        const isRest = !item.inTime && !item.outTime && note.indexOf('休') > -1;
-        state.events.push({
-          title:isRest ? '休息' : ((item.shiftCode ? item.shiftCode + ' ' : '') + '上班'),
-          start:item.date,
-          allDay:true,
-          backgroundColor:isRest ? '#cbd5e1' : getEmployeeColor(),
-          borderColor:isRest ? '#cbd5e1' : getEmployeeColor(),
-          textColor:isRest ? '#475569' : '#ffffff',
-          extendedProps:{ type:isRest ? 'rest' : 'shift' }
+      setStatus('bindStatus','info','綁定中...');
+
+      if (window.google && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(function(res){
+            if (!res || !res.ok) {
+              setStatus('bindStatus','error',(res && (res.message || res.msg)) || '綁定失敗');
+              return;
+            }
+
+            handleBindSuccess(res);
+          })
+          .withFailureHandler(function(err){
+            setStatus('bindStatus','error',err && err.message ? err.message : '連線失敗');
+          })
+          .bindEmployeeDeviceByToken({
+            id:APP_STATE.id,
+            token:APP_STATE.token,
+            deviceId:APP_STATE.deviceId
+          });
+        return;
+      }
+
+      setTimeout(function(){
+        setStatus('bindStatus','success','綁定成功');
+      },500);
+    }
+
+    function handleBindSuccess(res){
+      const id = String(res.id || res.employeeId || res.empId || APP_STATE.id || '').trim().toUpperCase();
+      const name = String(res.name || res.employeeName || APP_STATE.name || id || '員工').trim();
+      const loginToken = String(res.loginToken || res.token || '').trim();
+
+      if (id) localStorage.setItem('emp_logged_in',id);
+      if (name) localStorage.setItem('emp_name',name);
+      if (loginToken) localStorage.setItem('emp_login_token',loginToken);
+
+      localStorage.setItem('isLoggedIn','1');
+
+      window.location.href = buildPageUrl('employee',id,loginToken);
+    }
+
+    function buildPageUrl(page,id,token){
+      let url = APP_STATE.baseUrl + '?page=' + encodeURIComponent(page || 'employee');
+
+      if (id) url += '&id=' + encodeURIComponent(id);
+      if (token) url += '&token=' + encodeURIComponent(token);
+
+      return url;
+    }
+
+    function scanQrCode(){
+      setStatus('codeStatus','info','請使用 APP 掃描 QR');
+    }
+
+    function contactHr(){
+      const subject = encodeURIComponent('ANG HR 開通碼');
+      const body = encodeURIComponent('您好，我需要重新取得 ANG HR 開通碼。');
+      window.location.href = 'mailto:hr@example.com?subject=' + subject + '&body=' + body;
+    }
+
+    function initManagerCarousel(){
+      if (!carousel || !mainAction) return;
+
+      sheets.forEach(function(sheet){
+        sheet.addEventListener('click',function(e){
+          const key = sheet.dataset.key || 'login';
+          setActiveManagerSheet(key,true);
+
+          if (e.target.closest('.sheet-handle-zone')) {
+            phone.classList.toggle('expanded');
+          }
         });
       });
 
-      (Array.isArray(leaveRows) ? leaveRows : []).forEach(function(item){
-        const start = item.startDate || item.date;
-        if (!start) return;
-        state.events.push({
-          title:item.type || item.display || '請假',
-          start:start,
-          allDay:true,
-          backgroundColor:'rgba(' + getEmployeeRgb() + ',.18)',
-          borderColor:'rgba(' + getEmployeeRgb() + ',.26)',
-          textColor:getEmployeeTextColor(),
-          extendedProps:{ type:'leave' }
+      dots.forEach(function(dot,index){
+        dot.addEventListener('click',function(){
+          const key = sheets[index].dataset.key || 'login';
+          setActiveManagerSheet(key,true);
         });
+      });
+
+      let scrollTimer = null;
+      carousel.addEventListener('scroll',function(){
+        if (scrollTimer) clearTimeout(scrollTimer);
+        scrollTimer = setTimeout(detectActiveManagerSheet,90);
+      },{passive:true});
+
+      let isDown = false;
+      let startX = 0;
+      let startY = 0;
+      let scrollLeft = 0;
+
+      carousel.addEventListener('pointerdown',function(e){
+        isDown = true;
+        carousel.classList.add('dragging');
+        startX = e.pageX;
+        startY = e.pageY;
+        scrollLeft = carousel.scrollLeft;
+        carousel.setPointerCapture(e.pointerId);
+      });
+
+      carousel.addEventListener('pointermove',function(e){
+        if (!isDown) return;
+
+        const walkX = e.pageX - startX;
+        const walkY = e.pageY - startY;
+
+        if (Math.abs(walkX) > Math.abs(walkY)) {
+          carousel.scrollLeft = scrollLeft - walkX;
+        }
+      });
+
+      carousel.addEventListener('pointerup',function(e){
+        if (!isDown) return;
+
+        const walkX = e.pageX - startX;
+        const walkY = e.pageY - startY;
+
+        isDown = false;
+        carousel.classList.remove('dragging');
+        carousel.releasePointerCapture(e.pointerId);
+
+        if (Math.abs(walkY) > Math.abs(walkX) && walkY < -34) phone.classList.add('expanded');
+        if (Math.abs(walkY) > Math.abs(walkX) && walkY > 34) phone.classList.remove('expanded');
+
+        setTimeout(detectActiveManagerSheet,120);
+      });
+
+      carousel.addEventListener('pointercancel',function(){
+        isDown = false;
+        carousel.classList.remove('dragging');
+        setTimeout(detectActiveManagerSheet,120);
+      });
+
+      mainAction.addEventListener('click',function(){
+        const active = document.querySelector('.plan-sheet.active');
+        const key = active ? active.dataset.key : 'login';
+
+        if (key === 'login') {
+          goAdminLogin();
+          return;
+        }
+
+        goTrial(key);
       });
     }
 
-    function getCalendarEvents_(key, fallback){
-      const data = state.calendarData || {};
-      const list = Array.isArray(data[key]) ? data[key] : [];
-      return list.length ? list : (Array.isArray(fallback) ? fallback : []);
-    }
+    function setActiveManagerSheet(key,shouldCenter){
+      sheets.forEach(function(sheet,index){
+        const active = sheet.dataset.key === key;
+        sheet.classList.toggle('active',active);
+        if (dots[index]) dots[index].classList.toggle('active',active);
 
-    function normalizeCalendarEvent(ev){
-      const copy = Object.assign({}, ev);
-      if (!copy.backgroundColor && copy.extendedProps && copy.extendedProps.type === 'shift'){
-        copy.backgroundColor = getEmployeeColor();
-        copy.borderColor = getEmployeeColor();
-      }
-      return copy;
-    }
-
-    function initCalendars(){
-      if (typeof FullCalendar === 'undefined') return;
-
-      const monthSet = {
-        initialView:'dayGridMonth',
-        locale:'zh-tw',
-        height:'auto',
-        contentHeight:'auto',
-        handleWindowResize:true,
-        events:[]
-      };
-
-      calMain = new FullCalendar.Calendar(qs('cal-main'), monthSet);
-      calSalaryMonth = new FullCalendar.Calendar(qs('cal-salary-month'), monthSet);
-      calClock = new FullCalendar.Calendar(qs('cal-clock'), monthSet);
-      if (qs('cal-upload')) calUpload = new FullCalendar.Calendar(qs('cal-upload'), monthSet);
-
-      calMain.render();
-      calSalaryMonth.render();
-      calClock.render();
-      if (calUpload) calUpload.render();
-    }
-
-    function refreshCalendars(){
-      if (calMain){
-        calMain.removeAllEvents();
-        getCalendarEvents_('scheduleEvents', state.events).forEach(function(ev){ calMain.addEvent(normalizeCalendarEvent(ev)); });
-      }
-
-      if (calSalaryMonth){
-        calSalaryMonth.removeAllEvents();
-        const salaryEvents = getCalendarEvents_('salaryEvents', []);
-        if (salaryEvents.length){
-          salaryEvents.forEach(function(ev){ calSalaryMonth.addEvent(normalizeCalendarEvent(ev)); });
-        } else {
-          (state.workRecords || []).forEach(function(rec){
-            const pay = Math.round(Number(rec.hours || 0) * HOURLY_RATE);
-            calSalaryMonth.addEvent({
-              title:formatMoney(pay),
-              start:rec.date,
-              allDay:true,
-              backgroundColor:'rgba(' + getEmployeeRgb() + ',.14)',
-              borderColor:'rgba(' + getEmployeeRgb() + ',.18)',
-              textColor:getEmployeeTextColor()
-            });
+        if (active && shouldCenter) {
+          sheet.scrollIntoView({
+            behavior:'smooth',
+            inline:'center',
+            block:'nearest'
           });
         }
-      }
+      });
 
-      if (calClock){
-        calClock.removeAllEvents();
-        const clockEvents = getCalendarEvents_('clockEvents', []);
-        if (clockEvents.length){
-          clockEvents.forEach(function(ev){ calClock.addEvent(normalizeCalendarEvent(ev)); });
-        } else {
-          (state.workRecords || []).forEach(function(rec){
-            if (rec.inTime){
-              calClock.addEvent({ title:'上 ' + rec.inTime, start:rec.date, allDay:true, backgroundColor:'rgba(' + getEmployeeRgb() + ',.14)', textColor:getEmployeeTextColor() });
-            }
-            if (rec.outTime){
-              calClock.addEvent({ title:'下 ' + rec.outTime, start:rec.date, allDay:true, backgroundColor:'rgba(' + getEmployeeRgb() + ',.20)', textColor:getEmployeeTextColor() });
-            }
-            if (String(rec.note || '').indexOf('加班') > -1){
-              calClock.addEvent({ title:'加 ' + (rec.inTime || ''), start:rec.date, allDay:true, backgroundColor:'rgba(' + getEmployeeRgb() + ',.26)', textColor:getEmployeeTextColor() });
-            }
-            if (isClockAbnormal(rec)){
-              calClock.addEvent({ title:'異常', start:rec.date, allDay:true, backgroundColor:'#fee2e2', textColor:'#b91c1c' });
-            }
-          });
+      mainAction.textContent = actionText[key] || '選擇方案';
+    }
+
+    function detectActiveManagerSheet(){
+      const rect = carousel.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+
+      let bestIndex = 0;
+      let bestDistance = Infinity;
+
+      sheets.forEach(function(sheet,index){
+        const sheetRect = sheet.getBoundingClientRect();
+        const sheetCenter = sheetRect.left + sheetRect.width / 2;
+        const distance = Math.abs(sheetCenter - centerX);
+
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          bestIndex = index;
         }
-      }
+      });
 
-      if (calUpload){
-        calUpload.removeAllEvents();
-        getCalendarEvents_('uploadEvents', []).forEach(function(ev){ calUpload.addEvent(normalizeCalendarEvent(ev)); });
-      }
+      const key = sheets[bestIndex].dataset.key || 'login';
+      setActiveManagerSheet(key,false);
     }
 
-    function initThemePicker(){
-      syncThemeInputs();
-      refreshThemePreviewButtons();
-      syncThemeAngleDisplay();
+    function goTrial(plan){
+      let url = APP_STATE.baseUrl + '?page=trial';
+      if (plan) url += '&plan=' + encodeURIComponent(plan);
+      window.location.href = url;
     }
 
-    window.onload = function() {
-          // 1. 基礎數據與 UI 靜態渲染 (不涉及後端請求)
-          initDefaults();
-          renderWeekdayStrip();
-          renderClockRecordList();
-          renderSalaryDayPayList();
-          renderHomeSummary();
-          renderMessageBoard();
-          fillSalaryHistorySelect();
+    function goAdminLogin(){
+      window.location.href = APP_STATE.baseUrl + '?page=login&role=admin';
+    }
 
-          // 2. 外部參數與套件初始化 (使用 try-catch 避免單一錯誤中斷全局)
-          try {
-            applyParamsFromUrl();
-          } catch (err) {
-            console.error('applyParamsFromUrl error:', err);
-          }
-
-          try {
-            initCalendars();
-          } catch (err) {
-            console.error('initCalendars error:', err);
-          }
-
-          try {
-            initThemePicker();
-          } catch (err) {
-            console.error('initThemePicker error:', err);
-          }
-
-          // 3. 頁面狀態同步
-          seedCalendarEvents();
-          refreshCalendars();
-          syncLeaveSummary();
-          syncSalaryEstimate();
-          switchClockTab('record');
-          updateScheduleTitle();
-          updateScheduleConfirmNote();
-
-          // 4. 關鍵修正：延遲並「只執行一次」後端資料載入
-          // 移除原本直接執行的 loadBootstrapData()，避免與 setTimeout 產生併發衝突
-          setTimeout(function() {
-            console.log('頁面初始化完成，開始載入後端數據...');
-            if (typeof loadBootstrapData === 'function') {
-              loadBootstrapData();
-            } else {
-              console.error('錯誤：找不到 loadBootstrapData 函式。');
-            }
-          }, 500); // 延遲 500 毫秒確保瀏覽器環境穩定
-        };
+    window.addEventListener('load',init);
   </script>
 </body>
 </html>
