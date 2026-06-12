@@ -6,8 +6,8 @@
   <title>ANG HR SYSTEMS｜ENTRY</title>
   <style>
     :root{
-      --body-bg:#d1d5db;
-      --screen-bg:url("ang-entry-bg-day.png");
+      --body-bg:#000000;
+      --screen-bg:url("https://pub-51476fa95e5148749c1b932e123dc797.r2.dev/ang-entry-bg-day.png");
 
       --panel-bg:rgba(255,255,255,.94);
       --panel-border:rgba(226,232,240,.92);
@@ -44,8 +44,8 @@
     }
 
     body[data-theme="dark"]{
-      --body-bg:#a3a3a3;
-      --screen-bg:url("ang-entry-bg-night.png");
+      --body-bg:#000000;
+      --screen-bg:url("https://pub-51476fa95e5148749c1b932e123dc797.r2.dev/ang-entry-bg-night.png");
 
       --panel-bg:rgba(18,25,42,.88);
       --panel-border:rgba(255,255,255,.08);
@@ -115,7 +115,7 @@
       position:relative;
       overflow:hidden;
       border-radius:24px;
-      background:#05060b;
+      background:var(--screen-bg),#050812;
       box-shadow:0 18px 42px rgba(0,0,0,.28);
     }
 
@@ -124,11 +124,12 @@
       position:absolute;
       inset:0;
       z-index:0;
+      background-color:#050812;
       background-image:var(--screen-bg);
       background-size:cover;
       background-position:center center;
       background-repeat:no-repeat;
-      transition:background-image .25s ease;
+      transition:background-image .25s ease,filter .25s ease;
     }
 
     .phone::after{
@@ -212,6 +213,84 @@
     body[data-theme="dark"] .theme-toggle .moon{
       color:#fff;
       filter:drop-shadow(0 0 5px rgba(255,255,255,.32));
+    }
+
+    .brand-fallback{
+      position:absolute;
+      left:0;
+      right:0;
+      top:74px;
+      z-index:2;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      pointer-events:none;
+      opacity:.96;
+      transform:translateY(0) scale(1);
+      transition:opacity .32s ease,transform .42s var(--ease),filter .32s ease;
+      filter:drop-shadow(0 12px 28px rgba(15,23,42,.18));
+    }
+
+    .phone.expanded .brand-fallback{
+      opacity:.20;
+      transform:translateY(-24px) scale(.92);
+    }
+
+    .brand-logo-row{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:13px;
+      color:#0f172a;
+      font-size:64px;
+      line-height:1;
+      font-weight:1000;
+      letter-spacing:1px;
+    }
+
+    body[data-theme="dark"] .brand-logo-row{
+      color:#ffffff;
+      text-shadow:0 0 24px rgba(89,221,255,.18),0 3px 18px rgba(0,0,0,.42);
+    }
+
+    .brand-logo-pillar{
+      width:20px;
+      height:66px;
+      border-radius:6px;
+      background:linear-gradient(180deg,#00e5ff 0%,#7c3cff 55%,#b000ff 100%);
+      transform:skewY(7deg);
+      box-shadow:0 0 22px rgba(89,221,255,.22);
+    }
+
+    .brand-ang{
+      margin-top:16px;
+      color:#0f172a;
+      font-size:22px;
+      line-height:1.2;
+      font-weight:1000;
+      letter-spacing:8px;
+      padding-left:8px;
+    }
+
+    .brand-sub{
+      margin-top:5px;
+      color:#475569;
+      font-size:12px;
+      line-height:1.2;
+      font-weight:950;
+      letter-spacing:4px;
+      padding-left:4px;
+    }
+
+    body[data-theme="dark"] .brand-ang,
+    body[data-theme="dark"] .brand-sub{
+      color:#ffffff;
+      text-shadow:0 0 18px rgba(89,221,255,.18),0 2px 12px rgba(0,0,0,.46);
+    }
+
+    body[data-theme="dark"] .brand-sub{
+      color:#aebbd2;
     }
 
     .view{
@@ -514,7 +593,7 @@
       right:0;
       bottom:0;
       z-index:8;
-      height:190px;
+      height:206px;
       max-height:88vh;
       overflow:visible;
       transition:height .58s var(--ease);
@@ -579,7 +658,6 @@
     }
 
     .plan-sheet.login,
-    .plan-sheet.register,
     .plan-sheet.basic{
       width:318px;
     }
@@ -605,7 +683,7 @@
 
     .sheet-handle-zone{
       width:100%;
-      padding:12px 0 8px;
+      padding:24px 0 16px;
       display:flex;
       justify-content:center;
       flex:0 0 auto;
@@ -628,7 +706,7 @@
     .sheet-summary{
       position:relative;
       z-index:2;
-      padding:0 20px 14px;
+      padding:8px 20px 16px;
       flex:0 0 auto;
     }
 
@@ -664,6 +742,22 @@
       line-height:1.15;
       font-weight:1000;
       letter-spacing:-.7px;
+      -webkit-text-stroke:.55px rgba(128,137,255,.38);
+      text-shadow:
+        0 1px 0 rgba(255,255,255,.16),
+        0 -1px 0 rgba(128,137,255,.18),
+        1px 0 0 rgba(128,137,255,.18),
+        -1px 0 0 rgba(128,137,255,.18),
+        0 8px 18px rgba(0,0,0,.30);
+    }
+
+    body:not([data-theme="dark"]) .sheet-title{
+      -webkit-text-stroke:.45px rgba(15,23,42,.20);
+      text-shadow:
+        0 1px 0 rgba(255,255,255,.76),
+        1px 0 0 rgba(15,23,42,.08),
+        -1px 0 0 rgba(15,23,42,.08),
+        0 8px 16px rgba(15,23,42,.14);
     }
 
     .plan-sheet.premium .sheet-title{
@@ -673,6 +767,9 @@
 
     .sheet-tag{
       display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:28px;
       padding:6px 10px;
       border-radius:999px;
       background:rgba(128,137,255,.13);
@@ -681,6 +778,36 @@
       line-height:1.2;
       font-weight:1000;
       white-space:nowrap;
+    }
+
+    .sheet-tag.tag-button{
+      border:1px solid rgba(128,137,255,.26);
+      cursor:pointer;
+      box-shadow:none;
+    }
+
+    .sheet-tag.tag-button:active{
+      transform:scale(.96);
+    }
+
+    .summary-service-btn{
+      min-width:86px;
+      min-height:38px;
+      padding:8px 13px;
+      border-radius:999px;
+      background:var(--secondary-bg);
+      color:var(--secondary-text);
+      border:1px solid var(--secondary-border);
+      font-size:13px;
+      line-height:1.1;
+      font-weight:1000;
+      white-space:nowrap;
+      box-shadow:none;
+      transition:transform .18s ease,background .25s ease,color .25s ease,border-color .25s ease;
+    }
+
+    .summary-service-btn:active{
+      transform:scale(.96);
     }
 
     .sheet-price{
@@ -713,34 +840,13 @@
       overflow:hidden;
     }
 
-    .mini-pills{
-      display:flex;
-      flex-wrap:wrap;
-      gap:6px;
-      margin-top:10px;
-    }
-
-    .mini-pill{
-      padding:5px 8px;
-      border-radius:999px;
-      background:var(--secondary-bg);
-      border:1px solid var(--secondary-border);
-      color:var(--secondary-text);
-      font-size:11px;
-      font-weight:850;
-    }
-
-    .phone:not(.expanded) .mini-pills{
-      display:none;
-    }
-
     .sheet-detail{
       position:relative;
       z-index:2;
       flex:1;
       min-height:0;
       overflow-y:auto;
-      padding:0 20px 8px;
+      padding:0 20px 24px;
       opacity:0;
       transform:translateY(12px);
       pointer-events:none;
@@ -805,20 +911,26 @@
     }
 
     .sheet-action{
-      position:relative;
-      z-index:3;
-      flex:0 0 auto;
-      padding:10px 20px 20px;
+      width:100%;
+      margin-top:16px;
+      padding-top:16px;
+      border-top:1px solid var(--line);
       display:none;
       opacity:0;
       transform:translateY(10px);
-      transition:opacity .24s var(--ease),transform .24s var(--ease);
+      transition:opacity .24s var(--ease),transform .24s var(--ease),border-color .25s ease;
     }
 
     .phone.expanded .plan-sheet.active .sheet-action{
       display:block;
       opacity:1;
       transform:translateY(0);
+    }
+
+    .login-only-action{
+      margin-top:4px;
+      padding-top:0;
+      border-top:0;
     }
 
     .sheet-action button{
@@ -838,6 +950,90 @@
       color:var(--secondary-text);
       border:1px solid var(--secondary-border);
       box-shadow:none;
+    }
+
+
+
+    .inline-form{
+      display:grid;
+      gap:10px;
+    }
+
+    .form-label{
+      display:block;
+      margin:0 0 6px;
+      color:var(--muted-text);
+      font-size:12px;
+      line-height:1.2;
+      font-weight:1000;
+    }
+
+    .inline-input-wrap{
+      display:flex;
+      align-items:center;
+      min-height:48px;
+      padding:4px 12px;
+      border-radius:16px;
+      background:var(--input-bg);
+      border:1px solid var(--input-border);
+      transition:background .25s ease,border-color .25s ease,box-shadow .2s ease;
+    }
+
+    .inline-input-wrap:focus-within{
+      border-color:rgba(124,60,255,.62);
+      box-shadow:0 0 0 4px rgba(124,60,255,.13);
+    }
+
+    .inline-input-wrap input{
+      width:100%;
+      padding:10px 0;
+      border:0;
+      outline:0;
+      background:transparent;
+      color:var(--main-text);
+      font-size:15px;
+      font-weight:1000;
+      letter-spacing:0;
+      text-transform:none;
+    }
+
+    .inline-input-wrap input.company-code-input{
+      letter-spacing:.06em;
+      text-transform:uppercase;
+    }
+
+    .inline-input-wrap input::placeholder{
+      color:var(--muted-text);
+      opacity:.68;
+      font-size:13px;
+      font-weight:900;
+      letter-spacing:0;
+      text-transform:none;
+    }
+
+    .inline-action-grid{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:10px;
+    }
+
+    .google-action{
+      background:var(--secondary-bg) !important;
+      color:var(--secondary-text) !important;
+      border:1px solid var(--secondary-border) !important;
+      box-shadow:none !important;
+    }
+
+    .inline-status{
+      margin-top:0;
+    }
+
+    .tiny-note{
+      margin:0;
+      color:var(--muted-text);
+      font-size:12px;
+      line-height:1.5;
+      font-weight:850;
     }
 
     .dots{
@@ -895,7 +1091,6 @@
       }
 
       .plan-sheet.login,
-      .plan-sheet.register,
       .plan-sheet.basic{
         width:302px;
       }
@@ -929,7 +1124,7 @@
       }
 
       .sheet-stage{
-        height:188px;
+        height:202px;
       }
     }
   </style>
@@ -937,6 +1132,16 @@
 
 <body data-theme="dark">
   <main class="phone" id="phone">
+    <div class="brand-fallback" aria-hidden="true">
+      <div class="brand-logo-row">
+        <span>H</span>
+        <span class="brand-logo-pillar"></span>
+        <span>R</span>
+      </div>
+      <div class="brand-ang">ANG</div>
+      <div class="brand-sub">HR SYSTEMS</div>
+    </div>
+
     <button class="theme-toggle" type="button" aria-label="切換日光與暗夜模式" aria-pressed="true">
       <span class="sun" aria-hidden="true">
         <svg viewBox="0 0 24 24">
@@ -1047,84 +1252,38 @@
                 <div class="summary-left">
                   <div class="title-line">
                     <h2 class="sheet-title">企業管理登入</h2>
-                    <div class="sheet-tag">現有客戶</div>
+                    <button class="sheet-tag tag-button" type="button" onclick="goAdminLoginQuick(event)">現有客戶</button>
                   </div>
                 </div>
                 <div class="summary-right">
-                  <div class="sheet-price">登入 <span>管理後台</span></div>
+                  <button class="summary-service-btn" type="button" onclick="contactManagerService(event)">聯絡客服</button>
                 </div>
-              </div>
-
-              <p class="sheet-sub">已有公司代碼與管理員帳號，請從這裡進入後台。</p>
-
-              <div class="mini-pills">
-                <span class="mini-pill">公司代碼</span>
-                <span class="mini-pill">管理員</span>
-                <span class="mini-pill">Creator</span>
               </div>
             </div>
 
             <div class="sheet-detail">
-              <div class="detail-block">
-                <h3 class="detail-title">登入後可管理</h3>
-                <ul class="feature-list">
-                  <li>員工資料與開通碼</li>
-                  <li>排班、請假與補打卡審核</li>
-                  <li>打卡紀錄與出勤狀態</li>
-                  <li>薪資、公告與系統設定</li>
-                </ul>
-              </div>
-              <div class="note">若忘記公司代碼或管理員帳號，請聯絡 ANG HR 系統管理者。</div>
-            </div>
-
-            <div class="sheet-action">
-              <button type="button" data-action-key="login">原有客戶登入</button>
-              <button class="outline-action" type="button" data-action-key="register">企業註冊</button>
-            </div>
-          </article>
-
-          <article class="plan-sheet register" data-key="register">
-            <div class="sheet-handle-zone">
-              <div class="sheet-handle"></div>
-            </div>
-
-            <div class="sheet-summary">
-              <div class="summary-main">
-                <div class="summary-left">
-                  <div class="title-line">
-                    <h2 class="sheet-title">企業註冊</h2>
-                    <div class="sheet-tag">新公司</div>
+              <div class="sheet-action login-only-action">
+                <div class="inline-form" data-stop-sheet>
+                  <div>
+                    <label class="form-label" for="managerCompanyCode">公司代碼</label>
+                    <div class="inline-input-wrap">
+                      <input id="managerCompanyCode" class="company-code-input" type="text" inputmode="text" autocomplete="organization" placeholder="例如 ANG0603" maxlength="24" />
+                    </div>
                   </div>
+                  <div>
+                    <label class="form-label" for="managerAccount">管理員 Email</label>
+                    <div class="inline-input-wrap">
+                      <input id="managerAccount" type="email" inputmode="email" autocomplete="email" placeholder="請輸入管理員 Email" maxlength="80" />
+                    </div>
+                  </div>
+                  <div class="inline-action-grid">
+                    <button type="button" onclick="goAdminLoginInline()">Email 驗證登入</button>
+                    <button class="google-action" type="button" onclick="goAdminGoogleVerifyInline()">Google 快速驗證</button>
+                  </div>
+                  <p class="tiny-note">管理員每次登入都需要完成 Email 或 Google 驗證。</p>
+                  <div id="managerLoginStatus" class="status inline-status"></div>
                 </div>
-                <div class="summary-right">
-                  <div class="sheet-price">建立 <span>公司帳號</span></div>
-                </div>
               </div>
-
-              <p class="sheet-sub">新公司請從這裡完成驗證、建立公司與選擇方案。</p>
-
-              <div class="mini-pills">
-                <span class="mini-pill">Email 驗證</span>
-                <span class="mini-pill">公司資料</span>
-                <span class="mini-pill">選方案</span>
-              </div>
-            </div>
-
-            <div class="sheet-detail">
-              <div class="detail-block">
-                <h3 class="detail-title">註冊流程</h3>
-                <ul class="feature-list">
-                  <li>驗證 Email 或 Google 帳號</li>
-                  <li>填寫公司與管理者資料</li>
-                  <li>選擇 Basic / Plus / Premium</li>
-                  <li>建立公司代碼與管理員帳號</li>
-                </ul>
-              </div>
-              <div class="note">註冊完成後即可進入企業管理後台，建立員工資料與發送開通碼。</div>
-            </div>
-
-            <div class="sheet-action">
-              <button type="button" data-action-key="register">開始企業註冊</button>
             </div>
           </article>
 
@@ -1138,7 +1297,7 @@
                 <div class="summary-left">
                   <div class="title-line">
                     <h2 class="sheet-title">Basic</h2>
-                    <div class="sheet-tag">基礎方案</div>
+                    <div class="sheet-tag">新客戶入口</div>
                   </div>
                 </div>
                 <div class="summary-right">
@@ -1146,13 +1305,7 @@
                 </div>
               </div>
 
-              <p class="sheet-sub">基本打卡、排班與員工資料。</p>
-
-              <div class="mini-pills">
-                <span class="mini-pill">打卡</span>
-                <span class="mini-pill">排班</span>
-                <span class="mini-pill">員工資料</span>
-              </div>
+              <p class="sheet-sub">基本打卡、排班與員工資料。閱讀功能後可直接驗證註冊。</p>
             </div>
 
             <div class="sheet-detail">
@@ -1165,11 +1318,23 @@
                   <li>基礎排班管理</li>
                 </ul>
               </div>
-              <div class="note">適合單店或小型團隊先建立基本出勤流程。</div>
-            </div>
+              <div class="note">適合單店或小型團隊先建立基本出勤流程。選定 Basic 後，直接在卡片內完成 Email 或 Google 驗證。</div>
 
-            <div class="sheet-action">
-              <button type="button" data-action-key="basic">選擇 Basic</button>
+              <div class="sheet-action">
+                <div class="inline-form" data-stop-sheet>
+                  <div>
+                    <label class="form-label" for="basicEmail">Email 驗證</label>
+                    <div class="inline-input-wrap">
+                      <input id="basicEmail" type="email" inputmode="email" autocomplete="email" placeholder="輸入公司或管理者 Email" />
+                    </div>
+                  </div>
+                  <div class="inline-action-grid">
+                    <button type="button" onclick="startEmailPlanRegistration('basic')">選擇 Basic 並驗證 Email</button>
+                    <button class="google-action" type="button" onclick="startGooglePlanRegistration('basic')">選擇 Basic 並使用 Google 驗證</button>
+                  </div>
+                  <div id="basicRegisterStatus" class="status inline-status"></div>
+                </div>
+              </div>
             </div>
           </article>
 
@@ -1191,13 +1356,7 @@
                 </div>
               </div>
 
-              <p class="sheet-sub">請假、補卡、審核與公告。</p>
-
-              <div class="mini-pills">
-                <span class="mini-pill">請假</span>
-                <span class="mini-pill">補卡</span>
-                <span class="mini-pill">審核</span>
-              </div>
+              <p class="sheet-sub">請假、補卡、審核與公告。閱讀功能後可直接驗證註冊。</p>
             </div>
 
             <div class="sheet-detail">
@@ -1211,11 +1370,23 @@
                   <li>主管公告與員工留言</li>
                 </ul>
               </div>
-              <div class="note">適合已經開始正式管理班表與審核流程的公司。</div>
-            </div>
+              <div class="note">適合已經開始正式管理班表與審核流程的公司。選定 Plus 後，直接在卡片內完成 Email 或 Google 驗證。</div>
 
-            <div class="sheet-action">
-              <button type="button" data-action-key="plus">選擇 Plus</button>
+              <div class="sheet-action">
+                <div class="inline-form" data-stop-sheet>
+                  <div>
+                    <label class="form-label" for="plusEmail">Email 驗證</label>
+                    <div class="inline-input-wrap">
+                      <input id="plusEmail" type="email" inputmode="email" autocomplete="email" placeholder="輸入公司或管理者 Email" />
+                    </div>
+                  </div>
+                  <div class="inline-action-grid">
+                    <button type="button" onclick="startEmailPlanRegistration('plus')">選擇 Plus 並驗證 Email</button>
+                    <button class="google-action" type="button" onclick="startGooglePlanRegistration('plus')">選擇 Plus 並使用 Google 驗證</button>
+                  </div>
+                  <div id="plusRegisterStatus" class="status inline-status"></div>
+                </div>
+              </div>
             </div>
           </article>
 
@@ -1237,13 +1408,7 @@
                 </div>
               </div>
 
-              <p class="sheet-sub">Premium 獨有的特色功能。</p>
-
-              <div class="mini-pills">
-                <span class="mini-pill">薪資</span>
-                <span class="mini-pill">分店</span>
-                <span class="mini-pill">報表</span>
-              </div>
+              <p class="sheet-sub">Premium 獨有的完整人資、出勤與薪資流程。</p>
             </div>
 
             <div class="sheet-detail">
@@ -1257,18 +1422,29 @@
                   <li>進階系統設定與管理儀表板</li>
                 </ul>
               </div>
-              <div class="note">適合已經正式營運，需要完整人資、排班、出勤與薪資流程的公司。</div>
-            </div>
+              <div class="note">適合已經正式營運，需要完整人資、排班、出勤與薪資流程的公司。選定 Premium 後，直接在卡片內完成 Email 或 Google 驗證。</div>
 
-            <div class="sheet-action">
-              <button type="button" data-action-key="premium">選擇 Premium</button>
+              <div class="sheet-action">
+                <div class="inline-form" data-stop-sheet>
+                  <div>
+                    <label class="form-label" for="premiumEmail">Email 驗證</label>
+                    <div class="inline-input-wrap">
+                      <input id="premiumEmail" type="email" inputmode="email" autocomplete="email" placeholder="輸入公司或管理者 Email" />
+                    </div>
+                  </div>
+                  <div class="inline-action-grid">
+                    <button type="button" onclick="startEmailPlanRegistration('premium')">選擇 Premium 並驗證 Email</button>
+                    <button class="google-action" type="button" onclick="startGooglePlanRegistration('premium')">選擇 Premium 並使用 Google 驗證</button>
+                  </div>
+                  <div id="premiumRegisterStatus" class="status inline-status"></div>
+                </div>
+              </div>
             </div>
           </article>
         </div>
 
         <div class="dots" id="dots">
           <span class="dot active"></span>
-          <span class="dot"></span>
           <span class="dot"></span>
           <span class="dot"></span>
           <span class="dot"></span>
@@ -1291,7 +1467,6 @@
     const carousel = document.getElementById('sheetCarousel');
     const sheets = Array.from(document.querySelectorAll('.plan-sheet'));
     const dots = Array.from(document.querySelectorAll('.dot'));
-    const sheetActionButtons = Array.from(document.querySelectorAll('[data-action-key]'));
 
     function init(){
       APP_STATE.baseUrl = getBaseUrl();
@@ -1326,7 +1501,8 @@
 
       function applyTheme(theme){
         const isDark = theme === 'dark' || theme === 'night';
-        body.dataset.theme = isDark ? 'dark' : 'light';
+        const normalizedTheme = isDark ? 'dark' : 'light';
+        body.dataset.theme = normalizedTheme;
         toggle.setAttribute('aria-pressed',String(isDark));
       }
 
@@ -1569,6 +1745,26 @@
       window.location.href = 'mailto:hr@example.com?subject=' + subject + '&body=' + body;
     }
 
+    function goAdminLoginQuick(event){
+      if (event && event.stopPropagation) event.stopPropagation();
+
+      setActiveManagerSheet('login',true);
+      phone.classList.add('expanded');
+
+      setTimeout(function(){
+        const input = document.getElementById('managerCompanyCode');
+        if (input) input.focus();
+      },260);
+    }
+
+    function contactManagerService(event){
+      if (event && event.stopPropagation) event.stopPropagation();
+
+      const subject = encodeURIComponent('ANG HR 企業管理客服');
+      const body = encodeURIComponent('您好，我需要 ANG HR 企業管理登入或公司代碼協助。');
+      window.location.href = 'mailto:hr@example.com?subject=' + subject + '&body=' + body;
+    }
+
     function initManagerCarousel(){
       if (!carousel) return;
 
@@ -1583,29 +1779,19 @@
         });
       });
 
-      dots.forEach(function(dot,index){
-        dot.addEventListener('click',function(){
-          const key = sheets[index].dataset.key || 'login';
-          setActiveManagerSheet(key,true);
+      document.querySelectorAll('[data-stop-sheet], input, button').forEach(function(el){
+        el.addEventListener('click',function(e){
+          e.stopPropagation();
         });
       });
 
-      sheetActionButtons.forEach(function(button){
-        button.addEventListener('click',function(e){
+      dots.forEach(function(dot,index){
+        dot.addEventListener('click',function(e){
           e.stopPropagation();
-          const key = button.dataset.actionKey || 'login';
-
-          if (key === 'login') {
-            goAdminLogin();
-            return;
-          }
-
-          if (key === 'register') {
-            goCompanyRegister();
-            return;
-          }
-
-          goTrial(key);
+          const targetSheet = sheets[index];
+          if (!targetSheet) return;
+          const key = targetSheet.dataset.key || 'login';
+          setActiveManagerSheet(key,true);
         });
       });
 
@@ -1619,9 +1805,13 @@
       let startX = 0;
       let startY = 0;
       let scrollLeft = 0;
+      let pointerId = null;
 
       carousel.addEventListener('pointerdown',function(e){
+        if (e.target.closest('button,input,a,textarea,select,[data-stop-sheet]')) return;
+
         isDown = true;
+        pointerId = e.pointerId;
         carousel.classList.add('dragging');
         startX = e.pageX;
         startY = e.pageY;
@@ -1648,7 +1838,14 @@
 
         isDown = false;
         carousel.classList.remove('dragging');
-        carousel.releasePointerCapture(e.pointerId);
+
+        if (pointerId !== null) {
+          try {
+            carousel.releasePointerCapture(pointerId);
+          } catch (err) {}
+        }
+
+        pointerId = null;
 
         if (Math.abs(walkY) > Math.abs(walkX) && walkY < -34) phone.classList.add('expanded');
         if (Math.abs(walkY) > Math.abs(walkX) && walkY > 34) phone.classList.remove('expanded');
@@ -1658,6 +1855,7 @@
 
       carousel.addEventListener('pointercancel',function(){
         isDown = false;
+        pointerId = null;
         carousel.classList.remove('dragging');
         setTimeout(detectActiveManagerSheet,120);
       });
@@ -1680,6 +1878,8 @@
     }
 
     function detectActiveManagerSheet(){
+      if (!carousel || !sheets.length) return;
+
       const rect = carousel.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
 
@@ -1701,18 +1901,315 @@
       setActiveManagerSheet(key,false);
     }
 
-    function goTrial(plan){
-      let url = APP_STATE.baseUrl + '?page=trial';
-      if (plan) url += '&plan=' + encodeURIComponent(plan);
-      window.location.href = url;
+    function normalizeCompanyCode(value){
+      return String(value || '')
+        .trim()
+        .replace(/\s+/g,'')
+        .toUpperCase();
     }
 
-    function goCompanyRegister(){
-      window.location.href = APP_STATE.baseUrl + '?page=register';
+    function normalizeAdminAccount(value){
+      return String(value || '').trim().toLowerCase();
     }
 
-    function goAdminLogin(){
-      window.location.href = APP_STATE.baseUrl + '?page=login&role=admin';
+    function isValidAdminEmail(email){
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email || '').trim());
+    }
+
+    function buildAdminVerifyUrl(method,companyCode,adminEmail,res){
+      let url = APP_STATE.baseUrl + '?page=login&role=admin';
+      url += '&verify=1';
+      url += '&method=' + encodeURIComponent(method || 'email');
+      url += '&company=' + encodeURIComponent(companyCode || '');
+      url += '&company_id=' + encodeURIComponent(companyCode || '');
+
+      if (adminEmail) {
+        url += '&email=' + encodeURIComponent(adminEmail);
+        url += '&account=' + encodeURIComponent(adminEmail);
+        url += '&admin=' + encodeURIComponent(adminEmail);
+      }
+
+      const verifyToken = String((res && (res.verifyToken || res.token || res.loginToken)) || '').trim();
+      if (verifyToken) url += '&verify_token=' + encodeURIComponent(verifyToken);
+
+      return url;
+    }
+
+    function goAdminLoginInline(){
+      const companyInput = document.getElementById('managerCompanyCode');
+      const accountInput = document.getElementById('managerAccount');
+      const companyCode = normalizeCompanyCode(companyInput ? companyInput.value : '');
+      const adminEmail = normalizeAdminAccount(accountInput ? accountInput.value : '');
+
+      if (!companyCode) {
+        setStatus('managerLoginStatus','error','請輸入公司代碼');
+        if (companyInput) companyInput.focus();
+        return;
+      }
+
+      if (!adminEmail) {
+        setStatus('managerLoginStatus','error','請輸入管理員 Email');
+        if (accountInput) accountInput.focus();
+        return;
+      }
+
+      if (!isValidAdminEmail(adminEmail)) {
+        setStatus('managerLoginStatus','error','管理員 Email 格式不正確');
+        if (accountInput) accountInput.focus();
+        return;
+      }
+
+      localStorage.setItem('ang_hr_manager_company',companyCode);
+      localStorage.setItem('ang_hr_manager_email',adminEmail);
+      localStorage.setItem('ang_hr_manager_account',adminEmail);
+      setStatus('managerLoginStatus','info','正在發送 Email 驗證...');
+
+      const payload = {
+        company:companyCode,
+        company_id:companyCode,
+        email:adminEmail,
+        account:adminEmail,
+        method:'email',
+        deviceId:APP_STATE.deviceId,
+        source:'entry_manager_login'
+      };
+
+      if (window.google && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(function(res){
+            if (!res || res.ok === false) {
+              setStatus('managerLoginStatus','error',(res && (res.message || res.msg)) || 'Email 驗證啟動失敗');
+              return;
+            }
+
+            setStatus('managerLoginStatus','success','驗證已啟動，正在前往確認頁...');
+            const redirect = String((res && (res.nextUrl || res.redirectUrl || res.url)) || '').trim();
+            setTimeout(function(){
+              window.location.href = redirect || buildAdminVerifyUrl('email',companyCode,adminEmail,res);
+            },420);
+          })
+          .withFailureHandler(function(err){
+            setStatus('managerLoginStatus','error',err && err.message ? err.message : 'Email 驗證連線失敗');
+          })
+          .startAdminEmailLoginVerification(payload);
+        return;
+      }
+
+      setTimeout(function(){
+        window.location.href = buildAdminVerifyUrl('email',companyCode,adminEmail,{ok:true});
+      },420);
+    }
+
+    function goAdminGoogleVerifyInline(){
+      const companyInput = document.getElementById('managerCompanyCode');
+      const accountInput = document.getElementById('managerAccount');
+      const companyCode = normalizeCompanyCode(companyInput ? companyInput.value : '');
+      const adminEmail = normalizeAdminAccount(accountInput ? accountInput.value : '');
+
+      if (!companyCode) {
+        setStatus('managerLoginStatus','error','請先輸入公司代碼');
+        if (companyInput) companyInput.focus();
+        return;
+      }
+
+      if (adminEmail && !isValidAdminEmail(adminEmail)) {
+        setStatus('managerLoginStatus','error','管理員 Email 格式不正確');
+        if (accountInput) accountInput.focus();
+        return;
+      }
+
+      localStorage.setItem('ang_hr_manager_company',companyCode);
+      if (adminEmail) {
+        localStorage.setItem('ang_hr_manager_email',adminEmail);
+        localStorage.setItem('ang_hr_manager_account',adminEmail);
+      }
+
+      setStatus('managerLoginStatus','info','正在啟動 Google 快速驗證...');
+
+      const payload = {
+        company:companyCode,
+        company_id:companyCode,
+        email:adminEmail,
+        account:adminEmail,
+        method:'google',
+        deviceId:APP_STATE.deviceId,
+        source:'entry_manager_login'
+      };
+
+      if (window.google && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(function(res){
+            if (!res || res.ok === false) {
+              setStatus('managerLoginStatus','error',(res && (res.message || res.msg)) || 'Google 驗證啟動失敗');
+              return;
+            }
+
+            const email = normalizeAdminAccount((res && (res.email || res.userEmail)) || adminEmail);
+            if (email) {
+              localStorage.setItem('ang_hr_manager_email',email);
+              localStorage.setItem('ang_hr_manager_account',email);
+            }
+
+            setStatus('managerLoginStatus','success','Google 驗證已啟動，正在前往確認頁...');
+            const redirect = String((res && (res.nextUrl || res.redirectUrl || res.url)) || '').trim();
+            setTimeout(function(){
+              window.location.href = redirect || buildAdminVerifyUrl('google',companyCode,email,res);
+            },420);
+          })
+          .withFailureHandler(function(err){
+            setStatus('managerLoginStatus','error',err && err.message ? err.message : 'Google 驗證連線失敗');
+          })
+          .startAdminGoogleLoginVerification(payload);
+        return;
+      }
+
+      setTimeout(function(){
+        window.location.href = buildAdminVerifyUrl('google',companyCode,adminEmail,{ok:true});
+      },420);
+    }
+
+    function getPlanEmailInput(plan){
+      return document.getElementById(String(plan || '').toLowerCase() + 'Email');
+    }
+
+    function getPlanStatusId(plan){
+      return String(plan || '').toLowerCase() + 'RegisterStatus';
+    }
+
+    function normalizeEmail(value){
+      return String(value || '').trim().toLowerCase();
+    }
+
+    function isValidEmail(email){
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    function startEmailPlanRegistration(plan){
+      const planKey = String(plan || '').toLowerCase();
+      const input = getPlanEmailInput(planKey);
+      const email = normalizeEmail(input ? input.value : '');
+      const statusId = getPlanStatusId(planKey);
+
+      if (!['basic','plus','premium'].includes(planKey)) {
+        setStatus(statusId,'error','方案錯誤');
+        return;
+      }
+
+      if (!email) {
+        setStatus(statusId,'error','請輸入 Email');
+        if (input) input.focus();
+        return;
+      }
+
+      if (!isValidEmail(email)) {
+        setStatus(statusId,'error','Email 格式不正確');
+        if (input) input.focus();
+        return;
+      }
+
+      localStorage.setItem('ang_hr_register_plan',planKey);
+      localStorage.setItem('ang_hr_register_email',email);
+      setStatus(statusId,'info','正在驗證 Email 並鎖定方案...');
+
+      const payload = {
+        plan:planKey,
+        email:email,
+        method:'email',
+        deviceId:APP_STATE.deviceId,
+        source:'entry_inline'
+      };
+
+      if (window.google && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(function(res){
+            if (!res || res.ok === false) {
+              setStatus(statusId,'error',(res && (res.message || res.msg)) || '驗證失敗');
+              return;
+            }
+
+            handleCompanyRegisterSuccess(planKey,email,'email',res,statusId);
+          })
+          .withFailureHandler(function(err){
+            setStatus(statusId,'error',err && err.message ? err.message : '連線失敗');
+          })
+          .startCompanyEmailRegistration(payload);
+        return;
+      }
+
+      setTimeout(function(){
+        handleCompanyRegisterSuccess(planKey,email,'email',{ok:true},statusId);
+      },450);
+    }
+
+    function startGooglePlanRegistration(plan){
+      const planKey = String(plan || '').toLowerCase();
+      const statusId = getPlanStatusId(planKey);
+
+      if (!['basic','plus','premium'].includes(planKey)) {
+        setStatus(statusId,'error','方案錯誤');
+        return;
+      }
+
+      localStorage.setItem('ang_hr_register_plan',planKey);
+      setStatus(statusId,'info','正在啟動 Google 驗證並鎖定方案...');
+
+      const payload = {
+        plan:planKey,
+        method:'google',
+        deviceId:APP_STATE.deviceId,
+        source:'entry_inline'
+      };
+
+      if (window.google && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(function(res){
+            if (!res || res.ok === false) {
+              setStatus(statusId,'error',(res && (res.message || res.msg)) || 'Google 驗證失敗');
+              return;
+            }
+
+            const email = normalizeEmail(res.email || res.userEmail || '');
+            if (email) localStorage.setItem('ang_hr_register_email',email);
+            handleCompanyRegisterSuccess(planKey,email,'google',res,statusId);
+          })
+          .withFailureHandler(function(err){
+            setStatus(statusId,'error',err && err.message ? err.message : 'Google 驗證連線失敗');
+          })
+          。startCompanyGoogleRegistration(payload);
+        return;
+      }
+
+      setTimeout(function(){
+        handleCompanyRegisterSuccess(planKey,'','google',{ok:true},statusId);
+      },450);
+    }
+
+    function handleCompanyRegisterSuccess(plan,email,method,res,statusId){
+      setStatus(statusId,'success','驗證成功，正在前往公司基本資料建立...');
+
+      const redirect = String((res && (res.下一處Url || res.redirectUrl || res.url)) || '').trim();
+
+      setTimeout(function(){
+        if (redirect) {
+          window.location.href = redirect;
+          return;
+        }
+
+        window.location.href = buildCompanySetupUrl(plan,email,method,res);
+      },520);
+    }
+
+    function buildCompanySetupUrl(plan,email,method,res){
+      let url = APP_STATE.baseUrl + '?page=register&step=company';
+      url += '&plan=' + encodeURIComponent(plan || 'basic');
+      url += '&method=' + encodeURIComponent(method || 'email');
+
+      if (email) url += '&email=' + encodeURIComponent(email);
+
+      const verifyToken = String((res && (res.verifyToken || res.token || res.registrationToken)) || '').trim();
+      if (verifyToken) url += '&verify_token=' + encodeURIComponent(verifyToken);
+
+      return url;
     }
 
     window.addEventListener('load',init);
