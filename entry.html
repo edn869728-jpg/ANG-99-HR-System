@@ -579,6 +579,7 @@
     }
 
     .plan-sheet.login,
+    .plan-sheet.register,
     .plan-sheet.basic{
       width:318px;
     }
@@ -831,6 +832,14 @@
       box-shadow:var(--primary-shadow);
     }
 
+    .sheet-action .outline-action{
+      margin-top:10px;
+      background:var(--secondary-bg);
+      color:var(--secondary-text);
+      border:1px solid var(--secondary-border);
+      box-shadow:none;
+    }
+
     .dots{
       position:absolute;
       left:0;
@@ -886,6 +895,7 @@
       }
 
       .plan-sheet.login,
+      .plan-sheet.register,
       .plan-sheet.basic{
         width:302px;
       }
@@ -1068,7 +1078,53 @@
             </div>
 
             <div class="sheet-action">
-              <button type="button" data-action-key="login">企業管理登入</button>
+              <button type="button" data-action-key="login">原有客戶登入</button>
+              <button class="outline-action" type="button" data-action-key="register">企業註冊</button>
+            </div>
+          </article>
+
+          <article class="plan-sheet register" data-key="register">
+            <div class="sheet-handle-zone">
+              <div class="sheet-handle"></div>
+            </div>
+
+            <div class="sheet-summary">
+              <div class="summary-main">
+                <div class="summary-left">
+                  <div class="title-line">
+                    <h2 class="sheet-title">企業註冊</h2>
+                    <div class="sheet-tag">新公司</div>
+                  </div>
+                </div>
+                <div class="summary-right">
+                  <div class="sheet-price">建立 <span>公司帳號</span></div>
+                </div>
+              </div>
+
+              <p class="sheet-sub">新公司請從這裡完成驗證、建立公司與選擇方案。</p>
+
+              <div class="mini-pills">
+                <span class="mini-pill">Email 驗證</span>
+                <span class="mini-pill">公司資料</span>
+                <span class="mini-pill">選方案</span>
+              </div>
+            </div>
+
+            <div class="sheet-detail">
+              <div class="detail-block">
+                <h3 class="detail-title">註冊流程</h3>
+                <ul class="feature-list">
+                  <li>驗證 Email 或 Google 帳號</li>
+                  <li>填寫公司與管理者資料</li>
+                  <li>選擇 Basic / Plus / Premium</li>
+                  <li>建立公司代碼與管理員帳號</li>
+                </ul>
+              </div>
+              <div class="note">註冊完成後即可進入企業管理後台，建立員工資料與發送開通碼。</div>
+            </div>
+
+            <div class="sheet-action">
+              <button type="button" data-action-key="register">開始企業註冊</button>
             </div>
           </article>
 
@@ -1212,6 +1268,7 @@
 
         <div class="dots" id="dots">
           <span class="dot active"></span>
+          <span class="dot"></span>
           <span class="dot"></span>
           <span class="dot"></span>
           <span class="dot"></span>
@@ -1543,6 +1600,11 @@
             return;
           }
 
+          if (key === 'register') {
+            goCompanyRegister();
+            return;
+          }
+
           goTrial(key);
         });
       });
@@ -1643,6 +1705,10 @@
       let url = APP_STATE.baseUrl + '?page=trial';
       if (plan) url += '&plan=' + encodeURIComponent(plan);
       window.location.href = url;
+    }
+
+    function goCompanyRegister(){
+      window.location.href = APP_STATE.baseUrl + '?page=register';
     }
 
     function goAdminLogin(){
