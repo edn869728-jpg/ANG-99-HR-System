@@ -97,6 +97,8 @@
       background:var(--body-bg);
       font-family:"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;
       color:var(--main-text);
+      font-size:16px;
+      letter-spacing:.02em;
       transition:background .25s ease;
     }
 
@@ -260,9 +262,10 @@
       margin:0 0 18px;
       color:var(--main-text);
       text-align:center;
-      font-size:22px;
-      line-height:1.2;
+      font-size:26px;
+      line-height:1.25;
       font-weight:1000;
+      letter-spacing:.02em;
       transition:color .25s ease;
     }
 
@@ -272,9 +275,10 @@
       border:none;
       border-radius:16px;
       padding:14px 18px;
-      font-size:16px;
-      line-height:1.2;
+      font-size:18px;
+      line-height:1.25;
       font-weight:1000;
+      letter-spacing:.02em;
       cursor:pointer;
       text-align:center;
       transition:transform .18s ease,background .25s ease,color .25s ease,border-color .25s ease,box-shadow .25s ease;
@@ -285,24 +289,27 @@
     }
 
     .btn-primary{
+      margin-top:18px;
       background:var(--primary-bg);
       color:var(--primary-text);
       box-shadow:var(--primary-shadow);
     }
 
     .btn-secondary{
-      background:var(--secondary-bg);
-      color:var(--secondary-text);
-      border:1px solid var(--secondary-border);
+      background:linear-gradient(90deg, rgba(99,102,241,.18) 0%, rgba(147,197,253,.22) 100%);
+      color:#1e3a8a;
+      border:1px solid rgba(147,197,253,.45);
+      box-shadow:0 12px 24px rgba(99,102,241,.1);
     }
 
     .help-text{
-      margin:8px 0 0;
+      margin:10px 0 0;
       color:var(--muted-text);
       text-align:center;
-      font-size:12px;
-      line-height:1.35;
+      font-size:14px;
+      line-height:1.5;
       font-weight:850;
+      letter-spacing:.03em;
       transition:color .25s ease;
     }
 
@@ -322,23 +329,24 @@
     .section-title{
       margin:0;
       color:var(--main-text);
-      font-size:20px;
-      line-height:1.2;
+      font-size:22px;
+      line-height:1.3;
       font-weight:1000;
-      letter-spacing:-.03em;
+      letter-spacing:.02em;
       transition:color .25s ease;
     }
 
     .back-btn{
       min-width:54px;
-      height:34px;
+      height:36px;
       border:none;
       border-radius:999px;
       padding:0 14px;
       background:rgba(78,98,184,.45);
       color:#dbeafe;
-      font-size:13px;
+      font-size:14px;
       font-weight:1000;
+      letter-spacing:.02em;
       cursor:pointer;
     }
 
@@ -373,9 +381,9 @@
       outline:none;
       background:transparent;
       color:var(--main-text);
-      font-size:16px;
+      font-size:18px;
       font-weight:1000;
-      letter-spacing:.08em;
+      letter-spacing:.1em;
       padding:12px 0;
       text-transform:uppercase;
     }
@@ -383,9 +391,9 @@
     input::placeholder{
       color:var(--muted-text);
       opacity:.72;
-      font-size:14px;
+      font-size:15px;
       font-weight:900;
-      letter-spacing:0;
+      letter-spacing:.05em;
       text-transform:none;
     }
 
@@ -411,11 +419,12 @@
 
     .hint{
       margin-top:14px;
-      color:var(--main-text);
+      color:var(--muted-text);
       text-align:center;
-      font-size:12px;
-      line-height:1.45;
+      font-size:14px;
+      line-height:1.5;
       font-weight:900;
+      letter-spacing:.03em;
       transition:color .25s ease;
     }
 
@@ -499,15 +508,17 @@
 
     .profile-name{
       color:var(--main-text);
-      font-size:16px;
+      font-size:18px;
       font-weight:1000;
+      letter-spacing:.02em;
     }
 
     .profile-meta{
       margin-top:4px;
       color:var(--muted-text);
-      font-size:12px;
+      font-size:13px;
       font-weight:850;
+      letter-spacing:.03em;
     }
 
     .sheet-stage{
@@ -539,7 +550,9 @@
       padding-left:calc((100% - 358px) / 2);
       padding-right:calc((100% - 358px) / 2);
       -webkit-overflow-scrolling:touch;
-      touch-action:pan-x pan-y;
+      touch-action:none;
+      overscroll-behavior:contain;
+      scroll-behavior:smooth;
       cursor:grab;
       scrollbar-width:none;
     }
@@ -551,6 +564,18 @@
     .sheet-carousel.dragging{
       cursor:grabbing;
       scroll-snap-type:none;
+    }
+
+    .sheet-carousel.vertical-swiping{
+      cursor:ns-resize;
+      scroll-snap-type:none;
+      overflow-x:hidden;
+    }
+
+    .sheet-carousel.horizontal-swiping{
+      cursor:grabbing;
+      scroll-snap-type:none;
+      overflow-y:hidden;
     }
 
     .plan-sheet{
@@ -627,54 +652,65 @@
     .sheet-summary{
       position:relative;
       z-index:2;
-      padding:0 20px 14px;
+      padding:6px 32px 8px 16px;
       flex:0 0 auto;
     }
 
-    .phone:not(.expanded) .plan-sheet.active .sheet-summary::after{
+    .phone:not(.expanded) .sheet-stage::after{
       content:"往上滑開啟";
+      position:absolute;
+      left:50%;
+      top:-24px;
+      transform:translateX(-50%);
       display:block;
-      margin-top:10px;
       color:var(--muted-text);
-      font-size:11px;
+      font-size:15px;
       line-height:1.2;
       font-weight:900;
       letter-spacing:.06em;
-      opacity:.72;
+      text-align:center;
+      opacity:.78;
+      animation: hintBounce 1.5s ease-in-out infinite;
+      z-index:10;
+      white-space:nowrap;
+      pointer-events:none;
     }
 
+    @keyframes hintBounce{
+      0%,100%{ transform:translateX(-50%) translateY(0); }
+      50%{ transform:translateX(-50%) translateY(-6px); }
+    }
+
+    /* 全新 Grid 佈局樣式 */
+    .sheet-summary-grid {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      grid-template-rows: auto auto;
+      gap: 16px 12px;
+      align-items: end;
+      justify-items:start;
+    }
+
+    .grid-title { grid-area: 1 / 1 / 2 / 2; align-self: start; }
+    .grid-tag { grid-area: 1 / 2 / 2 / 3; align-self: start; justify-self: end; }
+    .grid-pills { grid-area: 2 / 1 / 3 / 2; }
+    .grid-price { grid-area: 2 / 2 / 3 / 3; justify-self: end; }
+
+    /* 企業登入專用原本排版 */
     .summary-main{
       display:flex;
       justify-content:space-between;
-      align-items:flex-start;
-      gap:14px;
-    }
-
-    .summary-left{
-      min-width:0;
-      flex:1;
-    }
-
-    .summary-right{
-      flex:0 0 auto;
-      text-align:right;
-      padding-top:2px;
-    }
-
-    .title-line{
-      display:flex;
       align-items:center;
-      gap:10px;
-      flex-wrap:wrap;
+      gap:12px;
     }
 
     .sheet-title{
       margin:0;
       color:var(--main-text);
-      font-size:24px;
-      line-height:1.15;
+      font-size:36px;
+      line-height:2;
       font-weight:1000;
-      letter-spacing:-.7px;
+      letter-spacing:-1px;
       text-shadow:
         0 1px 0 rgba(255,255,255,.12),
         0 0 1px rgba(255,255,255,.72),
@@ -682,99 +718,105 @@
       -webkit-text-stroke:.25px rgba(255,255,255,.22);
     }
 
-    .plan-sheet.premium .sheet-title{
-      font-size:30px;
-      letter-spacing:-1px;
+    .plan-sheet.login .sheet-title{
+      font-size:36px;
+      letter-spacing:-.7px;
     }
 
     .sheet-tag{
       display:inline-flex;
-      padding:6px 10px;
+      padding:6px 12px;
       border-radius:999px;
-      background:rgba(128,137,255,.13);
-      color:#8089ff;
-      font-size:11px;
-      line-height:1.2;
+      background:rgba(128,137,255,.18);
+      color:#233876;
+      font-size:12px;
+      line-height:1;
       font-weight:1000;
       white-space:nowrap;
+      border:1px solid rgba(128,137,255,.24);
+      box-shadow:0 8px 18px rgba(128,137,255,.06);
     }
 
-    .sheet-tag-button,
     .contact-mini-btn{
       appearance:none;
       border:1px solid rgba(128,137,255,.24);
       border-radius:999px;
       background:rgba(128,137,255,.15);
       color:#dbeafe;
-      padding:7px 11px;
-      font-size:12px;
-      line-height:1.1;
+      min-width:54px;
+      height:36px;
+      padding:0 14px;
+      font-size:14px;
+      line-height:normal;
       font-weight:1000;
       white-space:nowrap;
       box-shadow:none;
     }
 
-    body:not([data-theme="dark"]) .sheet-tag-button,
     body:not([data-theme="dark"]) .contact-mini-btn{
       color:#4338ca;
       background:#eef2ff;
       border-color:#dbeafe;
     }
 
-    .contact-mini-btn{
-      min-height:34px;
-      padding:8px 13px;
-    }
-
     .sheet-price{
       color:var(--main-text);
-      font-size:22px;
-      line-height:1.1;
+      font-size:30px;
+      line-height:1;
       font-weight:1000;
-      letter-spacing:-.8px;
-      white-space:nowrap;
+      letter-spacing:-1px;
+      display:flex;
+      align-items:baseline;
+      gap:4px;
     }
 
     .sheet-price span{
-      display:block;
-      margin-top:3px;
-      color:var(--muted-text);
-      font-size:11px;
-      font-weight:850;
+      color:var(--main-text);
+      font-size:16px;
+      font-weight:900;
       letter-spacing:0;
-    }
-
-    .sheet-sub{
-      margin:10px 0 0;
-      color:var(--muted-text);
-      font-size:13px;
-      line-height:1.5;
-      font-weight:800;
-      display:-webkit-box;
-      -webkit-line-clamp:2;
-      -webkit-box-orient:vertical;
-      overflow:hidden;
     }
 
     .mini-pills{
       display:flex;
-      flex-wrap:wrap;
-      gap:6px;
-      margin-top:10px;
+      flex-wrap:nowrap;
+      gap:8px;
+      overflow-x:auto;
+      -webkit-overflow-scrolling:touch;
+      padding-bottom:6px;
     }
 
+    .mini-pills::-webkit-scrollbar{ display:none; }
+
     .mini-pill{
-      padding:5px 8px;
+      flex:0 0 auto;
+      padding:4px 10px;
       border-radius:999px;
-      background:var(--secondary-bg);
-      border:1px solid var(--secondary-border);
-      color:var(--secondary-text);
+      background:linear-gradient(90deg, rgba(128,137,255,0.14), rgba(236,72,153,0.04));
+      border:1px solid rgba(128,137,255,0.24);
+      color:#0f172a;
       font-size:11px;
-      font-weight:850;
+      font-weight:800;
+      letter-spacing:0.4px;
+      box-shadow:0 4px 12px rgba(124,60,255,0.05);
+      transition:transform .18s ease,box-shadow .18s ease;
+      line-height:1;
+    }
+
+    .phone:not([data-theme="dark"]) .mini-pill:hover{
+      transform:translateY(-4px);
+      box-shadow:0 12px 30px rgba(124,60,255,0.12);
+    }
+
+    body[data-theme="dark"] .mini-pill{
+      background:linear-gradient(90deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+      border:1px solid rgba(255,255,255,0.12);
+      color:#e5e7eb;
+      box-shadow:0 10px 24px rgba(0,0,0,0.38);
     }
 
     .phone:not(.expanded) .mini-pills{
-      display:none;
+      display:flex;
     }
 
     .sheet-detail{
@@ -799,6 +841,7 @@
       opacity:1;
       transform:translateY(0);
       pointer-events:auto;
+      touch-action:pan-y;
     }
 
     .detail-block{
@@ -945,9 +988,10 @@
 
     .swipe-hint-side{
       display:flex;
-      align-items:center;
+      align-items:flex-end;
       gap:4px;
       color:#8089ff;
+      padding-top:4px;
     }
 
     .swipe-hint-side.left{
@@ -961,12 +1005,12 @@
     }
 
     .swipe-hint-side svg{
-      width:12px;
-      height:12px;
+      width:18px;
+      height:18px;
       display:block;
       stroke:currentColor;
       fill:none;
-      stroke-width:2.6;
+      stroke-width:3.2;
       stroke-linecap:round;
       stroke-linejoin:round;
     }
@@ -987,32 +1031,31 @@
     }
 
     .swipe-hint-main{
-      color:var(--main-text);
-      font-size:12px;
-      line-height:1.25;
+      color:#8089ff;
+      font-size:15px;
+      line-height:1.5;
       font-weight:1000;
       white-space:nowrap;
     }
 
     .swipe-hint-plan{
       color:#8089ff;
-      font-size:12px;
-      line-height:1.25;
+      font-size:14px;
+      line-height:1.3;
       font-weight:1000;
-      letter-spacing:.02em;
+      letter-spacing:.03em;
       white-space:nowrap;
     }
 
-
-    /* Plan card visual style like the reference mockup */
     .plan-sheet:not(.login) .sheet-summary{
       margin:0 16px 12px;
-      padding:20px 18px 18px;
-      border-radius:20px;
+      padding:20px 22px;
+      border-radius:24px;
       border:1px solid rgba(128,137,255,.06);
       box-shadow:0 10px 26px rgba(15,23,42,.04);
     }
 
+    /* 方案卡片專屬色系與陰影設定 */
     .plan-sheet.basic .sheet-summary{
       border-color:rgba(72, 97, 236, 0.18);
       background:
@@ -1060,70 +1103,68 @@
     }
 
     body[data-theme="dark"] .plan-sheet:not(.login) .sheet-summary{
-      box-shadow:0 12px 26px rgba(0,0,0,.18);
+      box-shadow:0 12px 26px rgba(0,0,0,.38);
     }
 
     body[data-theme="dark"] .plan-sheet.basic .sheet-summary{
       border-color:rgba(236,72,153,.18);
       background:
-        radial-gradient(circle at 100% 0%,rgba(236,72,153,.12) 0%,rgba(236,72,153,0) 42%),
-        linear-gradient(135deg,rgba(78,13,46,.64) 0%,rgba(56,9,32,.52) 100%);
+        radial-gradient(circle at 100% 0%,rgba(236,72,153,.16) 0%,rgba(236,72,153,0) 50%),
+        linear-gradient(135deg,rgba(40,15,30,.85) 0%,rgba(25,10,20,.80) 100%);
     }
 
     body[data-theme="dark"] .plan-sheet.plus .sheet-summary{
       border-color:rgba(96,165,250,.18);
       background:
-        radial-gradient(circle at 100% 0%,rgba(96,165,250,.12) 0%,rgba(96,165,250,0) 42%),
-        linear-gradient(135deg,rgba(18,39,76,.64) 0%,rgba(12,28,58,.52) 100%);
+        radial-gradient(circle at 100% 0%,rgba(96,165,250,.16) 0%,rgba(96,165,250,0) 50%),
+        linear-gradient(135deg,rgba(15,25,45,.85) 0%,rgba(10,15,30,.80) 100%);
     }
 
     body[data-theme="dark"] .plan-sheet.premium .sheet-summary{
       border-color:rgba(192,132,252,.18);
       background:
-        radial-gradient(circle at 100% 0%,rgba(192,132,252,.12) 0%,rgba(192,132,252,0) 40%),
+        radial-gradient(circle at 100% 0%,rgba(192,132,252,.16) 0%,rgba(192,132,252,0) 50%),
         radial-gradient(circle at 0% 100%,rgba(216,180,254,.12) 0%,rgba(216,180,254,0) 44%),
-        linear-gradient(135deg,rgba(58,31,84,.64) 0%,rgba(42,24,66,.52) 100%);
+        linear-gradient(135deg,rgba(30,15,45,.85) 0%,rgba(20,10,30,.80) 100%);
     }
 
     body[data-theme="dark"] .plan-sheet.basic .sheet-summary{
-      border-color:rgba(244,114,182,.76);
+      border:1.5px solid rgba(244,114,182,.76);
       box-shadow:
         0 0 0 1px rgba(244,114,182,.18),
         0 0 26px rgba(236,72,153,.34),
-        0 12px 26px rgba(0,0,0,.18);
+        0 12px 26px rgba(0,0,0,.38);
     }
 
     body[data-theme="dark"] .plan-sheet.plus .sheet-summary{
-      border-color:rgba(125,211,252,.78);
+      border:1.5px solid rgba(125,211,252,.78);
       box-shadow:
         0 0 0 1px rgba(125,211,252,.18),
         0 0 26px rgba(96,165,250,.36),
-        0 12px 26px rgba(0,0,0,.18);
+        0 12px 26px rgba(0,0,0,.38);
     }
 
     body[data-theme="dark"] .plan-sheet.premium .sheet-summary{
-      border-color:rgba(216,180,254,.80);
+      border:1.5px solid rgba(216,180,254,.80);
       box-shadow:
         0 0 0 1px rgba(216,180,254,.18),
         0 0 26px rgba(192,132,252,.38),
-        0 12px 26px rgba(0,0,0,.18);
+        0 12px 26px rgba(0,0,0,.38);
     }
 
-    .plan-sheet.basic .sheet-tag{
-      background:rgba(236,72,153,.20);
-      color:#db2777;
-    }
+    .plan-sheet.basic .sheet-tag{ background:rgba(236,72,153,.20); color:#db2777; }
+    .plan-sheet.plus .sheet-tag{ background:rgba(96,165,250,.20); color:#2563eb; }
+    .plan-sheet.premium .sheet-tag{ background:rgba(192,132,252,.20); color:#7c3aed; }
 
-    /* 再次增加可見度：讓卡片與卡片內元素更明顯 */
+    body[data-theme="dark"] .plan-sheet.basic .sheet-tag { background: rgba(236,72,153,0.3); color: #fbcfe8; }
+    body[data-theme="dark"] .plan-sheet.plus .sheet-tag { background: rgba(96,165,250,0.3); color: #bfdbfe; }
+    body[data-theme="dark"] .plan-sheet.premium .sheet-tag { background: rgba(192,132,252,0.3); color: #e9d5ff; }
+
     .feature-card,
     .feature-card.green,
     .feature-card.blue,
     .feature-card.purple,
     .feature-card.orange,
-    .mini-pill,
-    .sheet-tag,
-    .sheet-tag-button,
-    .contact-mini-btn,
     .feature-icon-box {
       background:rgba(255,255,255,0.12) !important;
       background-image:none !important;
@@ -1131,108 +1172,18 @@
       border-color:rgba(128,137,255,0.14) !important;
     }
 
-    /* Dark theme：增加深色底下的可見度（但仍偏淡） */
     body[data-theme="dark"] .feature-card,
-    body[data-theme="dark"] .mini-pill,
-    body[data-theme="dark"] .sheet-tag,
-    body[data-theme="dark"] .sheet-tag-button,
-    body[data-theme="dark"] .contact-mini-btn,
     body[data-theme="dark"] .feature-icon-box {
       background:rgba(255,255,255,0.06) !important;
       border-color:rgba(255,255,255,0.12) !important;
       box-shadow:0 8px 20px rgba(0,0,0,0.12) !important;
     }
 
-    .plan-sheet.plus .sheet-tag{
-      background:rgba(96,165,250,.20);
-      color:#2563eb;
-    }
-
-    .plan-sheet.premium .sheet-tag{
-      background:rgba(192,132,252,.20);
-      color:#7c3aed;
-    }
-
-    .plan-sheet:not(.login) .sheet-title{
-      font-size:27px;
-      letter-spacing:.02em;
-    }
-
-    .plan-sheet:not(.login) .sheet-price{
-      font-size:32px;
-      letter-spacing:.02em;
-      font-weight:1000;
-    }
-
-    .plan-sheet:not(.login) .sheet-price span{
-      font-size:18px;
-      margin-top:5px;
-      text-align:right;
-      color:var(--main-text);
-    }
-
-    .plan-sheet:not(.login) .mini-pills{
-      display:flex;
-      gap:10px;
-      margin-top:18px;
-    }
-
-    .plan-sheet.basic .mini-pill{
-      min-width:50px;
-      text-align:center;
-      padding:8px 12px;
-      border-radius:999px;
-      background:rgba(255,255,255,.20);
-      border:1px solid rgba(249,168,212,.20);
-      box-shadow:0 6px 14px rgba(15,23,42,.05);
-      color:#be185d;
-      font-size:13px;
-      font-weight:1000;
-    }
-
-    .plan-sheet.plus .mini-pill{
-      min-width:50px;
-      text-align:center;
-      padding:8px 12px;
-      border-radius:999px;
-      background:rgba(255,255,255,.20);
-      border:1px solid rgba(147,197,253,.20);
-      box-shadow:0 6px 14px rgba(15,23,42,.05);
-      color:#1d4ed8;
-      font-size:13px;
-      font-weight:1000;
-    }
-
-    .plan-sheet.premium .mini-pill{
-      min-width:50px;
-      text-align:center;
-      padding:8px 12px;
-      border-radius:999px;
-      background:rgba(255,255,255,.20);
-      border:1px solid rgba(216,180,254,.20);
-      box-shadow:0 6px 14px rgba(15,23,42,.05);
-      color:#7c3aed;
-      font-size:13px;
-      font-weight:1000;
-    }
-
-    body[data-theme="dark"] .plan-sheet.basic .mini-pill,
-    body[data-theme="dark"] .plan-sheet.plus .mini-pill,
-    body[data-theme="dark"] .plan-sheet.premium .mini-pill{
-      background:rgba(255,255,255,.08);
-      color:#e5e7eb;
-    }
-
-    body[data-theme="dark"] .plan-sheet.basic .mini-pill{ border-color:rgba(236,72,153,.20); }
-    body[data-theme="dark"] .plan-sheet.plus .mini-pill{ border-color:rgba(96,165,250,.20); }
-    body[data-theme="dark"] .plan-sheet.premium .mini-pill{ border-color:rgba(192,132,252,.20); }
-
     .feature-stack{
       display:grid;
       gap:12px;
       margin:0 0 18px;
     }
-
 
     .feature-card{
       position:relative;
@@ -1249,90 +1200,15 @@
       overflow:hidden;
     }
 
-    .feature-card.green{
-      background:
-        radial-gradient(circle at 100% 0%,rgba(236,72,153,.14) 0%,rgba(236,72,153,0) 42%),
-        linear-gradient(135deg,rgba(255,245,249,.74) 0%,rgba(252,231,243,.60) 100%);
-      border-color:rgba(236,72,153,.14);
-      box-shadow:0 10px 20px rgba(236,72,153,.10);
-    }
-
-    .feature-card.blue{
-      background:
-        radial-gradient(circle at 100% 0%,rgba(96,165,250,.14) 0%,rgba(96,165,250,0) 42%),
-        linear-gradient(135deg,rgba(245,250,255,.74) 0%,rgba(219,234,254,.60) 100%);
-      border-color:rgba(96,165,250,.14);
-      box-shadow:0 10px 20px rgba(96,165,250,.10);
-    }
-
-    .feature-card.purple,
-    .feature-card.orange{
-      background:
-        radial-gradient(circle at 100% 0%,rgba(192,132,252,.14) 0%,rgba(192,132,252,0) 42%),
-        linear-gradient(135deg,rgba(250,245,255,.76) 0%,rgba(243,232,255,.64) 100%);
-      border-color:rgba(192,132,252,.14);
-      box-shadow:0 10px 20px rgba(192,132,252,.10);
-    }
-
-    body[data-theme="dark"] .feature-card.green{
-      background:
-        radial-gradient(circle at 100% 0%,rgba(236,72,153,.12) 0%,rgba(236,72,153,0) 42%),
-        linear-gradient(135deg,rgba(78,13,46,.58) 0%,rgba(56,9,32,.50) 100%);
-      border-color:rgba(236,72,153,.14);
-      box-shadow:none;
-    }
-
-    body[data-theme="dark"] .feature-card.blue{
-      background:
-        radial-gradient(circle at 100% 0%,rgba(96,165,250,.12) 0%,rgba(96,165,250,0) 42%),
-        linear-gradient(135deg,rgba(18,39,76,.58) 0%,rgba(12,28,58,.50) 100%);
-      border-color:rgba(96,165,250,.14);
-      box-shadow:none;
-    }
-
-    body[data-theme="dark"] .feature-card.purple,
-    body[data-theme="dark"] .feature-card.orange{
-      background:
-        radial-gradient(circle at 100% 0%,rgba(192,132,252,.12) 0%,rgba(192,132,252,0) 42%),
-        linear-gradient(135deg,rgba(58,31,84,.60) 0%,rgba(42,24,66,.52) 100%);
-      border-color:rgba(192,132,252,.14);
-      box-shadow:none;
-    }
-
-    .feature-card.green .feature-icon-box{
-      background:linear-gradient(135deg,#fce7f3 0%,#ec4899 100%);
-      color:#831843;
-    }
-
-    .feature-card.blue .feature-icon-box{
-      background:linear-gradient(135deg,#dbeafe 0%,#60a5fa 100%);
-      color:#1e3a8a;
-    }
-
+    .feature-card.green .feature-icon-box{ background:linear-gradient(135deg,#fce7f3 0%,#ec4899 100%); color:#831843; }
+    .feature-card.blue .feature-icon-box{ background:linear-gradient(135deg,#dbeafe 0%,#60a5fa 100%); color:#1e3a8a; }
     .feature-card.purple .feature-icon-box,
-    .feature-card.orange .feature-icon-box{
-      background:linear-gradient(135deg,#f3e8ff 0%,#c084fc 100%);
-      color:#581c87;
-    }
+    .feature-card.orange .feature-icon-box{ background:linear-gradient(135deg,#f3e8ff 0%,#c084fc 100%); color:#581c87; }
 
-    .feature-card.green .feature-badge{
-      background:rgba(236,72,153,.20);
-      color:#be185d;
-      border-color:rgba(236,72,153,.20);
-    }
-
-    .feature-card.blue .feature-badge{
-      background:rgba(96,165,250,.20);
-      color:#1d4ed8;
-      border-color:rgba(96,165,250,.20);
-    }
-
+    .feature-card.green .feature-badge{ background:rgba(236,72,153,.20); color:#be185d; border-color:rgba(236,72,153,.20); }
+    .feature-card.blue .feature-badge{ background:rgba(96,165,250,.20); color:#1d4ed8; border-color:rgba(96,165,250,.20); }
     .feature-card.purple .feature-badge,
-    .feature-card.orange .feature-badge{
-      background:rgba(192,132,252,.20);
-      color:#7c3aed;
-      border-color:rgba(192,132,252,.20);
-    }
+    .feature-card.orange .feature-badge{ background:rgba(192,132,252,.20); color:#7c3aed; border-color:rgba(192,132,252,.20); }
 
     body[data-theme="dark"] .feature-card.green .feature-badge,
     body[data-theme="dark"] .feature-card.blue .feature-badge,
@@ -1342,7 +1218,6 @@
       border-color:rgba(255,255,255,.12);
       background:rgba(255,255,255,.10);
     }
-
 
     .feature-icon-box{
       width:58px;
@@ -1356,21 +1231,6 @@
       background:rgba(186,230,253,.58);
     }
 
-    .feature-card.green .feature-icon-box{
-      background:linear-gradient(135deg,#fce7f3 0%,#ec4899 100%);
-      color:#831843;
-    }
-
-    .feature-card.orange .feature-icon-box{
-      background:linear-gradient(135deg,#dbeafe 0%,#60a5fa 100%);
-      color:#1e3a8a;
-    }
-
-    .feature-card.purple .feature-icon-box{
-      background:linear-gradient(135deg,#f3e8ff 0%,#c084fc 100%);
-      color:#581c87;
-    }
-
     .feature-copy{
       min-width:0;
     }
@@ -1378,7 +1238,7 @@
     .feature-title{
       margin:0;
       color:var(--main-text);
-      font-size:17px;
+      font-size:18px;
       line-height:1.18;
       font-weight:1000;
       letter-spacing:.01em;
@@ -1422,28 +1282,15 @@
     }
 
     @media (max-width:430px){
-      body{
-        align-items:stretch;
-      }
-
-      .phone{
-        max-width:none;
-        max-height:none;
-        height:100vh;
-        border-radius:0;
-      }
-
-      .top-space{
-        min-height:380px;
-      }
-
+      body{ align-items:stretch; }
+      .phone{ max-width:none; max-height:none; height:100vh; border-radius:0; }
+      .top-space{ min-height:380px; }
       .sheet-carousel{
         scroll-padding-left:calc((100% - 342px) / 2);
         scroll-padding-right:calc((100% - 342px) / 2);
         padding-left:calc((100% - 342px) / 2);
         padding-right:calc((100% - 342px) / 2);
       }
-
       .plan-sheet.login,
       .plan-sheet.register,
       .plan-sheet.basic,
@@ -1451,30 +1298,15 @@
       .plan-sheet.premium{
         width:342px;
       }
-
-      .plan-sheet.premium .sheet-title{
-        font-size:28px;
-      }
+      .sheet-title{ font-size:32px; }
+      .sheet-price{ font-size:26px; }
     }
 
     @media (max-height:700px){
-      .phone{
-        height:100vh;
-        border-radius:0;
-      }
-
-      .top-space{
-        min-height:320px;
-      }
-
-      .panel{
-        min-height:258px;
-        padding:24px 22px 22px;
-      }
-
-      .sheet-stage{
-        height:188px;
-      }
+      .phone{ height:100vh; border-radius:0; }
+      .top-space{ min-height:320px; }
+      .panel{ min-height:258px; padding:24px 22px 22px; }
+      .sheet-stage{ height:188px; }
     }
   </style>
 </head>
@@ -1483,57 +1315,43 @@
   <main class="phone" id="phone">
     <button class="theme-toggle" type="button" aria-label="切換日光與暗夜模式" aria-pressed="true">
       <span class="sun" aria-hidden="true">
-        <svg viewBox="0 0 24 24">
-          <circle cx="12" cy="12" r="4"></circle>
-          <path d="M12 2v2.2M12 19.8V22M4.93 4.93l1.56 1.56M17.51 17.51l1.56 1.56M2 12h2.2M19.8 12H22M4.93 19.07l1.56-1.56M17.51 6.49l1.56-1.56"></path>
-        </svg>
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2.2M12 19.8V22M4.93 4.93l1.56 1.56M17.51 17.51l1.56 1.56M2 12h2.2M19.8 12H22M4.93 19.07l1.56-1.56M17.51 6.49l1.56-1.56"></path></svg>
       </span>
       <span class="moon" aria-hidden="true">
-        <svg viewBox="0 0 24 24">
-          <path d="M21 14.2A8.6 8.6 0 0 1 9.8 3a7.5 7.5 0 1 0 11.2 11.2z"></path>
-        </svg>
+        <svg viewBox="0 0 24 24"><path d="M21 14.2A8.6 8.6 0 0 1 9.8 3a7.5 7.5 0 1 0 11.2 11.2z"></path></svg>
       </span>
     </button>
 
     <section id="homeView" class="view active">
       <div class="top-space"></div>
-
       <div class="panel">
         <h1 class="home-title">歡迎登入系統</h1>
-
         <button class="btn btn-primary" type="button" onclick="showEmployeeEntry('code')">員工專區</button>
         <div class="help-text">首次使用請點擊專屬開通連結</div>
-
         <div class="spacer"></div>
-
         <button class="btn btn-secondary" type="button" onclick="showManagerEntry()">企業管理與註冊</button>
       </div>
     </section>
 
     <section id="employeeEntryView" class="view">
       <div class="top-space"></div>
-
       <div class="panel">
         <div id="codeMode" class="entry-mode">
           <div class="entry-top-row">
             <h1 class="section-title">輸入開通碼</h1>
             <button class="back-btn" type="button" onclick="showHome()">返回</button>
           </div>
-
           <div class="field">
             <div class="input-wrap">
               <input id="activationCode" type="text" inputmode="text" autocomplete="one-time-code" placeholder="開通碼" maxlength="20" />
               <button class="clear-btn" type="button" onclick="clearCode()">×</button>
             </div>
           </div>
-
           <button class="btn btn-primary" type="button" onclick="submitActivationCode()">啟用此設備</button>
-
           <div class="btn-row">
             <button class="btn btn-secondary" type="button" onclick="scanQrCode()">掃描 QR</button>
             <button class="btn btn-secondary" type="button" onclick="contactHr()">聯絡 HR</button>
           </div>
-
           <div class="hint">換手機或無法登入，請聯絡管理員重發開通碼。</div>
           <div id="codeStatus" class="status"></div>
         </div>
@@ -1543,7 +1361,6 @@
             <h1 class="section-title">確認綁定</h1>
             <button class="back-btn" type="button" onclick="showHome()">返回</button>
           </div>
-
           <div class="profile">
             <div class="avatar" id="bindAvatar">員</div>
             <div>
@@ -1551,9 +1368,7 @@
               <div class="profile-meta" id="bindMeta">即將綁定此設備</div>
             </div>
           </div>
-
           <button class="btn btn-primary" type="button" onclick="confirmBindByToken()">綁定此設備</button>
-
           <div class="hint">綁定後，下次會自動登入。</div>
           <div id="bindStatus" class="status"></div>
         </div>
@@ -1563,14 +1378,11 @@
             <h1 class="section-title">連結已失效</h1>
             <button class="back-btn" type="button" onclick="showHome()">返回</button>
           </div>
-
           <button class="btn btn-primary" type="button" onclick="showEmployeeEntry('code')">輸入開通碼</button>
-
           <div class="btn-row">
             <button class="btn btn-secondary" type="button" onclick="scanQrCode()">掃描 QR</button>
             <button class="btn btn-secondary" type="button" onclick="contactHr()">聯絡 HR</button>
           </div>
-
           <div class="hint">請向管理員索取新的開通碼。</div>
         </div>
       </div>
@@ -1578,26 +1390,22 @@
 
     <section id="managerEntryView" class="view">
       <div class="top-space"></div>
-
       <section class="sheet-stage">
         <div class="sheet-carousel" id="sheetCarousel">
+          
           <article class="plan-sheet login active" data-key="login">
             <div class="sheet-handle-zone">
               <div class="sheet-handle"></div>
             </div>
-
             <div class="sheet-summary">
               <div class="summary-main">
                 <div class="summary-left">
-                  <div class="title-line">
-                    <h2 class="sheet-title">企業管理登入</h2>
-                  </div>
+                  <h2 class="sheet-title">企業管理登入</h2>
                 </div>
                 <div class="summary-right">
-                  <button class="contact-mini-btn" type="button" data-action-key="contact-service">聯絡客服</button>
+                  <button class="contact-mini-btn" type="button" onclick="showHome()">返回</button>
                 </div>
               </div>
-
               <div class="swipe-hint">
                 <span class="swipe-hint-side left" aria-hidden="true">
                   <svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"></path></svg>
@@ -1615,7 +1423,6 @@
                 </span>
               </div>
             </div>
-
             <div class="sheet-detail">
               <div class="detail-block">
                 <h3 class="detail-title">登入驗證</h3>
@@ -1644,24 +1451,23 @@
             </div>
 
             <div class="sheet-summary">
-              <div class="summary-main">
-                <div class="summary-left">
-                  <div class="title-line">
-                    <h2 class="sheet-title">Basic</h2>
-                    <div class="sheet-tag">基礎方案</div>
+              <div class="sheet-summary-grid">
+                <div class="grid-title">
+                  <h2 class="sheet-title">Basic</h2>
+                </div>
+                <div class="grid-tag">
+                  <div class="sheet-tag">實施方案</div>
+                </div>
+                <div class="grid-pills">
+                  <div class="mini-pills">
+                    <span class="mini-pill">打卡</span>
+                    <span class="mini-pill">排班</span>
+                    <span class="mini-pill">員工資料</span>
                   </div>
                 </div>
-                <div class="summary-right">
-                  <div class="sheet-price">NT$199 <span>/ 月</span></div>
+                <div class="grid-price">
+                  <div class="sheet-price">$199<span>/月</span></div>
                 </div>
-              </div>
-
-              <p class="sheet-sub">基本打卡、排班與員工資料。</p>
-
-              <div class="mini-pills">
-                <span class="mini-pill">打卡</span>
-                <span class="mini-pill">排班</span>
-                <span class="mini-pill">員工資料</span>
               </div>
             </div>
 
@@ -1673,51 +1479,39 @@
                     <h3 class="feature-title">員工資料（Personnel）</h3>
                     <p class="feature-desc">員工資料建立，集中管理核心資訊</p>
                   </div>
-                  <div class="feature-mini">
-                    <span class="feature-badge">員工資料</span>
-                    <span>⚙️</span>
-                  </div>
+                  <div class="feature-mini"><span class="feature-badge">員工資料</span><span>⚙️</span></div>
                 </div>
-
                 <div class="feature-card green">
                   <div class="feature-icon-box">☝️</div>
                   <div class="feature-copy">
                     <h3 class="feature-title">打卡（Attendance）</h3>
                     <p class="feature-desc">NFC / QR / 按鈕備援打卡，本月打卡紀錄</p>
                   </div>
-                  <div class="feature-mini">
-                    <span class="feature-badge">打卡</span>
-                    <span>🕒</span>
-                  </div>
+                  <div class="feature-mini"><span class="feature-badge">打卡</span><span>🕒</span></div>
                 </div>
-
                 <div class="feature-card green">
                   <div class="feature-icon-box">🗓️</div>
                   <div class="feature-copy">
                     <h3 class="feature-title">排班（Schedule）</h3>
                     <p class="feature-desc">基礎排班管理，建立出勤規則</p>
                   </div>
-                  <div class="feature-mini">
-                    <span class="feature-badge">排班</span>
-                    <span>⏱️</span>
-                  </div>
+                  <div class="feature-mini"><span class="feature-badge">排班</span><span>⏱️</span></div>
                 </div>
               </div>
 
               <div class="note">適合單店或小型團隊先建立基本出勤流程。</div>
 
               <div class="inline-form">
-                  <div>
-                    <div class="inline-label">註冊 Email</div>
-                    <input class="inline-input" id="basicSignupEmail" type="email" inputmode="email" autocomplete="email" placeholder="name@company.com" />
-                  </div>
+                <div>
+                  <div class="inline-label">註冊 Email</div>
+                  <input class="inline-input" id="basicSignupEmail" type="email" inputmode="email" autocomplete="email" placeholder="name@company.com" />
                 </div>
-
-                <div class="sheet-action">
-                  <button type="button" data-action-key="plan-email" data-plan="basic">選擇 Basic 並驗證 Email</button>
-                  <button class="google-action" type="button" data-action-key="plan-google" data-plan="basic">選擇 Basic 並使用 Google 驗證</button>
-                  <div id="basicPlanStatus" class="status"></div>
-                </div>
+              </div>
+              <div class="sheet-action">
+                <button type="button" data-action-key="plan-email" data-plan="basic">選擇 Basic 並驗證 Email</button>
+                <button class="google-action" type="button" data-action-key="plan-google" data-plan="basic">選擇 Basic 並使用 Google 驗證</button>
+                <div id="basicPlanStatus" class="status"></div>
+              </div>
             </div>
           </article>
 
@@ -1727,24 +1521,23 @@
             </div>
 
             <div class="sheet-summary">
-              <div class="summary-main">
-                <div class="summary-left">
-                  <div class="title-line">
-                    <h2 class="sheet-title">Plus</h2>
-                    <div class="sheet-tag">推薦</div>
+              <div class="sheet-summary-grid">
+                <div class="grid-title">
+                  <h2 class="sheet-title">Plus</h2>
+                </div>
+                <div class="grid-tag">
+                  <div class="sheet-tag">推薦方案</div>
+                </div>
+                <div class="grid-pills">
+                  <div class="mini-pills">
+                    <span class="mini-pill">請假</span>
+                    <span class="mini-pill">補卡</span>
+                    <span class="mini-pill">審核</span>
                   </div>
                 </div>
-                <div class="summary-right">
-                  <div class="sheet-price">NT$399 <span>/ 月</span></div>
+                <div class="grid-price">
+                  <div class="sheet-price">$399<span>/月</span></div>
                 </div>
-              </div>
-
-              <p class="sheet-sub">請假、補卡、審核與公告。</p>
-
-              <div class="mini-pills">
-                <span class="mini-pill">請假</span>
-                <span class="mini-pill">補卡</span>
-                <span class="mini-pill">審核</span>
               </div>
             </div>
 
@@ -1758,7 +1551,6 @@
                   </div>
                   <div class="feature-mini"><span class="feature-badge">請假</span><span>✅</span></div>
                 </div>
-
                 <div class="feature-card blue">
                   <div class="feature-icon-box">🕘</div>
                   <div class="feature-copy">
@@ -1767,7 +1559,6 @@
                   </div>
                   <div class="feature-mini"><span class="feature-badge">補卡</span><span>🛠️</span></div>
                 </div>
-
                 <div class="feature-card blue">
                   <div class="feature-icon-box">📣</div>
                   <div class="feature-copy">
@@ -1781,17 +1572,16 @@
               <div class="note">適合已經開始正式管理班表與審核流程的公司。</div>
 
               <div class="inline-form">
-                  <div>
-                    <div class="inline-label">註冊 Email</div>
-                    <input class="inline-input" id="plusSignupEmail" type="email" inputmode="email" autocomplete="email" placeholder="name@company.com" />
-                  </div>
+                <div>
+                  <div class="inline-label">註冊 Email</div>
+                  <input class="inline-input" id="plusSignupEmail" type="email" inputmode="email" autocomplete="email" placeholder="name@company.com" />
                 </div>
-
-                <div class="sheet-action">
-                  <button type="button" data-action-key="plan-email" data-plan="plus">選擇 Plus 並驗證 Email</button>
-                  <button class="google-action" type="button" data-action-key="plan-google" data-plan="plus">選擇 Plus 並使用 Google 驗證</button>
-                  <div id="plusPlanStatus" class="status"></div>
-                </div>
+              </div>
+              <div class="sheet-action">
+                <button type="button" data-action-key="plan-email" data-plan="plus">選擇 Plus 並驗證 Email</button>
+                <button class="google-action" type="button" data-action-key="plan-google" data-plan="plus">選擇 Plus 並使用 Google 驗證</button>
+                <div id="plusPlanStatus" class="status"></div>
+              </div>
             </div>
           </article>
 
@@ -1801,24 +1591,23 @@
             </div>
 
             <div class="sheet-summary">
-              <div class="summary-main">
-                <div class="summary-left">
-                  <div class="title-line">
-                    <h2 class="sheet-title">Premium</h2>
-                    <div class="sheet-tag">完整功能</div>
+              <div class="sheet-summary-grid">
+                <div class="grid-title">
+                  <h2 class="sheet-title">Premium</h2>
+                </div>
+                <div class="grid-tag">
+                  <div class="sheet-tag">完整方案</div>
+                </div>
+                <div class="grid-pills">
+                  <div class="mini-pills">
+                    <span class="mini-pill">薪資</span>
+                    <span class="mini-pill">分店</span>
+                    <span class="mini-pill">報表</span>
                   </div>
                 </div>
-                <div class="summary-right">
-                  <div class="sheet-price">NT$699 <span>/ 月</span></div>
+                <div class="grid-price">
+                  <div class="sheet-price">$699<span>/月</span></div>
                 </div>
-              </div>
-
-              <p class="sheet-sub">Premium 獨有的特色功能。</p>
-
-              <div class="mini-pills">
-                <span class="mini-pill">薪資</span>
-                <span class="mini-pill">分店</span>
-                <span class="mini-pill">報表</span>
               </div>
             </div>
 
@@ -1832,7 +1621,6 @@
                   </div>
                   <div class="feature-mini"><span class="feature-badge">薪資</span><span>📊</span></div>
                 </div>
-
                 <div class="feature-card purple">
                   <div class="feature-icon-box">🏬</div>
                   <div class="feature-copy">
@@ -1841,7 +1629,6 @@
                   </div>
                   <div class="feature-mini"><span class="feature-badge">分店</span><span>🔀</span></div>
                 </div>
-
                 <div class="feature-card purple">
                   <div class="feature-icon-box">🛡️</div>
                   <div class="feature-copy">
@@ -1855,17 +1642,16 @@
               <div class="note">適合已經正式營運，需要完整人資、排班、出勤與薪資流程的公司。</div>
 
               <div class="inline-form">
-                  <div>
-                    <div class="inline-label">註冊 Email</div>
-                    <input class="inline-input" id="premiumSignupEmail" type="email" inputmode="email" autocomplete="email" placeholder="name@company.com" />
-                  </div>
+                <div>
+                  <div class="inline-label">註冊 Email</div>
+                  <input class="inline-input" id="premiumSignupEmail" type="email" inputmode="email" autocomplete="email" placeholder="name@company.com" />
                 </div>
-
-                <div class="sheet-action">
-                  <button type="button" data-action-key="plan-email" data-plan="premium">選擇 Premium 並驗證 Email</button>
-                  <button class="google-action" type="button" data-action-key="plan-google" data-plan="premium">選擇 Premium 並使用 Google 驗證</button>
-                  <div id="premiumPlanStatus" class="status"></div>
-                </div>
+              </div>
+              <div class="sheet-action">
+                <button type="button" data-action-key="plan-email" data-plan="premium">選擇 Premium 並驗證 Email</button>
+                <button class="google-action" type="button" data-action-key="plan-google" data-plan="premium">選擇 Premium 並使用 Google 驗證</button>
+                <div id="premiumPlanStatus" class="status"></div>
+              </div>
             </div>
           </article>
         </div>
@@ -1994,7 +1780,6 @@
 
       if (mode === 'bind') {
         setEntryMode('bindMode');
-
         const displayName = APP_STATE.name || APP_STATE.id || '員工帳號';
         setText('bindAvatar',displayName.slice(0,1) || '員');
         setText('bindName',displayName);
@@ -2036,6 +1821,7 @@
 
       if (!message) {
         box.innerText = '';
+        box.classList.remove('show');
         return;
       }
 
@@ -2203,6 +1989,11 @@
             return;
           }
 
+          if (key === 'go-back') {
+            showHome();
+            return;
+          }
+
           if (key === 'admin-email-login') {
             requestAdminEmailLogin();
             return;
@@ -2238,16 +2029,44 @@
       let isDown = false;
       let startX = 0;
       let startY = 0;
-      let scrollLeft = 0;
+      let lockScrollLeft = 0;
       let gestureMode = '';
+
+      function openManagerSheet(){
+        phone.classList.add('expanded');
+      }
+
+      function closeManagerSheet(){
+        phone.classList.remove('expanded');
+      }
+
+      function handleVerticalSwipe(deltaY,deltaX){
+        if (Math.abs(deltaY) < 28) return false;
+        if (Math.abs(deltaY) < Math.abs(deltaX) * 1.05) return false;
+
+        if (deltaY < 0) {
+          openManagerSheet();
+        } else {
+          closeManagerSheet();
+        }
+
+        return true;
+      }
+
+      function clearSwipeLocks(){
+        carousel.classList.remove('dragging');
+        carousel.classList.remove('vertical-swiping');
+        carousel.classList.remove('horizontal-swiping');
+      }
 
       carousel.addEventListener('pointerdown',function(e){
         isDown = true;
         gestureMode = '';
         startX = e.pageX;
         startY = e.pageY;
-        scrollLeft = carousel.scrollLeft;
-        carousel.setPointerCapture(e.pointerId);
+        lockScrollLeft = carousel.scrollLeft;
+
+        try { carousel.setPointerCapture(e.pointerId); } catch(_) {}
       });
 
       carousel.addEventListener('pointermove',function(e){
@@ -2256,49 +2075,110 @@
         const walkX = e.pageX - startX;
         const walkY = e.pageY - startY;
 
-        if (!gestureMode) {
-          if (Math.abs(walkY) > 10 || Math.abs(walkX) > 10) {
-            gestureMode = Math.abs(walkY) > Math.abs(walkX) ? 'vertical' : 'horizontal';
-          }
-        }
-
-        if (gestureMode === 'horizontal') {
-          carousel.classList.add('dragging');
-          carousel.scrollLeft = scrollLeft - walkX;
-          return;
+        if (!gestureMode && (Math.abs(walkY) > 10 || Math.abs(walkX) > 10)) {
+          gestureMode = Math.abs(walkY) > Math.abs(walkX) ? 'vertical' : 'horizontal';
         }
 
         if (gestureMode === 'vertical') {
+          e.preventDefault();
+          carousel.classList.add('vertical-swiping');
+          carousel.classList.remove('horizontal-swiping');
           carousel.classList.remove('dragging');
+          carousel.scrollLeft = lockScrollLeft;
+          return;
         }
-      });
+
+        if (gestureMode === 'horizontal') {
+          e.preventDefault();
+          carousel.classList.add('horizontal-swiping');
+          carousel.classList.add('dragging');
+          carousel.classList.remove('vertical-swiping');
+          carousel.scrollLeft = lockScrollLeft - walkX;
+        }
+      },{passive:false});
 
       carousel.addEventListener('pointerup',function(e){
         if (!isDown) return;
 
         const walkX = e.pageX - startX;
         const walkY = e.pageY - startY;
+        const finalMode = gestureMode || (Math.abs(walkY) > Math.abs(walkX) ? 'vertical' : 'horizontal');
 
         isDown = false;
-        carousel.classList.remove('dragging');
-        gestureMode = gestureMode || (Math.abs(walkY) > Math.abs(walkX) ? 'vertical' : 'horizontal');
+        clearSwipeLocks();
 
         try { carousel.releasePointerCapture(e.pointerId); } catch(_) {}
 
-        if (gestureMode === 'vertical') {
-          if (walkY < -24) phone.classList.add('expanded');
-          if (walkY > 42) phone.classList.remove('expanded');
+        if (finalMode === 'vertical') {
+          carousel.scrollLeft = lockScrollLeft;
+          handleVerticalSwipe(walkY,walkX);
         }
 
-        setTimeout(function(){ detectActiveManagerSheet(true); },90);
+        setTimeout(function(){ detectActiveManagerSheet(true); },120);
       });
 
       carousel.addEventListener('pointercancel',function(){
         isDown = false;
         gestureMode = '';
-        carousel.classList.remove('dragging');
-        setTimeout(function(){ detectActiveManagerSheet(true); },90);
+        clearSwipeLocks();
+        setTimeout(function(){ detectActiveManagerSheet(true); },120);
       });
+
+      let touchStartX = 0;
+      let touchStartY = 0;
+      let touchStartScrollLeft = 0;
+      let touchGestureMode = '';
+
+      carousel.addEventListener('touchstart',function(e){
+        if (!e.touches || !e.touches.length) return;
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+        touchStartScrollLeft = carousel.scrollLeft;
+        touchGestureMode = '';
+      },{passive:true});
+
+      carousel.addEventListener('touchmove',function(e){
+        if (!e.touches || !e.touches.length) return;
+
+        const dx = e.touches[0].clientX - touchStartX;
+        const dy = e.touches[0].clientY - touchStartY;
+
+        if (!touchGestureMode && (Math.abs(dx) > 10 || Math.abs(dy) > 10)) {
+          touchGestureMode = Math.abs(dy) > Math.abs(dx) ? 'vertical' : 'horizontal';
+        }
+
+        if (touchGestureMode === 'vertical') {
+          e.preventDefault();
+          carousel.classList.add('vertical-swiping');
+          carousel.classList.remove('horizontal-swiping');
+          carousel.scrollLeft = touchStartScrollLeft;
+          return;
+        }
+
+        if (touchGestureMode === 'horizontal') {
+          e.preventDefault();
+          carousel.classList.add('horizontal-swiping');
+          carousel.classList.remove('vertical-swiping');
+          carousel.scrollLeft = touchStartScrollLeft - dx;
+        }
+      },{passive:false});
+
+      carousel.addEventListener('touchend',function(e){
+        if (!e.changedTouches || !e.changedTouches.length) return;
+
+        const dx = e.changedTouches[0].clientX - touchStartX;
+        const dy = e.changedTouches[0].clientY - touchStartY;
+        const finalMode = touchGestureMode || (Math.abs(dy) > Math.abs(dx) ? 'vertical' : 'horizontal');
+
+        clearSwipeLocks();
+
+        if (finalMode === 'vertical') {
+          carousel.scrollLeft = touchStartScrollLeft;
+          handleVerticalSwipe(dy,dx);
+        }
+
+        setTimeout(function(){ detectActiveManagerSheet(true); },120);
+      },{passive:true});
     }
 
     function setActiveManagerSheet(key,shouldCenter){
@@ -2308,20 +2188,15 @@
         if (dots[index]) dots[index].classList.toggle('active',active);
 
         if (active && shouldCenter) {
-          /* 保留滑動位置，不強制自動置中 */
+          centerManagerSheet(sheet,'smooth');
         }
       });
     }
 
     function centerManagerSheet(sheet,behavior){
       if (!carousel || !sheet) return;
-
       const targetLeft = sheet.offsetLeft - (carousel.clientWidth - sheet.offsetWidth) / 2;
-
-      carousel.scrollTo({
-        left:Math.max(0,targetLeft),
-        behavior:behavior || 'smooth'
-      });
+      carousel.scrollTo({ left:Math.max(0,targetLeft), behavior:behavior || 'smooth' });
     }
 
     function detectActiveManagerSheet(shouldCenter){
@@ -2389,18 +2264,15 @@
       }
 
       if (browser) {
-        setStatus(statusId,'info','正在開啟安全登入視窗...');
-        browser.open({
-          url:authUrl,
-          presentationStyle:'fullscreen'
-        }).catch(function(err){
-          setStatus(statusId,'error',err && err.message ? err.message : '無法開啟安全登入視窗，請改用 Email 驗證');
+        setStatus(statusId,'info','正在開啟安全驗證視窗...');
+        browser.open({ url:authUrl, windowName:'_blank' }).catch(function(err){
+          setStatus(statusId,'error',err && err.message ? err.message : '無法開啟驗證視窗，請改用 Email 驗證');
         });
         return;
       }
 
       if (isLikelyWebView()) {
-        setStatus(statusId,'error','APP 內不能直接開啟 Google 登入，請改用 Email 驗證或更新 APP');
+        setStatus(statusId,'error','App 內不支援 Google 驗證，請改用上方的「Email 驗證」');
         return;
       }
 
@@ -2411,40 +2283,22 @@
       const companyCode = normalizeCompanyCode(document.getElementById('adminCompanyCode') ? document.getElementById('adminCompanyCode').value : '');
       const adminEmail = String(document.getElementById('adminEmail') ? document.getElementById('adminEmail').value : '').trim();
 
-      if (!companyCode) {
-        setStatus('adminLoginStatus','error','請輸入公司代碼');
-        return;
-      }
-
-      if (!isValidEmail(adminEmail)) {
-        setStatus('adminLoginStatus','error','請輸入正確的管理員 Email');
-        return;
-      }
+      if (!companyCode) { setStatus('adminLoginStatus','error','請輸入公司代碼'); return; }
+      if (!isValidEmail(adminEmail)) { setStatus('adminLoginStatus','error','請輸入正確的管理員 Email'); return; }
 
       setStatus('adminLoginStatus','info','正在送出 Email 驗證...');
 
       if (window.google && google.script && google.script.run) {
         google.script.run
           .withSuccessHandler(function(res){
-            if (!res || !res.ok) {
-              setStatus('adminLoginStatus','error',(res && (res.message || res.msg)) || '驗證送出失敗');
-              return;
-            }
-
+            if (!res || !res.ok) { setStatus('adminLoginStatus','error',(res && (res.message || res.msg)) || '驗證送出失敗'); return; }
             setStatus('adminLoginStatus','success',(res.message || res.msg) || '已送出驗證，請查看 Email');
-
-            if (res.nextUrl) {
-              setTimeout(function(){ window.location.href = res.nextUrl; },650);
-            }
+            if (res.nextUrl) { setTimeout(function(){ window.location.href = res.nextUrl; },650); }
           })
           .withFailureHandler(function(err){
             setStatus('adminLoginStatus','error',err && err.message ? err.message : '連線失敗');
           })
-          .requestAdminLoginEmailVerification({
-            companyCode:companyCode,
-            adminEmail:adminEmail,
-            deviceId:APP_STATE.deviceId
-          });
+          .requestAdminLoginEmailVerification({ companyCode:companyCode, adminEmail:adminEmail, deviceId:APP_STATE.deviceId });
         return;
       }
 
@@ -2454,35 +2308,21 @@
     function requestAdminGoogleLogin(){
       const companyCode = normalizeCompanyCode(document.getElementById('adminCompanyCode') ? document.getElementById('adminCompanyCode').value : '');
 
-      if (!companyCode) {
-        setStatus('adminLoginStatus','error','請先輸入公司代碼');
-        return;
-      }
+      if (!companyCode) { setStatus('adminLoginStatus','error','請先輸入公司代碼'); return; }
 
-      setStatus('adminLoginStatus','info','正在開啟 Google 快速驗證...');
+      setStatus('adminLoginStatus','info','正在啟動 Google 快速驗證...');
 
       if (window.google && google.script && google.script.run) {
         google.script.run
           .withSuccessHandler(function(res){
-            if (!res || !res.ok) {
-              setStatus('adminLoginStatus','error',(res && (res.message || res.msg)) || 'Google 驗證啟動失敗');
-              return;
-            }
-
-            if (res.authUrl || res.nextUrl) {
-              openGoogleAuthUrl(res.authUrl || res.nextUrl,'adminLoginStatus');
-              return;
-            }
-
+            if (!res || !res.ok) { setStatus('adminLoginStatus','error',(res && (res.message || res.msg)) || 'Google 驗證啟動失敗'); return; }
+            if (res.authUrl || res.nextUrl) { openGoogleAuthUrl(res.authUrl || res.nextUrl,'adminLoginStatus'); return; }
             setStatus('adminLoginStatus','success','Google 驗證已啟動');
           })
           .withFailureHandler(function(err){
             setStatus('adminLoginStatus','error',err && err.message ? err.message : '連線失敗');
           })
-          .requestAdminGoogleVerification({
-            companyCode:companyCode,
-            deviceId:APP_STATE.deviceId
-          });
+          .requestAdminGoogleVerification({ companyCode:companyCode, deviceId:APP_STATE.deviceId });
         return;
       }
 
@@ -2499,36 +2339,21 @@
       const statusId = safePlan + 'PlanStatus';
 
       if (!safePlan) return;
-
-      if (!isValidEmail(email)) {
-        setStatus(statusId,'error','請輸入正確的 Email');
-        return;
-      }
+      if (!isValidEmail(email)) { setStatus(statusId,'error','請輸入正確的 Email'); return; }
 
       setStatus(statusId,'info','正在送出註冊驗證...');
 
       if (window.google && google.script && google.script.run) {
         google.script.run
           .withSuccessHandler(function(res){
-            if (!res || !res.ok) {
-              setStatus(statusId,'error',(res && (res.message || res.msg)) || '驗證送出失敗');
-              return;
-            }
-
+            if (!res || !res.ok) { setStatus(statusId,'error',(res && (res.message || res.msg)) || '驗證送出失敗'); return; }
             setStatus(statusId,'success',(res.message || res.msg) || '已送出驗證，請查看 Email');
-
-            if (res.nextUrl) {
-              setTimeout(function(){ window.location.href = res.nextUrl; },650);
-            }
+            if (res.nextUrl) { setTimeout(function(){ window.location.href = res.nextUrl; },650); }
           })
           .withFailureHandler(function(err){
             setStatus(statusId,'error',err && err.message ? err.message : '連線失敗');
           })
-          .requestCompanySignupEmailVerification({
-            plan:safePlan,
-            email:email,
-            deviceId:APP_STATE.deviceId
-          });
+          .requestCompanySignupEmailVerification({ plan:safePlan, email:email, deviceId:APP_STATE.deviceId });
         return;
       }
 
@@ -2546,25 +2371,14 @@
       if (window.google && google.script && google.script.run) {
         google.script.run
           .withSuccessHandler(function(res){
-            if (!res || !res.ok) {
-              setStatus(statusId,'error',(res && (res.message || res.msg)) || 'Google 驗證啟動失敗');
-              return;
-            }
-
-            if (res.authUrl || res.nextUrl) {
-              openGoogleAuthUrl(res.authUrl || res.nextUrl,statusId);
-              return;
-            }
-
+            if (!res || !res.ok) { setStatus(statusId,'error',(res && (res.message || res.msg)) || 'Google 驗證啟動失敗'); return; }
+            if (res.authUrl || res.nextUrl) { openGoogleAuthUrl(res.authUrl || res.nextUrl,statusId); return; }
             setStatus(statusId,'success','Google 驗證已啟動');
           })
           .withFailureHandler(function(err){
             setStatus(statusId,'error',err && err.message ? err.message : '連線失敗');
           })
-          .requestCompanySignupGoogleVerification({
-            plan:safePlan,
-            deviceId:APP_STATE.deviceId
-          });
+          .requestCompanySignupGoogleVerification({ plan:safePlan, deviceId:APP_STATE.deviceId });
         return;
       }
 
