@@ -86,7 +86,7 @@
           <button class="back" type="button" onclick="goBack()">返回</button>
         </div>
         <h1>正式註冊<br>先免費使用</h1>
-        <p class="sub">送出後建立正式公司資料，首期直接免費使用，可選 30 天或 15 天。</p>
+        <p class="sub">這不是建立體驗公司。送出後建立正式公司資料，首期直接免費使用，可選 30 天或 15 天。</p>
         <div class="badge-row">
           <div class="badge"><b id="planName">Basic</b><span>正式方案</span></div>
           <div class="badge"><b id="freeDaysText">30 天</b><span>首期免費</span></div>
@@ -127,7 +127,7 @@
   </main>
 
   <script>
-    const APP_STATE = { deviceId:'', googleSub:'', verifiedEmail:'' };
+    const APP_STATE = { deviceId:'' };
 
     function getRootPath(){
       const path = window.location.pathname || '/';
@@ -170,8 +170,6 @@
         admin_name:String(document.getElementById('adminName').value || '').trim(),
         phone:String(document.getElementById('phone').value || '').trim(),
         device_id:APP_STATE.deviceId,
-        google_sub:APP_STATE.googleSub || '',
-        verified_email:APP_STATE.verifiedEmail || '',
         source:'register_html'
       };
     }
@@ -241,14 +239,8 @@
       document.getElementById('planSelect').value = normalizePlan(params.plan);
       document.getElementById('freeDays').value = String(params.free_days || params.freeDays || '') === '15' ? '15' : '30';
       if (params.email) document.getElementById('adminEmail').value = params.email;
-      APP_STATE.googleSub = params.google_sub || params.googleSub || '';
-      APP_STATE.verifiedEmail = params.email || '';
       syncPlan();
       syncFreeDays();
-      if (APP_STATE.googleSub) {
-        setStatus('success','Google Email 已驗證，請補完公司資料後送出建立。');
-        return;
-      }
       if (params.verify === 'google') submitFreeUse('google');
     }
     window.addEventListener('load', init);
