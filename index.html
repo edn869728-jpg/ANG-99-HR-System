@@ -4,13 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover" />
   <title>ANG HR SYSTEMS｜ENTRY</title>
-  <link rel="preload" as="image" href="https://pub-51476fa95e5148749c1b932e123dc797.r2.dev/ang-entry-bg-day.png?v=20260614-free-use" referrerpolicy="no-referrer" />
-  <link rel="preload" as="image" href="https://pub-51476fa95e5148749c1b932e123dc797.r2.dev/ang-entry-bg-night.png?v=20260614-free-use" referrerpolicy="no-referrer" />
+
+  <link rel="preload" as="image" href="https://pub-51476fa95e5148749c1b932e123dc797.r2.dev/ang-entry-bg-day.png" referrerpolicy="no-referrer" />
+  <link rel="preload" as="image" href="https://pub-51476fa95e5148749c1b932e123dc797.r2.dev/ang-entry-bg-night.png" referrerpolicy="no-referrer" />
+
   <style>
     :root{
       --body-bg:#000000;
-      --day-bg:url("https://pub-51476fa95e5148749c1b932e123dc797.r2.dev/ang-entry-bg-day.png?v=20260614-free-use");
-      --night-bg:url("https://pub-51476fa95e5148749c1b932e123dc797.r2.dev/ang-entry-bg-night.png?v=20260614-free-use");
+      --day-bg:url("https://pub-51476fa95e5148749c1b932e123dc797.r2.dev/ang-entry-bg-day.png");
+      --night-bg:url("https://pub-51476fa95e5148749c1b932e123dc797.r2.dev/ang-entry-bg-night.png");
       --screen-fallback:linear-gradient(180deg,#eef7ff 0%,#dff3ff 45%,#f3e7ff 100%);
       --panel-bg:rgba(255,255,255,.94);
       --panel-border:rgba(226,232,240,.92);
@@ -27,6 +29,9 @@
       --card-bg:rgba(255,255,255,.94);
       --card-border:rgba(226,232,240,.92);
       --line:rgba(148,163,184,.24);
+      --danger:#ef4444;
+      --success:#10b981;
+      --warning:#f59e0b;
       --toggle-bg:rgba(255,255,255,.74);
       --toggle-border:rgba(148,163,184,.34);
       --toggle-thumb-bg:#ffffff;
@@ -69,8 +74,10 @@
       -webkit-font-smoothing:antialiased;
       text-rendering:optimizeLegibility;
     }
-    button,input{font-family:inherit;}
+
+    button,input,select,textarea{font-family:inherit;}
     button{border:none;cursor:pointer;}
+    a{text-decoration:none;color:inherit;}
 
     .phone{
       width:100%;
@@ -82,6 +89,7 @@
       background:var(--screen-fallback);
       box-shadow:0 18px 42px rgba(0,0,0,.28);
     }
+
     .phone::before{
       content:"";
       position:absolute;
@@ -92,8 +100,10 @@
       background-position:center top;
       background-repeat:no-repeat;
     }
+
     body:not([data-theme="dark"]) .phone::before{background-image:var(--day-bg);}
     body[data-theme="dark"] .phone::before{background-image:var(--night-bg);}
+
     .phone::after{
       content:"";
       position:absolute;
@@ -103,6 +113,7 @@
       background:linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(0,0,0,.08) 66%,rgba(0,0,0,.18) 100%);
       opacity:.62;
     }
+
     body:not([data-theme="dark"]) .phone::after{
       background:linear-gradient(180deg,rgba(255,255,255,.03) 0%,rgba(255,255,255,.02) 62%,rgba(15,23,42,.10) 100%);
       opacity:.75;
@@ -130,6 +141,7 @@
       -webkit-appearance:none;
       overflow:hidden;
     }
+
     .theme-toggle::before{
       content:"";
       position:absolute;
@@ -143,15 +155,38 @@
       transform:translateX(var(--toggle-thumb-x));
       transition:transform .25s ease,background .25s ease;
     }
-    .theme-toggle span{position:relative;z-index:1;width:24px;height:24px;display:flex;align-items:center;justify-content:center;color:#94a3b8;pointer-events:none;}
-    .theme-toggle svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round;}
+
+    .theme-toggle span{
+      position:relative;
+      z-index:1;
+      width:24px;
+      height:24px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#94a3b8;
+      pointer-events:none;
+      font-size:14px;
+      font-weight:1000;
+    }
+
     body:not([data-theme="dark"]) .theme-toggle .sun{color:#0f172a;}
     body[data-theme="dark"] .theme-toggle .moon{color:#fff;filter:drop-shadow(0 0 5px rgba(255,255,255,.32));}
 
-    .view{position:absolute;inset:0;z-index:5;display:none;flex-direction:column;}
+    .view{
+      position:absolute;
+      inset:0;
+      z-index:5;
+      display:none;
+      flex-direction:column;
+    }
+
     .view.active{display:flex;}
-    .top-space{flex:1;min-height:360px;transition:opacity .42s var(--ease),transform .42s var(--ease);}
-    .phone.expanded .top-space{opacity:.38;transform:translateY(-24px) scale(.96);}
+
+    .top-space{
+      flex:1;
+      min-height:360px;
+    }
 
     .panel{
       position:relative;
@@ -168,9 +203,44 @@
       backdrop-filter:blur(24px);
       -webkit-backdrop-filter:blur(24px);
     }
+
     body[data-theme="dark"] .panel{box-shadow:none;}
-    .home-title{margin:0 0 16px;text-align:center;font-size:26px;line-height:1.18;font-weight:1000;letter-spacing:.015em;}
-    .help-text{margin:10px 0 0;color:var(--muted-text);text-align:center;font-size:14px;line-height:1.55;font-weight:850;letter-spacing:.02em;}
+
+    .home-title{
+      margin:0 0 16px;
+      text-align:center;
+      font-size:26px;
+      line-height:1.18;
+      font-weight:1000;
+      letter-spacing:.015em;
+    }
+
+    .page-title{
+      margin:0 0 8px;
+      font-size:25px;
+      line-height:1.16;
+      font-weight:1000;
+      letter-spacing:.015em;
+    }
+
+    .page-sub{
+      margin:0 0 16px;
+      color:var(--muted-text);
+      font-size:14px;
+      line-height:1.55;
+      font-weight:850;
+    }
+
+    .help-text{
+      margin:10px 0 0;
+      color:var(--muted-text);
+      text-align:center;
+      font-size:14px;
+      line-height:1.55;
+      font-weight:850;
+      letter-spacing:.02em;
+    }
+
     .spacer{flex:1;min-height:12px;}
 
     .btn{
@@ -194,435 +264,1213 @@
       -webkit-user-select:none;
       transition:transform .18s ease,background .25s ease,color .25s ease,border-color .25s ease,box-shadow .25s ease;
     }
-    .btn:active{transform:scale(.98);}
-    .btn-primary{margin-top:14px;background:var(--primary-bg);color:#fff!important;box-shadow:var(--primary-shadow);text-shadow:0 1px 2px rgba(0,0,0,.18);}
-    .btn-secondary{background:var(--secondary-bg);color:var(--secondary-text)!important;border:1px solid var(--secondary-border)!important;box-shadow:0 10px 22px rgba(30,41,59,.10)!important;text-shadow:none!important;}
-    body[data-theme="dark"] .btn-secondary{text-shadow:0 1px 3px rgba(0,0,0,.45)!important;}
-    .btn-icon{width:1.35em;height:1.35em;flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;font-size:1.05em;line-height:1;transform:translateY(-.5px);}
-    .google .btn-icon{width:1.65em;height:1.65em;border-radius:999px;background:rgba(255,255,255,.95);color:#111827;font-family:Arial,sans-serif;font-size:.86em;font-weight:1000;box-shadow:0 3px 10px rgba(15,23,42,.12);}
 
-    .quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;}
-    .quick-link{
-      min-height:42px;
+    .btn:active{transform:scale(.98);}
+
+    .btn-primary{
+      margin-top:14px;
+      background:var(--primary-bg);
+      color:#fff!important;
+      box-shadow:var(--primary-shadow);
+      text-shadow:0 1px 2px rgba(0,0,0,.18);
+    }
+
+    .btn-secondary{
+      background:var(--secondary-bg);
+      color:var(--secondary-text)!important;
+      border:1px solid var(--secondary-border)!important;
+      box-shadow:0 10px 22px rgba(30,41,59,.10)!important;
+      text-shadow:none!important;
+    }
+
+    body[data-theme="dark"] .btn-secondary{text-shadow:0 1px 3px rgba(0,0,0,.45)!important;}
+
+    .btn-ghost{
+      min-height:46px;
+      border-radius:15px;
+      font-size:14px;
+      color:var(--muted-text);
+      background:transparent;
+      border:1px solid var(--line);
+      box-shadow:none;
+    }
+
+    .btn-small{
+      min-height:44px;
+      padding:10px 12px;
+      font-size:14px;
       border-radius:14px;
-      border:1px solid var(--secondary-border);
-      background:rgba(255,255,255,.72);
-      color:#1e1b4b;
-      font-size:13px;
+    }
+
+    .btn-icon{
+      width:1.35em;
+      height:1.35em;
+      flex:0 0 auto;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      font-size:1.05em;
+      line-height:1;
+      transform:translateY(-.5px);
+    }
+
+    .brand-mark{
+      position:absolute;
+      left:16px;
+      top:calc(14px + env(safe-area-inset-top));
+      z-index:40;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      color:#fff;
+      text-shadow:0 2px 10px rgba(0,0,0,.25);
       font-weight:1000;
-      letter-spacing:.01em;
+      letter-spacing:.03em;
+      pointer-events:none;
+    }
+
+    body:not([data-theme="dark"]) .brand-mark{
+      color:#0f172a;
+      text-shadow:0 2px 10px rgba(255,255,255,.8);
+    }
+
+    .brand-box{
+      width:38px;
+      height:38px;
+      border-radius:14px;
+      background:linear-gradient(135deg,rgba(0,217,255,.92),rgba(124,60,255,.92),rgba(176,0,255,.92));
+      color:#fff;
       display:flex;
       align-items:center;
       justify-content:center;
-      text-decoration:none;
+      font-size:13px;
+      font-weight:1000;
+      box-shadow:0 10px 24px rgba(15,23,42,.18);
+    }
+
+    .brand-text{
+      display:flex;
+      flex-direction:column;
+      line-height:1.05;
+    }
+
+    .brand-text b{font-size:13px;}
+    .brand-text span{font-size:10px;opacity:.78;margin-top:3px;}
+
+    .content{
+      position:relative;
+      z-index:8;
+      height:100%;
+      overflow-y:auto;
+      -webkit-overflow-scrolling:touch;
+      padding:72px 18px calc(24px + env(safe-area-inset-bottom));
+      scrollbar-width:none;
+    }
+
+    .content::-webkit-scrollbar{display:none;}
+
+    .card{
+      background:var(--card-bg);
+      border:1px solid var(--card-border);
+      border-radius:24px;
+      box-shadow:0 12px 28px rgba(15,23,42,.10);
+      backdrop-filter:blur(24px);
+      -webkit-backdrop-filter:blur(24px);
+      padding:18px;
+      margin-bottom:14px;
+    }
+
+    body[data-theme="dark"] .card{
+      box-shadow:0 12px 28px rgba(0,0,0,.20);
+    }
+
+    .card-title{
+      margin:0 0 8px;
+      font-size:18px;
+      line-height:1.2;
+      font-weight:1000;
+      color:var(--main-text);
+    }
+
+    .card-sub{
+      margin:0;
+      font-size:13px;
+      line-height:1.5;
+      color:var(--muted-text);
+      font-weight:850;
+    }
+
+    .grid-2{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+
+    .form-grid{
+      display:grid;
+      gap:12px;
+    }
+
+    .field label{
+      display:block;
+      margin:0 0 7px;
+      font-size:13px;
+      color:var(--muted-text);
+      font-weight:1000;
+    }
+
+    .field input,.field select,.field textarea{
+      width:100%;
+      border:1px solid var(--input-border);
+      background:var(--input-bg);
+      color:var(--main-text);
+      outline:none;
+      border-radius:16px;
+      padding:13px 14px;
+      font-size:15px;
+      font-weight:900;
+      line-height:1.2;
+      box-shadow:none;
+    }
+
+    .field textarea{
+      min-height:82px;
+      resize:vertical;
+      line-height:1.5;
+    }
+
+    .field input::placeholder,.field textarea::placeholder{color:var(--soft-text);}
+
+    .field-note{
+      margin-top:6px;
+      font-size:12px;
+      color:var(--soft-text);
+      font-weight:800;
+      line-height:1.4;
+    }
+
+    .error{
+      margin-top:6px;
+      display:none;
+      color:var(--danger);
+      font-size:12px;
+      line-height:1.35;
+      font-weight:1000;
+    }
+
+    .field.invalid .error{display:block;}
+    .field.invalid input,.field.invalid select,.field.invalid textarea{border-color:rgba(239,68,68,.9)!important;}
+
+    .pill-row{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:10px;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:34px;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.52);
+      color:var(--muted-text);
+      font-size:12px;
+      font-weight:1000;
+    }
+
+    body[data-theme="dark"] .pill{background:rgba(255,255,255,.06);}
+
+    .plan-carousel{
+      display:flex;
+      gap:12px;
+      overflow-x:auto;
+      scroll-snap-type:x mandatory;
+      -webkit-overflow-scrolling:touch;
+      padding:4px 2px 10px;
+      margin:0 -2px;
+      scrollbar-width:none;
+    }
+
+    .plan-carousel::-webkit-scrollbar{display:none;}
+
+    .plan-card{
+      flex:0 0 284px;
+      scroll-snap-align:center;
+      padding:18px;
+      border-radius:24px;
+      border:1px solid var(--card-border);
+      background:var(--card-bg);
+      backdrop-filter:blur(24px);
+      -webkit-backdrop-filter:blur(24px);
+      box-shadow:0 12px 28px rgba(15,23,42,.10);
+    }
+
+    .plan-head{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:12px;
+    }
+
+    .plan-name{
+      font-size:28px;
+      line-height:1;
+      font-weight:1000;
+      letter-spacing:-.02em;
+      color:var(--main-text);
+    }
+
+    .plan-price{
+      text-align:right;
+      color:var(--muted-text);
+      font-weight:1000;
+      font-size:13px;
+      line-height:1.35;
+      white-space:nowrap;
+    }
+
+    .plan-price b{
+      color:var(--main-text);
+      font-size:17px;
+    }
+
+    .feature-list{
+      display:grid;
+      gap:8px;
+      margin:12px 0 0;
+      padding:0;
+      list-style:none;
+    }
+
+    .feature-list li{
+      color:var(--muted-text);
+      font-size:13px;
+      line-height:1.45;
+      font-weight:850;
+      padding-left:18px;
+      position:relative;
+    }
+
+    .feature-list li::before{
+      content:"";
+      position:absolute;
+      left:0;
+      top:.55em;
+      width:7px;
+      height:7px;
+      border-radius:50%;
+      background:linear-gradient(90deg,#00d9ff,#7c3cff);
+      transform:translateY(-50%);
+    }
+
+    .verification-tabs{
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr;
+      gap:8px;
+      margin-bottom:14px;
+    }
+
+    .verify-tab{
+      min-height:44px;
+      border-radius:15px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.52);
+      color:var(--muted-text);
+      font-size:13px;
+      font-weight:1000;
+    }
+
+    body[data-theme="dark"] .verify-tab{background:rgba(255,255,255,.06);}
+
+    .verify-tab.active{
+      background:var(--primary-bg);
+      color:#fff;
+      border-color:transparent;
+      box-shadow:var(--primary-shadow);
+    }
+
+    .verify-box{display:none;}
+    .verify-box.active{display:block;}
+
+    .status-box{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.48);
+      border-radius:18px;
+      padding:12px 14px;
+      margin:12px 0 0;
+      color:var(--muted-text);
+      font-size:13px;
+      line-height:1.55;
+      font-weight:900;
+    }
+
+    body[data-theme="dark"] .status-box{background:rgba(255,255,255,.06);}
+
+    .status-box.success{
+      color:#047857;
+      border-color:rgba(16,185,129,.35);
+      background:rgba(16,185,129,.12);
+    }
+
+    body[data-theme="dark"] .status-box.success{color:#86efac;}
+
+    .summary-list{
+      display:grid;
+      gap:10px;
+      margin-top:12px;
+    }
+
+    .summary-row{
+      display:grid;
+      grid-template-columns:92px 1fr;
+      gap:10px;
+      padding:11px 12px;
+      border-radius:16px;
+      background:rgba(255,255,255,.48);
+      border:1px solid var(--line);
+      font-size:13px;
+      line-height:1.45;
+    }
+
+    body[data-theme="dark"] .summary-row{background:rgba(255,255,255,.06);}
+
+    .summary-row b{
+      color:var(--muted-text);
+      font-weight:1000;
+    }
+
+    .summary-row span{
+      color:var(--main-text);
+      font-weight:950;
+      word-break:break-word;
+    }
+
+    .back-row{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:10px;
+      margin-top:12px;
+    }
+
+    .toast{
+      position:absolute;
+      left:18px;
+      right:18px;
+      bottom:calc(18px + env(safe-area-inset-bottom));
+      z-index:80;
+      min-height:44px;
+      padding:12px 14px;
+      border-radius:16px;
+      background:rgba(15,23,42,.92);
+      color:#fff;
+      font-size:13px;
+      line-height:1.45;
+      font-weight:1000;
+      display:none;
+      align-items:center;
+      justify-content:center;
       text-align:center;
-      padding:8px 10px;
-      backdrop-filter:blur(12px);
-      -webkit-backdrop-filter:blur(12px);
+      box-shadow:0 14px 32px rgba(0,0,0,.24);
+      backdrop-filter:blur(16px);
+      -webkit-backdrop-filter:blur(16px);
     }
-    body[data-theme="dark"] .quick-link{background:rgba(255,255,255,.07);color:#fff;border-color:rgba(255,255,255,.14);}
 
-    .sheet-stage{position:absolute;left:0;right:0;bottom:0;z-index:8;height:196px;max-height:88vh;overflow:visible;transition:height .58s var(--ease);}
-    .phone.expanded .sheet-stage{height:84vh;}
-    .sheet-carousel{width:100%;height:100%;display:flex;gap:14px;overflow-x:auto;overflow-y:visible;scroll-snap-type:x mandatory;scroll-padding-left:calc((100% - 358px) / 2);scroll-padding-right:calc((100% - 358px) / 2);padding-left:calc((100% - 358px) / 2);padding-right:calc((100% - 358px) / 2);-webkit-overflow-scrolling:touch;touch-action:pan-x;overscroll-behavior-x:contain;overscroll-behavior-y:none;scroll-behavior:smooth;scrollbar-width:none;}
-    .sheet-carousel::-webkit-scrollbar{display:none;}
-    .plan-sheet{flex:0 0 auto;width:358px;height:100%;scroll-snap-align:center;border-radius:30px 30px 0 0;background:var(--card-bg);border:1px solid var(--card-border);border-bottom:0;box-shadow:0 -14px 34px rgba(15,23,42,.10);backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px);overflow:hidden;display:flex;flex-direction:column;opacity:.58;transform:scale(.94) translateY(14px);transition:opacity .28s var(--ease),transform .28s var(--ease),box-shadow .28s var(--ease);position:relative;touch-action:pan-x;}
-    .plan-sheet.active{opacity:1;transform:scale(1) translateY(0);box-shadow:0 -18px 46px rgba(15,23,42,.15);}
-    body[data-theme="dark"] .plan-sheet.active{box-shadow:0 -18px 46px rgba(0,0,0,.24);}
-    .sheet-handle-zone{width:100%;padding:12px 0 8px;display:flex;justify-content:center;flex:0 0 auto;position:relative;z-index:2;pointer-events:none;}
-    .sheet-handle{width:44px;height:5px;border-radius:999px;background:rgba(100,116,139,.34);}
-    body[data-theme="dark"] .sheet-handle{background:rgba(255,255,255,.20);}
-    .sheet-summary{position:relative;z-index:2;padding:10px 22px 12px;flex:0 0 auto;}
-    .phone:not(.expanded) .sheet-stage::after{content:"往上滑開啟";position:absolute;left:50%;top:-26px;transform:translateX(-50%);display:block;color:var(--muted-text);font-size:14px;line-height:1.2;font-weight:900;letter-spacing:.04em;text-align:center;opacity:.78;animation:hintBounce 1.5s ease-in-out infinite;z-index:10;white-space:nowrap;pointer-events:none;}
-    @keyframes hintBounce{0%,100%{transform:translateX(-50%) translateY(0);}50%{transform:translateX(-50%) translateY(-6px);}}
-    .summary-main{display:flex;justify-content:space-between;align-items:center;gap:14px;}
-    .sheet-title{margin:0;color:var(--main-text);font-size:34px;line-height:1.05;font-weight:1000;letter-spacing:-.02em;text-shadow:0 1px 2px rgba(0,0,0,.20);}
-    .login .sheet-title{font-size:26px;line-height:1.12;letter-spacing:.01em;max-width:210px;}
-    .sheet-summary-grid{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;gap:14px 12px;align-items:center;}
-    .grid-title{grid-area:1/1/2/2;}.grid-tag{grid-area:1/2/2/3;justify-self:end;}.grid-pills{grid-area:2/1/3/2;}.grid-price{grid-area:2/2/3/3;justify-self:end;}
-    .sheet-tag{display:inline-flex;padding:7px 11px;border-radius:999px;background:rgba(128,137,255,.18);color:#233876;font-size:12px;line-height:1;font-weight:1000;white-space:nowrap;border:1px solid rgba(128,137,255,.24);}
-    body[data-theme="dark"] .sheet-tag{color:#e5e7eb;background:rgba(255,255,255,.08);}
-    .sheet-price{font-size:28px;line-height:1;font-weight:1000;letter-spacing:-.03em;display:flex;align-items:baseline;gap:4px;}
-    .sheet-price span{font-size:15px;font-weight:900;letter-spacing:0;}
-    .mini-pills{display:flex;gap:7px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px;}
-    .mini-pills::-webkit-scrollbar{display:none;}
-    .mini-pill{flex:0 0 auto;padding:6px 10px;border-radius:999px;background:linear-gradient(90deg,rgba(128,137,255,0.14),rgba(236,72,153,0.04));border:1px solid rgba(128,137,255,0.24);color:#0f172a;font-size:12px;font-weight:900;letter-spacing:.02em;line-height:1;}
-    body[data-theme="dark"] .mini-pill{background:linear-gradient(90deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02));border:1px solid rgba(255,255,255,0.12);color:#e5e7eb;}
-    .contact-mini-btn{min-width:74px;height:40px;border-radius:999px;padding:7px 14px;font-size:15px;font-weight:1000;background:var(--secondary-bg);color:var(--secondary-text);border:1px solid var(--secondary-border);display:inline-flex;align-items:center;justify-content:center;}
-    .sheet-detail{position:relative;z-index:2;flex:1;min-height:0;overflow-y:auto;padding:0 20px calc(24px + env(safe-area-inset-bottom));opacity:0;transform:translateY(12px);pointer-events:none;transition:opacity .28s var(--ease),transform .28s var(--ease);scrollbar-width:none;}
-    .sheet-detail::-webkit-scrollbar{display:none;}
-    .phone.expanded .plan-sheet.active .sheet-detail{opacity:1;transform:translateY(0);pointer-events:auto;touch-action:pan-y;}
-    .detail-block{margin-top:10px;padding-top:16px;border-top:1px solid var(--line);}
-    .detail-title{margin:0 0 12px;font-size:16px;line-height:1.2;font-weight:1000;}
-    .note{margin-top:18px;color:var(--muted-text);font-size:14px;line-height:1.55;font-weight:850;border-top:1px solid var(--line);padding-top:16px;}
-    .inline-form{display:grid;gap:12px;margin-top:14px;}
-    .inline-label{margin-bottom:6px;color:var(--main-text);font-size:13px;line-height:1.25;font-weight:1000;letter-spacing:.02em;}
-    .inline-input{width:100%;min-height:50px;border-radius:16px;padding:12px 14px;background:var(--input-bg);border:1px solid var(--input-border);color:var(--main-text);font-size:16px;font-weight:950;letter-spacing:0;text-transform:none;outline:none;}
-    .inline-input:focus{border-color:rgba(124,60,255,.62);box-shadow:0 0 0 4px rgba(124,60,255,.13);}
-    .inline-input::placeholder{color:var(--muted-text);opacity:.76;font-size:14px;font-weight:850;}
-    .sheet-action{width:100%;margin-top:18px;padding-top:16px;border-top:1px solid var(--line);display:none;opacity:0;transform:translateY(10px);transition:opacity .24s var(--ease),transform .24s var(--ease);}
-    .phone.expanded .plan-sheet.active .sheet-action{display:block;opacity:1;transform:translateY(0);}
-    .sheet-action button{width:100%;min-height:56px;border-radius:18px;background:var(--primary-bg);color:#fff!important;font-size:16px;line-height:1.28;font-weight:1000;letter-spacing:.015em;box-shadow:var(--primary-shadow);padding:14px 16px;display:flex;align-items:center;justify-content:center;gap:9px;text-shadow:0 1px 2px rgba(0,0,0,.18);}
-    .sheet-action .google-action{margin-top:10px;background:#ffffff!important;color:#111827!important;border:1px solid rgba(148,163,184,.42)!important;box-shadow:none!important;text-shadow:none!important;}
-    .feature-stack{display:grid;gap:12px;margin:0 0 18px;}
-    .feature-card{display:grid;grid-template-columns:58px minmax(0,1fr) auto;gap:12px;align-items:center;min-height:82px;padding:13px;border-radius:18px;background:rgba(255,255,255,.12);border:1px solid rgba(128,137,255,.14);box-shadow:0 8px 20px rgba(15,23,42,.08);}
-    body[data-theme="dark"] .feature-card{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12);box-shadow:0 8px 20px rgba(0,0,0,.12);}
-    .feature-icon-box{width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:27px;font-weight:1000;background:rgba(255,255,255,.12);}
-    .feature-title{margin:0;font-size:16px;line-height:1.22;font-weight:1000;}
-    .feature-desc{margin:5px 0 0;color:var(--muted-text);font-size:13px;line-height:1.42;font-weight:850;}
-    .feature-mini{display:flex;flex-direction:column;align-items:flex-end;gap:14px;font-size:20px;font-weight:1000;}
-    .feature-badge{display:inline-flex;min-height:26px;align-items:center;justify-content:center;border-radius:999px;padding:5px 9px;background:rgba(128,137,255,.13);color:#334155;font-size:12px;line-height:1;font-weight:1000;white-space:nowrap;}
-    body[data-theme="dark"] .feature-badge{color:#e5e7eb;background:rgba(255,255,255,.08);}
-    .swipe-hint{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;width:100%;margin-top:14px;column-gap:10px;color:#8089ff;}
-    .swipe-hint-side{display:flex;align-items:flex-end;gap:2px;color:#8089ff;}
-    .swipe-hint-side.left{justify-content:flex-end;animation:swipeHintLeft 1.2s ease-in-out infinite;}
-    .swipe-hint-side.right{justify-content:flex-start;animation:swipeHintLeft 1.2s ease-in-out infinite;}
-    .swipe-hint-side svg{width:16px;height:16px;display:block;stroke:currentColor;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;}
-    @keyframes swipeHintLeft{0%,100%{opacity:.40;transform:translateX(3px)}50%{opacity:1;transform:translateX(-2px)}}
-    .swipe-hint-text{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;text-align:center;}
-    .swipe-hint-main{font-size:14px;line-height:1.35;font-weight:1000;white-space:nowrap;}
-    .swipe-hint-plan{font-size:13px;line-height:1.25;font-weight:1000;white-space:nowrap;}
-    .route-note{margin-top:14px;padding:12px;border-radius:16px;background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.18);color:var(--muted-text);font-size:13px;line-height:1.5;font-weight:850;}
+    .toast.show{display:flex;}
 
-    @media (max-width:430px){
-      body{align-items:stretch;}
-      .phone{max-width:none;height:100vh;border-radius:0;}
-      .top-space{min-height:372px;}
-      .panel{padding:26px 22px calc(24px + env(safe-area-inset-bottom));}
-      .sheet-carousel{scroll-padding-left:calc((100% - 342px) / 2);scroll-padding-right:calc((100% - 342px) / 2);padding-left:calc((100% - 342px) / 2);padding-right:calc((100% - 342px) / 2);}
-      .plan-sheet{width:342px;}
-      .sheet-title{font-size:32px;}
-      .login .sheet-title{font-size:25px;}
-      .sheet-price{font-size:27px;}
-      .quick-grid{grid-template-columns:1fr 1fr;}
-    }
-    @media (max-width:370px){
-      .home-title{font-size:24px;}
-      .btn{min-height:56px;font-size:17px;padding-left:14px;padding-right:14px;}
-      .quick-link{font-size:12px;padding:8px 6px;}
-      .feature-card{grid-template-columns:52px minmax(0,1fr);}
-      .feature-mini{grid-column:1 / -1;flex-direction:row;justify-content:space-between;align-items:center;gap:10px;}
-    }
-    @media (max-height:700px){
-      .top-space{min-height:320px;}
-      .panel{min-height:258px;padding:22px 22px calc(20px + env(safe-area-inset-bottom));}
-      .sheet-stage{height:188px;}
-      .phone.expanded .sheet-stage{height:86vh;}
+    .hidden{display:none!important;}
+
+    @media (max-width:420px){
+      .phone{
+        max-width:none;
+        height:100vh;
+        border-radius:0;
+      }
+
+      .home-title{
+        font-size:25px;
+      }
+
+      .page-title{
+        font-size:24px;
+      }
+
+      .panel{
+        padding-left:22px;
+        padding-right:22px;
+      }
+
+      .content{
+        padding-left:14px;
+        padding-right:14px;
+      }
+
+      .plan-card{
+        flex-basis:calc(100vw - 56px);
+      }
+
+      .grid-2{
+        grid-template-columns:1fr;
+      }
     }
   </style>
 </head>
 
-<body data-theme="dark">
-  <main class="phone" id="phone">
-    <button class="theme-toggle" type="button" aria-label="切換日光與暗夜模式" aria-pressed="true" onclick="toggleTheme()">
-      <span class="sun" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2.2M12 19.8V22M4.93 4.93l1.56 1.56M17.51 17.51l1.56 1.56M2 12h2.2M19.8 12H22M4.93 19.07l1.56-1.56M17.51 6.49l1.56-1.56"></path></svg></span>
-      <span class="moon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 14.2A8.6 8.6 0 0 1 9.8 3a7.5 7.5 0 1 0 11.2 11.2z"></path></svg></span>
+<body>
+  <div class="phone" id="phone">
+    <div class="brand-mark">
+      <div class="brand-box">ANG</div>
+      <div class="brand-text">
+        <b>ANG HR SYSTEMS</b>
+        <span>Human Resource Engine</span>
+      </div>
+    </div>
+
+    <button class="theme-toggle" type="button" onclick="toggleTheme()" aria-label="切換日夜模式">
+      <span class="sun">☀</span>
+      <span class="moon">☾</span>
     </button>
 
-    <section id="homeView" class="view active">
+    <section class="view active" id="view-home">
       <div class="top-space"></div>
       <div class="panel">
-        <h1 class="home-title">歡迎登入系統</h1>
-        <button class="btn btn-primary" type="button" onclick="goEmployeeBind()"><span class="btn-icon">👥</span><span>員工專區</span></button>
-        <div class="help-text">員工登入 / 一次性開通 / 設備綁定</div>
+        <h1 class="home-title">ANG HR SYSTEMS</h1>
+        <button class="btn btn-primary" type="button" onclick="openEmployeeArea()">
+          <span class="btn-icon">👤</span>
+          員工專區
+        </button>
+        <button class="btn btn-secondary" type="button" onclick="goView('business')">
+          <span class="btn-icon">🏢</span>
+          企業管理與註冊
+        </button>
         <div class="spacer"></div>
-        <button class="btn btn-secondary" type="button" onclick="showManagerEntry()"><span class="btn-icon">🏢</span><span>企業管理與註冊</span></button>
-        <div class="quick-grid" aria-label="系統快捷入口">
-          <a class="quick-link" href="register.html?plan=basic&amp;free_days=30">免費使用</a>
-          <a class="quick-link" href="admin.html">管理中心</a>
-          <a class="quick-link" href="platform_admin.html">ANG8963</a>
-          <a class="quick-link" href="nfc_admin.html">NFC 設定</a>
-          <a class="quick-link" href="nfc_clock.html">NFC 打卡</a>
-          <a class="quick-link" href="login.html?tab=login&amp;role=admin">管理登入</a>
+        <p class="help-text">員工請從員工專區進入；企業端請從企業管理與註冊開始。</p>
+      </div>
+    </section>
+
+    <section class="view" id="view-employee">
+      <div class="content">
+        <div class="card">
+          <h2 class="page-title">員工專區</h2>
+          <p class="page-sub">第一次使用請輸入公司提供的一次性開通碼，完成後此設備會綁定員工帳號。</p>
+
+          <div class="form-grid">
+            <div class="field" id="fieldEmployeeCode">
+              <label for="employeeCode">一次性開通碼</label>
+              <input id="employeeCode" type="text" autocomplete="one-time-code" placeholder="請輸入公司提供的開通碼" />
+              <div class="error">請輸入一次性開通碼。</div>
+            </div>
+
+            <button class="btn btn-primary" type="button" onclick="submitEmployeeCode()">確認綁定此設備</button>
+            <button class="btn btn-secondary" type="button" onclick="scanEmployeeQr()">掃描 QR Code 開通</button>
+            <button class="btn btn-ghost" type="button" onclick="goView('home')">返回首頁</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 class="card-title">設備更換提醒</h3>
+          <p class="card-sub">換手機或手機遺失時，請聯絡管理員重發開通碼。新設備完成開通後，舊設備登入資料會失效。</p>
         </div>
       </div>
     </section>
 
-    <section id="managerEntryView" class="view">
-      <div class="top-space"></div>
-      <section class="sheet-stage">
-        <div class="sheet-carousel" id="sheetCarousel">
-          <article class="plan-sheet login active" data-key="login">
-            <div class="sheet-handle-zone"><div class="sheet-handle"></div></div>
-            <div class="sheet-summary">
-              <div class="summary-main">
-                <h2 class="sheet-title">企業管理登入</h2>
-                <button class="contact-mini-btn" type="button" onclick="showHome()">返回</button>
-              </div>
-              <div class="swipe-hint">
-                <span class="swipe-hint-side left" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"></path></svg><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"></path></svg></span>
-                <span class="swipe-hint-text"><span class="swipe-hint-main">左右滑動 查看各方案內容</span><span class="swipe-hint-plan">Basic / Plus / Premium</span></span>
-                <span class="swipe-hint-side right" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"></path></svg><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"></path></svg></span>
-              </div>
-            </div>
-            <div class="sheet-detail">
-              <div class="detail-block">
-                <h3 class="detail-title">登入驗證</h3>
-                <div class="inline-form">
-                  <div><div class="inline-label">公司代碼</div><input class="inline-input" id="adminCompanyCode" type="text" inputmode="text" autocomplete="organization" placeholder="例如 ANG0603" /></div>
-                  <div><div class="inline-label">管理員 Email</div><input class="inline-input" id="adminEmail" type="email" inputmode="email" autocomplete="email" placeholder="name@company.com" /></div>
-                </div>
-              </div>
-              <div class="sheet-action">
-                <button type="button" onclick="goAdminLogin('email')"><span class="btn-icon">✉️</span><span>驗證 Email 並登入後台</span></button>
-                <button class="google-action google" type="button" onclick="goAdminLogin('google')"><span class="btn-icon">G</span><span>Google 快速驗證</span></button>
-                <div class="route-note">正式入口：login.html?tab=login&amp;role=admin</div>
-              </div>
-            </div>
-          </article>
+    <section class="view" id="view-business">
+      <div class="content">
+        <div class="card">
+          <h2 class="page-title">企業管理與註冊</h2>
+          <p class="page-sub">既有企業可登入管理端；新企業請先選擇方案，再完成 Email、Google 或 LINE 擇一驗證。</p>
 
-          <article class="plan-sheet basic" data-key="basic">
-            <div class="sheet-handle-zone"><div class="sheet-handle"></div></div>
-            <div class="sheet-summary"><div class="sheet-summary-grid"><div class="grid-title"><h2 class="sheet-title">Basic</h2></div><div class="grid-tag"><div class="sheet-tag">實施方案</div></div><div class="grid-pills"><div class="mini-pills"><span class="mini-pill">打卡</span><span class="mini-pill">排班</span><span class="mini-pill">員工資料</span></div></div><div class="grid-price"><div class="sheet-price">$199<span>/月</span></div></div></div></div>
-            <div class="sheet-detail">
-              <div class="feature-stack">
-                <div class="feature-card"><div class="feature-icon-box">👤</div><div><h3 class="feature-title">員工資料</h3><p class="feature-desc">員工資料建立，集中管理核心資訊</p></div><div class="feature-mini"><span class="feature-badge">資料</span><span>⚙️</span></div></div>
-                <div class="feature-card"><div class="feature-icon-box">☝️</div><div><h3 class="feature-title">打卡</h3><p class="feature-desc">NFC / QR / 按鈕備援打卡</p></div><div class="feature-mini"><span class="feature-badge">打卡</span><span>🕒</span></div></div>
-                <div class="feature-card"><div class="feature-icon-box">🗓️</div><div><h3 class="feature-title">排班</h3><p class="feature-desc">基礎排班管理，建立出勤規則</p></div><div class="feature-mini"><span class="feature-badge">排班</span><span>⏱️</span></div></div>
-              </div>
-              <div class="note">建立正式公司後先免費使用 30 天；也可在註冊頁改成 15 天。</div>
-              <div class="inline-form"><div><div class="inline-label">註冊 Email</div><input class="inline-input" id="basicSignupEmail" type="email" inputmode="email" autocomplete="email" placeholder="name@company.com" /></div></div>
-              <div class="sheet-action">
-                <button type="button" onclick="goFreeUse('basic','email')"><span class="btn-icon">✉️</span><span>選擇 Basic｜免費使用 30 天</span></button>
-                <button class="google-action google" type="button" onclick="goFreeUse('basic','google')"><span class="btn-icon">G</span><span>Basic｜Google 驗證後免費使用</span></button>
-              </div>
-            </div>
-          </article>
-
-          <article class="plan-sheet plus" data-key="plus">
-            <div class="sheet-handle-zone"><div class="sheet-handle"></div></div>
-            <div class="sheet-summary"><div class="sheet-summary-grid"><div class="grid-title"><h2 class="sheet-title">Plus</h2></div><div class="grid-tag"><div class="sheet-tag">推薦方案</div></div><div class="grid-pills"><div class="mini-pills"><span class="mini-pill">請假</span><span class="mini-pill">補卡</span><span class="mini-pill">審核</span></div></div><div class="grid-price"><div class="sheet-price">$399<span>/月</span></div></div></div></div>
-            <div class="sheet-detail">
-              <div class="feature-stack">
-                <div class="feature-card"><div class="feature-icon-box">📝</div><div><h3 class="feature-title">請假</h3><p class="feature-desc">請假申請與主管審核，支援正式流程</p></div><div class="feature-mini"><span class="feature-badge">請假</span><span>✅</span></div></div>
-                <div class="feature-card"><div class="feature-icon-box">🕘</div><div><h3 class="feature-title">補卡</h3><p class="feature-desc">漏打卡補登與審核，保留紀錄</p></div><div class="feature-mini"><span class="feature-badge">補卡</span><span>🛠️</span></div></div>
-                <div class="feature-card"><div class="feature-icon-box">📣</div><div><h3 class="feature-title">公告</h3><p class="feature-desc">主管公告與員工留言，重要訊息集中</p></div><div class="feature-mini"><span class="feature-badge">公告</span><span>💬</span></div></div>
-              </div>
-              <div class="note">建立正式公司後先免費使用 30 天；也可在註冊頁改成 15 天。</div>
-              <div class="inline-form"><div><div class="inline-label">註冊 Email</div><input class="inline-input" id="plusSignupEmail" type="email" inputmode="email" autocomplete="email" placeholder="name@company.com" /></div></div>
-              <div class="sheet-action">
-                <button type="button" onclick="goFreeUse('plus','email')"><span class="btn-icon">✉️</span><span>選擇 Plus｜免費使用 30 天</span></button>
-                <button class="google-action google" type="button" onclick="goFreeUse('plus','google')"><span class="btn-icon">G</span><span>Plus｜Google 驗證後免費使用</span></button>
-              </div>
-            </div>
-          </article>
-
-          <article class="plan-sheet premium" data-key="premium">
-            <div class="sheet-handle-zone"><div class="sheet-handle"></div></div>
-            <div class="sheet-summary"><div class="sheet-summary-grid"><div class="grid-title"><h2 class="sheet-title">Premium</h2></div><div class="grid-tag"><div class="sheet-tag">完整方案</div></div><div class="grid-pills"><div class="mini-pills"><span class="mini-pill">薪資</span><span class="mini-pill">分店</span><span class="mini-pill">報表</span></div></div><div class="grid-price"><div class="sheet-price">$699<span>/月</span></div></div></div></div>
-            <div class="sheet-detail">
-              <div class="feature-stack">
-                <div class="feature-card"><div class="feature-icon-box">💰</div><div><h3 class="feature-title">薪資</h3><p class="feature-desc">薪資試算、月結管理與工時計算</p></div><div class="feature-mini"><span class="feature-badge">薪資</span><span>📊</span></div></div>
-                <div class="feature-card"><div class="feature-icon-box">🏬</div><div><h3 class="feature-title">分店</h3><p class="feature-desc">分店資料分流，跨店查看與管理</p></div><div class="feature-mini"><span class="feature-badge">分店</span><span>🔀</span></div></div>
-                <div class="feature-card"><div class="feature-icon-box">🛡️</div><div><h3 class="feature-title">權限</h3><p class="feature-desc">角色權限分層，完整管理儀表板</p></div><div class="feature-mini"><span class="feature-badge">權限</span><span>⚙️</span></div></div>
-              </div>
-              <div class="note">建立正式公司後先免費使用 30 天；也可在註冊頁改成 15 天。</div>
-              <div class="inline-form"><div><div class="inline-label">註冊 Email</div><input class="inline-input" id="premiumSignupEmail" type="email" inputmode="email" autocomplete="email" placeholder="name@company.com" /></div></div>
-              <div class="sheet-action">
-                <button type="button" onclick="goFreeUse('premium','email')"><span class="btn-icon">✉️</span><span>選擇 Premium｜免費使用 30 天</span></button>
-                <button class="google-action google" type="button" onclick="goFreeUse('premium','google')"><span class="btn-icon">G</span><span>Premium｜Google 驗證後免費使用</span></button>
-              </div>
-            </div>
-          </article>
+          <div class="form-grid">
+            <button class="btn btn-primary" type="button" onclick="goView('plans')">選擇方案 / 開通</button>
+            <button class="btn btn-secondary" type="button" onclick="goBusinessLogin()">企業登入</button>
+            <button class="btn btn-ghost" type="button" onclick="goView('home')">返回首頁</button>
+          </div>
         </div>
-      </section>
+
+        <div class="card">
+          <h3 class="card-title">開通流程</h3>
+          <p class="card-sub">選方案 → 驗證 Email / Google / LINE → 驗證成功後填基本資料 → 格式檢查 → 確認資料 → 建立公司與管理者。</p>
+        </div>
+      </div>
     </section>
-  </main>
+
+    <section class="view" id="view-plans">
+      <div class="content">
+        <div class="card">
+          <h2 class="page-title">選擇方案</h2>
+          <p class="page-sub">左右滑動查看方案，點選方案後會先進入身份驗證。</p>
+
+          <div class="plan-carousel" id="planCarousel">
+            <article class="plan-card">
+              <div class="plan-head">
+                <div class="plan-name">Basic</div>
+                <div class="plan-price"><b>$299</b><br>月付</div>
+              </div>
+              <p class="card-sub">適合小型店家與初期團隊。</p>
+              <ul class="feature-list">
+                <li>員工打卡</li>
+                <li>簡易排班</li>
+                <li>基本請假紀錄</li>
+                <li>資料保存依方案限制</li>
+              </ul>
+              <button class="btn btn-primary btn-small" type="button" onclick="selectPlan('Basic')">選擇 Basic</button>
+            </article>
+
+            <article class="plan-card">
+              <div class="plan-head">
+                <div class="plan-name">Plus</div>
+                <div class="plan-price"><b>$699</b><br>月付</div>
+              </div>
+              <p class="card-sub">適合需要審核、排班與薪資試算的公司。</p>
+              <ul class="feature-list">
+                <li>員工打卡與補打卡</li>
+                <li>請假 / 資料審核</li>
+                <li>週排班 / 月排班</li>
+                <li>薪資試算與管理報表</li>
+              </ul>
+              <button class="btn btn-primary btn-small" type="button" onclick="selectPlan('Plus')">選擇 Plus</button>
+            </article>
+
+            <article class="plan-card">
+              <div class="plan-head">
+                <div class="plan-name">Premium</div>
+                <div class="plan-price"><b>$1299</b><br>月付</div>
+              </div>
+              <p class="card-sub">適合多分店、多角色與完整管理需求。</p>
+              <ul class="feature-list">
+                <li>完整員工與主管權限</li>
+                <li>多分店設定</li>
+                <li>進階薪資與匯出</li>
+                <li>系統設定與品牌配置</li>
+              </ul>
+              <button class="btn btn-primary btn-small" type="button" onclick="selectPlan('Premium')">選擇 Premium</button>
+            </article>
+          </div>
+
+          <button class="btn btn-ghost" type="button" onclick="goView('business')">返回</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="view-verify">
+      <div class="content">
+        <div class="card">
+          <h2 class="page-title">先完成驗證</h2>
+          <p class="page-sub">目前選擇方案：<b id="selectedPlanText">-</b>。請從 Email、Google、LINE 擇一完成驗證，成功後才能填基本資料。</p>
+
+          <div class="verification-tabs">
+            <button class="verify-tab active" id="tab-email" type="button" onclick="setVerifyMethod('email')">Email</button>
+            <button class="verify-tab" id="tab-google" type="button" onclick="setVerifyMethod('google')">Google</button>
+            <button class="verify-tab" id="tab-line" type="button" onclick="setVerifyMethod('line')">LINE</button>
+          </div>
+
+          <div class="verify-box active" id="verify-email">
+            <div class="form-grid">
+              <div class="field" id="fieldVerifyEmail">
+                <label for="verifyEmail">Email 信箱</label>
+                <input id="verifyEmail" type="email" autocomplete="email" placeholder="example@company.com" />
+                <div class="error">請輸入正確 Email 格式。</div>
+              </div>
+
+              <button class="btn btn-secondary" type="button" onclick="sendEmailCode()">發送驗證碼</button>
+
+              <div class="field" id="fieldEmailCode">
+                <label for="emailCode">驗證碼</label>
+                <input id="emailCode" type="text" inputmode="numeric" maxlength="6" autocomplete="one-time-code" placeholder="請輸入 6 位數驗證碼" />
+                <div class="error">請輸入 6 位數驗證碼。</div>
+              </div>
+
+              <button class="btn btn-primary" type="button" onclick="verifyEmailCode()">確認 Email 驗證</button>
+            </div>
+          </div>
+
+          <div class="verify-box" id="verify-google">
+            <div class="form-grid">
+              <button class="btn btn-primary" type="button" onclick="verifyGoogle()">
+                <span class="btn-icon">G</span>
+                使用 Google 驗證
+              </button>
+              <p class="card-sub">Google 驗證成功後，系統會保留驗證帳號與 Email 作為企業開通依據。</p>
+            </div>
+          </div>
+
+          <div class="verify-box" id="verify-line">
+            <div class="form-grid">
+              <button class="btn btn-primary" type="button" onclick="verifyLine()">
+                <span class="btn-icon">LINE</span>
+                使用 LINE 驗證
+              </button>
+              <p class="card-sub">LINE 驗證成功後，可用於身份確認，之後也能延伸為 LINE 通知或帳號綁定。</p>
+            </div>
+          </div>
+
+          <div class="status-box" id="verifyStatus">尚未完成驗證。</div>
+
+          <div class="back-row">
+            <button class="btn btn-primary hidden" id="continueProfileBtn" type="button" onclick="goProfileForm()">驗證成功，繼續填資料</button>
+            <button class="btn btn-ghost" type="button" onclick="goView('plans')">返回方案</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="view-profile">
+      <div class="content">
+        <div class="card">
+          <h2 class="page-title">填寫基本資料</h2>
+          <p class="page-sub">已完成 <b id="verifiedMethodText">-</b> 驗證。以下欄位會做必填與格式檢查，通過後才可確認送出。</p>
+
+          <div class="form-grid">
+            <div class="field" id="fieldOwnerName">
+              <label for="ownerName">申請人姓名 *</label>
+              <input id="ownerName" type="text" autocomplete="name" placeholder="請輸入真實姓名" />
+              <div class="error">姓名為必填，至少 2 個字。</div>
+            </div>
+
+            <div class="field" id="fieldPhone">
+              <label for="phone">電話號碼 *</label>
+              <input id="phone" type="tel" autocomplete="tel" placeholder="09xxxxxxxx 或 +8869xxxxxxxx" />
+              <div class="error">電話格式需為 09xxxxxxxx 或 +8869xxxxxxxx。</div>
+            </div>
+
+            <div class="field" id="fieldBirth">
+              <label for="birthDate">出生年月日 *</label>
+              <input id="birthDate" type="date" />
+              <div class="error">出生年月日為必填，且不能是未來日期。</div>
+            </div>
+
+            <div class="field" id="fieldCompanyName">
+              <label for="companyName">公司 / 店家名稱 *</label>
+              <input id="companyName" type="text" autocomplete="organization" placeholder="請輸入公司或店家名稱" />
+              <div class="error">公司 / 店家名稱為必填。</div>
+            </div>
+
+            <div class="field" id="fieldTaxId">
+              <label for="taxId">統一編號</label>
+              <input id="taxId" type="text" inputmode="numeric" maxlength="8" placeholder="可不填；有填需 8 碼數字" />
+              <div class="error">統編有填時必須是 8 碼數字。</div>
+            </div>
+
+            <div class="field" id="fieldCompanyPhone">
+              <label for="companyPhone">公司電話</label>
+              <input id="companyPhone" type="tel" placeholder="可不填；有填需符合電話格式" />
+              <div class="error">公司電話格式不正確。</div>
+            </div>
+
+            <div class="field" id="fieldAddress">
+              <label for="companyAddress">聯絡地址</label>
+              <textarea id="companyAddress" placeholder="可不填；正式開通或發票資料可後續補齊"></textarea>
+              <div class="error">地址格式不正確。</div>
+            </div>
+
+            <div class="field" id="fieldAgree">
+              <label style="display:flex;align-items:flex-start;gap:10px;color:var(--main-text);">
+                <input id="agreeTerms" type="checkbox" style="width:20px;height:20px;margin-top:1px;flex:0 0 auto;" />
+                <span>我確認資料正確，並同意由 ANG HR 系統建立公司與管理者帳號。</span>
+              </label>
+              <div class="error">請先勾選確認與同意。</div>
+            </div>
+
+            <button class="btn btn-primary" type="button" onclick="validateProfile()">下一步，確認資料</button>
+            <button class="btn btn-ghost" type="button" onclick="goView('verify')">返回驗證</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="view-confirm">
+      <div class="content">
+        <div class="card">
+          <h2 class="page-title">確認資料</h2>
+          <p class="page-sub">請確認以下資料正確，送出後才會進入建立公司與管理員流程。</p>
+
+          <div class="summary-list" id="summaryList"></div>
+
+          <div class="back-row">
+            <button class="btn btn-primary" type="button" onclick="submitCompanyRegister()">確認送出</button>
+            <button class="btn btn-ghost" type="button" onclick="goView('profile')">返回修改</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="view-done">
+      <div class="content">
+        <div class="card">
+          <h2 class="page-title">已送出</h2>
+          <p class="page-sub">資料已送出，請稍候系統建立公司資料與管理者帳號。</p>
+
+          <div class="status-box success">
+            建議先截圖保存此畫面。完成開通後，系統會依照你的驗證方式與聯絡資料回傳登入資訊。
+          </div>
+
+          <div class="back-row">
+            <button class="btn btn-primary" type="button" onclick="goView('business')">返回企業入口</button>
+            <button class="btn btn-ghost" type="button" onclick="goView('home')">返回首頁</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="toast" id="toast"></div>
+  </div>
 
   <script>
-    const phone = document.getElementById('phone');
-    const carousel = document.getElementById('sheetCarousel');
-    const sheets = Array.from(document.querySelectorAll('.plan-sheet'));
+    const ENTRY_LINKS = {
+      employeeHome: './employee.html',
+      employeeLogin: './login.html?role=employee',
+      adminLogin: './login.html?role=admin',
+      qrScanner: './employee.html?action=scan_qr'
+    };
 
-    function getRootPath(){
-      const path = window.location.pathname || '/';
-      return window.location.origin + path.replace(/[^\/]*$/, '');
+    const state = {
+      selectedPlan: '',
+      verifyMethod: 'email',
+      verified: false,
+      verifiedPayload: null,
+      profile: null,
+      emailCodeSent: false
+    };
+
+    function qs(id){
+      return document.getElementById(id);
     }
 
-    function buildFileUrl(file, params){
-      const url = new URL(file, getRootPath());
-      Object.keys(params || {}).forEach(function(key){
-        const value = params[key];
-        if (value !== undefined && value !== null && String(value).trim() !== '') url.searchParams.set(key, String(value).trim());
+    function clean(v){
+      return String(v == null ? '' : v).trim();
+    }
+
+    function goView(name){
+      document.querySelectorAll('.view').forEach(function(v){
+        v.classList.remove('active');
       });
-      return url.href;
+
+      const target = qs('view-' + name) || qs('view-home');
+      target.classList.add('active');
+
+      const scrollBox = target.querySelector('.content');
+      if (scrollBox) scrollBox.scrollTop = 0;
+
+      history.replaceState(null, '', '#' + name);
     }
 
-    function goFile(file, params){
-      window.location.href = buildFileUrl(file, params || {});
-    }
-
-    function goEmployeeBind(){
-      goFile('login.html', { tab:'bind' });
-    }
-
-    function goAdminLogin(verify){
-      const company = document.getElementById('adminCompanyCode') ? document.getElementById('adminCompanyCode').value : '';
-      const email = document.getElementById('adminEmail') ? document.getElementById('adminEmail').value : '';
-      goFile('login.html', { tab:'login', role:'admin', verify:verify || '', company:company, email:email });
-    }
-
-    function goFreeUse(plan, verify){
-      const safePlan = String(plan || '').trim().toLowerCase();
-      const input = document.getElementById(safePlan + 'SignupEmail');
-      const email = input ? input.value : '';
-      goFile('register.html', {
-        plan:safePlan,
-        verify:verify || '',
-        email:email,
-        free_days:'30',
-        billing_status:'first_period_free',
-        source:'entry_plan'
-      });
-    }
-
-    function initTheme(){
-      const storageKey = 'ang-hr-theme';
-      const sp = new URLSearchParams(window.location.search);
-      const theme = sp.get('theme') || localStorage.getItem(storageKey) || 'dark';
-      applyTheme(theme);
-    }
-
-    function applyTheme(theme){
-      const isDark = theme === 'dark' || theme === 'night';
-      document.body.dataset.theme = isDark ? 'dark' : 'light';
-      const toggle = document.querySelector('.theme-toggle');
-      if (toggle) toggle.setAttribute('aria-pressed', String(isDark));
-      localStorage.setItem('ang-hr-theme', isDark ? 'dark' : 'light');
+    function toast(msg){
+      const box = qs('toast');
+      if (!box) return alert(msg);
+      box.textContent = msg;
+      box.classList.add('show');
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(function(){
+        box.classList.remove('show');
+      }, 2600);
     }
 
     function toggleTheme(){
-      applyTheme(document.body.dataset.theme === 'dark' ? 'light' : 'dark');
+      const body = document.body;
+      const next = body.getAttribute('data-theme') === 'dark' ? 'day' : 'dark';
+      if (next === 'dark') body.setAttribute('data-theme','dark');
+      else body.removeAttribute('data-theme');
+      localStorage.setItem('ang_entry_theme', next);
     }
 
-    function setView(viewId){
-      ['homeView','managerEntryView'].forEach(function(id){
-        const el = document.getElementById(id);
-        if (el) el.classList.remove('active');
-      });
-      const target = document.getElementById(viewId);
-      if (target) target.classList.add('active');
-      if (viewId !== 'managerEntryView') phone.classList.remove('expanded');
+    function initTheme(){
+      const saved = localStorage.getItem('ang_entry_theme');
+      if (saved === 'dark') document.body.setAttribute('data-theme','dark');
     }
 
-    function showHome(){
-      setView('homeView');
-    }
+    function openEmployeeArea(){
+      const savedId = clean(localStorage.getItem('emp_logged_in') || localStorage.getItem('ang_hr_id') || '');
+      const savedToken = clean(localStorage.getItem('auth_token') || localStorage.getItem('ang_hr_token') || '');
 
-    function showManagerEntry(){
-      setView('managerEntryView');
-      setTimeout(function(){
-        setActiveSheet('login', true);
-      }, 40);
-    }
-
-    function setActiveSheet(key, shouldCenter){
-      sheets.forEach(function(sheet){
-        const active = sheet.dataset.key === key;
-        sheet.classList.toggle('active', active);
-        if (active && shouldCenter) centerSheet(sheet);
-      });
-    }
-
-    function centerSheet(sheet){
-      if (!carousel || !sheet) return;
-      const targetLeft = sheet.offsetLeft - (carousel.clientWidth - sheet.offsetWidth) / 2;
-      carousel.scrollTo({ left:Math.max(0, targetLeft), behavior:'smooth' });
-    }
-
-    function detectActiveSheet(){
-      if (!carousel || !sheets.length) return;
-      const rect = carousel.getBoundingClientRect();
-      const centerX = rect.left + rect.width / 2;
-      let best = sheets[0];
-      let distance = Infinity;
-      sheets.forEach(function(sheet){
-        const r = sheet.getBoundingClientRect();
-        const d = Math.abs((r.left + r.width / 2) - centerX);
-        if (d < distance) { distance = d; best = sheet; }
-      });
-      setActiveSheet(best.dataset.key || 'login', false);
-    }
-
-    function initCarousel(){
-      if (!carousel) return;
-      let sx = 0;
-      let sy = 0;
-      let moved = false;
-      let scrollTimer = null;
-
-      sheets.forEach(function(sheet){
-        sheet.addEventListener('click', function(e){
-          if (e.target && e.target.closest && e.target.closest('button,input,a')) return;
-          if (moved) return;
-          setActiveSheet(sheet.dataset.key || 'login', true);
-          phone.classList.add('expanded');
-        });
-      });
-
-      carousel.addEventListener('scroll', function(){
-        if (scrollTimer) clearTimeout(scrollTimer);
-        scrollTimer = setTimeout(detectActiveSheet, 160);
-      }, { passive:true });
-
-      carousel.addEventListener('touchstart', function(e){
-        if (!e.touches || !e.touches.length) return;
-        moved = false;
-        sx = e.touches[0].clientX;
-        sy = e.touches[0].clientY;
-      }, { passive:true });
-
-      carousel.addEventListener('touchmove', function(e){
-        if (!e.touches || !e.touches.length) return;
-        const dx = e.touches[0].clientX - sx;
-        const dy = e.touches[0].clientY - sy;
-        if (Math.abs(dx) > 8 || Math.abs(dy) > 8) moved = true;
-      }, { passive:true });
-
-      carousel.addEventListener('touchend', function(e){
-        if (!e.changedTouches || !e.changedTouches.length) return;
-        const dx = e.changedTouches[0].clientX - sx;
-        const dy = e.changedTouches[0].clientY - sy;
-        if (Math.abs(dy) > 42 && Math.abs(dy) > Math.abs(dx) * 1.25) {
-          if (dy < 0) phone.classList.add('expanded');
-          else phone.classList.remove('expanded');
-        }
-        setTimeout(function(){ moved = false; detectActiveSheet(); }, 120);
-      }, { passive:true });
-    }
-
-    function redirectLegacyQuery(){
-      const sp = new URLSearchParams(window.location.search);
-      const page = String(sp.get('page') || '').trim().toLowerCase();
-      const role = String(sp.get('role') || '').trim().toLowerCase();
-      const plan = String(sp.get('plan') || '').trim().toLowerCase();
-      const token = sp.get('token') || sp.get('key') || '';
-      const id = sp.get('id') || '';
-
-      if (page === 'login') {
-        goFile('login.html', { tab:sp.get('tab') || 'login', role:role || '', id:id, token:token });
-        return true;
+      if (savedId && savedToken) {
+        const url = new URL(ENTRY_LINKS.employeeHome, location.href);
+        url.searchParams.set('id', savedId);
+        url.searchParams.set('token', savedToken);
+        url.searchParams.set('source', 'entry');
+        location.href = url.toString();
+        return;
       }
-      if (page === 'register') {
-        goFile('register.html', { plan:plan || 'basic', free_days:sp.get('free_days') || '30', billing_status:'first_period_free' });
-        return true;
-      }
-      if (page === 'employee' || token) {
-        goFile('login.html', { tab:'bind', id:id, token:token });
-        return true;
-      }
-      if (page === 'admin') { goFile('admin.html', {}); return true; }
-      if (page === 'platform_admin' || page === 'platform') { goFile('platform_admin.html', {}); return true; }
-      if (page === 'nfc_admin') { goFile('nfc_admin.html', {}); return true; }
-      if (page === 'nfc_clock' || page === 'clock') { goFile('nfc_clock.html', {}); return true; }
-      if (plan) { goFile('register.html', { plan:plan, free_days:sp.get('free_days') || '30', billing_status:'first_period_free' }); return true; }
-      return false;
+
+      goView('employee');
     }
+
+    function submitEmployeeCode(){
+      const field = qs('fieldEmployeeCode');
+      const code = clean(qs('employeeCode').value);
+
+      field.classList.toggle('invalid', !code);
+
+      if (!code) return;
+
+      localStorage.setItem('ang_pending_activation_code', code);
+      const url = new URL(ENTRY_LINKS.employeeHome, location.href);
+      url.searchParams.set('activation_code', code);
+      url.searchParams.set('source', 'entry_activation');
+      location.href = url.toString();
+    }
+
+    function scanEmployeeQr(){
+      const url = new URL(ENTRY_LINKS.qrScanner, location.href);
+      url.searchParams.set('source', 'entry_qr');
+      location.href = url.toString();
+    }
+
+    function goBusinessLogin(){
+      const url = new URL(ENTRY_LINKS.adminLogin, location.href);
+      url.searchParams.set('source', 'entry_business');
+      location.href = url.toString();
+    }
+
+    function selectPlan(plan){
+      state.selectedPlan = plan;
+      state.verified = false;
+      state.verifiedPayload = null;
+
+      qs('selectedPlanText').textContent = plan;
+      qs('verifyStatus').classList.remove('success');
+      qs('verifyStatus').textContent = '尚未完成驗證。';
+      qs('continueProfileBtn').classList.add('hidden');
+
+      setVerifyMethod('email');
+      goView('verify');
+    }
+
+    function setVerifyMethod(method){
+      state.verifyMethod = method;
+
+      ['email','google','line'].forEach(function(m){
+        qs('tab-' + m).classList.toggle('active', m === method);
+        qs('verify-' + m).classList.toggle('active', m === method);
+      });
+    }
+
+    function isEmail(v){
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clean(v));
+    }
+
+    function isPhone(v){
+      const s = clean(v).replace(/\s|-/g,'');
+      return /^09\d{8}$/.test(s) || /^\+8869\d{8}$/.test(s);
+    }
+
+    function isCompanyPhone(v){
+      const s = clean(v).replace(/\s|-/g,'');
+      if (!s) return true;
+      return /^0\d{1,2}\d{6,8}$/.test(s) || /^\+886\d{7,10}$/.test(s);
+    }
+
+    function isTaxId(v){
+      const s = clean(v);
+      if (!s) return true;
+      return /^\d{8}$/.test(s);
+    }
+
+    function isPastOrTodayDate(v){
+      if (!v) return false;
+      const d = new Date(v + 'T00:00:00');
+      if (isNaN(d.getTime())) return false;
+      const today = new Date();
+      today.setHours(23,59,59,999);
+      return d.getTime() <= today.getTime();
+    }
+
+    function setInvalid(fieldId, invalid){
+      const el = qs(fieldId);
+      if (el) el.classList.toggle('invalid', !!invalid);
+    }
+
+    function sendEmailCode(){
+      const email = clean(qs('verifyEmail').value);
+      const ok = isEmail(email);
+      setInvalid('fieldVerifyEmail', !ok);
+
+      if (!ok) return;
+
+      state.emailCodeSent = true;
+      localStorage.setItem('ang_entry_last_email', email);
+
+      if (window.ANG_ENTRY_API && typeof window.ANG_ENTRY_API.sendEmailCode === 'function') {
+        window.ANG_ENTRY_API.sendEmailCode(email);
+      }
+
+      toast('驗證碼已送出，請到信箱查看。');
+      qs('verifyStatus').textContent = '已發送 Email 驗證碼，請輸入 6 位數驗證碼。';
+    }
+
+    function verifyEmailCode(){
+      const email = clean(qs('verifyEmail').value);
+      const code = clean(qs('emailCode').value);
+      const emailOk = isEmail(email);
+      const codeOk = /^\d{6}$/.test(code);
+
+      setInvalid('fieldVerifyEmail', !emailOk);
+      setInvalid('fieldEmailCode', !codeOk);
+
+      if (!emailOk || !codeOk) return;
+
+      if (!state.emailCodeSent) {
+        toast('請先發送驗證碼。');
+        return;
+      }
+
+      markVerified({
+        method: 'email',
+        email: email,
+        email_verified: true,
+        verify_code: code
+      });
+    }
+
+    function verifyGoogle(){
+      const callback = function(payload){
+        markVerified(Object.assign({
+          method:'google',
+          google_verified:true
+        }, payload || {}));
+      };
+
+      if (window.AndroidGoogleBridge && typeof window.AndroidGoogleBridge.startGoogleLogin === 'function') {
+        window.__ANG_GOOGLE_CALLBACK = callback;
+        window.AndroidGoogleBridge.startGoogleLogin();
+        return;
+      }
+
+      if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.angGoogleLogin) {
+        window.__ANG_GOOGLE_CALLBACK = callback;
+        window.webkit.messageHandlers.angGoogleLogin.postMessage({source:'ang_entry'});
+        return;
+      }
+
+      if (window.ANG_NATIVE_GOOGLE && typeof window.ANG_NATIVE_GOOGLE.login === 'function') {
+        window.ANG_NATIVE_GOOGLE.login().then(callback);
+        return;
+      }
+
+      callback({
+        name:'Google 驗證使用者',
+        email: clean(localStorage.getItem('ang_entry_last_email') || ''),
+        google_sub:'preview_google_sub'
+      });
+    }
+
+    function verifyLine(){
+      const callback = function(payload){
+        markVerified(Object.assign({
+          method:'line',
+          line_verified:true
+        }, payload || {}));
+      };
+
+      if (window.AndroidLineBridge && typeof window.AndroidLineBridge.startLineLogin === 'function') {
+        window.__ANG_LINE_CALLBACK = callback;
+        window.AndroidLineBridge.startLineLogin();
+        return;
+      }
+
+      if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.angLineLogin) {
+        window.__ANG_LINE_CALLBACK = callback;
+        window.webkit.messageHandlers.angLineLogin.postMessage({source:'ang_entry'});
+        return;
+      }
+
+      if (window.ANG_NATIVE_LINE && typeof window.ANG_NATIVE_LINE.login === 'function') {
+        window.ANG_NATIVE_LINE.login().then(callback);
+        return;
+      }
+
+      callback({
+        line_user_id:'preview_line_user',
+        line_display_name:'LINE 驗證使用者'
+      });
+    }
+
+    function markVerified(payload){
+      state.verified = true;
+      state.verifiedPayload = payload || {};
+
+      const methodName = {
+        email:'Email',
+        google:'Google',
+        line:'LINE'
+      }[state.verifiedPayload.method] || '驗證';
+
+      qs('verifyStatus').classList.add('success');
+      qs('verifyStatus').textContent = methodName + ' 驗證成功，可以繼續填寫基本資料。';
+      qs('continueProfileBtn').classList.remove('hidden');
+
+      toast(methodName + ' 驗證成功');
+    }
+
+    function goProfileForm(){
+      if (!state.verified) {
+        toast('請先完成 Email、Google 或 LINE 擇一驗證。');
+        return;
+      }
+
+      const methodName = {
+        email:'Email',
+        google:'Google',
+        line:'LINE'
+      }[state.verifiedPayload.method] || '驗證';
+
+      qs('verifiedMethodText').textContent = methodName;
+
+      if (state.verifiedPayload.email && !qs('verifyEmail').value) {
+        qs('verifyEmail').value = state.verifiedPayload.email;
+      }
+
+      goView('profile');
+    }
+
+    function getProfileData(){
+      return {
+        plan: state.selectedPlan,
+        verify_method: state.verifiedPayload ? state.verifiedPayload.method : '',
+        verified_payload: state.verifiedPayload || {},
+        owner_name: clean(qs('ownerName').value),
+        phone: clean(qs('phone').value),
+        birth_date: clean(qs('birthDate').value),
+        company_name: clean(qs('companyName').value),
+        tax_id: clean(qs('taxId').value),
+        company_phone: clean(qs('companyPhone').value),
+        company_address: clean(qs('companyAddress').value),
+        agree_terms: qs('agreeTerms').checked
+      };
+    }
+
+    function validateProfile(){
+      if (!state.verified) {
+        toast('請先完成驗證。');
+        goView('verify');
+        return;
+      }
+
+      const data = getProfileData();
+
+      const ownerInvalid = data.owner_name.length < 2;
+      const phoneInvalid = !isPhone(data.phone);
+      const birthInvalid = !isPastOrTodayDate(data.birth_date);
+      const companyInvalid = !data.company_name;
+      const taxInvalid = !isTaxId(data.tax_id);
+      const companyPhoneInvalid = !isCompanyPhone(data.company_phone);
+      const agreeInvalid = !data.agree_terms;
+
+      setInvalid('fieldOwnerName', ownerInvalid);
+      setInvalid('fieldPhone', phoneInvalid);
+      setInvalid('fieldBirth', birthInvalid);
+      setInvalid('fieldCompanyName', companyInvalid);
+      setInvalid('fieldTaxId', taxInvalid);
+      setInvalid('fieldCompanyPhone', companyPhoneInvalid);
+      setInvalid('fieldAgree', agreeInvalid);
+
+      const hasError = ownerInvalid || phoneInvalid || birthInvalid || companyInvalid || taxInvalid || companyPhoneInvalid || agreeInvalid;
+
+      if (hasError) {
+        toast('請先修正必填欄位與格式限制。');
+        return;
+      }
+
+      state.profile = data;
+      renderSummary(data);
+      goView('confirm');
+    }
+
+    function renderSummary(data){
+      const methodLabel = {
+        email:'Email 驗證',
+        google:'Google 驗證',
+        line:'LINE 驗證'
+      }[data.verify_method] || '已驗證';
+
+      const rows = [
+        ['方案', data.plan],
+        ['驗證方式', methodLabel],
+        ['申請人', data.owner_name],
+        ['電話', data.phone],
+        ['生日', data.birth_date],
+        ['公司名稱', data.company_name],
+        ['統一編號', data.tax_id || '未填'],
+        ['公司電話', data.company_phone || '未填'],
+        ['聯絡地址', data.company_address || '未填']
+      ];
+
+      qs('summaryList').innerHTML = rows.map(function(row){
+        return '<div class="summary-row"><b>' + escapeHtml(row[0]) + '</b><span>' + escapeHtml(row[1]) + '</span></div>';
+      }).join('');
+    }
+
+    function submitCompanyRegister(){
+      if (!state.profile || !state.verified) {
+        toast('資料尚未完成。');
+        return;
+      }
+
+      const payload = Object.assign({}, state.profile, {
+        source: 'ang_entry_frontend',
+        submitted_at: new Date().toISOString()
+      });
+
+      localStorage.setItem('ang_entry_last_register_payload', JSON.stringify(payload));
+
+      if (window.ANG_ENTRY_API && typeof window.ANG_ENTRY_API.registerCompany === 'function') {
+        Promise.resolve(window.ANG_ENTRY_API.registerCompany(payload))
+          .then(function(res){
+            if (res && res.ok === false) {
+              toast(res.message || '送出失敗');
+              return;
+            }
+            goView('done');
+          })
+          .catch(function(err){
+            toast(err && err.message ? err.message : '送出失敗');
+          });
+        return;
+      }
+
+      goView('done');
+    }
+
+    function escapeHtml(str){
+      return String(str == null ? '' : str)
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;')
+        .replace(/'/g,'&#39;');
+    }
+
+    function bootFromHash(){
+      const hash = clean(location.hash).replace('#','');
+
+      if (hash && qs('view-' + hash)) {
+        goView(hash);
+        return;
+      }
+
+      goView('home');
+    }
+
+    window.ANG_ON_GOOGLE_LOGIN_SUCCESS = function(payload){
+      markVerified(Object.assign({
+        method:'google',
+        google_verified:true
+      }, payload || {}));
+    };
+
+    window.ANG_ON_LINE_LOGIN_SUCCESS = function(payload){
+      markVerified(Object.assign({
+        method:'line',
+        line_verified:true
+      }, payload || {}));
+    };
 
     window.addEventListener('load', function(){
       initTheme();
-      initCarousel();
-      if (!redirectLegacyQuery()) showHome();
+      bootFromHash();
     });
   </script>
 </body>
