@@ -577,8 +577,9 @@
       padding-left:calc((100% - 358px) / 2);
       padding-right:calc((100% - 358px) / 2);
       -webkit-overflow-scrolling:touch;
-      touch-action:none;
-      overscroll-behavior:contain;
+      touch-action:pan-x;
+      overscroll-behavior-x:contain;
+      overscroll-behavior-y:none;
       scroll-behavior:smooth;
       cursor:grab;
       scrollbar-width:none;
@@ -593,17 +594,6 @@
       scroll-snap-type:none;
     }
 
-    .sheet-carousel.vertical-swiping{
-      cursor:ns-resize;
-      scroll-snap-type:none;
-      overflow-x:hidden;
-    }
-
-    .sheet-carousel.horizontal-swiping{
-      cursor:grabbing;
-      scroll-snap-type:none;
-      overflow-y:hidden;
-    }
 
     .plan-sheet{
       flex:0 0 auto;
@@ -623,6 +613,7 @@
       transform:scale(.94) translateY(14px);
       transition:opacity .28s var(--ease),transform .28s var(--ease),box-shadow .28s var(--ease),background .28s ease;
       position:relative;
+      touch-action:pan-x;
     }
 
     .plan-sheet.active{
@@ -1993,8 +1984,37 @@
     function initManagerCarousel(){
       if (!carousel) return;
 
+      let didSwipe = false;
+      let gestureStartX = 0;
+      let gestureStartY = 0;
+
+      function openManagerSheet(){
+        phone.classList.add('expanded');
+      }
+
+      function closeManagerSheet(){
+        phone.classList.remove('expanded');
+      }
+
+      function handleVerticalSwipe(deltaY,deltaX){
+        const absY = Math.abs(deltaY);
+        const absX = Math.abs(deltaX);
+
+        if (absY < 42) return false;
+        if (absY < absX * 1.25) return false;
+
+        if (deltaY < 0) {
+          openManagerSheet();
+        } else {
+          closeManagerSheet();
+        }
+
+        return true;
+      }
+
       sheets.forEach(function(sheet){
         sheet.addEventListener('click',function(){
+          if (didSwipe) return;
           const key = sheet.dataset.key || 'login';
           setActiveManagerSheet(key,true);
         });
@@ -2059,165 +2079,68 @@
       carousel.addEventListener('scroll',function(){
         if (scrollTimer) clearTimeout(scrollTimer);
         scrollTimer = setTimeout(function(){
-          if (!carousel.classList.contains('dragging')) {
-            detectActiveManagerSheet(true);
-          }
-        },140);
+          detectActiveManagerSheet(false);
+        },180);
       },{passive:true});
 
-      let isDown = false;
-      let startX = 0;
-      let startY = 0;
-      let lockScrollLeft = 0;
-      let gestureMode = '';
-
-      function openManagerSheet(){
-        phone.classList.add('expanded');
+      if ('onscrollend' in window) {
+        carousel.addEventListener('scrollend',function(){
+          detectActiveManagerSheet(false);
+        });
       }
-
-      function closeManagerSheet(){
-        phone.classList.remove('expanded');
-      }
-
-      function handleVerticalSwipe(deltaY,deltaX){
-        if (Math.abs(deltaY) < 28) return false;
-        if (Math.abs(deltaY) < Math.abs(deltaX) * 1.05) return false;
-
-        if (deltaY < 0) {
-          openManagerSheet();
-        } else {
-          closeManagerSheet();
-        }
-
-        return true;
-      }
-
-      function clearSwipeLocks(){
-        carousel.classList.remove('dragging');
-        carousel.classList.remove('vertical-swiping');
-        carousel.classList.remove('horizontal-swiping');
-      }
-
-      carousel.addEventListener('pointerdown',function(e){
-        isDown = true;
-        gestureMode = '';
-        startX = e.pageX;
-        startY = e.pageY;
-        lockScrollLeft = carousel.scrollLeft;
-
-        try { carousel.setPointerCapture(e.pointerId); } catch(_) {}
-      });
-
-      carousel.addEventListener('pointermove',function(e){
-        if (!isDown) return;
-
-        const walkX = e.pageX - startX;
-        const walkY = e.pageY - startY;
-
-        if (!gestureMode && (Math.abs(walkY) > 10 || Math.abs(walkX) > 10)) {
-          gestureMode = Math.abs(walkY) > Math.abs(walkX) ? 'vertical' : 'horizontal';
-        }
-
-        if (gestureMode === 'vertical') {
-          e.preventDefault();
-          carousel.classList.add('vertical-swiping');
-          carousel.classList.remove('horizontal-swiping');
-          carousel.classList.remove('dragging');
-          carousel.scrollLeft = lockScrollLeft;
-          return;
-        }
-
-        if (gestureMode === 'horizontal') {
-          e.preventDefault();
-          carousel.classList.add('horizontal-swiping');
-          carousel.classList.add('dragging');
-          carousel.classList.remove('vertical-swiping');
-          carousel.scrollLeft = lockScrollLeft - walkX;
-        }
-      },{passive:false});
-
-      carousel.addEventListener('pointerup',function(e){
-        if (!isDown) return;
-
-        const walkX = e.pageX - startX;
-        const walkY = e.pageY - startY;
-        const finalMode = gestureMode || (Math.abs(walkY) > Math.abs(walkX) ? 'vertical' : 'horizontal');
-
-        isDown = false;
-        clearSwipeLocks();
-
-        try { carousel.releasePointerCapture(e.pointerId); } catch(_) {}
-
-        if (finalMode === 'vertical') {
-          carousel.scrollLeft = lockScrollLeft;
-          handleVerticalSwipe(walkY,walkX);
-        }
-
-        setTimeout(function(){ detectActiveManagerSheet(true); },120);
-      });
-
-      carousel.addEventListener('pointercancel',function(){
-        isDown = false;
-        gestureMode = '';
-        clearSwipeLocks();
-        setTimeout(function(){ detectActiveManagerSheet(true); },120);
-      });
-
-      let touchStartX = 0;
-      let touchStartY = 0;
-      let touchStartScrollLeft = 0;
-      let touchGestureMode = '';
 
       carousel.addEventListener('touchstart',function(e){
         if (!e.touches || !e.touches.length) return;
-        touchStartX = e.touches[0].clientX;
-        touchStartY = e.touches[0].clientY;
-        touchStartScrollLeft = carousel.scrollLeft;
-        touchGestureMode = '';
+        didSwipe = false;
+        gestureStartX = e.touches[0].clientX;
+        gestureStartY = e.touches[0].clientY;
       },{passive:true});
 
       carousel.addEventListener('touchmove',function(e){
         if (!e.touches || !e.touches.length) return;
 
-        const dx = e.touches[0].clientX - touchStartX;
-        const dy = e.touches[0].clientY - touchStartY;
+        const dx = e.touches[0].clientX - gestureStartX;
+        const dy = e.touches[0].clientY - gestureStartY;
 
-        if (!touchGestureMode && (Math.abs(dx) > 10 || Math.abs(dy) > 10)) {
-          touchGestureMode = Math.abs(dy) > Math.abs(dx) ? 'vertical' : 'horizontal';
+        if (Math.abs(dx) > 8 || Math.abs(dy) > 8) {
+          didSwipe = true;
         }
-
-        if (touchGestureMode === 'vertical') {
-          e.preventDefault();
-          carousel.classList.add('vertical-swiping');
-          carousel.classList.remove('horizontal-swiping');
-          carousel.scrollLeft = touchStartScrollLeft;
-          return;
-        }
-
-        if (touchGestureMode === 'horizontal') {
-          e.preventDefault();
-          carousel.classList.add('horizontal-swiping');
-          carousel.classList.remove('vertical-swiping');
-          carousel.scrollLeft = touchStartScrollLeft - dx;
-        }
-      },{passive:false});
+      },{passive:true});
 
       carousel.addEventListener('touchend',function(e){
         if (!e.changedTouches || !e.changedTouches.length) return;
 
-        const dx = e.changedTouches[0].clientX - touchStartX;
-        const dy = e.changedTouches[0].clientY - touchStartY;
-        const finalMode = touchGestureMode || (Math.abs(dy) > Math.abs(dx) ? 'vertical' : 'horizontal');
+        const dx = e.changedTouches[0].clientX - gestureStartX;
+        const dy = e.changedTouches[0].clientY - gestureStartY;
 
-        clearSwipeLocks();
-
-        if (finalMode === 'vertical') {
-          carousel.scrollLeft = touchStartScrollLeft;
-          handleVerticalSwipe(dy,dx);
-        }
-
-        setTimeout(function(){ detectActiveManagerSheet(true); },120);
+        handleVerticalSwipe(dy,dx);
+        setTimeout(function(){ detectActiveManagerSheet(false); },160);
+        setTimeout(function(){ didSwipe = false; },80);
       },{passive:true});
+
+      carousel.addEventListener('pointerdown',function(e){
+        didSwipe = false;
+        gestureStartX = e.pageX;
+        gestureStartY = e.pageY;
+      });
+
+      carousel.addEventListener('pointermove',function(e){
+        const dx = e.pageX - gestureStartX;
+        const dy = e.pageY - gestureStartY;
+
+        if (Math.abs(dx) > 8 || Math.abs(dy) > 8) {
+          didSwipe = true;
+        }
+      },{passive:true});
+
+      carousel.addEventListener('pointerup',function(e){
+        const dx = e.pageX - gestureStartX;
+        const dy = e.pageY - gestureStartY;
+
+        handleVerticalSwipe(dy,dx);
+        setTimeout(function(){ detectActiveManagerSheet(false); },160);
+        setTimeout(function(){ didSwipe = false; },80);
+      });
     }
 
     function setActiveManagerSheet(key,shouldCenter){
@@ -2259,7 +2182,7 @@
       const key = sheets[bestIndex].dataset.key || 'login';
       setActiveManagerSheet(key,false);
 
-      if (shouldCenter !== false) {
+      if (shouldCenter === true) {
         centerManagerSheet(sheets[bestIndex],'smooth');
       }
     }
@@ -2384,15 +2307,15 @@
 
       if (window.google && google.script && google.script.run) {
         google.script.run
-          .withSuccessHandler(function(res){
+          。withSuccessHandler(function(res){
             if (!res || !res.ok) { setStatus(statusId,'error',(res && (res.message || res.msg)) || '驗證送出失敗'); return; }
             setStatus(statusId,'success',(res.message || res.msg) || '已送出驗證，請查看 Email');
             if (res.nextUrl) { setTimeout(function(){ window.location.href = res.nextUrl; },650); }
           })
-          .withFailureHandler(function(err){
+          。withFailureHandler(function(err){
             setStatus(statusId,'error',err && err.message ? err.message : '連線失敗');
           })
-          .requestCompanySignupEmailVerification({ plan:safePlan, email:email, deviceId:APP_STATE.deviceId });
+          。requestCompanySignupEmailVerification({ plan:safePlan, email:email, deviceId:APP_STATE.deviceId });
         return;
       }
 
@@ -2409,15 +2332,15 @@
 
       if (window.google && google.script && google.script.run) {
         google.script.run
-          .withSuccessHandler(function(res){
+          。withSuccessHandler(function(res){
             if (!res || !res.ok) { setStatus(statusId,'error',(res && (res.message || res.msg)) || 'Google 驗證啟動失敗'); return; }
             if (res.authUrl || res.nextUrl) { openGoogleAuthUrl(res.authUrl || res.nextUrl,statusId); return; }
             setStatus(statusId,'success','Google 驗證已啟動');
           })
-          .withFailureHandler(function(err){
+          。withFailureHandler(function(err){
             setStatus(statusId,'error',err && err.message ? err.message : '連線失敗');
           })
-          .requestCompanySignupGoogleVerification({ plan:safePlan, deviceId:APP_STATE.deviceId });
+          。requestCompanySignupGoogleVerification({ plan:safePlan, deviceId:APP_STATE.deviceId });
         return;
       }
 
