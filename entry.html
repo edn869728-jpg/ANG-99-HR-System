@@ -2384,7 +2384,7 @@
 
       if (window.google && google.script && google.script.run) {
         google.script.run
-          .withSuccessHandler(function(res){
+          。withSuccessHandler(function(res){
             if (!res || !res.ok) { setStatus(statusId,'error',(res && (res.message || res.msg)) || '驗證送出失敗'); return; }
             setStatus(statusId,'success',(res.message || res.msg) || '已送出驗證，請查看 Email');
             if (res.nextUrl) { setTimeout(function(){ window.location.href = res.nextUrl; },650); }
