@@ -1641,6 +1641,7 @@
     function initManagerCarousel(){
       if (!carousel) return;
       let didSwipe = false;
+      let gestureActive = false;
       let gestureStartX = 0;
       let gestureStartY = 0;
       function openManagerSheet(){ phone.classList.add('expanded'); }
@@ -1688,12 +1689,53 @@
       carousel.addEventListener('scroll',function(){ if (scrollTimer) clearTimeout(scrollTimer); scrollTimer = setTimeout(function(){ detectActiveManagerSheet(false); },180); },{passive:true});
       if ('onscrollend' in window) carousel.addEventListener('scrollend',function(){ detectActiveManagerSheet(false); });
 
-      carousel.addEventListener('touchstart',function(e){ if (isInteractiveTarget(e.target)) return; if (!e.touches || !e.touches.length) return; didSwipe = false; gestureStartX = e.touches[0].clientX; gestureStartY = e.touches[0].clientY; },{passive:true});
-      carousel.addEventListener('touchmove',function(e){ if (!e.touches || !e.touches.length) return; const dx = e.touches[0].clientX - gestureStartX; const dy = e.touches[0].clientY - gestureStartY; if (Math.abs(dx) > 8 || Math.abs(dy) > 8) didSwipe = true; },{passive:true});
-      carousel.addEventListener('touchend',function(e){ if (!e.changedTouches || !e.changedTouches.length) return; const dx = e.changedTouches[0].clientX - gestureStartX; const dy = e.changedTouches[0].clientY - gestureStartY; handleVerticalSwipe(dy,dx); setTimeout(function(){ detectActiveManagerSheet(false); },160); setTimeout(function(){ didSwipe = false; },80); },{passive:true});
-      carousel.addEventListener('pointerdown',function(e){ if (isInteractiveTarget(e.target)) return; didSwipe = false; gestureStartX = e.pageX; gestureStartY = e.pageY; });
-      carousel.addEventListener('pointermove',function(e){ const dx = e.pageX - gestureStartX; const dy = e.pageY - gestureStartY; if (Math.abs(dx) > 8 || Math.abs(dy) > 8) didSwipe = true; },{passive:true});
-      carousel.addEventListener('pointerup',function(e){ const dx = e.pageX - gestureStartX; const dy = e.pageY - gestureStartY; handleVerticalSwipe(dy,dx); setTimeout(function(){ detectActiveManagerSheet(false); },160); setTimeout(function(){ didSwipe = false; },80); });
+      carousel.addEventListener('touchstart',function(e){
+        if (isInteractiveTarget(e.target)) { gestureActive = false; return; }
+        if (!e.touches || !e.touches.length) return;
+        gestureActive = true;
+        didSwipe = false;
+        gestureStartX = e.touches[0].clientX;
+        gestureStartY = e.touches[0].clientY;
+      },{passive:true});
+      carousel.addEventListener('touchmove',function(e){
+        if (!gestureActive) return;
+        if (!e.touches || !e.touches.length) return;
+        const dx = e.touches[0].clientX - gestureStartX;
+        const dy = e.touches[0].clientY - gestureStartY;
+        if (Math.abs(dx) > 8 || Math.abs(dy) > 8) didSwipe = true;
+      },{passive:true});
+      carousel.addEventListener('touchend',function(e){
+        if (!gestureActive) return;
+        gestureActive = false;
+        if (!e.changedTouches || !e.changedTouches.length) return;
+        const dx = e.changedTouches[0].clientX - gestureStartX;
+        const dy = e.changedTouches[0].clientY - gestureStartY;
+        handleVerticalSwipe(dy,dx);
+        setTimeout(function(){ detectActiveManagerSheet(false); },160);
+        setTimeout(function(){ didSwipe = false; },80);
+      },{passive:true});
+      carousel.addEventListener('pointerdown',function(e){
+        if (isInteractiveTarget(e.target)) { gestureActive = false; return; }
+        gestureActive = true;
+        didSwipe = false;
+        gestureStartX = e.pageX;
+        gestureStartY = e.pageY;
+      });
+      carousel.addEventListener('pointermove',function(e){
+        if (!gestureActive) return;
+        const dx = e.pageX - gestureStartX;
+        const dy = e.pageY - gestureStartY;
+        if (Math.abs(dx) > 8 || Math.abs(dy) > 8) didSwipe = true;
+      },{passive:true});
+      carousel.addEventListener('pointerup',function(e){
+        if (!gestureActive) return;
+        gestureActive = false;
+        const dx = e.pageX - gestureStartX;
+        const dy = e.pageY - gestureStartY;
+        handleVerticalSwipe(dy,dx);
+        setTimeout(function(){ detectActiveManagerSheet(false); },160);
+        setTimeout(function(){ didSwipe = false; },80);
+      });
     }
 
     function setActiveManagerSheet(key,shouldCenter){
