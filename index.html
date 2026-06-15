@@ -1442,29 +1442,35 @@
       const safeFlow = String(flow || '').trim().toLowerCase();
       const safePlan = normalizePlan(plan);
       const action = safeProvider === 'line' ? 'requestLineAuth' : 'requestGoogleAuth';
-      savePendingAuth(safeProvider,safeFlow,safePlan,payload || {});
-      return callGasApi(action,Object.assign({},getAuthReturnParams(safeProvider,safeFlow,safePlan,payload || {}),payload || {},{
+      const gasUrl = getGasApiUrl();
+      const body = Object.assign({},getAuthReturnParams(safeProvider,safeFlow,safePlan,payload || {}),payload || {},{
+        action:action,
         provider:safeProvider,
         flow:safeFlow,
         plan:safePlan,
         company_id:(payload && (payload.company_id || payload.company)) || '',
         device_id:APP_STATE.deviceId,
-        user_agent:navigator.userAgent || ''
-      })).then(function(res){
-        if (!res || !res.ok) {
-          setStatus(statusId,'error',(res && (res.message || res.msg)) || '驗證啟動失敗');
-          return;
-        }
-        const authUrl = readApiResponseUrl(res);
-        if (!authUrl) {
-          setStatus(statusId,'error','後端沒有回傳驗證網址 auth_url');
-          return;
-        }
-        if (safeProvider === 'line') openLineAuthUrl(authUrl,statusId);
-        else openGoogleAuthUrl(authUrl,statusId);
-      }).catch(function(err){
-        setStatus(statusId,'error',err && err.message ? err.message : 'GAS 連線失敗');
+        user_agent:navigator.userAgent || '',
+        direct:'1'
       });
+
+      if (!gasUrl) {
+        setStatus(statusId,'error','尚未設定 GAS API URL');
+        return Promise.resolve();
+      }
+
+      savePendingAuth(safeProvider,safeFlow,safePlan,payload || {});
+      setStatus(statusId,'info','正在開啟 ' + (safeProvider === 'line' ? 'LINE' : 'Google') + ' 安全驗證...');
+
+      const url = new URL(gasUrl,window.location.href);
+      Object.keys(body).forEach(function(key){
+        const value = body[key];
+        if (value === undefined || value === null || value === '') return;
+        url.searchParams.set(key,String(value));
+      });
+
+      window.location.href = url.toString();
+      return Promise.resolve();
     }
 
     function buildIndexAuthUrl(provider,flow,plan,extra){
