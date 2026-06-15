@@ -1094,8 +1094,8 @@
   <script>
     const ANG_DATA_URLS = {
       entry: 'https://edn869728-jpg.github.io/ANG-99-HR-System/',
-      adminLogin: 'https://edn869728-jpg.github.io/ANG-99-HR-System/login.html',
-      companyRegister: 'https://edn869728-jpg.github.io/ANG-99-HR-System/login.html',
+      adminLogin: 'https://edn869728-jpg.github.io/ANG-99-HR-System/index.html',
+      companyRegister: 'https://edn869728-jpg.github.io/ANG-99-HR-System/index.html',
       employeeHome: 'https://edn869728-jpg.github.io/ang-hr-basic/employee_home.htm',
       employeeQr: 'https://edn869728-jpg.github.io/ang-hr-basic/employee_home.htm',
       supportEmail: 'endenmi@ang-system.com',
@@ -1105,9 +1105,9 @@
         premium: 'https://edn869728-jpg.github.io/ang-hr-premium/employee_home.htm'
       },
       planRegister: {
-        basic: 'https://edn869728-jpg.github.io/ANG-99-HR-System/login.html',
-        plus: 'https://edn869728-jpg.github.io/ANG-99-HR-System/login.html',
-        premium: 'https://edn869728-jpg.github.io/ANG-99-HR-System/login.html'
+        basic: 'https://edn869728-jpg.github.io/ANG-99-HR-System/index.html',
+        plus: 'https://edn869728-jpg.github.io/ANG-99-HR-System/index.html',
+        premium: 'https://edn869728-jpg.github.io/ANG-99-HR-System/index.html'
       }
     };
 
@@ -1212,6 +1212,7 @@
       APP_STATE.baseUrl = getBaseUrl();
       const params = getParams();
       APP_STATE.params = params;
+      clearLegacyLoginRoutes();
       saveRouteOverrides(params);
       APP_STATE.routes = getRouteConfig(params);
       APP_STATE.token = params.token || params.key || '';
@@ -1225,6 +1226,7 @@
       initAppButtonTouchFix();
       if (params.expired === '1' || params.status === 'expired') { showEmployeeEntry('expired'); return; }
       if (APP_STATE.token) { showEmployeeEntry('bind'); return; }
+      if (handleAuthEntryParams(params)) return;
       showHome();
     }
 
@@ -1286,6 +1288,72 @@
       catch (err) { return ''; }
     }
 
+    function isLegacyLoginRoute(value){
+      const raw = String(value || '');
+      return /\/(login|register)\.html/i.test(raw) || /[?&]page=(login|register)(?=&|$)/i.test(raw);
+    }
+
+    function clearLegacyLoginRoutes(){
+      [
+        'ang_admin_login_url',
+        'ang_company_register_url',
+        'ang_basic_register_url',
+        'ang_plus_register_url',
+        'ang_premium_register_url'
+      ].forEach(function(key){
+        try {
+          const value = String(localStorage.getItem(key) || '');
+          if (isLegacyLoginRoute(value)) localStorage.removeItem(key);
+        } catch (err) {}
+      });
+    }
+
+    function normalizeAuthReturnParams(params){
+      const data = Object.assign({}, params || {});
+      const page = String(data.page || '').trim().toLowerCase();
+      const verify = String(data.verify || data.auth || '').trim().toLowerCase();
+      const role = String(data.role || '').trim().toLowerCase();
+      if ((page === 'login' || page === 'admin') && !data.flow) data.flow = 'admin_login';
+      if ((page === 'register' || page === 'signup') && !data.flow) data.flow = 'company_signup';
+      if (verify && !data.auth) data.auth = verify;
+      if (role === 'admin' && !data.flow) data.flow = 'admin_login';
+      delete data.page;
+      delete data.role;
+      delete data.verify;
+      return data;
+    }
+
+    function handleAuthEntryParams(params){
+      const normalized = normalizeAuthReturnParams(params || {});
+      const flow = String(normalized.flow || '').trim();
+      const auth = String(normalized.auth || normalized.provider || '').trim();
+      const plan = normalizePlan(normalized.plan || '');
+      const authDone = normalized.auth_done === '1' || String(normalized.status || '').toLowerCase() === 'verified';
+      if (!flow && !auth && !authDone) return false;
+
+      showManagerEntry();
+      phone.classList.add('expanded');
+
+      if (flow === 'company_signup') {
+        const targetPlan = plan || 'basic';
+        setTimeout(function(){
+          setActiveManagerSheet(targetPlan,true);
+          setStatus(targetPlan + 'PlanStatus', authDone ? 'success' : 'info', authDone ? '驗證完成，請繼續填寫公司資料' : '正在處理驗證，請稍候');
+        },80);
+        return true;
+      }
+
+      if (flow === 'admin_login') {
+        setTimeout(function(){
+          setActiveManagerSheet('login',true);
+          setStatus('adminLoginStatus', authDone ? 'success' : 'info', authDone ? '登入驗證完成，正在準備後台' : '正在處理登入驗證，請稍候');
+        },80);
+        return true;
+      }
+
+      return false;
+    }
+
     function normalizeUrl(url){
       const value = String(url || '').trim();
       if (!value) return '';
@@ -1333,6 +1401,7 @@
       map.forEach(function(item){
         const value = getFirstParam(params,item[0]);
         if (!value) return;
+        if (isLegacyLoginRoute(value)) return;
         try { localStorage.setItem(item[1],value); } catch (err) {}
       });
     }
@@ -1371,8 +1440,8 @@
       let target = '';
       if (name === 'employee') target = (safePlan && routes.planHome && routes.planHome[safePlan]) || routes.employeeHome;
       else if (name === 'employeeQr') target = routes.employeeQr || routes.employeeHome;
-      else if (name === 'adminLogin') target = routes.adminLogin;
-      else if (name === 'companyRegister') target = (safePlan && routes.planRegister && routes.planRegister[safePlan]) || routes.companyRegister;
+      else if (name === 'adminLogin') target = routes.entry || APP_STATE.baseUrl;
+      else if (name === 'companyRegister') target = routes.entry || APP_STATE.baseUrl;
       else target = routes.entry || APP_STATE.baseUrl;
       return appendUrlParams(target,commonCarryParams(extra));
     }
@@ -1630,8 +1699,31 @@
     function contactService(){ const subject = encodeURIComponent('ANG HR 企業客服'); const body = encodeURIComponent('您好，我想詢問 ANG HR SYSTEMS 企業管理登入或方案註冊。'); window.location.href = 'mailto:' + encodeURIComponent((APP_STATE.routes && APP_STATE.routes.supportEmail) || ANG_DATA_URLS.supportEmail) + '?subject=' + subject + '&body=' + body; }
     function getCapacitorBrowser(){ const cap = window.Capacitor; return cap && cap.Plugins && cap.Plugins.Browser && typeof cap.Plugins.Browser.open === 'function' ? cap.Plugins.Browser : null; }
     function isLikelyWebView(){ const ua = navigator.userAgent || ''; const isAndroidWebView = /\bwv\b/i.test(ua) || /Version\/[\d.]+.*Chrome\/[\d.]+ Mobile Safari/i.test(ua); const isIos = /iPhone|iPad|iPod/i.test(ua); const isIosWebView = isIos && /AppleWebKit/i.test(ua) && !/Safari/i.test(ua); return !!window.Capacitor || isAndroidWebView || isIosWebView; }
-    function openGoogleAuthUrl(url,statusId){ const authUrl = String(url || '').trim(); const browser = getCapacitorBrowser(); if (!authUrl) { setStatus(statusId,'error','Google 驗證網址無效'); return; } if (browser) { setStatus(statusId,'info','正在開啟安全驗證視窗...'); browser.open({ url:authUrl, windowName:'_blank' }).catch(function(err){ setStatus(statusId,'error',err && err.message ? err.message : '無法開啟驗證視窗，請改用 Email 驗證'); }); return; } if (isLikelyWebView()) { setStatus(statusId,'error','App 內不支援 Google 驗證，請改用上方的「Email 驗證」'); return; } window.location.href = authUrl; }
-    function openLineAuthUrl(url,statusId){ const authUrl = String(url || '').trim(); const browser = getCapacitorBrowser(); if (!authUrl) { setStatus(statusId,'error','LINE 驗證網址無效'); return; } if (browser) { setStatus(statusId,'info','正在開啟 LINE 驗證視窗...'); browser.open({ url:authUrl, windowName:'_blank' }).catch(function(err){ setStatus(statusId,'error',err && err.message ? err.message : '無法開啟 LINE 驗證視窗，請改用 Email 驗證'); }); return; } window.location.href = authUrl; }
+    function normalizeAuthRedirectUrl(url,provider){
+      const raw = String(url || '').trim();
+      if (!raw) return '';
+      if (!isLegacyLoginRoute(raw)) return raw;
+      try {
+        const legacy = new URL(raw, window.location.href);
+        const fixed = new URL(APP_STATE.baseUrl || ANG_DATA_URLS.entry, window.location.href);
+        const page = String(legacy.searchParams.get('page') || '').toLowerCase();
+        const role = String(legacy.searchParams.get('role') || '').toLowerCase();
+        const verify = String(legacy.searchParams.get('verify') || provider || '').toLowerCase();
+        fixed.searchParams.set('auth', verify || provider || '');
+        fixed.searchParams.set('flow', (page === 'register' || page === 'signup') ? 'company_signup' : 'admin_login');
+        if (role === 'admin') fixed.searchParams.set('flow','admin_login');
+        ['company','company_id','plan','email','source','theme','device_id'].forEach(function(key){
+          const value = legacy.searchParams.get(key);
+          if (value) fixed.searchParams.set(key,value);
+        });
+        return fixed.toString();
+      } catch (err) {
+        return raw.replace(/\/(login|register)\.html/i,'/index.html').replace(/[?&]page=(login|register)(?=&|$)/i,'');
+      }
+    }
+
+    function openGoogleAuthUrl(url,statusId){ const authUrl = normalizeAuthRedirectUrl(url,'google'); const browser = getCapacitorBrowser(); if (!authUrl) { setStatus(statusId,'error','Google 驗證網址無效'); return; } if (browser && !isLegacyLoginRoute(authUrl)) { setStatus(statusId,'info','正在開啟安全驗證視窗...'); browser.open({ url:authUrl, windowName:'_blank' }).catch(function(err){ setStatus(statusId,'error',err && err.message ? err.message : '無法開啟驗證視窗，請改用 Email 驗證'); }); return; } if (isLikelyWebView() && !isLegacyLoginRoute(authUrl) && !authUrl.includes(window.location.host)) { setStatus(statusId,'error','App 內不支援 Google 驗證，請改用上方的「Email 驗證」'); return; } window.location.href = authUrl; }
+    function openLineAuthUrl(url,statusId){ const authUrl = normalizeAuthRedirectUrl(url,'line'); const browser = getCapacitorBrowser(); if (!authUrl) { setStatus(statusId,'error','LINE 驗證網址無效'); return; } if (browser && !isLegacyLoginRoute(authUrl)) { setStatus(statusId,'info','正在開啟 LINE 驗證視窗...'); browser.open({ url:authUrl, windowName:'_blank' }).catch(function(err){ setStatus(statusId,'error',err && err.message ? err.message : '無法開啟 LINE 驗證視窗，請改用 Email 驗證'); }); return; } window.location.href = authUrl; }
 
     function requestAdminEmailLogin(){
       const companyCode = normalizeCompanyCode(document.getElementById('adminCompanyCode') ? document.getElementById('adminCompanyCode').value : '');
@@ -1643,7 +1735,7 @@
         google.script.run.withSuccessHandler(function(res){ if (!res || !res.ok) { setStatus('adminLoginStatus','error',(res && (res.message || res.msg)) || '驗證送出失敗'); return; } setStatus('adminLoginStatus','success',(res.message || res.msg) || '已送出驗證，請查看 Email'); if (res.nextUrl) { setTimeout(function(){ window.location.href = res.nextUrl; },650); } }).withFailureHandler(function(err){ setStatus('adminLoginStatus','error',err && err.message ? err.message : '連線失敗'); }).requestAdminLoginEmailVerification({ companyCode:companyCode, adminEmail:adminEmail, deviceId:APP_STATE.deviceId });
         return;
       }
-      window.location.href = routeUrl('adminLogin','',{ page:'login', role:'admin', verify:'email', company:companyCode, email:adminEmail, source:'entry_admin_email' });
+      window.location.href = routeUrl('adminLogin','',{ auth:'email', flow:'admin_login', company:companyCode, email:adminEmail, source:'entry_admin_email' });
     }
 
     function requestAdminGoogleLogin(){
@@ -1654,7 +1746,7 @@
         google.script.run.withSuccessHandler(function(res){ if (!res || !res.ok) { setStatus('adminLoginStatus','error',(res && (res.message || res.msg)) || 'Google 驗證啟動失敗'); return; } if (res.authUrl || res.nextUrl) { openGoogleAuthUrl(res.authUrl || res.nextUrl,'adminLoginStatus'); return; } setStatus('adminLoginStatus','success','Google 驗證已啟動'); }).withFailureHandler(function(err){ setStatus('adminLoginStatus','error',err && err.message ? err.message : '連線失敗'); }).requestAdminGoogleVerification({ companyCode:companyCode, deviceId:APP_STATE.deviceId });
         return;
       }
-      openGoogleAuthUrl(routeUrl('adminLogin','',{ page:'login', role:'admin', verify:'google', company:companyCode, source:'entry_admin_google' }),'adminLoginStatus');
+      openGoogleAuthUrl(routeUrl('adminLogin','',{ auth:'google', flow:'admin_login', company:companyCode, source:'entry_admin_google' }),'adminLoginStatus');
     }
 
     function requestAdminLineLogin(){
@@ -1665,7 +1757,7 @@
         google.script.run.withSuccessHandler(function(res){ if (!res || !res.ok) { setStatus('adminLoginStatus','error',(res && (res.message || res.msg)) || 'LINE 驗證啟動失敗'); return; } if (res.authUrl || res.nextUrl) { openLineAuthUrl(res.authUrl || res.nextUrl,'adminLoginStatus'); return; } setStatus('adminLoginStatus','success','LINE 驗證已啟動'); }).withFailureHandler(function(err){ setStatus('adminLoginStatus','error',err && err.message ? err.message : '連線失敗'); }).requestAdminLineVerification({ companyCode:companyCode, deviceId:APP_STATE.deviceId });
         return;
       }
-      openLineAuthUrl(routeUrl('adminLogin','',{ page:'login', role:'admin', verify:'line', company:companyCode, source:'entry_admin_line' }),'adminLoginStatus');
+      openLineAuthUrl(routeUrl('adminLogin','',{ auth:'line', flow:'admin_login', company:companyCode, source:'entry_admin_line' }),'adminLoginStatus');
     }
 
     function requestPlanEmailVerification(plan){
@@ -1680,7 +1772,7 @@
         google.script.run.withSuccessHandler(function(res){ if (!res || !res.ok) { setStatus(statusId,'error',(res && (res.message || res.msg)) || '驗證送出失敗'); return; } setStatus(statusId,'success',(res.message || res.msg) || '已送出驗證，請查看 Email'); if (res.nextUrl) { setTimeout(function(){ window.location.href = res.nextUrl; },650); } }).withFailureHandler(function(err){ setStatus(statusId,'error',err && err.message ? err.message : '連線失敗'); }).requestCompanySignupEmailVerification({ plan:safePlan, email:email, deviceId:APP_STATE.deviceId });
         return;
       }
-      window.location.href = routeUrl('companyRegister',safePlan,{ page:'register', verify:'email', plan:safePlan, email:email, source:'entry_plan_email' });
+      window.location.href = routeUrl('companyRegister',safePlan,{ auth:'email', flow:'company_signup', plan:safePlan, email:email, source:'entry_plan_email' });
     }
 
     function requestPlanGoogleVerification(plan){
@@ -1692,7 +1784,7 @@
         google.script.run.withSuccessHandler(function(res){ if (!res || !res.ok) { setStatus(statusId,'error',(res && (res.message || res.msg)) || 'Google 驗證啟動失敗'); return; } if (res.authUrl || res.nextUrl) { openGoogleAuthUrl(res.authUrl || res.nextUrl,statusId); return; } setStatus(statusId,'success','Google 驗證已啟動'); }).withFailureHandler(function(err){ setStatus(statusId,'error',err && err.message ? err.message : '連線失敗'); }).requestCompanySignupGoogleVerification({ plan:safePlan, deviceId:APP_STATE.deviceId });
         return;
       }
-      openGoogleAuthUrl(routeUrl('companyRegister',safePlan,{ page:'register', verify:'google', plan:safePlan, source:'entry_plan_google' }),statusId);
+      openGoogleAuthUrl(routeUrl('companyRegister',safePlan,{ auth:'google', flow:'company_signup', plan:safePlan, source:'entry_plan_google' }),statusId);
     }
 
     function requestPlanLineVerification(plan){
@@ -1704,7 +1796,7 @@
         google.script.run.withSuccessHandler(function(res){ if (!res || !res.ok) { setStatus(statusId,'error',(res && (res.message || res.msg)) || 'LINE 驗證啟動失敗'); return; } if (res.authUrl || res.nextUrl) { openLineAuthUrl(res.authUrl || res.nextUrl,statusId); return; } setStatus(statusId,'success','LINE 驗證已啟動'); }).withFailureHandler(function(err){ setStatus(statusId,'error',err && err.message ? err.message : '連線失敗'); }).requestCompanySignupLineVerification({ plan:safePlan, deviceId:APP_STATE.deviceId });
         return;
       }
-      openLineAuthUrl(routeUrl('companyRegister',safePlan,{ page:'register', verify:'line', plan:safePlan, source:'entry_plan_line' }),statusId);
+      openLineAuthUrl(routeUrl('companyRegister',safePlan,{ auth:'line', flow:'company_signup', plan:safePlan, source:'entry_plan_line' }),statusId);
     }
 
     window.addEventListener('load',init);
