@@ -1437,7 +1437,7 @@
       const flow = String(pending.flow || 'company_signup').trim().toLowerCase();
       const plan = normalizePlan(pending.plan || currentPlan() || '');
       const statusId = getPendingAuthStatusId(pending);
-      const action = safeProvider === 'line' ? 'verifyLineCredential' : 'verifyGoogleCredential';
+      const action = safeProvider === 'line' ? 'verifyNativeLineIdToken' : 'verifyNativeGoogleIdToken';
       const label = safeProvider === 'line' ? 'LINE' : 'Google';
 
       if (!token) {
@@ -1447,20 +1447,16 @@
 
       setStatus(statusId,'info','正在送出 ' + label + ' 原生驗證結果...');
 
-      const payload = Object.assign({},extra || {},{
+      const payload = Object.assign({},pending || {},extra || {},{
         provider:safeProvider,
         flow:flow,
         plan:plan,
+        id_token:token,
+        credential:token,
         device_id:APP_STATE.deviceId,
+        user_agent:navigator.userAgent || '',
         source:'android_native_bridge'
       });
-      if (safeProvider === 'line') {
-        payload.id_token = token;
-      } else {
-        payload.credential = token;
-      }
-      if (pending && pending.company_id) payload.company_id = pending.company_id;
-      if (pending && pending.company) payload.company = pending.company;
 
       callGasApi(action,payload,25000).then(function(res){
         if (!res || !res.ok) {
@@ -1468,17 +1464,14 @@
           return;
         }
 
-        const profile = (res && res.profile) || (res && res.data && res.data.profile) || {};
-        const verifyToken = res.verify_token || profile.verify_token || '';
-        const verifiedEmail = res.email || profile.email || '';
-        if (verifyToken) {
+        if (res.verify_token) {
           try {
-            sessionStorage.setItem('ang_verify_token',String(verifyToken));
-            localStorage.setItem('ang_last_verify_token',String(verifyToken));
+            sessionStorage.setItem('ang_verify_token',String(res.verify_token));
+            localStorage.setItem('ang_last_verify_token',String(res.verify_token));
           } catch (err) {}
         }
-        if (verifiedEmail) {
-          try { sessionStorage.setItem('ang_verified_email',String(verifiedEmail)); } catch (err2) {}
+        if (res.email) {
+          try { sessionStorage.setItem('ang_verified_email',String(res.email)); } catch (err2) {}
         }
 
         clearPendingAuth();
