@@ -1651,48 +1651,6 @@
       if (closeBtn) closeBtn.onclick = function(){ panel.remove(); };
     }
 
-
-    function encodeUtf8Base64Text(text){
-      text = String(text || '');
-      try {
-        if (window.TextEncoder) {
-          const bytes = new TextEncoder().encode(text);
-          let bin = '';
-          const chunk = 0x8000;
-          for (let i = 0; i < bytes.length; i += chunk) {
-            bin += String.fromCharCode.apply(null, Array.from(bytes.slice(i, i + chunk)));
-          }
-          return btoa(bin);
-        }
-      } catch(err) {}
-      return btoa(unescape(encodeURIComponent(text)));
-    }
-
-    function getNativeGasBridge(){
-      const bridge = window.ANGHRApp || window.AndroidBridge || window.AndroidNative || window.WebAppInterface;
-      if (!bridge) return null;
-      if (typeof bridge.verifyNativeAuthWithGas === 'function') return bridge;
-      return null;
-    }
-
-    function handleGasVerifySuccess(statusId,res){
-      if (!res || !res.ok) {
-        setStatus(statusId,'error',(res && (res.message || res.msg)) || 'GAS 驗證失敗');
-        return;
-      }
-      if (res.verify_token) {
-        try {
-          sessionStorage.setItem('ang_verify_token',String(res.verify_token));
-          localStorage.setItem('ang_last_verify_token',String(res.verify_token));
-        } catch(err) {}
-      }
-      if (res.email) {
-        try { sessionStorage.setItem('ang_verified_email',String(res.email)); } catch(err2) {}
-      }
-      setStatus(statusId,'success','GAS 驗證成功，可以繼續下一步。');
-      clearPendingNativeAuth();
-    }
-
     function callGasApi(action,payload,timeoutMs){
       const gasUrl = getGasApiUrl();
       if (!gasUrl) return Promise.reject(new Error('尚未設定 GAS API URL'));
@@ -1786,21 +1744,6 @@
     window.onGoogleSignInError = window.onNativeGoogleLoginFailure;
     window.onNativeLineLoginFailure = function(message){ const pending = loadPendingNativeAuth(); setStatus(getPendingNativeStatusId(pending),'error',message || 'LINE 原生驗證失敗'); };
 
-
-    window.ANG_NATIVE_GAS_RESULT_RECEIVER = function(payload){
-      payload = payload || {};
-      const last = normalizeNativeResult(window.__ANG_LAST_NATIVE_AUTH_RESULT || {});
-      const pending = loadPendingNativeAuth() || {};
-      const statusId = getPendingNativeStatusId(pending);
-      const gasRes = payload.gas_response || payload.gasResponse || payload;
-      showNativeCapturePanel(last,gasRes);
-      if (payload.ok === false && !payload.gas_response) {
-        setStatus(statusId,'error',payload.message || 'Android 送 GAS 失敗');
-        return;
-      }
-      handleGasVerifySuccess(statusId,gasRes);
-    };
-
     function sendCapturedNativeAuthToGas(result){
       const r = normalizeNativeResult(result || window.__ANG_LAST_NATIVE_AUTH_RESULT || {});
       const pending = loadPendingNativeAuth() || {};
@@ -1824,7 +1767,6 @@
 
       const action = provider === 'line' ? 'verifyNativeLineIdToken' : 'verifyNativeGoogleIdToken';
       const payload = Object.assign({},pending || {},{
-        action:action,
         provider:provider,
         flow:pending.flow || 'company_signup',
         plan:pending.plan || '',
@@ -1838,22 +1780,24 @@
         source:'android_native_bridge_base64'
       });
 
-      const nativeGasBridge = getNativeGasBridge();
-      if (nativeGasBridge) {
-        try {
-          setStatus(statusId,'info','正在由 Android 原生 HTTP 送 GAS 驗證一次...');
-          nativeGasBridge.verifyNativeAuthWithGas(encodeUtf8Base64Text(JSON.stringify(payload)));
-          return;
-        } catch(nativeErr) {
-          setStatus(statusId,'error',nativeErr && nativeErr.message ? nativeErr.message : 'Android 原生送 GAS 啟動失敗');
-          return;
-        }
-      }
-
-      setStatus(statusId,'info','正在由前端 JSONP 送 GAS 驗證一次...');
+      setStatus(statusId,'info','正在送 GAS 驗證一次...');
       callGasApi(action,payload,25000).then(function(res){
         showNativeCapturePanel(r,res);
-        handleGasVerifySuccess(statusId,res);
+        if (!res || !res.ok) {
+          setStatus(statusId,'error',(res && (res.message || res.msg)) || 'GAS 驗證失敗');
+          return;
+        }
+        if (res.verify_token) {
+          try {
+            sessionStorage.setItem('ang_verify_token',String(res.verify_token));
+            localStorage.setItem('ang_last_verify_token',String(res.verify_token));
+          } catch(err) {}
+        }
+        if (res.email) {
+          try { sessionStorage.setItem('ang_verified_email',String(res.email)); } catch(err2) {}
+        }
+        setStatus(statusId,'success','GAS 驗證成功，可以繼續下一步。');
+        clearPendingNativeAuth();
       }).catch(function(err){
         showNativeCapturePanel(r,{ ok:false, message:err && err.message ? err.message : String(err || 'error') });
         setStatus(statusId,'error',err && err.message ? err.message : 'GAS 驗證通訊失敗');
