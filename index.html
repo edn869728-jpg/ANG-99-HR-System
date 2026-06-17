@@ -1215,6 +1215,7 @@
       APP_STATE.baseUrl = getBaseUrl();
       const params = getParams();
       APP_STATE.params = params;
+      forceCorrectGasApiUrl();
       saveRouteOverrides(params);
       APP_STATE.routes = getRouteConfig(params);
       APP_STATE.token = params.token || params.key || '';
@@ -1297,10 +1298,17 @@
       catch (err) { return value; }
     }
 
+    function forceCorrectGasApiUrl(){
+      try {
+        localStorage.setItem('ang_gas_api_url', ANG_DATA_URLS.gasApiUrl);
+        localStorage.setItem('ang_gas_url', ANG_DATA_URLS.gasApiUrl);
+      } catch (err) {}
+    }
+
     function getRouteConfig(params){
       const route = {
         entry: normalizeUrl(getFirstParam(params,['entry_url','entryUrl']) || getStoredUrl('ang_entry_url') || ANG_DATA_URLS.entry),
-        gasApiUrl: normalizeUrl(getFirstParam(params,['gas_api_url','gasApiUrl','api_url','apiUrl','web_app_url','webAppUrl']) || getStoredUrl('ang_gas_api_url') || ANG_DATA_URLS.gasApiUrl),
+        gasApiUrl: normalizeUrl(ANG_DATA_URLS.gasApiUrl),
         employeeHome: normalizeUrl(getFirstParam(params,['employee_url','employeeUrl','employee_home_url','employeeHomeUrl','frontend_url','frontendUrl']) || getStoredUrl('ang_employee_home_url') || ANG_DATA_URLS.employeeHome),
         employeeQr: normalizeUrl(getFirstParam(params,['employee_qr_url','employeeQrUrl','qr_url','qrUrl']) || getStoredUrl('ang_employee_qr_url') || ANG_DATA_URLS.employeeQr),
         adminLogin: normalizeUrl(getFirstParam(params,['admin_url','adminUrl','admin_login_url','adminLoginUrl','login_url','loginUrl']) || getStoredUrl('ang_admin_login_url') || ANG_DATA_URLS.adminLogin),
@@ -1388,8 +1396,8 @@
     }
 
     function getGasApiUrl(){
-      const routes = APP_STATE.routes || ANG_DATA_URLS;
-      return normalizeUrl((routes && routes.gasApiUrl) || ANG_DATA_URLS.gasApiUrl || '');
+      forceCorrectGasApiUrl();
+      return normalizeUrl(ANG_DATA_URLS.gasApiUrl || '');
     }
 
     function readApiResponseUrl(res){
@@ -1398,19 +1406,23 @@
 
 
     function isAndroidNativeBridgeReady(){
-      return !!(window.ANGHRApp || window.AndroidBridge);
+      return !!(window.ANGHRApp || window.AndroidBridge || window.AndroidNative || window.WebAppInterface);
     }
 
     function callAndroidNativeAuth(provider,statusId){
       const p = String(provider || '').trim().toLowerCase();
-      const bridge = window.ANGHRApp || window.AndroidBridge;
+      const bridge = window.ANGHRApp || window.AndroidBridge || window.AndroidNative || window.WebAppInterface;
       if (!bridge) return false;
       try {
         if (p === 'google') {
+          if (typeof bridge.startGoogleLogin === 'function') { bridge.startGoogleLogin(); return true; }
+          if (typeof bridge.startGoogleSignIn === 'function') { bridge.startGoogleSignIn(); return true; }
           if (typeof bridge.googleLogin === 'function') { bridge.googleLogin(); return true; }
           if (typeof bridge.loginWithGoogle === 'function') { bridge.loginWithGoogle(); return true; }
         }
         if (p === 'line') {
+          if (typeof bridge.startLineLogin === 'function') { bridge.startLineLogin(); return true; }
+          if (typeof bridge.startLineSignIn === 'function') { bridge.startLineSignIn(); return true; }
           if (typeof bridge.lineLogin === 'function') { bridge.lineLogin(); return true; }
           if (typeof bridge.loginWithLine === 'function') { bridge.loginWithLine(); return true; }
         }
@@ -1679,8 +1691,6 @@
         device_id:APP_STATE.deviceId,
         returnUrl:returnUrl,
         return_url:returnUrl,
-        redirectUri:returnUrl,
-        redirect_uri:returnUrl,
         callbackUrl:returnUrl,
         callback_url:returnUrl
       };
