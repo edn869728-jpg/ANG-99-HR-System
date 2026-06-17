@@ -1445,6 +1445,11 @@
     function handleNativeAuthToken(provider,idToken,extra){
       const token = String(idToken || '').trim();
       const safeProvider = String(provider || '').trim().toLowerCase();
+      const nativeKey = safeProvider + ':' + token;
+      const nowTs = Date.now();
+      if (token && window.__ANG_LAST_NATIVE_AUTH_KEY === nativeKey && (nowTs - (window.__ANG_LAST_NATIVE_AUTH_AT || 0)) < 5000) return;
+      window.__ANG_LAST_NATIVE_AUTH_KEY = nativeKey;
+      window.__ANG_LAST_NATIVE_AUTH_AT = nowTs;
       const pending = loadPendingAuth() || {};
       const flow = String(pending.flow || 'company_signup').trim().toLowerCase();
       const plan = normalizePlan(pending.plan || currentPlan() || '');
@@ -1507,6 +1512,56 @@
         setStatus(statusId,'error',err && err.message ? err.message : (label + ' 原生驗證通訊失敗'));
       });
     }
+
+    function normalizeNativeAuthResultPayload(payload){
+      if (typeof payload === 'string') {
+        try { payload = JSON.parse(payload); } catch (err) { payload = { id_token:payload }; }
+      }
+      payload = payload || {};
+      const provider = String(payload.provider || payload.type || '').trim().toLowerCase();
+      const token = String(payload.id_token || payload.credential || payload.loginToken || payload.token || '').trim();
+      return {
+        ok: payload.ok !== false,
+        provider: provider,
+        token: token,
+        email: String(payload.email || ''),
+        line_user_id: String(payload.line_user_id || payload.user_id || payload.sub || ''),
+        profile_name: String(payload.profile_name || payload.displayName || payload.name || ''),
+        message: String(payload.message || payload.error || '')
+      };
+    }
+
+    window.handleNativeAuthResult = function(payload){
+      const r = normalizeNativeAuthResultPayload(payload);
+      const pending = loadPendingAuth() || {};
+      const fallbackProvider = String((pending && pending.provider) || '').trim().toLowerCase();
+      const provider = r.provider || fallbackProvider;
+      if (!r.ok) {
+        setStatus(getPendingAuthStatusId(pending),'error',r.message || 'App 原生驗證失敗');
+        return;
+      }
+      if (!provider || !r.token) {
+        setStatus(getPendingAuthStatusId(pending),'error','App 已登入成功，但前端沒有收到 provider 或 token');
+        return;
+      }
+      handleNativeAuthToken(provider,r.token,{ email:r.email, line_user_id:r.line_user_id, profile_name:r.profile_name });
+    };
+
+    window.handleNativeGoogleResult = function(payload){
+      const r = normalizeNativeAuthResultPayload(payload);
+      r.provider = 'google';
+      window.handleNativeAuthResult(r);
+    };
+
+    window.handleNativeLineResult = function(payload){
+      const r = normalizeNativeAuthResultPayload(payload);
+      r.provider = 'line';
+      window.handleNativeAuthResult(r);
+    };
+
+    window.addEventListener('ANG_NATIVE_AUTH_RESULT',function(event){
+      if (event && event.detail) window.handleNativeAuthResult(event.detail);
+    });
 
     window.onNativeGoogleLoginSuccess = function(idToken,email){
       handleNativeAuthToken('google',idToken,{ email:email || '' });
@@ -1691,6 +1746,8 @@
         device_id:APP_STATE.deviceId,
         returnUrl:returnUrl,
         return_url:returnUrl,
+        redirectUri:returnUrl,
+        redirect_uri:returnUrl,
         callbackUrl:returnUrl,
         callback_url:returnUrl
       };
