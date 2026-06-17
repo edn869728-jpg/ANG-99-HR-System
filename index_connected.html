@@ -1589,6 +1589,42 @@
       setStatus(getPendingAuthStatusId(pending),'error',message || 'LINE 原生驗證失敗');
     };
 
+
+
+    function processStoredNativeAuthResult(){
+      try {
+        const pending = loadPendingAuth();
+        if (!pending) return false;
+        const raw = localStorage.getItem('ang_last_native_auth_result');
+        if (!raw) return false;
+        const savedAt = Number(localStorage.getItem('ang_last_native_auth_at') || '0');
+        if (savedAt && Date.now() - savedAt > 30 * 60 * 1000) return false;
+        const result = JSON.parse(raw);
+        const normalized = normalizeNativeAuthResultPayload(result);
+        const provider = normalized.provider || String(pending.provider || '').trim().toLowerCase();
+        const token = normalized.token || '';
+        const key = provider + ':' + token;
+        if (!provider || !token) return false;
+        if (window.__ANG_NATIVE_STORAGE_KEY === key && Date.now() - (window.__ANG_NATIVE_STORAGE_AT || 0) < 4500) return false;
+        window.__ANG_NATIVE_STORAGE_KEY = key;
+        window.__ANG_NATIVE_STORAGE_AT = Date.now();
+        handleNativeAuthToken(provider,token,{ email:normalized.email, line_user_id:normalized.line_user_id, profile_name:normalized.profile_name });
+        return true;
+      } catch (err) {
+        return false;
+      }
+    }
+
+    function startNativeAuthReceiveWatch(){
+      window.__ANG_NATIVE_AUTH_READY = '1';
+      [120,420,900,1600,2600,4200,6500,9000].forEach(function(delay){
+        setTimeout(processStoredNativeAuthResult,delay);
+      });
+    }
+
+    window.addEventListener('focus',function(){ setTimeout(processStoredNativeAuthResult,120); });
+    document.addEventListener('visibilitychange',function(){ if (!document.hidden) setTimeout(processStoredNativeAuthResult,120); });
+
     function callGasApi(action,payload,timeoutMs){
       const gasUrl = getGasApiUrl();
       if (!gasUrl) return Promise.reject(new Error('尚未設定 GAS API URL'));
@@ -2044,7 +2080,7 @@
       startOauthViaGas('line','company_signup',safePlan,{ source:'entry_plan_line' },statusId);
     }
 
-    window.addEventListener('load',init);
+    window.addEventListener('load',function(){ init(); startNativeAuthReceiveWatch(); });
   </script>
 </body>
 </html>
