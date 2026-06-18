@@ -1,224 +1,639 @@
-<!-- ANG HR v5 入口頁補丁：公司建立時要求 Google Drive 資料夾 ID + 測試上傳
-     貼法：放在 index.html 最後面，</body> 前。 -->
-<style>
-  .ang-drive-folder-block{
-    margin-top:10px;
-    padding:12px;
-    border-radius:18px;
-    border:1px solid var(--line,rgba(148,163,184,.24));
-    background:rgba(255,255,255,.52);
-  }
-  body[data-theme="dark"] .ang-drive-folder-block{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12)}
-  .ang-drive-folder-grid{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end}
-  .ang-drive-folder-grid .inline-label{font-size:13px;font-weight:1000;color:var(--main-text,#0f172a);margin-bottom:6px}
-  .ang-drive-folder-grid .inline-input{margin:0!important;letter-spacing:0!important;text-transform:none!important;font-size:14px!important;min-height:48px!important}
-  .ang-drive-test-btn{height:48px;min-width:82px;border-radius:16px;background:var(--secondary-bg,#f8fafc);color:var(--secondary-text,#1e1b4b);border:1px solid var(--secondary-border,#c7d2fe);font-weight:1000;font-size:14px;white-space:nowrap}
-  body[data-theme="dark"] .ang-drive-test-btn{background:rgba(255,255,255,.08);color:#fff;border-color:rgba(255,255,255,.18)}
-  .ang-drive-note{margin-top:8px;color:var(--muted-text,#64748b);font-size:12px;line-height:1.45;font-weight:850}
-</style>
-<script>
-(function(){
-  const PLANS = ['basic','plus','premium'];
-
-  function qs(id){ return document.getElementById(id); }
-  function safeText(v){ return String(v == null ? '' : v).trim(); }
-  function statusId(plan){ return plan + 'PlanStatus'; }
-  function driveInputId(plan){ return plan + 'DriveFolderId'; }
-  function driveStatusId(plan){ return plan + 'DriveFolderStatus'; }
-
-  function normalizeAuthMessage(msg){
-    const s = safeText(msg);
-    if (/帳號不存在|找不到帳號|查無帳號|無此帳號|公司.*錯|company|companyCode|公司代碼|驗證失敗|token/i.test(s)) {
-      return '公司代碼或身份驗證錯誤：請確認公司代碼、帳號 / 工號與驗證 token。';
-    }
-    return s;
-  }
-
-  const oldSetStatus = window.setStatus;
-  window.setStatus = function(id,type,message){
-    if (typeof oldSetStatus === 'function') return oldSetStatus(id,type,normalizeAuthMessage(message));
-    const box = qs(id);
-    if (!box) return;
-    box.className = 'status';
-    if (!message) { box.innerText = ''; box.classList.remove('show'); return; }
-    box.classList.add('show',type || 'info');
-    box.innerText = normalizeAuthMessage(message);
-  };
-
-  function extractDriveFolderId(value){
-    const raw = safeText(value);
-    if (!raw) return '';
-    const m1 = raw.match(/folders\/([a-zA-Z0-9_-]+)/);
-    if (m1) return m1[1];
-    const m2 = raw.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-    if (m2) return m2[1];
-    return raw.replace(/^https?:\/\/drive\.google\.com\/.*$/,'').trim() || raw;
-  }
-
-  function getDriveFolderId(plan){
-    const input = qs(driveInputId(plan));
-    const id = extractDriveFolderId(input ? input.value : '');
-    if (input && id && input.value !== id) input.value = id;
-    return id;
-  }
-
-  function getDeviceId(){
-    try { return (window.APP_STATE && APP_STATE.deviceId) || localStorage.getItem('ang_device_id') || ''; }
-    catch(err){ return ''; }
-  }
-
-  function getGasUrl(){
-    try { if (typeof getGasApiUrl === 'function') return getGasApiUrl(); } catch(err){}
-    try { if (window.ANG_DATA_URLS && ANG_DATA_URLS.gasApiUrl) return ANG_DATA_URLS.gasApiUrl; } catch(err){}
-    try { return localStorage.getItem('ang_gas_api_url') || ''; } catch(err){}
-    return '';
-  }
-
-  function postToGas(action,payload){
-    const url = getGasUrl();
-    if (!url) return Promise.reject(new Error('缺少 GAS API URL'));
-    return fetch(url,{
-      method:'POST',
-      headers:{'Content-Type':'text/plain;charset=utf-8'},
-      body:JSON.stringify(Object.assign({},payload || {},{ action:action }))
-    }).then(r=>r.text()).then(t=>{
-      try { return t ? JSON.parse(t) : {}; }
-      catch(err){ return { ok:false, message:'GAS 回傳不是 JSON：' + t.slice(0,120) }; }
-    });
-  }
-
-  function ensureDriveUI(){
-    PLANS.forEach(function(plan){
-      const email = qs(plan + 'SignupEmail');
-      if (!email) return;
-      const form = email.closest('.inline-form') || email.parentElement;
-      if (!form || qs(driveInputId(plan))) return;
-
-      const block = document.createElement('div');
-      block.className = 'ang-drive-folder-block';
-      block.innerHTML =
-        '<div class="ang-drive-folder-grid">' +
-          '<div>' +
-            '<div class="inline-label">Google Drive 公開資料夾 ID</div>' +
-            '<input class="inline-input" id="'+driveInputId(plan)+'" type="text" autocomplete="off" placeholder="貼上資料夾 ID 或 Drive 資料夾網址" />' +
-          '</div>' +
-          '<button class="ang-drive-test-btn" type="button" data-drive-test="'+plan+'">測試</button>' +
-        '</div>' +
-        '<div class="ang-drive-note">建立公司前必填。請先把資料夾共用權限設為公開 / 知道連結者可存取；測試會上傳 ANG_FOLDER_TEST.txt，完成後請自行到 Drive 檢查。</div>' +
-        '<div id="'+driveStatusId(plan)+'" class="status"></div>';
-      form.appendChild(block);
-    });
-  }
-
-  window.testCompanyDriveFolder = function(plan){
-    const safePlan = safeText(plan).toLowerCase();
-    const folderId = getDriveFolderId(safePlan);
-    const st = driveStatusId(safePlan);
-    if (!folderId) { setStatus(st,'error','請先輸入 Google Drive 資料夾 ID'); return; }
-    setStatus(st,'info','正在測試資料夾，會上傳 ANG_FOLDER_TEST.txt...');
-
-    const payload = { plan:safePlan, folderId:folderId, googleDriveFolderId:folderId, deviceId:getDeviceId() };
-
-    if (window.google && google.script && google.script.run) {
-      google.script.run
-        .withSuccessHandler(function(res){
-          if (!res || !res.ok) { setStatus(st,'error',(res && (res.message || res.msg)) || '測試失敗'); return; }
-          const input = qs(driveInputId(safePlan));
-          if (input) input.dataset.tested = '1';
-          setStatus(st,'success',(res.message || '測試檔已上傳，請自行到 Drive 資料夾檢查。'));
-        })
-        .withFailureHandler(function(err){ setStatus(st,'error',err && err.message ? err.message : '測試連線失敗'); })
-        .testCompanyDriveFolderAccess(payload);
-      return;
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+  <title>ANG HR SYSTEMS｜ENTRY</title>
+  <script src="config.js"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <style>
+    :root{
+      --body-bg:#d1d5db;
+      --screen-bg:url("ang-entry-bg-day.png");
+      --panel-bg:rgba(255,255,255,.94);
+      --panel-border:rgba(226,232,240,.92);
+      --panel-shadow:0 -14px 34px rgba(15,23,42,.10);
+      --main-text:#0f172a;
+      --muted-text:#64748b;
+      --soft-text:#94a3b8;
+      --input-bg:#f1f5f9;
+      --input-border:#e2e8f0;
+      --primary-bg:linear-gradient(90deg,#00d9ff 0%,#7c3cff 58%,#b000ff 100%);
+      --primary-text:#ffffff;
+      --primary-shadow:0 8px 24px rgba(124,60,255,.26);
+      --secondary-bg:#f8fafc;
+      --secondary-text:#475569;
+      --secondary-border:#e2e8f0;
+      --card-bg:rgba(255,255,255,.94);
+      --card-border:rgba(226,232,240,.92);
+      --line:rgba(148,163,184,.24);
+      --toggle-bg:rgba(255,255,255,.74);
+      --toggle-border:rgba(148,163,184,.34);
+      --toggle-shadow:0 10px 24px rgba(15,23,42,.12);
+      --toggle-icon-dim:rgba(71,85,105,.72);
+      --toggle-thumb-bg:#ffffff;
+      --toggle-thumb-shadow:0 6px 14px rgba(15,23,42,.16);
+      --toggle-thumb-x:0px;
+      --ease:cubic-bezier(.22,1,.36,1);
     }
 
-    postToGas('testCompanyDriveFolderAccess',payload).then(function(res){
-      if (!res || !res.ok) { setStatus(st,'error',(res && (res.message || res.msg)) || '測試失敗'); return; }
-      const input = qs(driveInputId(safePlan));
-      if (input) input.dataset.tested = '1';
-      setStatus(st,'success',(res.message || '測試檔已上傳，請自行到 Drive 資料夾檢查。'));
-    }).catch(function(err){ setStatus(st,'error',err && err.message ? err.message : '測試連線失敗'); });
-  };
-
-  document.addEventListener('click',function(ev){
-    const btn = ev.target && ev.target.closest ? ev.target.closest('[data-drive-test]') : null;
-    if (!btn) return;
-    ev.preventDefault();
-    window.testCompanyDriveFolder(btn.getAttribute('data-drive-test'));
-  },true);
-
-  function requireDriveBeforeSignup(plan){
-    const safePlan = safeText(plan).toLowerCase();
-    const folderId = getDriveFolderId(safePlan);
-    if (!folderId) { setStatus(statusId(safePlan),'error','建立公司前請輸入 Google Drive 公開資料夾 ID'); return ''; }
-    const input = qs(driveInputId(safePlan));
-    if (input && input.dataset.tested !== '1') { setStatus(statusId(safePlan),'error','請先按旁邊「測試」，確認測試檔可上傳後再建立公司'); return ''; }
-    return folderId;
-  }
-
-  function isValidEmailLocal(email){
-    if (typeof window.isValidEmail === 'function') return window.isValidEmail(email);
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email || '').trim());
-  }
-
-  window.requestPlanEmailVerification = function(plan){
-    const safePlan = safeText(plan).toLowerCase();
-    const input = qs(safePlan + 'SignupEmail');
-    const email = safeText(input ? input.value : '');
-    const st = statusId(safePlan);
-    const folderId = requireDriveBeforeSignup(safePlan);
-    if (!folderId) return;
-    if (!safePlan) return;
-    if (!isValidEmailLocal(email)) { setStatus(st,'error','請輸入正確的 Email'); return; }
-    setStatus(st,'info','正在送出註冊驗證...');
-
-    const payload = { plan:safePlan, email:email, deviceId:getDeviceId(), driveFolderId:folderId, folderId:folderId, googleDriveFolderId:folderId };
-    if (window.google && google.script && google.script.run) {
-      google.script.run.withSuccessHandler(function(res){
-        if (!res || !res.ok) { setStatus(st,'error',(res && (res.message || res.msg)) || '驗證送出失敗'); return; }
-        setStatus(st,'success',(res.message || res.msg) || '已送出驗證，請查看 Email');
-        if (res.nextUrl) setTimeout(function(){ window.location.href = res.nextUrl; },650);
-      }).withFailureHandler(function(err){ setStatus(st,'error',err && err.message ? err.message : '連線失敗'); })
-        .requestCompanySignupEmailVerification(payload);
-      return;
+    body[data-theme="dark"]{
+      --body-bg:#a3a3a3;
+      --screen-bg:url("ang-entry-bg-night.png");
+      --panel-bg:rgba(18,25,42,.88);
+      --panel-border:rgba(255,255,255,.08);
+      --panel-shadow:none;
+      --main-text:#ffffff;
+      --muted-text:#cbd5e1;
+      --soft-text:#8b9bb4;
+      --input-bg:rgba(255,255,255,.07);
+      --input-border:rgba(255,255,255,.10);
+      --secondary-bg:rgba(255,255,255,.06);
+      --secondary-text:#e5e7eb;
+      --secondary-border:rgba(255,255,255,.08);
+      --card-bg:rgba(18,25,42,.88);
+      --card-border:rgba(255,255,255,.08);
+      --line:rgba(255,255,255,.10);
+      --toggle-bg:rgba(15,23,42,.52);
+      --toggle-border:rgba(255,255,255,.12);
+      --toggle-shadow:0 10px 24px rgba(0,0,0,.28);
+      --toggle-icon-dim:rgba(226,232,240,.68);
+      --toggle-thumb-bg:rgba(255,255,255,.15);
+      --toggle-thumb-shadow:0 0 18px rgba(0,217,255,.16);
+      --toggle-thumb-x:28px;
     }
-    postToGas('requestCompanySignupEmailVerification',payload).then(function(res){
-      if (!res || !res.ok) { setStatus(st,'error',(res && (res.message || res.msg)) || '驗證送出失敗'); return; }
-      setStatus(st,'success',(res.message || res.msg) || '已送出驗證，請查看 Email');
-      if (res.nextUrl || res.url) setTimeout(function(){ window.location.href = res.nextUrl || res.url; },650);
-    }).catch(function(err){ setStatus(st,'error',err && err.message ? err.message : '連線失敗'); });
-  };
 
-  window.requestPlanGoogleVerification = function(plan){
-    const safePlan = safeText(plan).toLowerCase();
-    const st = statusId(safePlan);
-    const folderId = requireDriveBeforeSignup(safePlan);
-    if (!folderId) return;
-    if (!safePlan) return;
-    setStatus(st,'info','正在開啟 Google 驗證...');
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+    html,body{margin:0;width:100%;height:100%;overflow:hidden;}
+    body{display:flex;align-items:center;justify-content:center;background:var(--body-bg);font-family:"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;color:var(--main-text);transition:background .25s ease;}
+    button,input{font-family:inherit;}
+    button{border:none;cursor:pointer;}
 
-    const payload = { plan:safePlan, deviceId:getDeviceId(), driveFolderId:folderId, folderId:folderId, googleDriveFolderId:folderId };
-    function openAuth(url){
-      if (typeof window.openGoogleAuthUrl === 'function') openGoogleAuthUrl(url,st);
-      else window.location.href = url;
+    .phone{width:100%;max-width:400px;height:min(100vh,760px);position:relative;overflow:hidden;border-radius:24px;background:#05060b;box-shadow:0 18px 42px rgba(0,0,0,.28);}
+    .phone::before{content:"";position:absolute;inset:0;z-index:0;background-image:var(--screen-bg);background-size:cover;background-position:center center;background-repeat:no-repeat;transition:background-image .25s ease;}
+    .phone::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(0,0,0,.08) 66%,rgba(0,0,0,.18) 100%);opacity:.55;}
+    body:not([data-theme="dark"]) .phone::after{background:linear-gradient(180deg,rgba(255,255,255,.04) 0%,rgba(255,255,255,.02) 62%,rgba(15,23,42,.08) 100%);opacity:.70;}
+
+    .theme-toggle{position:absolute;top:14px;right:14px;width:58px;height:30px;padding:3px;border:1px solid var(--toggle-border);border-radius:999px;background:var(--toggle-bg);box-shadow:var(--toggle-shadow);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);z-index:40;display:grid;grid-template-columns:1fr 1fr;align-items:center;justify-items:center;appearance:none;-webkit-appearance:none;overflow:hidden;}
+    .theme-toggle::before{content:"";position:absolute;left:3px;top:3px;width:24px;height:24px;border-radius:50%;background:var(--toggle-thumb-bg);box-shadow:var(--toggle-thumb-shadow);transform:translateX(var(--toggle-thumb-x));transition:transform .25s ease,background .25s ease,box-shadow .25s ease;}
+    .theme-toggle span{position:relative;z-index:1;width:24px;height:24px;display:flex;align-items:center;justify-content:center;color:var(--toggle-icon-dim);pointer-events:none;}
+    .theme-toggle svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round;}
+    body:not([data-theme="dark"]) .theme-toggle .sun{color:#0f172a;}
+    body[data-theme="dark"] .theme-toggle .moon{color:#fff;filter:drop-shadow(0 0 5px rgba(255,255,255,.32));}
+
+    .view{position:absolute;inset:0;z-index:5;display:none;flex-direction:column;}
+    .view.active{display:flex;}
+    .top-space{flex:1;min-height:360px;transition:opacity .42s var(--ease),transform .42s var(--ease);}
+    .phone.expanded .top-space{opacity:.38;transform:translateY(-24px) scale(.96);}
+    .panel{position:relative;z-index:8;margin-top:auto;min-height:264px;padding:28px 24px 24px;display:flex;flex-direction:column;background:var(--panel-bg);border-top:1px solid var(--panel-border);border-radius:28px 28px 0 0;box-shadow:var(--panel-shadow);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);transition:background .25s ease,border-color .25s ease,box-shadow .25s ease;}
+    .home-title{margin:0 0 18px;color:var(--main-text);text-align:center;font-size:22px;line-height:1.2;font-weight:1000;transition:color .25s ease;}
+    .btn{width:100%;min-height:52px;border:none;border-radius:16px;padding:14px 18px;font-size:16px;line-height:1.2;font-weight:1000;cursor:pointer;text-align:center;transition:transform .18s ease,background .25s ease,color .25s ease,border-color .25s ease,box-shadow .25s ease;}
+    .btn:active{transform:scale(.98);}
+    .btn-primary{background:var(--primary-bg);color:var(--primary-text);box-shadow:var(--primary-shadow);}
+    .btn-secondary{background:var(--secondary-bg);color:var(--secondary-text);border:1px solid var(--secondary-border);}
+    .help-text{margin:8px 0 0;color:var(--muted-text);text-align:center;font-size:12px;line-height:1.35;font-weight:850;transition:color .25s ease;}
+    .spacer{flex:1;min-height:12px;}
+    .entry-top-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;}
+    .section-title{margin:0;color:var(--main-text);font-size:20px;line-height:1.2;font-weight:1000;letter-spacing:-.03em;transition:color .25s ease;}
+    .back-btn{min-width:54px;height:34px;border:none;border-radius:999px;padding:0 14px;background:rgba(78,98,184,.45);color:#dbeafe;font-size:13px;font-weight:1000;cursor:pointer;}
+    body:not([data-theme="dark"]) .back-btn{background:#e0e7ff;color:#4338ca;}
+    .field{margin:10px 0 12px;}
+    .input-wrap{display:flex;align-items:center;min-height:54px;padding:4px 6px 4px 16px;border-radius:18px;background:var(--input-bg);border:1px solid var(--input-border);transition:background .25s ease,border-color .25s ease,box-shadow .2s ease;}
+    .input-wrap:focus-within{border-color:rgba(124,60,255,.62);box-shadow:0 0 0 4px rgba(124,60,255,.13);}
+    input{width:100%;border:none;outline:none;background:transparent;color:var(--main-text);font-size:16px;font-weight:1000;letter-spacing:.08em;padding:12px 0;}
+    input::placeholder{color:var(--muted-text);opacity:.72;font-size:14px;font-weight:900;letter-spacing:0;text-transform:none;}
+    .clear-btn{width:36px;height:36px;flex:0 0 auto;border:none;border-radius:14px;background:var(--secondary-bg);color:var(--secondary-text);font-size:18px;font-weight:1000;cursor:pointer;}
+    .btn-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
+    .hint{margin-top:14px;color:var(--main-text);text-align:center;font-size:12px;line-height:1.45;font-weight:900;transition:color .25s ease;}
+    .status{display:none;margin-top:10px;padding:10px 12px;border-radius:15px;font-size:13px;line-height:1.45;font-weight:900;text-align:center;white-space:pre-wrap;}
+    .status.show{display:block;}
+    .status.info{background:rgba(59,130,246,.14);color:#bfdbfe;border:1px solid rgba(59,130,246,.18);}
+    .status.success{background:rgba(16,185,129,.14);color:#a7f3d0;border:1px solid rgba(16,185,129,.18);}
+    .status.error{background:rgba(239,68,68,.14);color:#fecaca;border:1px solid rgba(239,68,68,.18);}
+    body:not([data-theme="dark"]) .status.info{color:#2563eb;}
+    body:not([data-theme="dark"]) .status.success{color:#059669;}
+    body:not([data-theme="dark"]) .status.error{color:#dc2626;}
+    .entry-mode{display:none;}
+    .entry-mode.active{display:block;}
+    .profile{display:flex;align-items:center;gap:12px;margin-bottom:12px;padding:12px;border-radius:18px;background:var(--input-bg);border:1px solid var(--input-border);}
+    .avatar{width:44px;height:44px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;border-radius:16px;background:var(--primary-bg);color:#fff;font-size:16px;font-weight:1000;}
+    .profile-name{color:var(--main-text);font-size:16px;font-weight:1000;}
+    .profile-meta{margin-top:4px;color:var(--muted-text);font-size:12px;font-weight:850;}
+
+    .sheet-stage{position:absolute;left:0;right:0;bottom:0;z-index:8;height:190px;max-height:88vh;overflow:visible;transition:height .58s var(--ease);}
+    .phone.expanded .sheet-stage{height:82vh;}
+    .sheet-carousel{width:100%;height:100%;display:flex;gap:14px;overflow-x:auto;overflow-y:visible;scroll-snap-type:x mandatory;scroll-padding-left:22px;padding:0 22px;-webkit-overflow-scrolling:touch;cursor:grab;scrollbar-width:none;}
+    .sheet-carousel::-webkit-scrollbar{display:none;}
+    .sheet-carousel.dragging{cursor:grabbing;scroll-snap-type:none;}
+    .plan-sheet{flex:0 0 auto;height:100%;scroll-snap-align:center;border-radius:32px 32px 0 0;background:var(--card-bg);border:1px solid var(--card-border);border-bottom:0;box-shadow:0 -14px 34px rgba(15,23,42,.10);backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px);overflow:hidden;display:flex;flex-direction:column;opacity:.58;transform:scale(.94) translateY(14px);transition:opacity .28s var(--ease),transform .28s var(--ease),box-shadow .28s var(--ease),background .28s ease;position:relative;}
+    .plan-sheet.active{opacity:1;transform:scale(1) translateY(0);box-shadow:0 -18px 46px rgba(15,23,42,.15);}
+    body[data-theme="dark"] .plan-sheet.active{box-shadow:0 -18px 46px rgba(0,0,0,.24);}
+    .plan-sheet.login,.plan-sheet.basic{width:318px;}
+    .plan-sheet.plus{width:338px;}
+    .plan-sheet.premium{width:358px;}
+    .plan-sheet::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 100% 0%,rgba(89,221,255,.18) 0%,rgba(89,221,255,0) 40%),radial-gradient(circle at 0% 100%,rgba(255,135,224,.13) 0%,rgba(255,135,224,0) 48%);pointer-events:none;z-index:0;}
+    .sheet-handle-zone{width:100%;padding:12px 0 8px;display:flex;justify-content:center;flex:0 0 auto;cursor:pointer;position:relative;z-index:2;}
+    .sheet-handle{width:44px;height:5px;border-radius:999px;background:rgba(100,116,139,.34);}
+    body[data-theme="dark"] .sheet-handle{background:rgba(255,255,255,.20);}
+    .sheet-summary{position:relative;z-index:2;padding:0 20px 14px;flex:0 0 auto;}
+    .summary-main{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;}
+    .summary-left{min-width:0;flex:1;}
+    .summary-right{flex:0 0 auto;text-align:right;padding-top:2px;}
+    .title-line{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+    .sheet-title{margin:0;color:var(--main-text);font-size:24px;line-height:1.15;font-weight:1000;letter-spacing:-.7px;}
+    .plan-sheet.premium .sheet-title{font-size:30px;letter-spacing:-1px;}
+    .sheet-tag{display:inline-flex;padding:6px 10px;border-radius:999px;background:rgba(128,137,255,.13);color:#8089ff;font-size:11px;line-height:1.2;font-weight:1000;white-space:nowrap;}
+    .sheet-price{color:var(--main-text);font-size:22px;line-height:1.1;font-weight:1000;letter-spacing:-.8px;white-space:nowrap;}
+    .sheet-price span{display:block;margin-top:3px;color:var(--muted-text);font-size:11px;font-weight:850;letter-spacing:0;}
+    .sheet-sub{margin:10px 0 0;color:var(--muted-text);font-size:13px;line-height:1.5;font-weight:800;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    .mini-pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+    .mini-pill{padding:5px 8px;border-radius:999px;background:var(--secondary-bg);border:1px solid var(--secondary-border);color:var(--secondary-text);font-size:11px;font-weight:850;}
+    .phone:not(.expanded) .mini-pills{display:none;}
+    .sheet-detail{position:relative;z-index:2;flex:1;min-height:0;overflow-y:auto;padding:0 20px 96px;opacity:0;transform:translateY(12px);pointer-events:none;transition:opacity .28s var(--ease),transform .28s var(--ease);scrollbar-width:none;}
+    .sheet-detail::-webkit-scrollbar{display:none;}
+    .phone.expanded .plan-sheet.active .sheet-detail{opacity:1;transform:translateY(0);pointer-events:auto;}
+    .detail-block{margin-top:10px;padding-top:16px;border-top:1px solid var(--line);}
+    .detail-title{margin:0 0 10px;color:var(--main-text);font-size:15px;font-weight:1000;}
+    .feature-list{display:grid;gap:10px;margin:0;padding:0;list-style:none;}
+    .feature-list li{color:var(--muted-text);font-size:14px;line-height:1.5;font-weight:800;}
+    .feature-list li::before{content:"✓";display:inline-flex;width:22px;color:#8089ff;font-weight:1000;}
+    .note{margin-top:20px;color:var(--muted-text);font-size:13px;line-height:1.65;font-weight:800;border-top:1px solid var(--line);padding-top:16px;}
+    .bottom-action{position:absolute;left:18px;right:18px;bottom:14px;z-index:12;padding-top:16px;background:linear-gradient(180deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.86) 34%,rgba(255,255,255,.96) 100%);pointer-events:none;opacity:0;transform:translateY(18px);transition:opacity .28s var(--ease),transform .28s var(--ease);}
+    body[data-theme="dark"] .bottom-action{background:linear-gradient(180deg,rgba(18,25,42,0) 0%,rgba(18,25,42,.82) 34%,rgba(18,25,42,.96) 100%);}
+    .phone.expanded .bottom-action{opacity:1;transform:translateY(0);}
+    .bottom-action button{width:100%;min-height:54px;border-radius:18px;background:var(--primary-bg);color:#fff;font-size:16px;font-weight:1000;box-shadow:var(--primary-shadow);pointer-events:auto;}
+    .dots{position:absolute;left:0;right:0;bottom:16px;z-index:13;display:flex;justify-content:center;gap:7px;pointer-events:auto;transition:bottom .36s var(--ease),opacity .24s var(--ease);}
+    .phone.expanded .dots{bottom:76px;opacity:.82;}
+    .dot{width:7px;height:7px;border-radius:999px;background:rgba(100,116,139,.28);transition:width .26s var(--ease),background .26s var(--ease);cursor:pointer;}
+    .dot.active{width:22px;background:#8089ff;}
+
+    .auth-sheet{position:absolute;inset:0;z-index:60;display:none;background:rgba(2,6,23,.42);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding:62px 14px 14px;}
+    .auth-sheet.show{display:flex;align-items:flex-end;}
+    .auth-panel{width:100%;max-height:86vh;overflow-y:auto;background:var(--panel-bg);border:1px solid var(--panel-border);border-radius:28px;padding:18px;box-shadow:0 18px 44px rgba(0,0,0,.24);scrollbar-width:none;}
+    .auth-panel::-webkit-scrollbar{display:none;}
+    .auth-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:12px;}
+    .auth-title{margin:0;color:var(--main-text);font-size:20px;line-height:1.2;font-weight:1000;}
+    .auth-sub{margin:6px 0 0;color:var(--muted-text);font-size:12px;line-height:1.45;font-weight:850;}
+    .auth-close{width:38px;height:38px;border-radius:15px;background:var(--secondary-bg);color:var(--secondary-text);border:1px solid var(--secondary-border);font-size:20px;font-weight:1000;}
+    .auth-step{margin-top:12px;padding:12px;border-radius:18px;background:var(--secondary-bg);border:1px solid var(--secondary-border);}
+    .auth-step-title{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;color:var(--main-text);font-size:14px;font-weight:1000;}
+    .auth-badge{padding:5px 8px;border-radius:999px;background:rgba(128,137,255,.16);color:#8089ff;font-size:11px;font-weight:1000;white-space:nowrap;}
+    .auth-badge.ok{background:rgba(16,185,129,.14);color:#10b981;}
+    .auth-field{margin-top:9px;}
+    .auth-field label{display:block;margin:0 0 6px;color:var(--muted-text);font-size:12px;font-weight:950;}
+    .auth-field input{min-height:46px;border-radius:15px;background:var(--input-bg);border:1px solid var(--input-border);padding:10px 12px;text-transform:none;letter-spacing:0;font-size:14px;}
+    .auth-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px;}
+    .auth-grid.three{grid-template-columns:1fr 1fr 1fr;}
+    .auth-mini-btn{min-height:44px;border-radius:15px;padding:10px 12px;font-size:13px;font-weight:1000;background:var(--secondary-bg);color:var(--secondary-text);border:1px solid var(--secondary-border);}
+    .auth-mini-btn.primary{background:var(--primary-bg);color:#fff;border:none;box-shadow:var(--primary-shadow);}
+    .auth-mini-btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none;}
+    .auth-ok-box{display:none;margin-top:10px;padding:10px 12px;border-radius:15px;background:rgba(16,185,129,.14);border:1px solid rgba(16,185,129,.18);color:#10b981;font-size:12px;line-height:1.45;font-weight:900;white-space:pre-wrap;}
+    .auth-ok-box.show{display:block;}
+    .register-submit{margin-top:12px;}
+    .register-submit:disabled{opacity:.45;cursor:not-allowed;box-shadow:none;}
+
+    @media (max-width:430px){
+      body{align-items:stretch;}
+      .phone{max-width:none;max-height:none;height:100vh;border-radius:0;}
+      .top-space{min-height:380px;}
+      .sheet-carousel{scroll-padding-left:18px;padding-left:18px;padding-right:18px;}
+      .plan-sheet.login,.plan-sheet.basic{width:302px;}
+      .plan-sheet.plus{width:322px;}
+      .plan-sheet.premium{width:342px;}
+      .plan-sheet.premium .sheet-title{font-size:28px;}
     }
-    if (window.google && google.script && google.script.run) {
-      google.script.run.withSuccessHandler(function(res){
-        if (!res || !res.ok) { setStatus(st,'error',(res && (res.message || res.msg)) || 'Google 驗證啟動失敗'); return; }
-        if (res.authUrl || res.nextUrl) { openAuth(res.authUrl || res.nextUrl); return; }
-        setStatus(st,'success','Google 驗證已啟動');
-      }).withFailureHandler(function(err){ setStatus(st,'error',err && err.message ? err.message : '連線失敗'); })
-        .requestCompanySignupGoogleVerification(payload);
-      return;
+    @media (max-height:700px){
+      .phone{height:100vh;border-radius:0;}
+      .top-space{min-height:320px;}
+      .panel{min-height:258px;padding:24px 22px 22px;}
+      .sheet-stage{height:188px;}
     }
-    postToGas('requestCompanySignupGoogleVerification',payload).then(function(res){
-      if (!res || !res.ok) { setStatus(st,'error',(res && (res.message || res.msg)) || 'Google 驗證啟動失敗'); return; }
-      if (res.authUrl || res.nextUrl || res.url) { openAuth(res.authUrl || res.nextUrl || res.url); return; }
-      setStatus(st,'success','Google 驗證已啟動');
-    }).catch(function(err){ setStatus(st,'error',err && err.message ? err.message : '連線失敗'); });
-  };
+  </style>
+</head>
 
-  window.addEventListener('load',ensureDriveUI);
-  document.addEventListener('DOMContentLoaded',ensureDriveUI);
-})();
-</script>
+<body data-theme="dark">
+  <main class="phone" id="phone">
+    <button class="theme-toggle" type="button" aria-label="切換日光與暗夜模式" aria-pressed="true">
+      <span class="sun" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2.2M12 19.8V22M4.93 4.93l1.56 1.56M17.51 17.51l1.56 1.56M2 12h2.2M19.8 12H22M4.93 19.07l1.56-1.56M17.51 6.49l1.56-1.56"></path></svg></span>
+      <span class="moon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 14.2A8.6 8.6 0 0 1 9.8 3a7.5 7.5 0 1 0 11.2 11.2z"></path></svg></span>
+    </button>
+
+    <section id="homeView" class="view active">
+      <div class="top-space"></div>
+      <div class="panel">
+        <h1 class="home-title">歡迎登入系統</h1>
+        <button class="btn btn-primary" type="button" onclick="showEmployeeEntry('code')">員工專區</button>
+        <div class="help-text">首次使用請點擊專屬開通連結</div>
+        <div class="spacer"></div>
+        <button class="btn btn-secondary" type="button" onclick="showManagerEntry()">企業管理與註冊</button>
+      </div>
+    </section>
+
+    <section id="employeeEntryView" class="view">
+      <div class="top-space"></div>
+      <div class="panel">
+        <div id="codeMode" class="entry-mode">
+          <div class="entry-top-row"><h1 class="section-title">輸入開通碼</h1><button class="back-btn" type="button" onclick="showHome()">返回</button></div>
+          <div class="field"><div class="input-wrap"><input id="activationCode" type="text" inputmode="text" autocomplete="one-time-code" placeholder="開通碼" maxlength="20" /><button class="clear-btn" type="button" onclick="clearCode()">×</button></div></div>
+          <button class="btn btn-primary" type="button" onclick="submitActivationCode()">啟用此設備</button>
+          <div class="btn-row"><button class="btn btn-secondary" type="button" onclick="scanQrCode()">掃描 QR</button><button class="btn btn-secondary" type="button" onclick="contactHr()">聯絡 HR</button></div>
+          <div class="hint">換手機或無法登入，請聯絡管理員重發開通碼。</div>
+          <div id="codeStatus" class="status"></div>
+        </div>
+        <div id="bindMode" class="entry-mode">
+          <div class="entry-top-row"><h1 class="section-title">確認綁定</h1><button class="back-btn" type="button" onclick="showHome()">返回</button></div>
+          <div class="profile"><div class="avatar" id="bindAvatar">員</div><div><div class="profile-name" id="bindName">員工帳號</div><div class="profile-meta" id="bindMeta">即將綁定此設備</div></div></div>
+          <button class="btn btn-primary" type="button" onclick="confirmBindByToken()">綁定此設備</button>
+          <div class="hint">綁定後，下次會自動登入。</div>
+          <div id="bindStatus" class="status"></div>
+        </div>
+        <div id="expiredMode" class="entry-mode">
+          <div class="entry-top-row"><h1 class="section-title">連結已失效</h1><button class="back-btn" type="button" onclick="showHome()">返回</button></div>
+          <button class="btn btn-primary" type="button" onclick="showEmployeeEntry('code')">輸入開通碼</button>
+          <div class="btn-row"><button class="btn btn-secondary" type="button" onclick="scanQrCode()">掃描 QR</button><button class="btn btn-secondary" type="button" onclick="contactHr()">聯絡 HR</button></div>
+          <div class="hint">請向管理員索取新的開通碼。</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="managerEntryView" class="view">
+      <div class="top-space"></div>
+      <section class="sheet-stage">
+        <div class="sheet-carousel" id="sheetCarousel">
+          <article class="plan-sheet login active" data-key="login">
+            <div class="sheet-handle-zone"><div class="sheet-handle"></div></div>
+            <div class="sheet-summary"><div class="summary-main"><div class="summary-left"><div class="title-line"><h2 class="sheet-title">企業管理登入</h2><div class="sheet-tag">現有客戶</div></div></div><div class="summary-right"><div class="sheet-price">登入 <span>管理後台</span></div></div></div><p class="sheet-sub">已有公司代碼與管理員帳號，請從這裡進入後台。</p><div class="mini-pills"><span class="mini-pill">公司代碼</span><span class="mini-pill">管理員</span><span class="mini-pill">Creator</span></div></div>
+            <div class="sheet-detail"><div class="detail-block"><h3 class="detail-title">登入後可管理</h3><ul class="feature-list"><li>員工資料與開通碼</li><li>排班、請假與補打卡審核</li><li>打卡紀錄與出勤狀態</li><li>薪資、公告與系統設定</li></ul></div><div class="note">若忘記公司代碼或管理員帳號，請聯絡 ANG HR 系統管理者。</div></div>
+          </article>
+          <article class="plan-sheet basic" data-key="basic">
+            <div class="sheet-handle-zone"><div class="sheet-handle"></div></div>
+            <div class="sheet-summary"><div class="summary-main"><div class="summary-left"><div class="title-line"><h2 class="sheet-title">Basic</h2><div class="sheet-tag">基礎方案</div></div></div><div class="summary-right"><div class="sheet-price">NT$199 <span>/ 月</span></div></div></div><p class="sheet-sub">基本打卡、排班與員工資料。</p><div class="mini-pills"><span class="mini-pill">打卡</span><span class="mini-pill">排班</span><span class="mini-pill">員工資料</span></div></div>
+            <div class="sheet-detail"><div class="detail-block"><h3 class="detail-title">Basic 主要功能</h3><ul class="feature-list"><li>員工資料建立</li><li>NFC / QR / 按鈕備援打卡</li><li>本月打卡紀錄</li><li>基礎排班管理</li></ul></div><div class="note">註冊前需完成 Email / Google / LINE 其中一種驗證，並測試公司 Google Drive 資料夾可寫入。</div></div>
+          </article>
+          <article class="plan-sheet plus" data-key="plus">
+            <div class="sheet-handle-zone"><div class="sheet-handle"></div></div>
+            <div class="sheet-summary"><div class="summary-main"><div class="summary-left"><div class="title-line"><h2 class="sheet-title">Plus</h2><div class="sheet-tag">推薦</div></div></div><div class="summary-right"><div class="sheet-price">NT$399 <span>/ 月</span></div></div></div><p class="sheet-sub">請假、補卡、審核與公告。</p><div class="mini-pills"><span class="mini-pill">請假</span><span class="mini-pill">補卡</span><span class="mini-pill">審核</span></div></div>
+            <div class="sheet-detail"><div class="detail-block"><h3 class="detail-title">Plus 主要功能</h3><ul class="feature-list"><li>Basic 全部功能</li><li>請假申請與審核</li><li>補打卡申請與審核</li><li>週排班 / 月排班</li><li>主管公告與員工留言</li></ul></div><div class="note">註冊前需完成 Email / Google / LINE 其中一種驗證，並測試公司 Google Drive 資料夾可寫入。</div></div>
+          </article>
+          <article class="plan-sheet premium" data-key="premium">
+            <div class="sheet-handle-zone"><div class="sheet-handle"></div></div>
+            <div class="sheet-summary"><div class="summary-main"><div class="summary-left"><div class="title-line"><h2 class="sheet-title">Premium</h2><div class="sheet-tag">完整功能</div></div></div><div class="summary-right"><div class="sheet-price">NT$699 <span>/ 月</span></div></div></div><p class="sheet-sub">Premium 獨有的特色功能。</p><div class="mini-pills"><span class="mini-pill">薪資</span><span class="mini-pill">分店</span><span class="mini-pill">報表</span></div></div>
+            <div class="sheet-detail"><div class="detail-block"><h3 class="detail-title">Premium 獨有特色</h3><ul class="feature-list"><li>薪資試算與月結管理</li><li>分店資料分流與跨店查看</li><li>角色權限分層管理</li><li>完整出勤、工時與薪資報表</li><li>進階系統設定與管理儀表板</li></ul></div><div class="note">註冊前需完成 Email / Google / LINE 其中一種驗證，並測試公司 Google Drive 資料夾可寫入。</div></div>
+          </article>
+        </div>
+        <div class="dots" id="dots"><span class="dot active"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+        <div class="bottom-action"><button type="button" id="mainAction">企業管理登入</button></div>
+      </section>
+    </section>
+
+    <section id="registerSheet" class="auth-sheet" aria-hidden="true">
+      <div class="auth-panel">
+        <div class="auth-head">
+          <div><h2 class="auth-title" id="regTitle">建立公司</h2><p class="auth-sub">先驗證管理員身份，再測試公司資料上傳資料夾。驗證只判斷是否成功，不綁死後續登入方式。</p></div>
+          <button class="auth-close" type="button" onclick="closeRegisterFlow()">×</button>
+        </div>
+
+        <div class="auth-step">
+          <div class="auth-step-title">1. 管理員驗證 <span class="auth-badge" id="authBadge">未驗證</span></div>
+          <div class="auth-field"><label>管理員 Email</label><input id="regEmail" type="email" placeholder="admin@example.com" autocomplete="email"></div>
+          <div class="auth-grid"><button class="auth-mini-btn primary" type="button" id="sendEmailBtn" onclick="sendRegisterEmailCode()">寄送驗證碼</button><button class="auth-mini-btn" type="button" onclick="startGoogleVerify()">Google 驗證</button></div>
+          <div class="auth-field"><label>Email 驗證碼</label><input id="regEmailCode" type="text" inputmode="numeric" placeholder="6 位數驗證碼" maxlength="10"></div>
+          <div class="auth-grid"><button class="auth-mini-btn" type="button" onclick="verifyRegisterEmailCode()">確認 Email 驗證碼</button><button class="auth-mini-btn" type="button" onclick="startLineVerify()">LINE 驗證</button></div>
+          <div id="authOkBox" class="auth-ok-box"></div>
+          <div id="regAuthStatus" class="status"></div>
+        </div>
+
+        <div class="auth-step">
+          <div class="auth-step-title">2. Google Drive 資料夾測試 <span class="auth-badge" id="driveBadge">未測試</span></div>
+          <div class="auth-field"><label>公司 Google Drive 資料夾 ID 或資料夾網址</label><input id="driveFolderId" type="text" placeholder="貼上資料夾 ID 或 https://drive.google.com/drive/folders/..." autocomplete="off"></div>
+          <button class="auth-mini-btn primary" type="button" onclick="testDriveFolderUpload()">測試上傳 ANG_FOLDER_TEST.txt</button>
+          <div id="driveOkBox" class="auth-ok-box"></div>
+          <div id="regDriveStatus" class="status"></div>
+        </div>
+
+        <div class="auth-step">
+          <div class="auth-step-title">3. 公司資料 <span class="auth-badge" id="companyBadge">待完成</span></div>
+          <div class="auth-field"><label>公司名稱</label><input id="companyName" type="text" placeholder="公司 / 店家名稱"></div>
+          <div class="auth-field"><label>公司代碼</label><input id="companyCode" type="text" placeholder="可留空由系統產生"></div>
+          <div class="auth-field"><label>管理員姓名</label><input id="adminName" type="text" placeholder="管理員姓名"></div>
+          <div class="auth-field"><label>聯絡電話</label><input id="adminPhone" type="tel" placeholder="手機或公司電話"></div>
+          <button class="btn btn-primary register-submit" id="submitCompanyBtn" type="button" onclick="submitCompanyRegister()" disabled>建立公司</button>
+          <div id="regSubmitStatus" class="status"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const GOOGLE_CLIENT_ID = '660707205594-74rvsq9s1h87v1s5pi9nvtms1e4qipat.apps.googleusercontent.com';
+
+    const APP_STATE = {baseUrl:'',token:'',id:'',name:'',company:'',deviceId:''};
+    const REGISTER_STATE = {plan:'',verified:false,provider:'',email:'',name:'',credential:'',driveFolderId:'',driveTestOk:false,sendTimer:null,sendRemain:0};
+
+    const phone = document.getElementById('phone');
+    const carousel = document.getElementById('sheetCarousel');
+    const sheets = Array.from(document.querySelectorAll('.plan-sheet'));
+    const dots = Array.from(document.querySelectorAll('.dot'));
+    const mainAction = document.getElementById('mainAction');
+    const actionText = {login:'企業管理登入',basic:'選擇 Basic',plus:'選擇 Plus',premium:'選擇 Premium'};
+    const planText = {basic:'Basic',plus:'Plus',premium:'Premium'};
+
+    function init(){
+      APP_STATE.baseUrl = getBaseUrl();
+      const params = getParams();
+      APP_STATE.token = params.token || params.key || '';
+      APP_STATE.id = String(params.id || '').trim().toUpperCase();
+      APP_STATE.name = String(params.name || '').trim();
+      APP_STATE.company = String(params.company || params.company_id || '').trim();
+      APP_STATE.deviceId = getOrCreateDeviceId();
+      initTheme(params.theme);
+      initManagerCarousel();
+      handleAuthReturnParams(params);
+      if (params.expired === '1' || params.status === 'expired') {showEmployeeEntry('expired');return;}
+      if (APP_STATE.token) {showEmployeeEntry('bind');return;}
+      showHome();
+    }
+
+    function initTheme(themeFromUrl){
+      const body = document.body;
+      const toggle = document.querySelector('.theme-toggle');
+      const storageKey = 'ang-hr-theme';
+      function applyTheme(theme){const isDark = theme === 'dark' || theme === 'night';body.dataset.theme = isDark ? 'dark' : 'light';toggle.setAttribute('aria-pressed',String(isDark));}
+      const savedTheme = localStorage.getItem(storageKey);
+      applyTheme(themeFromUrl || savedTheme || 'dark');
+      toggle.addEventListener('click',function(){const nextTheme = body.dataset.theme === 'dark' ? 'light' : 'dark';applyTheme(nextTheme);localStorage.setItem(storageKey,nextTheme);});
+    }
+
+    function getParams(){const sp = new URLSearchParams(window.location.search);const data = {};sp.forEach(function(value,key){data[key] = String(value || '').trim();});return data;}
+    function getBaseUrl(){return window.location.origin + window.location.pathname;}
+    function getOrCreateDeviceId(){const key = 'ang_hr_device_id';let id = localStorage.getItem(key);if (!id) {id = 'DEV-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).slice(2,10).toUpperCase();localStorage.setItem(key,id);}return id;}
+    function setView(viewId){['homeView','employeeEntryView','managerEntryView'].forEach(function(id){const el = document.getElementById(id);if (el) el.classList.remove('active');});const target = document.getElementById(viewId);if (target) target.classList.add('active');if (viewId !== 'managerEntryView') phone.classList.remove('expanded');}
+    function setEntryMode(modeId){['codeMode','bindMode','expiredMode'].forEach(function(id){const el = document.getElementById(id);if (el) el.classList.remove('active');});const target = document.getElementById(modeId);if (target) target.classList.add('active');}
+    function showHome(){setView('homeView');}
+    function showEmployeeEntry(mode){setView('employeeEntryView');if (mode === 'bind') {setEntryMode('bindMode');const displayName = APP_STATE.name || APP_STATE.id || '員工帳號';setText('bindAvatar',displayName.slice(0,1) || '員');setText('bindName',displayName);setText('bindMeta',APP_STATE.id ? '員編：' + APP_STATE.id : '即將綁定此設備');return;}if (mode === 'expired') {setEntryMode('expiredMode');return;}setEntryMode('codeMode');setStatus('codeStatus','','');setTimeout(function(){const input = document.getElementById('activationCode');if (input) input.focus();},160);}
+    function showManagerEntry(){setView('managerEntryView');setTimeout(function(){setActiveManagerSheet('login',true);},40);}
+    function setText(id,text){const el = document.getElementById(id);if (el) el.innerText = text;}
+    function setStatus(id,type,message){const box = document.getElementById(id);if (!box) return;box.className = 'status';if (!message) {box.innerText = '';return;}box.classList.add('show',type || 'info');box.innerText = message;}
+    function clearCode(){const input = document.getElementById('activationCode');if (input) {input.value = '';input.focus();}setStatus('codeStatus','','');}
+    function normalizeCode(value){return String(value || '').trim().replace(/\s+/g,'').replace(/-/g,'').toUpperCase();}
+
+    function apiUrl(){
+      const c = window.ANG_HR_CONFIG || window.ANG_CONFIG || window.CONFIG || window.config || {};
+      return window.ANG_HR_API_URL || window.GAS_API_URL || c.workerApiUrl || c.apiUrl || c.gasApiUrl || localStorage.getItem('ang_hr_api_url') || '';
+    }
+
+    function callApi(action,payload){
+      payload = payload || {};
+      return new Promise(function(resolve,reject){
+        if (window.google && google.script && google.script.run) {
+          try{
+            const runner = google.script.run.withSuccessHandler(resolve).withFailureHandler(reject);
+            if (typeof runner[action] === 'function') {runner[action](payload);return;}
+          }catch(e){}
+        }
+        const url = apiUrl();
+        if (!url) {reject(new Error('找不到 API 位址，請確認 config.js 或 ANG_HR_API_URL。'));return;}
+        fetch(url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(Object.assign({action:action},payload))})
+          .then(function(r){return r.text().then(function(t){try{return JSON.parse(t)}catch(e){return {ok:false,message:t || ('HTTP '+r.status)}}})})
+          .then(resolve)
+          .catch(reject);
+      });
+    }
+
+    function submitActivationCode(){
+      const input = document.getElementById('activationCode');
+      const code = normalizeCode(input ? input.value : '');
+      if (!code) {setStatus('codeStatus','error','請輸入開通碼');return;}
+      setStatus('codeStatus','info','驗證中...');
+      callApi('activateEmployeeDevice',{code:code,deviceId:APP_STATE.deviceId})
+        .then(function(res){if (!res || !res.ok) {setStatus('codeStatus','error',(res && (res.message || res.msg)) || '開通失敗');return;}handleBindSuccess(res);})
+        .catch(function(err){setStatus('codeStatus','error',err && err.message ? err.message : '連線失敗');});
+    }
+
+    function confirmBindByToken(){
+      if (!APP_STATE.token) {setStatus('bindStatus','error','連結無效');return;}
+      setStatus('bindStatus','info','綁定中...');
+      callApi('bindEmployeeDeviceByToken',{id:APP_STATE.id,token:APP_STATE.token,deviceId:APP_STATE.deviceId})
+        .then(function(res){if (!res || !res.ok) {setStatus('bindStatus','error',(res && (res.message || res.msg)) || '綁定失敗');return;}handleBindSuccess(res);})
+        .catch(function(err){setStatus('bindStatus','error',err && err.message ? err.message : '連線失敗');});
+    }
+
+    function handleBindSuccess(res){
+      const id = String(res.id || res.employeeId || res.empId || APP_STATE.id || '').trim().toUpperCase();
+      const name = String(res.name || res.employeeName || APP_STATE.name || id || '員工').trim();
+      const loginToken = String(res.loginToken || res.token || '').trim();
+      if (id) localStorage.setItem('emp_logged_in',id);
+      if (name) localStorage.setItem('emp_name',name);
+      if (loginToken) localStorage.setItem('emp_login_token',loginToken);
+      localStorage.setItem('isLoggedIn','1');
+      window.location.href = buildPageUrl('employee',id,loginToken);
+    }
+
+    function buildPageUrl(page,id,token){let url = APP_STATE.baseUrl + '?page=' + encodeURIComponent(page || 'employee');if (id) url += '&id=' + encodeURIComponent(id);if (token) url += '&token=' + encodeURIComponent(token);return url;}
+    function scanQrCode(){setStatus('codeStatus','info','請使用 APP 掃描 QR');}
+    function contactHr(){const subject = encodeURIComponent('ANG HR 開通碼');const body = encodeURIComponent('您好，我需要重新取得 ANG HR 開通碼。');window.location.href = 'mailto:hr@example.com?subject=' + subject + '&body=' + body;}
+
+    function initManagerCarousel(){
+      if (!carousel || !mainAction) return;
+      sheets.forEach(function(sheet){sheet.addEventListener('click',function(e){const key = sheet.dataset.key || 'login';setActiveManagerSheet(key,true);if (e.target.closest('.sheet-handle-zone')) phone.classList.toggle('expanded');});});
+      dots.forEach(function(dot,index){dot.addEventListener('click',function(){const key = sheets[index].dataset.key || 'login';setActiveManagerSheet(key,true);});});
+      let scrollTimer = null;
+      carousel.addEventListener('scroll',function(){if (scrollTimer) clearTimeout(scrollTimer);scrollTimer = setTimeout(detectActiveManagerSheet,90);},{passive:true});
+      let isDown = false,startX = 0,startY = 0,scrollLeft = 0;
+      carousel.addEventListener('pointerdown',function(e){isDown = true;carousel.classList.add('dragging');startX = e.pageX;startY = e.pageY;scrollLeft = carousel.scrollLeft;carousel.setPointerCapture(e.pointerId);});
+      carousel.addEventListener('pointermove',function(e){if (!isDown) return;const walkX = e.pageX - startX;const walkY = e.pageY - startY;if (Math.abs(walkX) > Math.abs(walkY)) carousel.scrollLeft = scrollLeft - walkX;});
+      carousel.addEventListener('pointerup',function(e){if (!isDown) return;const walkX = e.pageX - startX;const walkY = e.pageY - startY;isDown = false;carousel.classList.remove('dragging');carousel.releasePointerCapture(e.pointerId);if (Math.abs(walkY) > Math.abs(walkX) && walkY < -34) phone.classList.add('expanded');if (Math.abs(walkY) > Math.abs(walkX) && walkY > 34) phone.classList.remove('expanded');setTimeout(detectActiveManagerSheet,120);});
+      carousel.addEventListener('pointercancel',function(){isDown = false;carousel.classList.remove('dragging');setTimeout(detectActiveManagerSheet,120);});
+      mainAction.addEventListener('click',function(){const active = document.querySelector('.plan-sheet.active');const key = active ? active.dataset.key : 'login';if (key === 'login') {goAdminLogin();return;}openRegisterFlow(key);});
+    }
+
+    function setActiveManagerSheet(key,shouldCenter){sheets.forEach(function(sheet,index){const active = sheet.dataset.key === key;sheet.classList.toggle('active',active);if (dots[index]) dots[index].classList.toggle('active',active);if (active && shouldCenter) sheet.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});});mainAction.textContent = actionText[key] || '選擇方案';}
+    function detectActiveManagerSheet(){const rect = carousel.getBoundingClientRect();const centerX = rect.left + rect.width / 2;let bestIndex = 0,bestDistance = Infinity;sheets.forEach(function(sheet,index){const sheetRect = sheet.getBoundingClientRect();const sheetCenter = sheetRect.left + sheetRect.width / 2;const distance = Math.abs(sheetCenter - centerX);if (distance < bestDistance) {bestDistance = distance;bestIndex = index;}});const key = sheets[bestIndex].dataset.key || 'login';setActiveManagerSheet(key,false);}
+    function goAdminLogin(){window.location.href = APP_STATE.baseUrl + '?page=login&role=admin';}
+
+    function openRegisterFlow(plan){
+      REGISTER_STATE.plan = plan;
+      REGISTER_STATE.verified = false;
+      REGISTER_STATE.provider = '';
+      REGISTER_STATE.email = '';
+      REGISTER_STATE.name = '';
+      REGISTER_STATE.credential = '';
+      REGISTER_STATE.driveFolderId = '';
+      REGISTER_STATE.driveTestOk = false;
+      setText('regTitle','建立公司｜' + (planText[plan] || plan));
+      ['regEmail','regEmailCode','driveFolderId','companyName','companyCode','adminName','adminPhone'].forEach(function(id){const el=document.getElementById(id);if(el)el.value='';});
+      setStatus('regAuthStatus','','');setStatus('regDriveStatus','','');setStatus('regSubmitStatus','','');
+      updateRegisterStateUI();
+      const sheet = document.getElementById('registerSheet');
+      sheet.classList.add('show');sheet.setAttribute('aria-hidden','false');
+    }
+
+    function closeRegisterFlow(){
+      const sheet = document.getElementById('registerSheet');
+      sheet.classList.remove('show');sheet.setAttribute('aria-hidden','true');
+      if (REGISTER_STATE.sendTimer) clearInterval(REGISTER_STATE.sendTimer);
+    }
+
+    function todayKey(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+    function emailLimitKey(email){return 'ang_register_email_limit_' + todayKey() + '_' + String(email || '').toLowerCase();}
+    function readEmailLimit(email){try{return JSON.parse(localStorage.getItem(emailLimitKey(email)) || '{"count":0,"last":0}')}catch(e){return {count:0,last:0};}}
+    function writeEmailLimit(email,data){localStorage.setItem(emailLimitKey(email),JSON.stringify(data));}
+    function normalizeEmail(v){return String(v || '').trim().toLowerCase();}
+    function validEmail(v){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v || '').trim());}
+
+    function sendRegisterEmailCode(){
+      const email = normalizeEmail((document.getElementById('regEmail') || {}).value);
+      if (!validEmail(email)) {setStatus('regAuthStatus','error','請先輸入正確 Email');return;}
+      const limit = readEmailLimit(email);
+      const now = Date.now();
+      const remain = Math.ceil((60000 - (now - Number(limit.last || 0))) / 1000);
+      if (limit.count >= 5) {setStatus('regAuthStatus','error','今天已達 5 次寄送上限，請明天再試或改用 Google / LINE 驗證。');return;}
+      if (remain > 0) {setStatus('regAuthStatus','error','請等待 ' + remain + ' 秒後再重新寄送。');startEmailCountdown(remain);return;}
+      setStatus('regAuthStatus','info','驗證碼寄送中...');
+      callApi('requestEmailCode',{email:email,plan:REGISTER_STATE.plan,flow:'company_signup',source:'index_signup'})
+        .then(function(res){if (!res || !res.ok) {setStatus('regAuthStatus','error',(res && (res.message || res.msg)) || '寄送失敗');return;}const next = {count:Number(limit.count || 0) + 1,last:Date.now()};writeEmailLimit(email,next);setStatus('regAuthStatus','success','驗證碼已寄出。今天已使用 ' + next.count + ' / 5 次。');startEmailCountdown(60);})
+        .catch(function(err){setStatus('regAuthStatus','error',err && err.message ? err.message : '寄送失敗');});
+    }
+
+    function startEmailCountdown(sec){
+      const btn = document.getElementById('sendEmailBtn');
+      if (REGISTER_STATE.sendTimer) clearInterval(REGISTER_STATE.sendTimer);
+      REGISTER_STATE.sendRemain = Math.max(0,Number(sec || 0));
+      function tick(){if (!btn) return;if (REGISTER_STATE.sendRemain > 0) {btn.disabled = true;btn.innerText = REGISTER_STATE.sendRemain + ' 秒後重寄';REGISTER_STATE.sendRemain -= 1;} else {btn.disabled = false;btn.innerText = '寄送驗證碼';clearInterval(REGISTER_STATE.sendTimer);REGISTER_STATE.sendTimer = null;}}
+      tick();REGISTER_STATE.sendTimer = setInterval(tick,1000);
+    }
+
+    function verifyRegisterEmailCode(){
+      const email = normalizeEmail((document.getElementById('regEmail') || {}).value);
+      const code = String((document.getElementById('regEmailCode') || {}).value || '').trim();
+      if (!validEmail(email)) {setStatus('regAuthStatus','error','請先輸入正確 Email');return;}
+      if (!code) {setStatus('regAuthStatus','error','請輸入 Email 驗證碼');return;}
+      setStatus('regAuthStatus','info','Email 驗證中...');
+      callApi('verifyEmailCode',{email:email,code:code,plan:REGISTER_STATE.plan,flow:'company_signup',source:'index_signup'})
+        .then(function(res){if (!res || !res.ok) {setStatus('regAuthStatus','error',(res && (res.message || res.msg)) || '驗證失敗');return;}markAuthVerified({provider:'email',email:email,name:res.name || res.displayName || email,credential:res.auth_token || res.token || ''});})
+        .catch(function(err){setStatus('regAuthStatus','error',err && err.message ? err.message : '驗證失敗');});
+    }
+
+    function startGoogleVerify(){
+      setStatus('regAuthStatus','info','正在啟動 Google 驗證...');
+      try{
+        if (window.ANGNative && typeof window.ANGNative.startGoogleLogin === 'function') {window.ANGNative.startGoogleLogin(JSON.stringify({flow:'company_signup',plan:REGISTER_STATE.plan}));return;}
+        if (window.AndroidBridge && typeof window.AndroidBridge.startGoogleLogin === 'function') {window.AndroidBridge.startGoogleLogin('company_signup',REGISTER_STATE.plan);return;}
+        if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.angGoogleLogin) {window.webkit.messageHandlers.angGoogleLogin.postMessage({flow:'company_signup',plan:REGISTER_STATE.plan});return;}
+      }catch(e){}
+      if (!window.google || !google.accounts || !google.accounts.id) {setStatus('regAuthStatus','error','Google 驗證尚未載入，請稍後再試，或改用 Email 驗證。');return;}
+      google.accounts.id.initialize({client_id:GOOGLE_CLIENT_ID,callback:function(resp){handleGoogleCredential(resp && resp.credential);}});
+      google.accounts.id.prompt(function(notification){
+        if (notification && notification.isNotDisplayed && notification.isNotDisplayed()) setStatus('regAuthStatus','error','Google 驗證未顯示，WebView 請使用 App 原生 Google 驗證。');
+      });
+    }
+
+    function handleGoogleCredential(credential){
+      if (!credential) {setStatus('regAuthStatus','error','Google 未回傳 credential');return;}
+      setStatus('regAuthStatus','info','Google 驗證確認中...');
+      callApi('verifyGoogleCredential',{credential:credential,plan:REGISTER_STATE.plan,flow:'company_signup',source:'index_signup'})
+        .then(function(res){if (!res || !res.ok) {setStatus('regAuthStatus','error',(res && (res.message || res.msg)) || 'Google 驗證失敗');return;}markAuthVerified({provider:'google',email:res.email || (res.user && res.user.email) || '',name:res.name || (res.user && res.user.name) || 'Google 帳號',credential:credential});})
+        .catch(function(err){setStatus('regAuthStatus','error',err && err.message ? err.message : 'Google 驗證失敗');});
+    }
+
+    function startLineVerify(){
+      setStatus('regAuthStatus','info','正在啟動 LINE 驗證...');
+      try{
+        if (window.ANGNative && typeof window.ANGNative.startLineLogin === 'function') {window.ANGNative.startLineLogin(JSON.stringify({flow:'company_signup',plan:REGISTER_STATE.plan}));return;}
+        if (window.AndroidBridge && typeof window.AndroidBridge.startLineLogin === 'function') {window.AndroidBridge.startLineLogin('company_signup',REGISTER_STATE.plan);return;}
+        if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.angLineLogin) {window.webkit.messageHandlers.angLineLogin.postMessage({flow:'company_signup',plan:REGISTER_STATE.plan});return;}
+      }catch(e){}
+      callApi('startLineAuthUrl',{plan:REGISTER_STATE.plan,flow:'company_signup',redirect_url:window.location.href})
+        .then(function(res){if (res && res.ok && res.url) {window.location.href = res.url;return;}setStatus('regAuthStatus','error',(res && (res.message || res.msg)) || 'LINE 驗證尚未設定，請改用 Email / Google 驗證。');})
+        .catch(function(err){setStatus('regAuthStatus','error',err && err.message ? err.message : 'LINE 驗證尚未設定，請改用 Email / Google 驗證。');});
+    }
+
+    function markAuthVerified(data){
+      REGISTER_STATE.verified = true;
+      REGISTER_STATE.provider = data.provider || 'verified';
+      REGISTER_STATE.email = normalizeEmail(data.email || (document.getElementById('regEmail') || {}).value || '');
+      REGISTER_STATE.name = data.name || REGISTER_STATE.email || '已驗證帳號';
+      REGISTER_STATE.credential = data.credential || '';
+      const emailInput = document.getElementById('regEmail');
+      if (emailInput && REGISTER_STATE.email) emailInput.value = REGISTER_STATE.email;
+      setStatus('regAuthStatus','success','管理員驗證成功');
+      updateRegisterStateUI();
+    }
+
+    function extractDriveFolderId(value){
+      const v = String(value || '').trim();
+      if (!v) return '';
+      const m1 = v.match(/\/folders\/([a-zA-Z0-9_-]+)/);
+      if (m1) return m1[1];
+      const m2 = v.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+      if (m2) return m2[1];
+      return v.replace(/^['"]|['"]$/g,'').trim();
+    }
+
+    function testDriveFolderUpload(){
+      if (!REGISTER_STATE.verified) {setStatus('regDriveStatus','error','請先完成 Email / Google / LINE 任一驗證。');return;}
+      const raw = (document.getElementById('driveFolderId') || {}).value;
+      const folderId = extractDriveFolderId(raw);
+      if (!folderId) {setStatus('regDriveStatus','error','請輸入 Google Drive 資料夾 ID 或網址');return;}
+      setStatus('regDriveStatus','info','正在測試上傳 ANG_FOLDER_TEST.txt...');
+      callApi('testCompanyDriveFolderAccess',{folderId:folderId,drive_folder_id:folderId,company_drive_folder_id:folderId,test_file_name:'ANG_FOLDER_TEST.txt',fileName:'ANG_FOLDER_TEST.txt',plan:REGISTER_STATE.plan,auth_provider:REGISTER_STATE.provider,auth_email:REGISTER_STATE.email})
+        .then(function(res){if (!res || !res.ok) {REGISTER_STATE.driveTestOk = false;setStatus('regDriveStatus','error',(res && (res.message || res.msg)) || '資料夾測試失敗');updateRegisterStateUI();return;}REGISTER_STATE.driveFolderId = folderId;REGISTER_STATE.driveTestOk = true;setStatus('regDriveStatus','success',(res.message || '測試成功，ANG_FOLDER_TEST.txt 已可寫入。'));updateRegisterStateUI();})
+        .catch(function(err){REGISTER_STATE.driveTestOk = false;setStatus('regDriveStatus','error',err && err.message ? err.message : '資料夾測試失敗');updateRegisterStateUI();});
+    }
+
+    function updateRegisterStateUI(){
+      const authBadge = document.getElementById('authBadge');
+      const driveBadge = document.getElementById('driveBadge');
+      const companyBadge = document.getElementById('companyBadge');
+      const authOkBox = document.getElementById('authOkBox');
+      const driveOkBox = document.getElementById('driveOkBox');
+      const submitBtn = document.getElementById('submitCompanyBtn');
+      if (authBadge) {authBadge.className = 'auth-badge' + (REGISTER_STATE.verified ? ' ok' : '');authBadge.innerText = REGISTER_STATE.verified ? '已驗證' : '未驗證';}
+      if (driveBadge) {driveBadge.className = 'auth-badge' + (REGISTER_STATE.driveTestOk ? ' ok' : '');driveBadge.innerText = REGISTER_STATE.driveTestOk ? '已通過' : '未測試';}
+      if (companyBadge) {companyBadge.className = 'auth-badge' + ((REGISTER_STATE.verified && REGISTER_STATE.driveTestOk) ? ' ok' : '');companyBadge.innerText = (REGISTER_STATE.verified && REGISTER_STATE.driveTestOk) ? '可建立' : '待完成';}
+      if (authOkBox) {authOkBox.className = 'auth-ok-box' + (REGISTER_STATE.verified ? ' show' : '');authOkBox.innerText = REGISTER_STATE.verified ? ('驗證方式：' + REGISTER_STATE.provider.toUpperCase() + '\n帳號名稱：' + REGISTER_STATE.name + '\nEmail：' + (REGISTER_STATE.email || '未提供')) : '';}
+      if (driveOkBox) {driveOkBox.className = 'auth-ok-box' + (REGISTER_STATE.driveTestOk ? ' show' : '');driveOkBox.innerText = REGISTER_STATE.driveTestOk ? ('資料夾測試通過\n之後公司資料上傳會使用：' + REGISTER_STATE.driveFolderId) : '';}
+      if (submitBtn) submitBtn.disabled = !(REGISTER_STATE.verified && REGISTER_STATE.driveTestOk);
+    }
+
+    function submitCompanyRegister(){
+      if (!REGISTER_STATE.verified) {setStatus('regSubmitStatus','error','請先完成管理員驗證');return;}
+      if (!REGISTER_STATE.driveTestOk) {setStatus('regSubmitStatus','error','請先完成 Google Drive 資料夾測試');return;}
+      const companyName = String((document.getElementById('companyName') || {}).value || '').trim();
+      const companyCode = String((document.getElementById('companyCode') || {}).value || '').trim().toUpperCase();
+      const adminName = String((document.getElementById('adminName') || {}).value || '').trim();
+      const adminPhone = String((document.getElementById('adminPhone') || {}).value || '').trim();
+      if (!companyName) {setStatus('regSubmitStatus','error','請輸入公司名稱');return;}
+      if (!adminName) {setStatus('regSubmitStatus','error','請輸入管理員姓名');return;}
+      setStatus('regSubmitStatus','info','建立公司中...');
+      const payload = {plan:REGISTER_STATE.plan,company_name:companyName,company_code:companyCode,admin_name:adminName,admin_phone:adminPhone,admin_email:REGISTER_STATE.email,auth_verified:true,auth_provider:REGISTER_STATE.provider,auth_name:REGISTER_STATE.name,auth_credential:REGISTER_STATE.credential,company_drive_folder_id:REGISTER_STATE.driveFolderId,drive_folder_id:REGISTER_STATE.driveFolderId,drive_test_file:'ANG_FOLDER_TEST.txt',source:'index_signup'};
+      callApi('registerCompany',payload)
+        .then(function(res){if (!res || !res.ok) {setStatus('regSubmitStatus','error',(res && (res.message || res.msg)) || '建立公司失敗');return;}setStatus('regSubmitStatus','success',res.message || '建立成功');const target = res.redirect_url || res.redirect || res.admin_url || res.frontend_url || '';setTimeout(function(){if (target) window.location.href = target;else window.location.href = APP_STATE.baseUrl + '?page=login&role=admin';},700);})
+        .catch(function(err){setStatus('regSubmitStatus','error',err && err.message ? err.message : '建立公司失敗');});
+    }
+
+    function handleAuthReturnParams(params){
+      if (!params) return;
+      const provider = String(params.provider || params.auth_provider || '').toLowerCase();
+      const verified = params.verified === '1' || params.auth_verified === '1' || params.status === 'verified' || params.status === 'success';
+      const flow = params.flow || params.source || '';
+      const plan = params.plan || '';
+      if (!provider || !verified) return;
+      if (flow && flow !== 'company_signup' && flow !== 'index_signup') return;
+      setTimeout(function(){showManagerEntry();openRegisterFlow(plan || 'basic');markAuthVerified({provider:provider,email:params.email || '',name:params.name || params.profile_name || provider + ' 帳號',credential:params.credential || params.token || ''});},200);
+    }
+
+    window.angReceiveNativeAuth = function(payload){
+      try{if (typeof payload === 'string') payload = JSON.parse(payload);}catch(e){payload = {};}
+      payload = payload || {};
+      if (!payload.ok && !payload.verified) {setStatus('regAuthStatus','error',payload.message || '驗證失敗');return;}
+      markAuthVerified({provider:payload.provider || 'native',email:payload.email || '',name:payload.name || payload.profile_name || '已驗證帳號',credential:payload.credential || payload.token || ''});
+    };
+
+    window.angReceiveGoogleCredential = function(credential){handleGoogleCredential(credential);};
+    window.angReceiveLineAuth = function(payload){window.angReceiveNativeAuth(Object.assign({provider:'line'},payload || {}));};
+
+    window.addEventListener('load',init);
+  </script>
+</body>
+</html>

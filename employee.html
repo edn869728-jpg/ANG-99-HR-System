@@ -361,26 +361,29 @@
     body[data-daynight="night"] .hero-daynight-inline .daynight-btn.active{background:var(--emp-gradient);color:var(--text-on-emp);border-color:transparent}
 
 
-  
-    /* === 資料讀取中狀態 === */
-    .ang-loading-state{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      min-height:46px;
-      padding:12px;
-      border-radius:16px;
-      background:linear-gradient(180deg,#ffffff 0%,rgba(var(--emp-rgb),.07) 100%);
-      border:1px dashed rgba(var(--emp-rgb),.20);
-      color:var(--emp-deep);
-      font-size:14px;
-      font-weight:900;
-      text-align:center;
+    /* v14：日光 / 暗夜切換鈕固定在上方橫幅右邊，樣式與入口頁一致 */
+    .topbar-right{display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:4px}
+    .topbar-daynight-toggle{
+      width:58px;height:30px;padding:3px;border:1px solid rgba(148,163,184,.34);border-radius:999px;
+      background:rgba(255,255,255,.74);box-shadow:0 10px 24px rgba(15,23,42,.12);
+      backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+      display:grid;grid-template-columns:1fr 1fr;align-items:center;justify-items:center;
+      position:relative;overflow:hidden;cursor:pointer;flex:0 0 auto;appearance:none;-webkit-appearance:none;
     }
-    .ang-loading-state small{display:block;color:var(--muted);font-size:11px;font-weight:800;margin-top:3px;line-height:1.35}
-    .ang-loading-dot{width:8px;height:8px;border-radius:999px;background:currentColor;opacity:.55;animation:angLoadPulse 1s infinite ease-in-out}
-    @keyframes angLoadPulse{0%,100%{transform:scale(.72);opacity:.35}50%{transform:scale(1.18);opacity:.85}}
+    .topbar-daynight-toggle::before{
+      content:"";position:absolute;left:3px;top:3px;width:24px;height:24px;border-radius:50%;
+      background:#fff;box-shadow:0 6px 14px rgba(15,23,42,.16);
+      transform:translateX(0);transition:transform .25s ease,background .25s ease,box-shadow .25s ease;
+    }
+    .topbar-daynight-toggle span{position:relative;z-index:1;width:24px;height:24px;display:flex;align-items:center;justify-content:center;color:rgba(71,85,105,.72);pointer-events:none;font-size:13px}
+    .topbar-daynight-toggle .sun{color:#0f172a}
+    body[data-daynight="night"] .topbar-daynight-toggle{background:rgba(15,23,42,.52);border-color:rgba(255,255,255,.12);box-shadow:0 10px 24px rgba(0,0,0,.28)}
+    body[data-daynight="night"] .topbar-daynight-toggle::before{transform:translateX(28px);background:rgba(255,255,255,.15);box-shadow:0 0 18px rgba(0,217,255,.16)}
+    body[data-daynight="night"] .topbar-daynight-toggle span{color:rgba(226,232,240,.68)}
+    body[data-daynight="night"] .topbar-daynight-toggle .moon{color:#fff;filter:drop-shadow(0 0 5px rgba(255,255,255,.32))}
+    .hero-daynight-inline{display:none!important}
+
+
   </style>
 </head>
 <body data-active-page="home" data-daynight="day">
@@ -395,6 +398,10 @@
 </div>
 </div>
 <div class="topbar-right">
+<button class="topbar-daynight-toggle" id="topbarDaynightToggle" type="button" aria-label="切換日光與暗夜模式" aria-pressed="false" onclick="toggleDayNightMode()">
+<span class="sun" aria-hidden="true"><i class="fa-solid fa-sun"></i></span>
+<span class="moon" aria-hidden="true"><i class="fa-solid fa-moon"></i></span>
+</button>
 <div class="title" id="topBrandTitle"></div>
 <div class="sub-title" id="topBrandSub"></div>
 </div>
@@ -716,7 +723,7 @@
     ];
 
     var state={
-      employeeId:'',userToken:'',dataLoading:true,uploadType:'',salaryMode:'week',scheduleWeekOffset:0,clockTab:'record',
+      employeeId:'',userToken:'',uploadType:'',salaryMode:'week',scheduleWeekOffset:0,clockTab:'record',
       events:[],calendarData:{scheduleEvents:[],clockEvents:[],salaryEvents:[],uploadEvents:[]},preselectSettings:{mode:'week'},myPreselect:null,selectedWeekdays:[],scheduleConfirmMap:{0:'',1:''},messages:[],
       themeColors:defaultThemeColors.slice(),activeThemeSlot:0,themeAngleIndex:3,
       selectedLeaveType:'事假',leaveDays:1,leaveHours:0,leaveV4Bound:false,
@@ -953,6 +960,11 @@
     function setDayNightMode(mode,save){
       mode=(mode==='night')?'night':'day';
       document.body.dataset.daynight=mode;
+      var topToggle=qs('topbarDaynightToggle');
+      if(topToggle){
+        topToggle.setAttribute('aria-pressed',String(mode==='night'));
+        topToggle.title=mode==='night'?'切換白天模式':'切換黑夜模式';
+      }
       var btn=qs('nav-daynight'),label=qs('daynightLabel');
       if(btn){
         var icon=btn.querySelector('i');
@@ -1385,7 +1397,6 @@
     function renderClockRecordList(){
       var wrap=qs('clock-record-list');if(!wrap)return;
       var records=state.workRecords||[];
-      if(state&&state.dataLoading){wrap.innerHTML=loadingBlockHtml_('打卡記錄讀取中...','資料載入完成後會自動更新');return;}
       if(!records.length){
         wrap.innerHTML='<div class="record-item"><div class="item-title">目前沒有打卡記錄</div></div>';
         return;
@@ -1406,7 +1417,6 @@
 
     function renderTodayClockCard(){
       var box=qs('today-clock-card');if(!box)return;
-      if(state&&state.dataLoading){box.innerHTML=loadingBlockHtml_('今日打卡讀取中...','正在讀取班表、打卡與異常狀態');return;}
       var today=new Date();var todayKey=dateKey(today);
       var rec=(state.workRecords||[]).find(function(r){return(r.date||'').replace(/\//g,'-')===todayKey})||null;
       if(!rec){box.innerHTML='<div class="item-meta" style="text-align:center;padding:8px">今日暫無排班或打卡記錄</div>';return}
@@ -1459,7 +1469,6 @@
       var wrap=qs('salary-day-pay-list');if(!wrap)return;
       wrap.innerHTML='';
       var records=state.workRecords||[];
-      if(state&&state.dataLoading){wrap.innerHTML=loadingBlockHtml_('薪資資料讀取中...','正在讀取本月工時與預估薪資');return;}
       if(!records.length){
         wrap.innerHTML='<div class="day-pay-item"><div class="item-title">目前沒有薪資資料</div></div>';
         return;
@@ -1938,7 +1947,7 @@
       var today=toDateOnly_(new Date());
       var names=['日','一','二','三','四','五','六'];
       var html='<div class="ang-empty-calendar">'
-        + '<div class="ang-empty-calendar-head"><span>'+esc(label||((month+1)+' 月'))+'</span><span class="ang-empty-calendar-note">'+(state&&state.dataLoading?'讀取中｜空白日曆':'尚無資料｜空白日曆')+'</span></div>'
+        + '<div class="ang-empty-calendar-head"><span>'+esc(label||((month+1)+' 月'))+'</span><span class="ang-empty-calendar-note">尚無資料｜空白日曆</span></div>'
         + '<div class="ang-empty-calendar-grid">';
       names.forEach(function(n){html+='<div class="ang-empty-calendar-wd">週'+n+'</div>';});
       for(var i=0;i<42;i++){
@@ -2077,65 +2086,6 @@
       ensureCalendarsHaveBlankView();
     }
 
-
-
-    /* ==================== 資料讀取中顯示 ==================== */
-    function loadingBlockHtml_(title,sub){
-      return '<div class="ang-loading-state"><span class="ang-loading-dot"></span><div>'+esc(title||'資料讀取中...')+(sub?'<small>'+esc(sub)+'</small>':'')+'</div></div>';
-    }
-
-    function setLoadingText_(id,text){
-      var el=qs(id);
-      if(el)el.textContent=text||'讀取中';
-    }
-
-    function renderLoadingPlaceholders(){
-      if(!state) return;
-      state.dataLoading=true;
-      setLoadingText_('home-week-salary','讀取中');
-      setLoadingText_('home-week-hours','讀取中');
-      setLoadingText_('home-month-salary','讀取中');
-      setLoadingText_('home-month-hours','讀取中');
-      setLoadingText_('home-tomorrow-status','讀取中');
-      setLoadingText_('home-after-status','讀取中');
-      setLoadingText_('home-pending-count','讀取中');
-      var today=qs('today-clock-card');
-      if(today)today.innerHTML=loadingBlockHtml_('今日打卡讀取中...','正在讀取班表、打卡與異常狀態');
-      var clock=qs('clock-record-list');
-      if(clock)clock.innerHTML=loadingBlockHtml_('打卡記錄讀取中...','資料載入完成後會自動更新');
-      var salary=qs('salary-day-pay-list');
-      if(salary)salary.innerHTML=loadingBlockHtml_('薪資資料讀取中...','正在讀取本月工時與預估薪資');
-      var msg=qs('message-board');
-      if(msg)msg.innerHTML=loadingBlockHtml_('留言讀取中...','正在讀取公告與留言');
-      var recent=qs('recentActivitiesBox');
-      if(recent)recent.innerHTML=loadingBlockHtml_('近期動態讀取中...','正在取得最新紀錄');
-      var notices=qs('noticesBox');
-      if(notices)notices.innerHTML=loadingBlockHtml_('主管通知讀取中...','正在取得公告');
-      safeCall(ensureCalendarsHaveBlankView,'loading.ensureCalendarsHaveBlankView');
-    }
-
-    function renderLoadFailedPlaceholders(message){
-      state.dataLoading=false;
-      var text=message||'資料讀取失敗，請稍後重新整理';
-      ['today-clock-card','clock-record-list','salary-day-pay-list','message-board','recentActivitiesBox','noticesBox'].forEach(function(id){
-        var el=qs(id);if(el)el.innerHTML='<div class="notice-item"><div class="item-title">'+esc(text)+'</div></div>';
-      });
-      ensureCalendarsHaveBlankView();
-    }
-
-    function renderMessageBoard(){
-      var box=qs('message-board');if(!box)return;
-      if(state&&state.dataLoading){box.innerHTML=loadingBlockHtml_('留言讀取中...','正在讀取公告與留言');return;}
-      var list=Array.isArray(state.messages)?state.messages:[];
-      if(!list.length){box.innerHTML='<div class="notice-item"><div class="item-title">暫無留言</div></div>';return;}
-      box.innerHTML=list.map(function(m){
-        var name=m.name||m.empName||m.author||'';
-        var text=m.text||m.content||m.message||'';
-        var time=m.time||m.createdAt||m.created_at||'';
-        return '<div class="notice-item"><div class="item-title">'+esc(name||'留言')+'</div><div class="item-meta" style="white-space:pre-wrap">'+esc(text)+'</div>'+(time?'<div class="item-meta" style="margin-top:4px;font-size:11px;color:#9ca3af">'+esc(time)+'</div>':'')+'</div>';
-      }).join('');
-    }
-
     /* ==================== 後端載入 ==================== */
 
     function loadPublishedScheduleCalendar(){
@@ -2168,8 +2118,7 @@
 
     // ANG.lo HR System Deploy Version: 129 - Fix 8: bootstrap data with fallbacks
     function handleBootstrapData(res){
-      if(!res||!res.ok){state.dataLoading=false;renderLoadFailedPlaceholders((res&&res.message)||'資料讀取失敗');return;}
-      state.dataLoading=false;
+      if(!res||!res.ok){ensureCalendarsHaveBlankView();return;}
       var p=res.profile||{},s=Object.assign({},res.system||{},res);
       try{renderTopHeader(p,s);}catch(e){}
       try{
@@ -2214,13 +2163,12 @@
     }
 
     function loadBootstrapData(){
-      renderLoadingPlaceholders();
       var id=state.employeeId,token=state.userToken;
-      if(!id||!token){state.dataLoading=false;ensureCalendarsHaveBlankView();return}
+      if(!id||!token){ensureCalendarsHaveBlankView();return}
       if(gas()){
-        google.script.run.withSuccessHandler(function(res){if(res&&res.ok)handleBootstrapData(res);else renderLoadFailedPlaceholders((res&&res.message)||'資料讀取失敗');}).withFailureHandler(function(){renderLoadFailedPlaceholders('資料讀取失敗，請稍後重新整理');}).getEmployeeBootstrapData(id,token);
+        google.script.run.withSuccessHandler(function(res){if(res&&res.ok)handleBootstrapData(res);else ensureCalendarsHaveBlankView();}).withFailureHandler(function(){ensureCalendarsHaveBlankView();}).getEmployeeBootstrapData(id,token);
       }else{
-        apiPost('employeeBootstrap',{id:id,token:token},function(res){if(res&&res.ok)handleBootstrapData(res);else renderLoadFailedPlaceholders((res&&res.message)||'資料讀取失敗');});
+        apiPost('employeeBootstrap',{id:id,token:token},function(res){if(res&&res.ok)handleBootstrapData(res);else ensureCalendarsHaveBlankView();});
       }
     }
 
@@ -2319,7 +2267,6 @@
     window.onload=function(){
       safeCall(initDefaults,'initDefaults');
       safeCall(applyParamsFromUrl,'applyParamsFromUrl');
-      safeCall(renderLoadingPlaceholders,'renderLoadingPlaceholders');
       safeCall(restoreScheduleState,'restoreScheduleState');
       safeCall(renderWeekdayStrip,'renderWeekdayStrip');
       safeCall(renderClockRecordList,'renderClockRecordList');
