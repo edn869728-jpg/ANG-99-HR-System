@@ -350,6 +350,37 @@
     body[data-daynight="night"] .ang-empty-calendar-day{background:#0b1628;color:#dbeafe;border-color:rgba(255,255,255,.08)}
     body[data-daynight="night"] .ang-empty-calendar-day.out{opacity:.35}
 
+
+    /* v4：日光 / 暗夜改放在工號下面，不再佔底部導航 */
+    .hero-id-line{margin-top:4px;font-size:12px;font-weight:900;opacity:.92;letter-spacing:.2px}
+    .hero-id-line:empty{display:none}
+    .hero-daynight-inline{display:flex;gap:8px;margin-top:8px;max-width:220px}
+    .hero-daynight-inline .daynight-btn{padding:9px 10px;border-radius:999px;font-size:12px;box-shadow:none;background:rgba(255,255,255,.18);color:#fff;border:1px solid rgba(255,255,255,.24)}
+    .hero-daynight-inline .daynight-btn.active{background:#fff;color:var(--emp-deep);border-color:#fff;box-shadow:0 8px 18px rgba(0,0,0,.10)}
+    body[data-daynight="night"] .hero-daynight-inline .daynight-btn{background:rgba(255,255,255,.12);color:#e5eefb;border-color:rgba(255,255,255,.20)}
+    body[data-daynight="night"] .hero-daynight-inline .daynight-btn.active{background:var(--emp-gradient);color:var(--text-on-emp);border-color:transparent}
+
+
+  
+    /* === 資料讀取中狀態 === */
+    .ang-loading-state{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      min-height:46px;
+      padding:12px;
+      border-radius:16px;
+      background:linear-gradient(180deg,#ffffff 0%,rgba(var(--emp-rgb),.07) 100%);
+      border:1px dashed rgba(var(--emp-rgb),.20);
+      color:var(--emp-deep);
+      font-size:14px;
+      font-weight:900;
+      text-align:center;
+    }
+    .ang-loading-state small{display:block;color:var(--muted);font-size:11px;font-weight:800;margin-top:3px;line-height:1.35}
+    .ang-loading-dot{width:8px;height:8px;border-radius:999px;background:currentColor;opacity:.55;animation:angLoadPulse 1s infinite ease-in-out}
+    @keyframes angLoadPulse{0%,100%{transform:scale(.72);opacity:.35}50%{transform:scale(1.18);opacity:.85}}
   </style>
 </head>
 <body data-active-page="home" data-daynight="day">
@@ -373,7 +404,7 @@
 <section class="page active" id="page-home">
 <div class="hero">
 <div class="hero-top">
-<div style="min-width:0"><div class="hello" id="helloName"></div><div class="hello-sub" id="helloStatus"></div></div>
+<div style="min-width:0"><div class="hello" id="helloName"></div><div class="hello-sub" id="helloStatus"></div><div class="hero-id-line" id="heroEmployeeIdLine"></div><div class="hero-daynight-inline" id="heroDaynightInline"><button class="daynight-btn" data-daynight-choice="day" onclick="setDayNightMode('day',true)" type="button"><i class="fa-solid fa-sun"></i> 白天</button><button class="daynight-btn" data-daynight-choice="night" onclick="setDayNightMode('night',true)" type="button"><i class="fa-solid fa-moon"></i> 黑夜</button></div></div>
 <div class="hero-chip" id="heroChip"></div>
 </div>
 <div class="next-shift">
@@ -448,13 +479,6 @@
 <label class="theme-custom-item"><span>色4</span><input id="themeColor4" oninput="updateThemeColor(3,this.value)" type="color" value="#59DDFF"/></label>
 </div>
 <div class="theme-custom-row"><button class="btn-soft" onclick="resetThemePreset()" type="button">套回預設四色</button></div>
-</div>
-<div class="card daynight-card">
-<div class="mini-row"><h3>畫面模式</h3><span class="badge">白天 / 黑夜</span></div>
-<div class="daynight-row">
-<button class="daynight-btn" data-daynight-choice="day" onclick="setDayNightMode('day',true)" type="button"><i class="fa-solid fa-sun"></i> 白天</button>
-<button class="daynight-btn" data-daynight-choice="night" onclick="setDayNightMode('night',true)" type="button"><i class="fa-solid fa-moon"></i> 黑夜</button>
-</div>
 </div>
 </section>
 <!-- ========== 請假排班 ========== -->
@@ -638,7 +662,6 @@
 <button class="nav-btn is-main active" id="nav-home" onclick="handleEmployeeHomeClick()"><i class="fa-solid fa-house"></i><span>員工主頁</span></button>
 <button class="nav-btn" id="nav-salary" onclick="nav('salary')"><i class="fa-solid fa-money-check-dollar"></i><span>薪資明細</span></button>
 <button class="nav-btn" id="nav-upload" onclick="nav('upload')"><i class="fa-solid fa-file-arrow-up"></i><span>資料上傳</span></button>
-<button class="nav-btn" id="nav-daynight" onclick="toggleDayNightMode()" type="button"><i class="fa-solid fa-moon"></i><span id="daynightLabel">黑夜/白天</span></button>
 </nav>
 <script>
     var APP_CTX={
@@ -650,6 +673,26 @@
       nickname:'<?= typeof nickname!=="undefined"?nickname:"" ?>',
       webAppUrl:'<?= typeof webAppUrl!=="undefined"?webAppUrl:"" ?>'
     };
+
+    var ANG_DEFAULT_GAS_URL='https://script.google.com/macros/s/AKfycbxmSMR9pqT1njaiANL5Ca8VmbWI4KbdUFnpSAJeE2WQGbITjwml2S4eGY4QNknlJA0FRw/exec';
+    function normalizeAuthMessage_(msg){
+      var s=String(msg||'').trim();
+      if(/帳號不存在|找不到帳號|查無帳號|無此帳號|公司.*錯|company/i.test(s)){
+        return '公司代碼或身份驗證錯誤：請確認公司代碼、管理員帳號 / 員工工號與驗證 token。';
+      }
+      return s;
+    }
+    function resolveApiUrl_(){
+      var list=[];
+      try{ if(window.ANG_HR_UTILS&&window.ANG_HR_UTILS.getApiUrl)list.push(window.ANG_HR_UTILS.getApiUrl()); }catch(e){}
+      try{ if(window.ANG_DATA_URLS&&window.ANG_DATA_URLS.gasApiUrl)list.push(window.ANG_DATA_URLS.gasApiUrl); }catch(e){}
+      try{ list.push(localStorage.getItem('ang_gas_api_url')); }catch(e){}
+      list.push(APP_CTX&&APP_CTX.webAppUrl);
+      if(/^https?:\/\/script\.google\.com\/macros\//i.test(String(location.href)))list.push(location.href.split('#')[0].split('?')[0]);
+      list.push(ANG_DEFAULT_GAS_URL);
+      for(var i=0;i<list.length;i++){var u=String(list[i]||'').trim();if(/^https?:\/\//i.test(u))return u;}
+      return String(window.location.origin+window.location.pathname).trim();
+    }
 
     var HOURLY_RATE=200;
     var defaultThemeColors=['#FF87E0','#CCA4FF','#8089FF','#59DDFF'];
@@ -673,7 +716,7 @@
     ];
 
     var state={
-      employeeId:'',userToken:'',uploadType:'',salaryMode:'week',scheduleWeekOffset:0,clockTab:'record',
+      employeeId:'',userToken:'',dataLoading:true,uploadType:'',salaryMode:'week',scheduleWeekOffset:0,clockTab:'record',
       events:[],calendarData:{scheduleEvents:[],clockEvents:[],salaryEvents:[],uploadEvents:[]},preselectSettings:{mode:'week'},myPreselect:null,selectedWeekdays:[],scheduleConfirmMap:{0:'',1:''},messages:[],
       themeColors:defaultThemeColors.slice(),activeThemeSlot:0,themeAngleIndex:3,
       selectedLeaveType:'事假',leaveDays:1,leaveHours:0,leaveV4Bound:false,
@@ -1003,12 +1046,12 @@
     function apiPost(action,payload,callback){
       var fp=Object.assign({},payload||{},{action:action});
       if(!/^https?:/i.test(String(window.location.href||''))){showWarning('非正式環境');if(callback)callback({ok:false,message:'not_in_web'});return}
-      var apiUrl=String((window.ANG_HR_UTILS&&window.ANG_HR_UTILS.getApiUrl&&window.ANG_HR_UTILS.getApiUrl())||(APP_CTX&&APP_CTX.webAppUrl)||'').trim()||String(window.location.origin+window.location.pathname).trim();
+      var apiUrl=resolveApiUrl_();
       Swal.fire({title:'處理中...',allowOutsideClick:false,didOpen:function(){Swal.showLoading()}});
       var ctrl=new AbortController();var timer=setTimeout(function(){ctrl.abort()},20000);
       fetch(apiUrl,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(fp),signal:ctrl.signal})
       .then(function(r){if(!r.ok)throw new Error('HTTP_'+r.status);return r.text()})
-      .then(function(t){clearTimeout(timer);Swal.close();var d=null;try{d=t?JSON.parse(t):{}}catch(e){throw new Error('invalid_json')}if(d&&!d.ok&&d.message)showError(d.message);if(callback)callback(d)})
+      .then(function(t){clearTimeout(timer);Swal.close();var d=null;try{d=t?JSON.parse(t):{}}catch(e){throw new Error('invalid_json')}if(d&&!d.ok&&d.message){d.message=normalizeAuthMessage_(d.message);showError(d.message);}if(callback)callback(d)})
       .catch(function(e){clearTimeout(timer);Swal.close();if(e&&e.name==='AbortError'){showError('連線逾時');if(callback)callback({ok:false,message:'timeout'});return}showError('連線錯誤');if(callback)callback({ok:false,message:'network_error'})})
       .finally(function(){clearTimeout(timer)});
     }
@@ -1021,6 +1064,7 @@
       var displayToken=String(p.token||APP_CTX.token||'').trim();
       state.employeeId=displayId;state.userToken=displayToken;currentUserId=displayId;currentUserToken=displayToken;
       if(displayId)localStorage.setItem('ang_employee_id',displayId);
+      setText('heroEmployeeIdLine',displayId?'工號 '+displayId:'');
       renderTopHeader({id:displayId,name:p.name||APP_CTX.name,nickname:p.nickname||APP_CTX.nickname},{});
       var displayName=cleanDataValue(APP_CTX.nickname,p.nickname,APP_CTX.name,p.name);
       setText('helloName',displayName?'哈囉，'+displayName:'');
@@ -1341,6 +1385,7 @@
     function renderClockRecordList(){
       var wrap=qs('clock-record-list');if(!wrap)return;
       var records=state.workRecords||[];
+      if(state&&state.dataLoading){wrap.innerHTML=loadingBlockHtml_('打卡記錄讀取中...','資料載入完成後會自動更新');return;}
       if(!records.length){
         wrap.innerHTML='<div class="record-item"><div class="item-title">目前沒有打卡記錄</div></div>';
         return;
@@ -1361,6 +1406,7 @@
 
     function renderTodayClockCard(){
       var box=qs('today-clock-card');if(!box)return;
+      if(state&&state.dataLoading){box.innerHTML=loadingBlockHtml_('今日打卡讀取中...','正在讀取班表、打卡與異常狀態');return;}
       var today=new Date();var todayKey=dateKey(today);
       var rec=(state.workRecords||[]).find(function(r){return(r.date||'').replace(/\//g,'-')===todayKey})||null;
       if(!rec){box.innerHTML='<div class="item-meta" style="text-align:center;padding:8px">今日暫無排班或打卡記錄</div>';return}
@@ -1413,6 +1459,7 @@
       var wrap=qs('salary-day-pay-list');if(!wrap)return;
       wrap.innerHTML='';
       var records=state.workRecords||[];
+      if(state&&state.dataLoading){wrap.innerHTML=loadingBlockHtml_('薪資資料讀取中...','正在讀取本月工時與預估薪資');return;}
       if(!records.length){
         wrap.innerHTML='<div class="day-pay-item"><div class="item-title">目前沒有薪資資料</div></div>';
         return;
@@ -1891,7 +1938,7 @@
       var today=toDateOnly_(new Date());
       var names=['日','一','二','三','四','五','六'];
       var html='<div class="ang-empty-calendar">'
-        + '<div class="ang-empty-calendar-head"><span>'+esc(label||((month+1)+' 月'))+'</span><span class="ang-empty-calendar-note">尚無資料｜空白日曆</span></div>'
+        + '<div class="ang-empty-calendar-head"><span>'+esc(label||((month+1)+' 月'))+'</span><span class="ang-empty-calendar-note">'+(state&&state.dataLoading?'讀取中｜空白日曆':'尚無資料｜空白日曆')+'</span></div>'
         + '<div class="ang-empty-calendar-grid">';
       names.forEach(function(n){html+='<div class="ang-empty-calendar-wd">週'+n+'</div>';});
       for(var i=0;i<42;i++){
@@ -2030,6 +2077,65 @@
       ensureCalendarsHaveBlankView();
     }
 
+
+
+    /* ==================== 資料讀取中顯示 ==================== */
+    function loadingBlockHtml_(title,sub){
+      return '<div class="ang-loading-state"><span class="ang-loading-dot"></span><div>'+esc(title||'資料讀取中...')+(sub?'<small>'+esc(sub)+'</small>':'')+'</div></div>';
+    }
+
+    function setLoadingText_(id,text){
+      var el=qs(id);
+      if(el)el.textContent=text||'讀取中';
+    }
+
+    function renderLoadingPlaceholders(){
+      if(!state) return;
+      state.dataLoading=true;
+      setLoadingText_('home-week-salary','讀取中');
+      setLoadingText_('home-week-hours','讀取中');
+      setLoadingText_('home-month-salary','讀取中');
+      setLoadingText_('home-month-hours','讀取中');
+      setLoadingText_('home-tomorrow-status','讀取中');
+      setLoadingText_('home-after-status','讀取中');
+      setLoadingText_('home-pending-count','讀取中');
+      var today=qs('today-clock-card');
+      if(today)today.innerHTML=loadingBlockHtml_('今日打卡讀取中...','正在讀取班表、打卡與異常狀態');
+      var clock=qs('clock-record-list');
+      if(clock)clock.innerHTML=loadingBlockHtml_('打卡記錄讀取中...','資料載入完成後會自動更新');
+      var salary=qs('salary-day-pay-list');
+      if(salary)salary.innerHTML=loadingBlockHtml_('薪資資料讀取中...','正在讀取本月工時與預估薪資');
+      var msg=qs('message-board');
+      if(msg)msg.innerHTML=loadingBlockHtml_('留言讀取中...','正在讀取公告與留言');
+      var recent=qs('recentActivitiesBox');
+      if(recent)recent.innerHTML=loadingBlockHtml_('近期動態讀取中...','正在取得最新紀錄');
+      var notices=qs('noticesBox');
+      if(notices)notices.innerHTML=loadingBlockHtml_('主管通知讀取中...','正在取得公告');
+      safeCall(ensureCalendarsHaveBlankView,'loading.ensureCalendarsHaveBlankView');
+    }
+
+    function renderLoadFailedPlaceholders(message){
+      state.dataLoading=false;
+      var text=message||'資料讀取失敗，請稍後重新整理';
+      ['today-clock-card','clock-record-list','salary-day-pay-list','message-board','recentActivitiesBox','noticesBox'].forEach(function(id){
+        var el=qs(id);if(el)el.innerHTML='<div class="notice-item"><div class="item-title">'+esc(text)+'</div></div>';
+      });
+      ensureCalendarsHaveBlankView();
+    }
+
+    function renderMessageBoard(){
+      var box=qs('message-board');if(!box)return;
+      if(state&&state.dataLoading){box.innerHTML=loadingBlockHtml_('留言讀取中...','正在讀取公告與留言');return;}
+      var list=Array.isArray(state.messages)?state.messages:[];
+      if(!list.length){box.innerHTML='<div class="notice-item"><div class="item-title">暫無留言</div></div>';return;}
+      box.innerHTML=list.map(function(m){
+        var name=m.name||m.empName||m.author||'';
+        var text=m.text||m.content||m.message||'';
+        var time=m.time||m.createdAt||m.created_at||'';
+        return '<div class="notice-item"><div class="item-title">'+esc(name||'留言')+'</div><div class="item-meta" style="white-space:pre-wrap">'+esc(text)+'</div>'+(time?'<div class="item-meta" style="margin-top:4px;font-size:11px;color:#9ca3af">'+esc(time)+'</div>':'')+'</div>';
+      }).join('');
+    }
+
     /* ==================== 後端載入 ==================== */
 
     function loadPublishedScheduleCalendar(){
@@ -2062,14 +2168,15 @@
 
     // ANG.lo HR System Deploy Version: 129 - Fix 8: bootstrap data with fallbacks
     function handleBootstrapData(res){
-      if(!res||!res.ok){ensureCalendarsHaveBlankView();return;}
+      if(!res||!res.ok){state.dataLoading=false;renderLoadFailedPlaceholders((res&&res.message)||'資料讀取失敗');return;}
+      state.dataLoading=false;
       var p=res.profile||{},s=Object.assign({},res.system||{},res);
       try{renderTopHeader(p,s);}catch(e){}
       try{
         var displayName=cleanDataValue(p.nickname,p.name,state.profileName);
         setText('helloName',displayName?'哈囉，'+displayName:'');
       }catch(e){}
-      try{setText('helloStatus',cleanDataValue(res.todayStatus,(res.home&&res.home.todayStatus)));}catch(e){}
+      try{setText('helloStatus',cleanDataValue(res.todayStatus,(res.home&&res.home.todayStatus)));setText('heroEmployeeIdLine',cleanEmployeeId(p.id,p.employee_id,p.employeeId,state.employeeId)||state.employeeId||'');if(qs('heroEmployeeIdLine')&&qs('heroEmployeeIdLine').innerText&&!/^工號/.test(qs('heroEmployeeIdLine').innerText))qs('heroEmployeeIdLine').innerText='工號 '+qs('heroEmployeeIdLine').innerText;}catch(e){}
       try{setText('heroChip',(p.chip&&!/manager|admin|creator|employee/i.test(String(p.chip)))?p.chip:'');}catch(e){}
       try{
         setValueOrBlank('home-week-salary',res.weekSalary,formatMoney);
@@ -2107,12 +2214,13 @@
     }
 
     function loadBootstrapData(){
+      renderLoadingPlaceholders();
       var id=state.employeeId,token=state.userToken;
-      if(!id||!token){ensureCalendarsHaveBlankView();return}
+      if(!id||!token){state.dataLoading=false;ensureCalendarsHaveBlankView();return}
       if(gas()){
-        google.script.run.withSuccessHandler(function(res){if(res&&res.ok)handleBootstrapData(res);else ensureCalendarsHaveBlankView();}).withFailureHandler(function(){ensureCalendarsHaveBlankView();}).getEmployeeBootstrapData(id,token);
+        google.script.run.withSuccessHandler(function(res){if(res&&res.ok)handleBootstrapData(res);else renderLoadFailedPlaceholders((res&&res.message)||'資料讀取失敗');}).withFailureHandler(function(){renderLoadFailedPlaceholders('資料讀取失敗，請稍後重新整理');}).getEmployeeBootstrapData(id,token);
       }else{
-        apiPost('employeeBootstrap',{id:id,token:token},function(res){if(res&&res.ok)handleBootstrapData(res);else ensureCalendarsHaveBlankView();});
+        apiPost('employeeBootstrap',{id:id,token:token},function(res){if(res&&res.ok)handleBootstrapData(res);else renderLoadFailedPlaceholders((res&&res.message)||'資料讀取失敗');});
       }
     }
 
@@ -2211,6 +2319,7 @@
     window.onload=function(){
       safeCall(initDefaults,'initDefaults');
       safeCall(applyParamsFromUrl,'applyParamsFromUrl');
+      safeCall(renderLoadingPlaceholders,'renderLoadingPlaceholders');
       safeCall(restoreScheduleState,'restoreScheduleState');
       safeCall(renderWeekdayStrip,'renderWeekdayStrip');
       safeCall(renderClockRecordList,'renderClockRecordList');
