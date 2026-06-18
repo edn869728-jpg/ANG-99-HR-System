@@ -1,66 +1,267 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover" />
-  <title>ANG HR SYSTEMS｜員工首頁</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>員工首頁</title>
+
+  
+
   <style>
     :root{
-      --bg:#f6f7fb;
-      --card:#ffffff;
-      --text:#1f2937;
-      --muted:#6b7280;
-      --line:#e5e7eb;
-      --primary:#111827;
-      --soft:#eef2ff;
-      --soft-text:#3730a3;
-      --shadow:0 10px 30px rgba(0,0,0,.06);
+      --ang-page-1:#FF87E0;
+      --ang-page-2:#CCA4FF;
+      --ang-page-3:#8089FF;
+      --ang-page-4:#59DDFF;
+      --ang-current-main:var(--ang-page-1);
+      --ang-soft-bg:#f6f7fb;
+      --ang-card-bg:#ffffff;
+      --ang-card-text:#1f2937;
+      --ang-muted:#6b7280;
     }
-    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-    html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;}
-    body{font-size:16px;line-height:1.5;}
-    button{font-family:inherit;}
-    .page{max-width:980px;margin:0 auto;padding:16px;box-sizing:border-box;}
-    .top-space{height:8px;}
-    .hero{background:linear-gradient(135deg,#ffffff 0%,#f3f6ff 100%);border-radius:22px;padding:22px 18px;box-shadow:var(--shadow);margin-bottom:16px;}
-    .hero-title{font-size:28px;font-weight:900;margin:0 0 8px;line-height:1.2;}
-    .hero-sub{font-size:14px;color:var(--muted);line-height:1.6;font-weight:700;}
-    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;}
-    .card{background:var(--card);border-radius:20px;padding:18px;box-shadow:0 8px 24px rgba(0,0,0,.06);box-sizing:border-box;}
-    .card-title{font-size:18px;font-weight:900;margin-bottom:10px;}
-    .muted{color:var(--muted);font-size:14px;line-height:1.6;font-weight:700;}
-    .big{font-size:24px;font-weight:900;line-height:1.2;}
-    .row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px;flex-wrap:wrap;}
-    .btn{appearance:none;border:none;border-radius:14px;padding:12px 16px;font-size:14px;font-weight:900;cursor:pointer;background:var(--primary);color:#fff;min-height:44px;}
-    .btn.light{background:var(--soft);color:var(--soft-text);}
-    .btn.gray{background:#f3f4f6;color:#111827;}
-    .list{display:flex;flex-direction:column;gap:10px;}
-    .list-item{padding:12px 14px;border-radius:14px;background:#f8fafc;border:1px solid #eef2f7;font-size:14px;line-height:1.5;font-weight:700;}
-    .list-item.link{cursor:pointer;transition:transform .16s ease,background .16s ease;}
-    .list-item.link:active{transform:scale(.99);background:#eef2ff;}
-    .empty{padding:18px;border-radius:16px;background:#fafafa;border:1px dashed #d1d5db;color:var(--muted);font-size:14px;text-align:center;font-weight:700;}
-    .footer-space{height:24px;}
-    .loading{text-align:center;color:var(--muted);padding:30px 16px;font-size:14px;font-weight:800;}
-    .top-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;}
-    @media (max-width:768px){.page{padding:12px;}.grid{grid-template-columns:1fr;}.hero-title{font-size:24px;}.big{font-size:22px;}}
+    body[data-theme="dark"]{
+      --ang-soft-bg:#060914;
+      --ang-card-bg:#111827;
+      --ang-card-text:#f9fafb;
+      --ang-muted:#cbd5e1;
+    }
+    body{
+      margin:0;
+      background:var(--ang-soft-bg);
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      color:var(--ang-card-text);
+    }
+
+    .page{
+      max-width:980px;
+      margin:0 auto;
+      padding:16px;
+      box-sizing:border-box;
+    }
+
+    .top-space{
+      height:8px;
+    }
+
+    .hero{
+      position:relative;
+      background:linear-gradient(135deg,var(--ang-card-bg) 0%,rgba(128,137,255,.10) 100%);
+      border-radius:22px;
+      padding:22px 18px;
+      box-shadow:0 10px 30px rgba(0,0,0,.06);
+      margin-bottom:16px;
+    }
+
+    .hero-title{
+      font-size:28px;
+      font-weight:900;
+      margin:0 0 8px;
+      line-height:1.2;
+    }
+
+    .hero-sub{
+      font-size:14px;
+      color:var(--ang-muted);
+      line-height:1.6;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:14px;
+    }
+
+    .card{
+      background:var(--ang-card-bg);
+      border-radius:20px;
+      padding:18px;
+      box-shadow:0 8px 24px rgba(0,0,0,.06);
+      box-sizing:border-box;
+    }
+
+    .card-title{
+      font-size:18px;
+      font-weight:900;
+      margin-bottom:10px;
+    }
+
+    .muted{
+      color:var(--ang-muted);
+      font-size:14px;
+      line-height:1.6;
+    }
+
+    .big{
+      font-size:24px;
+      font-weight:900;
+      line-height:1.2;
+    }
+
+    .row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-top:10px;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      appearance:none;
+      border:none;
+      border-radius:14px;
+      padding:12px 16px;
+      font-size:14px;
+      font-weight:800;
+      cursor:pointer;
+      background:#111827;
+      color:#fff;
+    }
+
+    .btn.light{
+      background:#eef2ff;
+      color:#3730a3;
+    }
+
+    .btn.gray{
+      background:#f3f4f6;
+      color:#111827;
+    }
+
+    .list{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .list-item{
+      padding:12px 14px;
+      border-radius:14px;
+      background:#f8fafc;
+      border:1px solid #eef2f7;
+      font-size:14px;
+      line-height:1.5;
+    }
+
+    .empty{
+      padding:18px;
+      border-radius:16px;
+      background:#fafafa;
+      border:1px dashed #d1d5db;
+      color:var(--ang-muted);
+      font-size:14px;
+      text-align:center;
+    }
+
+    .footer-space{
+      height:24px;
+    }
+
+    .loading{
+      text-align:center;
+      color:var(--ang-muted);
+      padding:30px 16px;
+      font-size:14px;
+    }
+
+
+
+    .brand-switcher{
+      position:relative;
+      display:inline-block;
+      margin-bottom:12px;
+    }
+    .brand-logo-btn{
+      width:54px;
+      height:54px;
+      border-radius:18px;
+      border:0;
+      background:var(--ang-current-main);
+      color:#fff;
+      font-size:18px;
+      font-weight:1000;
+      box-shadow:0 10px 24px rgba(0,0,0,.16);
+      cursor:pointer;
+    }
+    .company-menu{
+      position:absolute;
+      top:62px;
+      left:0;
+      width:210px;
+      display:none;
+      z-index:50;
+      background:var(--ang-card-bg);
+      border:1px solid rgba(148,163,184,.28);
+      border-radius:20px;
+      box-shadow:0 18px 46px rgba(0,0,0,.18);
+      padding:8px;
+    }
+    .company-menu.show{display:grid;gap:8px;}
+    .company-menu button{
+      min-height:46px;
+      border:0;
+      border-radius:14px;
+      padding:10px 12px;
+      text-align:left;
+      font-size:14px;
+      font-weight:900;
+      background:#f8fafc;
+      color:#111827;
+      cursor:pointer;
+    }
+    body[data-theme="dark"] .company-menu button{background:#1f2937;color:#fff;}
+    .mode-tip{
+      display:inline-flex;
+      margin-top:10px;
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(128,137,255,.12);
+      color:var(--ang-card-text);
+      font-size:12px;
+      font-weight:900;
+    }
+
+    @media (max-width: 768px){
+      .page{
+        padding:12px;
+      }
+
+      .grid{
+        grid-template-columns:1fr;
+      }
+
+      .hero-title{
+        font-size:24px;
+      }
+
+      .big{
+        font-size:22px;
+      }
+    }
   </style>
 </head>
 <body>
+  <div id="navContainer">
+
+  </div>
+
   <div class="page">
     <div class="top-space"></div>
+
     <div id="loadingBox" class="loading">載入中...</div>
 
     <div id="mainSection" style="display:none;">
       <section class="hero">
+        <div class="brand-switcher">
+          <button class="brand-logo-btn" type="button" onclick="toggleCompanyMenu()">ANG</button>
+          <div class="company-menu" id="companyMenu"></div>
+        </div>
         <div class="hero-title" id="mainTitle">員工首頁</div>
         <div class="hero-sub">
           歡迎回來，<span id="welcomeName">員工</span>
           <span id="globalUserName" style="display:none;"></span>
         </div>
-        <div class="top-actions">
-          <button class="btn light" type="button" onclick="goHome()">入口首頁</button>
-          <button class="btn gray" type="button" onclick="logout()">登出</button>
-        </div>
+        <div class="mode-tip" id="modeTip">員工模式</div>
       </section>
 
       <section class="grid">
@@ -69,8 +270,8 @@
           <div class="big" id="todayStatusText">尚未載入</div>
           <div class="muted" id="todayStatusSub">正在讀取今日打卡資訊</div>
           <div class="row">
-            <button class="btn" type="button" onclick="goClock()">前往打卡</button>
-            <button class="btn light" type="button" onclick="reloadDashboard()">重新整理</button>
+            <button class="btn" onclick="goClock()">前往打卡</button>
+            <button class="btn light" onclick="reloadDashboard()">重新整理</button>
           </div>
         </div>
 
@@ -79,23 +280,25 @@
           <div class="muted">員工編號</div>
           <div class="big" id="employeeIdText">-</div>
           <div class="row">
-            <button class="btn gray" type="button" onclick="goSalary()">查看薪資</button>
-            <button class="btn gray" type="button" onclick="logout()">登出</button>
+            <button class="btn gray" onclick="goSalary()">查看薪資</button>
+            <button class="btn gray" onclick="logout()">登出</button>
           </div>
         </div>
 
         <div class="card">
           <div class="card-title">本月打卡紀錄</div>
-          <div id="monthClockBox" class="list"><div class="empty">尚無資料</div></div>
+          <div id="monthClockBox" class="list">
+            <div class="empty">尚無資料</div>
+          </div>
         </div>
 
         <div class="card">
           <div class="card-title">快捷功能</div>
           <div class="list">
-            <div class="list-item link" onclick="goClock()">🕒 打卡中心</div>
-            <div class="list-item link" onclick="goSalary()">💰 薪資查詢</div>
-            <div class="list-item link" onclick="goUpload()">📤 上傳資料</div>
-            <div class="list-item link" onclick="goHome()">🏠 回入口首頁</div>
+            <div class="list-item" onclick="goClock()" style="cursor:pointer;">🕒 打卡中心</div>
+            <div class="list-item" onclick="goSalary()" style="cursor:pointer;">💰 薪資查詢</div>
+            <div class="list-item" onclick="goUpload()" style="cursor:pointer;">📤 上傳資料</div>
+            <div class="list-item" onclick="goIndex()" style="cursor:pointer;">🏠 回首頁</div>
           </div>
         </div>
       </section>
@@ -105,53 +308,62 @@
   </div>
 
   <script>
-    const FILE_MAP = {
-      index:'index.html',
-      home:'index.html',
-      login:'login.html',
-      employee:'employee.html',
-      clock:'nfc_clock.html',
-      nfc_clock:'nfc_clock.html',
-      nfc_admin:'nfc_admin.html',
-      admin:'admin.html',
-      platform:'platform_admin.html',
-      platform_admin:'platform_admin.html',
-      salary:'employee.html',
-      mysalary:'employee.html',
-      upload:'employee.html'
-    };
-
     function getParams(){
       const sp = new URLSearchParams(window.location.search);
       return {
-        page:(sp.get('page') || '').trim().toLowerCase(),
-        id:(sp.get('id') || '').trim().toUpperCase(),
-        name:(sp.get('name') || '').trim(),
-        token:(sp.get('token') || sp.get('key') || '').trim()
+        page: (sp.get('page') || '').trim().toLowerCase(),
+        id: (sp.get('id') || '').trim().toUpperCase(),
+        name: (sp.get('name') || '').trim()
       };
     }
 
-    function getRootPath(){
-      const path = window.location.pathname || '/';
-      return window.location.origin + path.replace(/[^\/]*$/, '');
-    }
-
-    function buildFileUrl(file, params){
-      const url = new URL(file, getRootPath());
-      Object.keys(params || {}).forEach(function(key){
-        const value = params[key];
-        if (value !== undefined && value !== null && String(value).trim() !== '') url.searchParams.set(key, String(value).trim());
-      });
-      return url.href;
+    function getBaseUrl(){
+      return window.location.origin + window.location.pathname;
     }
 
     function buildUrl(page, id){
-      const key = String(page || 'employee').trim().toLowerCase();
-      const file = FILE_MAP[key] || (key.endsWith('.html') ? key : 'employee.html');
-      const params = {};
-      if (id) params.id = id;
-      if (key === 'salary' || key === 'mysalary' || key === 'upload') params.page = key;
-      return buildFileUrl(file, params);
+      let url = getBaseUrl() + '?page=' + encodeURIComponent(page || 'employee');
+      if (id) url += '&id=' + encodeURIComponent(id);
+      return url;
+    }
+
+    function applyEmployeeTheme(){
+      const theme = localStorage.getItem('ang-hr-theme') || localStorage.getItem('ang_theme_mode') || localStorage.getItem('ang_app_theme') || 'dark';
+      document.body.dataset.theme = (theme === 'dark' || theme === 'night') ? 'dark' : 'light';
+      const pageIndexMap = { employee:0, clock:1, mysalary:2, upload:3 };
+      const p = getParams();
+      const idx = pageIndexMap[p.page || 'employee'] || 0;
+      const colors = ['#FF87E0','#CCA4FF','#8089FF','#59DDFF'];
+      document.documentElement.style.setProperty('--ang-current-main',colors[idx] || colors[0]);
+    }
+
+    function getCompanyMemberships(){
+      try {
+        const raw = localStorage.getItem('ang_company_memberships') || localStorage.getItem('ang_employee_companies') || '';
+        const arr = raw ? JSON.parse(raw) : [];
+        if (Array.isArray(arr) && arr.length) return arr.slice(0,3);
+      } catch(err) {}
+      const currentCompany = localStorage.getItem('ang_company_id') || '';
+      const currentName = localStorage.getItem('ang_company_name') || currentCompany || '目前公司';
+      const currentId = localStorage.getItem('emp_logged_in') || '';
+      return [{ company_id:currentCompany, company_name:currentName, employee_id:currentId }];
+    }
+
+    function toggleCompanyMenu(){
+      const menu = document.getElementById('companyMenu');
+      if (!menu) return;
+      if (menu.classList.contains('show')) { menu.classList.remove('show'); return; }
+      const companies = getCompanyMemberships();
+      menu.innerHTML = companies.map(function(c){
+        return '<button type="button" onclick="switchCompany(\'' + escapeHtml(c.company_id || '') + '\',\'' + escapeHtml(c.employee_id || '') + '\')">' + escapeHtml(c.company_name || c.company_id || '公司') + '<br><small>' + escapeHtml(c.company_id || '') + '</small></button>';
+      }).join('') + '<button type="button" onclick="logout()">登出</button>';
+      menu.classList.add('show');
+    }
+
+    function switchCompany(companyId, employeeId){
+      if (companyId) localStorage.setItem('ang_company_id',companyId);
+      if (employeeId) localStorage.setItem('emp_logged_in',employeeId);
+      window.location.href = buildUrl('employee',employeeId || localStorage.getItem('emp_logged_in') || '');
     }
 
     function goPage(page){
@@ -159,18 +371,38 @@
       window.location.href = buildUrl(page, id);
     }
 
-    function goLogin(){ window.location.href = buildFileUrl('login.html', { tab:'bind' }); }
-    function goClock(){ goPage('clock'); }
-    function goSalary(){ goPage('mysalary'); }
-    function goUpload(){ goPage('upload'); }
-    function goHome(){ window.location.href = buildFileUrl('index.html', {}); }
+    function goLogin(){
+      window.location.href = buildUrl('login');
+    }
+
+    function goClock(){
+      goPage('clock');
+    }
+
+    function goSalary(){
+      goPage('mysalary');
+    }
+
+    function goUpload(){
+      goPage('upload');
+    }
+
+    function goIndex(){
+      const role = (localStorage.getItem('ang_role') || localStorage.getItem('role') || '').toLowerCase();
+      const canSwitch = ['creator','admin','manager','super_admin','super admin'].indexOf(role) >= 0 || localStorage.getItem('ang_can_switch_mode') === '1';
+      if (!canSwitch) { window.scrollTo({ top:0, behavior:'smooth' }); return; }
+      const current = localStorage.getItem('ang_current_mode') || 'employee';
+      const next = current === 'employee' ? 'admin' : 'employee';
+      localStorage.setItem('ang_current_mode',next);
+      if (next === 'admin') window.location.href = 'admin.html?company_id=' + encodeURIComponent(localStorage.getItem('ang_company_id') || '') + '&id=' + encodeURIComponent(localStorage.getItem('emp_logged_in') || '');
+      else window.location.href = buildUrl('employee',localStorage.getItem('emp_logged_in') || '');
+    }
 
     function logout(){
       localStorage.removeItem('isLoggedIn');
       localStorage.removeItem('loginId');
       localStorage.removeItem('emp_logged_in');
       localStorage.removeItem('emp_name');
-      localStorage.removeItem('emp_login_token');
       goLogin();
     }
 
@@ -181,9 +413,12 @@
       const welcomeName = document.getElementById('welcomeName');
       const globalUserName = document.getElementById('globalUserName');
       const employeeIdText = document.getElementById('employeeIdText');
+
       if (loadingBox) loadingBox.style.display = 'none';
       if (mainSection) mainSection.style.display = 'block';
+
       if (mainTitle) mainTitle.innerText = '員工首頁';
+
       const displayName = name || id || '員工';
       if (welcomeName) welcomeName.innerText = displayName;
       if (globalUserName) globalUserName.innerText = displayName;
@@ -200,76 +435,130 @@
     function renderMonthClock(list){
       const box = document.getElementById('monthClockBox');
       if (!box) return;
+
       if (!Array.isArray(list) || !list.length) {
         box.innerHTML = '<div class="empty">尚無本月打卡紀錄</div>';
         return;
       }
+
       box.innerHTML = list.map(function(item){
         const d = item.date || item.日期 || '-';
         const inTime = item.in || item.clockIn || item.上班 || '-';
         const outTime = item.out || item.clockOut || item.下班 || '-';
         const hours = item.hours || item.工時 || '-';
-        return '<div class="list-item"><div><strong>' + escapeHtml(d) + '</strong></div><div>上班：' + escapeHtml(String(inTime)) + '</div><div>下班：' + escapeHtml(String(outTime)) + '</div><div>工時：' + escapeHtml(String(hours)) + '</div></div>';
+
+        return `
+          <div class="list-item">
+            <div><strong>${escapeHtml(d)}</strong></div>
+            <div>上班：${escapeHtml(String(inTime))}</div>
+            <div>下班：${escapeHtml(String(outTime))}</div>
+            <div>工時：${escapeHtml(String(hours))}</div>
+          </div>
+        `;
       }).join('');
     }
 
     function escapeHtml(str){
-      return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
     }
 
     function loadTodayStatus(id){
-      if (!(window.google && google.script && google.script.run)) {
-        setTodayStatus('尚未連線', '目前為 GitHub Pages 前端模式，請由 login.html 取得登入狀態');
+      if (!google || !google.script || !google.script.run) {
+        setTodayStatus('無法載入', 'google.script.run 不存在');
         return;
       }
+
       google.script.run
         .withSuccessHandler(function(res){
-          if (!res || !res.ok) { setTodayStatus('讀取失敗', (res && (res.msg || res.message)) || '無法取得今日狀態'); return; }
-          setTodayStatus(res.text || res.statusText || res.status || '今日狀態已載入', res.subText || res.message || '已完成今日資料讀取');
+          if (!res || !res.ok) {
+            setTodayStatus('讀取失敗', (res && (res.msg || res.message)) || '無法取得今日狀態');
+            return;
+          }
+
+          const text =
+            res.text ||
+            res.statusText ||
+            res.status ||
+            '今日狀態已載入';
+
+          const sub =
+            res.subText ||
+            res.message ||
+            '已完成今日資料讀取';
+
+          setTodayStatus(text, sub);
         })
-        .withFailureHandler(function(err){ setTodayStatus('讀取失敗', err && err.message ? err.message : String(err || 'error')); })
+        .withFailureHandler(function(err){
+          setTodayStatus('讀取失敗', err && err.message ? err.message : String(err || 'error'));
+        })
         .get_today_status(id);
     }
 
     function loadMonthClock(id){
-      if (!(window.google && google.script && google.script.run)) { renderMonthClock([]); return; }
+      if (!google || !google.script || !google.script.run) {
+        renderMonthClock([]);
+        return;
+      }
+
       google.script.run
-        .withSuccessHandler(function(res){ renderMonthClock(res && res.ok ? (res.list || res.data || res.records || []) : []); })
-        .withFailureHandler(function(){ renderMonthClock([]); })
+        .withSuccessHandler(function(res){
+          if (!res || !res.ok) {
+            renderMonthClock([]);
+            return;
+          }
+
+          const list = res.list || res.data || res.records || [];
+          renderMonthClock(list);
+        })
+        .withFailureHandler(function(){
+          renderMonthClock([]);
+        })
         .get_month_clock(id);
     }
 
     function reloadDashboard(){
       const id = window.currentId || (localStorage.getItem('emp_logged_in') || '').trim().toUpperCase();
-      if (!id) { goLogin(); return; }
+      if (!id) {
+        goLogin();
+        return;
+      }
       loadTodayStatus(id);
       loadMonthClock(id);
     }
 
     function bootstrapEmployeePage(){
+      applyEmployeeTheme();
       const p = getParams();
       const idFromUrl = p.id;
-      const savedId = (localStorage.getItem('emp_logged_in') || localStorage.getItem('loginId') || '').trim().toUpperCase();
+      const savedId = (localStorage.getItem('emp_logged_in') || '').trim().toUpperCase();
       const savedName = (localStorage.getItem('emp_name') || '').trim();
 
-      if (!savedId && !idFromUrl) { goLogin(); return; }
-
-      const finalId = savedId || idFromUrl;
-      if (idFromUrl && savedId && idFromUrl !== savedId) { logout(); return; }
-
-      if (!idFromUrl && finalId) {
-        window.location.replace(buildFileUrl('employee.html', { id:finalId }));
+      if (!savedId) {
+        goLogin();
         return;
       }
 
-      window.currentId = finalId;
-      window.currentName = savedName || p.name || finalId;
-      if (finalId) localStorage.setItem('emp_logged_in', finalId);
-      if (window.currentName) localStorage.setItem('emp_name', window.currentName);
-      localStorage.setItem('isLoggedIn', '1');
-      showMainOnly(finalId, window.currentName);
-      loadTodayStatus(finalId);
-      loadMonthClock(finalId);
+      if (!idFromUrl) {
+        window.location.replace(buildUrl('employee', savedId));
+        return;
+      }
+
+      if (idFromUrl !== savedId) {
+        logout();
+        return;
+      }
+
+      window.currentId = savedId;
+      window.currentName = savedName || p.name || savedId;
+
+      showMainOnly(savedId, window.currentName);
+      loadTodayStatus(savedId);
+      loadMonthClock(savedId);
     }
 
     window.addEventListener('load', bootstrapEmployeePage);

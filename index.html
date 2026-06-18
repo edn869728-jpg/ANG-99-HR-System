@@ -1246,14 +1246,29 @@
       function applyTheme(theme){
         const isDark = theme === 'dark' || theme === 'night';
         body.dataset.theme = isDark ? 'dark' : 'light';
-        toggle.setAttribute('aria-pressed',String(isDark));
+        if (toggle) toggle.setAttribute('aria-pressed',String(isDark));
+        try { localStorage.setItem('ang_theme_mode',isDark ? 'night' : 'day'); } catch(_e) {}
+      }
+      function syncNativeTheme(nextTheme,fullReplace){
+        const nativeTheme = nextTheme === 'dark' ? 'night' : 'day';
+        const transition = nativeTheme === 'day' ? 'night_to_day' : 'day_to_night';
+        try { localStorage.setItem('ang_splash_transition',transition); } catch(_e) {}
+        const bridge = window.ANGHRApp || window.AndroidBridge || window.AndroidNative || window.WebAppInterface;
+        if (!bridge || !fullReplace) return;
+        try {
+          if (typeof bridge.setFullTheme === 'function') { bridge.setFullTheme(nativeTheme,transition); return; }
+          if (typeof bridge.setTheme === 'function') { bridge.setTheme(nativeTheme); return; }
+        } catch(err) {}
       }
       const savedTheme = localStorage.getItem(storageKey);
       applyTheme(themeFromUrl || savedTheme || 'dark');
-      toggle.addEventListener('click',function(){
+      if (toggle) toggle.addEventListener('click',function(){
         const nextTheme = body.dataset.theme === 'dark' ? 'light' : 'dark';
+        const nativeName = nextTheme === 'dark' ? '暗夜模式' : '日光模式';
+        const fullReplace = window.confirm('要完整更換為「' + nativeName + '」嗎？\n\n選擇確定：同步切換 App icon 與開場影片，App 不會自動重開。\n選擇取消：只切換目前畫面顏色。');
         applyTheme(nextTheme);
         localStorage.setItem(storageKey,nextTheme);
+        syncNativeTheme(nextTheme,fullReplace);
       });
     }
 
@@ -1799,7 +1814,78 @@
       try { localStorage.removeItem('ang_last_gas_response'); } catch(err4) {}
       try { localStorage.removeItem('ang_verify_token'); } catch(err5) {}
       try { localStorage.removeItem('ang_last_verify_token'); } catch(err6) {}
-      try { sessionStorage.removeItem('ang_verify_token'); } catch(err7) {}
+      try { localStorage.removeItem('ang_admin_email_pending'); } catch(err8) {}
+      try { localStorage.removeItem('ang_email_signup_pending'); } catch(err9) {}
+    }
+
+    const ANG_EMAIL_LIMIT_SECONDS = 60;
+    const ANG_EMAIL_DAILY_LIMIT = 5;
+    let angEmailCountdownTimer = null;
+
+    function todayKey(){
+      const d = new Date();
+      return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+    }
+
+    function emailThrottleKey(flow,email){
+      return 'ang_email_verify_limit_' + String(flow || 'company_signup') + '_' + String(email || '').trim().toLowerCase() + '_' + todayKey();
+    }
+
+    function readEmailThrottle(flow,email){
+      try {
+        const raw = localStorage.getItem(emailThrottleKey(flow,email));
+        const data = raw ? JSON.parse(raw) : null;
+        if (!data || data.date !== todayKey()) return { date:todayKey(), count:0, lastSentAt:0 };
+        return { date:data.date, count:Number(data.count || 0), lastSentAt:Number(data.lastSentAt || 0) };
+      } catch(err) {
+        return { date:todayKey(), count:0, lastSentAt:0 };
+      }
+    }
+
+    function writeEmailThrottle(flow,email,data){
+      try { localStorage.setItem(emailThrottleKey(flow,email),JSON.stringify(data || {})); } catch(err) {}
+    }
+
+    function canSendEmailCode(flow,email){
+      const data = readEmailThrottle(flow,email);
+      const leftSeconds = Math.max(0,ANG_EMAIL_LIMIT_SECONDS - Math.floor((Date.now() - Number(data.lastSentAt || 0)) / 1000));
+      if (data.count >= ANG_EMAIL_DAILY_LIMIT) return { ok:false, message:'今天已達 5 次寄送上限，請明天再試或改用 Google / LINE。', leftSeconds:leftSeconds, count:data.count };
+      if (leftSeconds > 0) return { ok:false, message:'請等待 ' + leftSeconds + ' 秒後再重寄。', leftSeconds:leftSeconds, count:data.count };
+      return { ok:true, leftSeconds:0, count:data.count };
+    }
+
+    function markEmailCodeSent(flow,email){
+      const data = readEmailThrottle(flow,email);
+      data.date = todayKey();
+      data.count = Number(data.count || 0) + 1;
+      data.lastSentAt = Date.now();
+      writeEmailThrottle(flow,email,data);
+      return data;
+    }
+
+    function startEmailResendCountdown(flow,email){
+      if (angEmailCountdownTimer) clearInterval(angEmailCountdownTimer);
+      const btn = document.getElementById('angEmailResendBtn');
+      if (!btn) return;
+      function tick(){
+        const data = readEmailThrottle(flow,email);
+        const leftSeconds = Math.max(0,ANG_EMAIL_LIMIT_SECONDS - Math.floor((Date.now() - Number(data.lastSentAt || 0)) / 1000));
+        if (data.count >= ANG_EMAIL_DAILY_LIMIT) {
+          btn.disabled = true;
+          btn.innerText = '今日已達 5 次';
+          return;
+        }
+        if (leftSeconds > 0) {
+          btn.disabled = true;
+          btn.innerText = '重寄 ' + leftSeconds + ' 秒';
+        } else {
+          btn.disabled = false;
+          btn.innerText = '重寄驗證碼';
+          if (angEmailCountdownTimer) clearInterval(angEmailCountdownTimer);
+        }
+      }
+      tick();
+      angEmailCountdownTimer = setInterval(tick,1000);
     }
 
     function injectEmailVerifyStyle(){
@@ -1838,17 +1924,19 @@
       if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
     }
 
-    function showEmailCodeOverlay(plan,email,statusId){
+    function showEmailCodeOverlay(plan,email,statusId,flow,extra){
       injectEmailVerifyStyle();
       closeEmailVerifyOverlay();
       const safePlan = String(plan || '').trim().toLowerCase();
+      const safeFlow = String(flow || 'company_signup').trim().toLowerCase();
+      const meta = extra || {};
       const overlay = document.createElement('div');
       overlay.id = 'angEmailVerifyOverlay';
       overlay.className = 'ang-email-overlay';
       overlay.innerHTML =
         '<div class="ang-email-card">' +
           '<h2 class="ang-email-title">Email 驗證碼</h2>' +
-          '<p class="ang-email-sub">驗證碼已寄到：<b>' + escapeButtonHtml(email) + '</b><br>請輸入 6 位數驗證碼，完成後會留在 App 內進入公司資料填寫。</p>' +
+          '<p class="ang-email-sub">驗證碼已寄到：<b>' + escapeButtonHtml(email) + '</b><br>60 秒後才能重寄；同一信箱一天最多 5 次。完成後會留在 App 內繼續流程。</p>' +
           '<input id="angEmailCodeInput" class="ang-email-input" type="text" inputmode="numeric" maxlength="6" placeholder="000000" autocomplete="one-time-code" />' +
           '<div class="ang-email-actions">' +
             '<button id="angEmailVerifyBtn" type="button" class="ang-email-btn primary">驗證並繼續</button>' +
@@ -1862,18 +1950,21 @@
       const verifyBtn = document.getElementById('angEmailVerifyBtn');
       const resendBtn = document.getElementById('angEmailResendBtn');
       const cancelBtn = document.getElementById('angEmailCancelBtn');
-      if (verifyBtn) verifyBtn.addEventListener('click',function(){ verifyPlanEmailCode(safePlan,email,statusId); });
-      if (resendBtn) resendBtn.addEventListener('click',function(){ requestPlanEmailVerification(safePlan); });
+      if (verifyBtn) verifyBtn.addEventListener('click',function(){ verifyPlanEmailCode(safePlan,email,statusId,safeFlow,meta); });
+      if (resendBtn) resendBtn.addEventListener('click',function(){ if (safeFlow === 'admin_login') requestAdminEmailLogin(true); else requestPlanEmailVerification(safePlan,true); });
       if (cancelBtn) cancelBtn.addEventListener('click',function(){ clearVerificationStateForNewMethod(); closeEmailVerifyOverlay(); setStatus(statusId,'info','已取消 Email 驗證，可以改用 Google / LINE。'); });
+      startEmailResendCountdown(safeFlow,email);
       if (input) {
-        input.addEventListener('keydown',function(e){ if (e.key === 'Enter') verifyPlanEmailCode(safePlan,email,statusId); });
+        input.addEventListener('keydown',function(e){ if (e.key === 'Enter') verifyPlanEmailCode(safePlan,email,statusId,safeFlow,meta); });
         setTimeout(function(){ input.focus(); },120);
       }
       setEmailVerifyStatus('info','請查看信箱並輸入驗證碼。');
     }
 
-    function verifyPlanEmailCode(plan,email,statusId){
+    function verifyPlanEmailCode(plan,email,statusId,flow,extra){
       const safePlan = String(plan || '').trim().toLowerCase();
+      const safeFlow = String(flow || 'company_signup').trim().toLowerCase();
+      const meta = extra || {};
       const input = document.getElementById('angEmailCodeInput');
       const code = String(input ? input.value : '').replace(/\D/g,'').trim();
       if (!code || code.length < 6) { setEmailVerifyStatus('error','請輸入 6 位數驗證碼'); return; }
@@ -1882,9 +1973,11 @@
         email:email,
         code:code,
         plan:safePlan,
-        flow:'company_signup',
+        flow:safeFlow,
+        company_id:meta.company_id || '',
+        company:meta.company_id || '',
         device_id:APP_STATE.deviceId,
-        source:'entry_plan_email_in_app'
+        source:safeFlow === 'admin_login' ? 'entry_admin_email_in_app' : 'entry_plan_email_in_app'
       },25000).then(function(res){
         if (!res || !res.ok) {
           setEmailVerifyStatus('error',(res && (res.message || res.msg)) || 'Email 驗證失敗');
@@ -1899,7 +1992,9 @@
           email:profile.email || email,
           profile_name:profile.name || '',
           name:profile.name || '',
-          flow:'company_signup',
+          flow:safeFlow,
+          company_id:meta.company_id || '',
+          company:meta.company_id || '',
           plan:safePlan,
           verify_token:profile.verify_token || res.verify_token || ''
         });
@@ -1908,6 +2003,16 @@
         try { localStorage.setItem('ang_verified_email',String(gas.email || email)); } catch(err3) {}
         try { localStorage.setItem('ang_verified_provider','email'); } catch(err4) {}
         try { localStorage.setItem('ang_verified_plan',safePlan); } catch(err5) {}
+        if (safeFlow === 'admin_login') {
+          setEmailVerifyStatus('success','Email 驗證成功，正在登入後台...');
+          setStatus(statusId,'success','Email 驗證成功，正在檢查管理員資料。');
+          setTimeout(function(){
+            closeEmailVerifyOverlay();
+            if (window.ANG_ADMIN_LOGIN_BY_VERIFIED_AUTH) window.ANG_ADMIN_LOGIN_BY_VERIFIED_AUTH(gas,meta.company_id || '');
+            else setStatus(statusId,'error','缺少管理員登入橋接，請更新 native-google-bridge.js。');
+          },300);
+          return;
+        }
         setEmailVerifyStatus('success','Email 驗證成功，正在開啟公司資料表...');
         setStatus(statusId,'success','Email 驗證成功。');
         setTimeout(function(){
@@ -1925,17 +2030,34 @@
       });
     }
 
-    function requestAdminEmailLogin(){
+    function requestAdminEmailLogin(isResend){
       const companyCode = normalizeCompanyCode(document.getElementById('adminCompanyCode') ? document.getElementById('adminCompanyCode').value : '');
       const adminEmail = String(document.getElementById('adminEmail') ? document.getElementById('adminEmail').value : '').trim();
       if (!companyCode) { setStatus('adminLoginStatus','error','請輸入公司代碼'); return; }
       if (!isValidEmail(adminEmail)) { setStatus('adminLoginStatus','error','請輸入正確的管理員 Email'); return; }
-      setStatus('adminLoginStatus','info','正在送出 Email 驗證...');
-      if (window.google && google.script && google.script.run) {
-        google.script.run.withSuccessHandler(function(res){ if (!res || !res.ok) { setStatus('adminLoginStatus','error',(res && (res.message || res.msg)) || '驗證送出失敗'); return; } setStatus('adminLoginStatus','success',(res.message || res.msg) || '已送出驗證，請查看 Email'); if (res.nextUrl) { setTimeout(function(){ window.location.href = res.nextUrl; },650); } }).withFailureHandler(function(err){ setStatus('adminLoginStatus','error',err && err.message ? err.message : '連線失敗'); }).requestAdminLoginEmailVerification({ companyCode:companyCode, adminEmail:adminEmail, deviceId:APP_STATE.deviceId });
-        return;
-      }
-      window.location.href = APP_STATE.baseUrl + '?page=login&role=admin&verify=email&company=' + encodeURIComponent(companyCode) + '&email=' + encodeURIComponent(adminEmail);
+      const limit = canSendEmailCode('admin_login',adminEmail);
+      if (!limit.ok) { setStatus('adminLoginStatus','error',limit.message); startEmailResendCountdown('admin_login',adminEmail); return; }
+      clearVerificationStateForNewMethod();
+      try { localStorage.setItem('ang_admin_email_pending',JSON.stringify({ company_id:companyCode, email:adminEmail, statusId:'adminLoginStatus', savedAt:Date.now() })); } catch(err) {}
+      setStatus('adminLoginStatus','info',isResend ? '正在重寄 Email 驗證碼...' : '正在寄出 Email 驗證碼...');
+      callGasApi('requestEmailCode',{
+        email:adminEmail,
+        flow:'admin_login',
+        company_id:companyCode,
+        company:companyCode,
+        device_id:APP_STATE.deviceId,
+        source:'entry_admin_email_in_app'
+      },25000).then(function(res){
+        if (!res || !res.ok) {
+          setStatus('adminLoginStatus','error',(res && (res.message || res.msg)) || '驗證碼寄送失敗');
+          return;
+        }
+        markEmailCodeSent('admin_login',adminEmail);
+        setStatus('adminLoginStatus','success',(res.message || res.msg) || '驗證碼已寄出，請查看 Email');
+        showEmailCodeOverlay('',adminEmail,'adminLoginStatus','admin_login',{ company_id:companyCode });
+      }).catch(function(err){
+        setStatus('adminLoginStatus','error',err && err.message ? err.message : 'Email 驗證連線失敗');
+      });
     }
 
     function requestAdminGoogleLogin(){
@@ -1950,29 +2072,34 @@
       openGoogleAuthUrl(APP_STATE.baseUrl + '?page=login&role=admin&verify=google&company=' + encodeURIComponent(companyCode),'adminLoginStatus');
     }
 
-    function requestPlanEmailVerification(plan){
+    function requestPlanEmailVerification(plan,isResend){
       const safePlan = String(plan || '').trim().toLowerCase();
       const input = document.getElementById(safePlan + 'SignupEmail');
       const email = String(input ? input.value : '').trim();
       const statusId = safePlan + 'PlanStatus';
       if (!safePlan) return;
       if (!isValidEmail(email)) { setStatus(statusId,'error','請輸入正確的 Email'); return; }
+      const limit = canSendEmailCode('company_signup',email);
+      if (!limit.ok) { setStatus(statusId,'error',limit.message); startEmailResendCountdown('company_signup',email); return; }
       clearVerificationStateForNewMethod();
       try { localStorage.setItem('ang_email_signup_pending',JSON.stringify({ plan:safePlan, email:email, statusId:statusId, savedAt:Date.now() })); } catch(err) {}
-      setStatus(statusId,'info','正在寄出 Email 驗證碼...');
+      setStatus(statusId,'info',isResend ? '正在重寄 Email 驗證碼...' : '正在寄出 Email 驗證碼...');
       callGasApi('requestEmailCode',{
         email:email,
         plan:safePlan,
-        flow:'company_signup',
+        flow:safeFlow,
+        company_id:meta.company_id || '',
+        company:meta.company_id || '',
         device_id:APP_STATE.deviceId,
-        source:'entry_plan_email_in_app'
+        source:safeFlow === 'admin_login' ? 'entry_admin_email_in_app' : 'entry_plan_email_in_app'
       },25000).then(function(res){
         if (!res || !res.ok) {
           setStatus(statusId,'error',(res && (res.message || res.msg)) || '驗證碼寄送失敗');
           return;
         }
+        markEmailCodeSent('company_signup',email);
         setStatus(statusId,'success',(res.message || res.msg) || '驗證碼已寄出，請查看 Email');
-        showEmailCodeOverlay(safePlan,email,statusId);
+        showEmailCodeOverlay(safePlan,email,statusId,'company_signup',{});
       }).catch(function(err){
         setStatus(statusId,'error',err && err.message ? err.message : 'Email 驗證連線失敗');
       });
@@ -2009,6 +2136,6 @@
 
     window.addEventListener('load',init);
   </script>
-  <script src="./native-google-bridge.js?v=20260618_2"></script>
+  <script src="./native-google-bridge.js?v=20260618_task10"></script>
 </body>
 </html>

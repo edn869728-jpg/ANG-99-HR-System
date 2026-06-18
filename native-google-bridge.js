@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  var ANG_NATIVE_BRIDGE_VERSION = '2026-06-18-email-inapp-1';
+  var ANG_NATIVE_BRIDGE_VERSION = '2026-06-18-task10-auth-admin-register';
   if (window.__ANG_NATIVE_BRIDGE_VERSION === ANG_NATIVE_BRIDGE_VERSION) return;
   window.__ANG_NATIVE_BRIDGE_VERSION = ANG_NATIVE_BRIDGE_VERSION;
 
@@ -326,6 +326,8 @@
       '.ang-register-sub{font-size:13px;line-height:1.55;color:#cbd5e1;font-weight:800;margin:0 0 14px;}',
       '.ang-register-badge-row{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px;}',
       '.ang-register-badge{border-radius:999px;padding:7px 10px;background:rgba(89,221,255,.13);border:1px solid rgba(89,221,255,.22);font-size:12px;font-weight:1000;color:#e0f2fe;}',
+      '.ang-register-authbox{margin:0 0 14px;padding:12px;border-radius:18px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);display:grid;gap:6px;font-size:13px;line-height:1.45;font-weight:900;color:#e5e7eb;}',
+      '.ang-register-authbox b{color:#fff;}',
       '.ang-register-field{margin:12px 0;}',
       '.ang-register-label{font-size:13px;font-weight:1000;color:#e5e7eb;margin-bottom:7px;}',
       '.ang-register-input{width:100%;min-height:50px;border-radius:16px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.08);color:#fff;padding:12px 14px;box-sizing:border-box;font-size:16px;font-weight:900;outline:none;}',
@@ -373,6 +375,57 @@
     return 'Basic 實施方案';
   }
 
+  function adminUrl(companyId, employeeId, sessionToken) {
+    var base = new URL('admin.html', window.location.href);
+    if (companyId) base.searchParams.set('company_id', companyId);
+    if (employeeId) base.searchParams.set('id', employeeId);
+    if (sessionToken) base.searchParams.set('session_token', sessionToken);
+    base.searchParams.set('source', 'verified_admin_login');
+    return base.toString();
+  }
+
+  function adminLoginByVerifiedAuth(gas, companyId) {
+    gas = gas || safeJsonParse(safeGetStorage('ang_last_gas_response', ''), {});
+    var token = gas.verify_token || safeGetStorage('ang_verify_token', '') || safeGetStorage('ang_last_verify_token', '');
+    var cid = String(companyId || gas.company_id || gas.company || '').trim().toUpperCase();
+    if (!token) { setStatusSafe('adminLoginStatus','error','缺少驗證 token，請重新驗證。'); return; }
+    if (!cid) { setStatusSafe('adminLoginStatus','error','請先輸入公司代碼。'); return; }
+    setStatusSafe('adminLoginStatus','info','驗證成功，正在檢查後台管理員資料...');
+    callGasApi('adminLoginByVerifiedAuth',{
+      verify_token: token,
+      company_id: cid,
+      company: cid,
+      provider: gas.provider || gas.method || '',
+      email: gas.email || safeGetStorage('ang_verified_email',''),
+      device_id: getDeviceId(),
+      source: 'entry_admin_verified_auth'
+    },30000).then(function(res){
+      if (!res || !res.ok) {
+        setStatusSafe('adminLoginStatus','error',(res && (res.message || res.msg)) || '登入失敗：此驗證身分沒有後台資料。');
+        return;
+      }
+      safeSetStorage('ang_company_id',res.company_id || cid);
+      safeSetStorage('ang_company_name',res.company_name || '');
+      safeSetStorage('ang_role',res.role || '');
+      safeSetStorage('loginId',res.employee_id || '');
+      safeSetStorage('emp_logged_in',res.employee_id || '');
+      safeSetStorage('emp_name',res.name || '');
+      safeSetStorage('ang_admin_session_token',res.session_token || '');
+      safeSetStorage('isLoggedIn','true');
+      setStatusSafe('adminLoginStatus','success','後台登入成功，正在進入企業管理。');
+      setTimeout(function(){ window.location.href = res.next_url || adminUrl(res.company_id || cid,res.employee_id || '',res.session_token || ''); },450);
+    }).catch(function(err){
+      setStatusSafe('adminLoginStatus','error',err && err.message ? err.message : '後台登入連線失敗');
+    });
+  }
+
+  function methodLabel(provider) {
+    provider = String(provider || '').toLowerCase();
+    if (provider === 'line') return 'LINE 驗證';
+    if (provider === 'email') return 'Email 驗證';
+    return 'Google 驗證';
+  }
+
   function showCompanyRegisterForm(gas) {
     gas = gas || {};
     closeDebugPanel();
@@ -396,8 +449,13 @@
         '<p class="ang-register-sub">驗證已完成，請補齊公司與負責人資料。送出後會建立公司帳號與 Creator 管理者。</p>' +
         '<div class="ang-register-badge-row">' +
           '<span class="ang-register-badge">' + escapeHtml(planLabel(plan)) + '</span>' +
-          '<span class="ang-register-badge">' + escapeHtml(provider === 'line' ? 'LINE 已驗證' : (provider === 'email' ? 'Email 已驗證' : 'Google 已驗證')) + '</span>' +
+          '<span class="ang-register-badge">' + escapeHtml(methodLabel(provider)) + '</span>' +
           '<span class="ang-register-badge">' + escapeHtml(email || '已取得驗證身分') + '</span>' +
+        '</div>' +
+        '<div class="ang-register-authbox">' +
+          '<div>註冊方式：<b>' + escapeHtml(methodLabel(provider)) + '</b></div>' +
+          '<div>帳號名稱：<b>' + escapeHtml(name || '-') + '</b></div>' +
+          '<div>帳號（Email）：<b>' + escapeHtml(email || '未提供') + '</b></div>' +
         '</div>' +
         '<div class="ang-register-field"><div class="ang-register-label">公司名稱 *</div><input id="angRegCompanyName" class="ang-register-input" type="text" autocomplete="organization" placeholder="例如：矽品精密" /></div>' +
         '<div class="ang-register-field"><div class="ang-register-label">負責人 / 申請人姓名 *</div><input id="angRegAdminName" class="ang-register-input" type="text" autocomplete="name" placeholder="姓名" value="' + escapeHtml(name) + '" /></div>' +
@@ -410,6 +468,11 @@
           '<div class="ang-register-field"><div class="ang-register-label">免付費特權碼</div><input id="angRegPrivilegeId" class="ang-register-input" type="text" placeholder="ANG8963-A，可空白" /></div>' +
         '</div>' +
         '<div class="ang-register-field"><div class="ang-register-label">公司地址</div><input id="angRegAddress" class="ang-register-input" type="text" autocomplete="street-address" placeholder="可空白" /></div>' +
+        '<div class="ang-register-grid">' +
+          '<div class="ang-register-field"><div class="ang-register-label">付款 / 授權方式</div><select id="angRegPaymentMethod" class="ang-register-input"><option value="trial_later">試用期後再設定</option><option value="google_play">Google Play / 信用卡付款</option><option value="credit_card">信用卡付款</option><option value="auth_code">我有 ANG 授權碼</option><option value="free_privilege">我有免付費特權碼</option><option value="test_authorization">測試授權（不扣款）</option></select></div>' +
+          '<div class="ang-register-field"><div class="ang-register-label">ANG 授權碼</div><input id="angRegAuthorizationCode" class="ang-register-input" type="text" placeholder="可空白" /></div>' +
+        '</div>' +
+        '<p class="ang-register-sub">建立成功後會顯示試用期間、預計收費日與試用後預估月費。加購包會併入每月月租；取消或降級時，啟用中員工數必須小於或等於調整後名額。</p>' +
         '<div class="ang-register-actions">' +
           '<button id="angRegSubmitBtn" type="button" class="ang-register-btn primary">建立公司並進入後台</button>' +
           '<button id="angRegCloseBtn" type="button" class="ang-register-btn secondary">先不要送出</button>' +
@@ -424,9 +487,10 @@
     var closeBtn = document.getElementById('angRegCloseBtn');
     if (submitBtn) submitBtn.addEventListener('click', function () { submitCompanyRegister(gas); });
     if (closeBtn) closeBtn.addEventListener('click', function () {
-      overlay.style.display = 'none';
+      try { localStorage.removeItem('ang_pending_auth'); localStorage.removeItem('ang_last_native_auth_result'); localStorage.removeItem('ang_last_native_gas_result'); localStorage.removeItem('ang_last_gas_response'); localStorage.removeItem('ang_verify_token'); localStorage.removeItem('ang_last_verify_token'); sessionStorage.removeItem('ang_verify_token'); } catch(_e) {}
       var statusId = resolveStatusId(gas);
-      setStatusSafe(statusId, 'success', '驗證成功，尚未建立公司。');
+      setStatusSafe(statusId, 'info', '已取消填寫，正在回入口讓你重選驗證方式。');
+      setTimeout(function(){ window.location.reload(); },350);
     });
 
     setRegisterStatus('success', '驗證成功，請填寫資料建立公司。');
@@ -452,6 +516,8 @@
     var taxId = fieldValue('angRegTaxId');
     var address = fieldValue('angRegAddress');
     var privilegeId = fieldValue('angRegPrivilegeId').toUpperCase().replace(/\s+/g, '');
+    var paymentMethod = fieldValue('angRegPaymentMethod') || 'trial_later';
+    var authorizationCode = fieldValue('angRegAuthorizationCode').toUpperCase().replace(/\s+/g, '');
 
     if (!verifyToken) { setRegisterStatus('error', '缺少 verify_token，請重新 Google 驗證。'); return; }
     if (!companyName) { setRegisterStatus('error', '請輸入公司名稱。'); return; }
@@ -476,6 +542,8 @@
       tax_id: taxId,
       address: address,
       privilege_id: privilegeId,
+      payment_method: paymentMethod,
+      authorization_code: authorizationCode,
       email: gas.email || safeGetStorage('ang_verified_email', ''),
       device_id: getDeviceId(),
       source: 'frontend_register_overlay'
@@ -524,6 +592,10 @@
       '<div><strong>公司代碼：</strong>' + escapeHtml(companyId || '-') + '</div>' +
       '<div><strong>公司名稱：</strong>' + escapeHtml(companyName || '-') + '</div>' +
       '<div><strong>方案：</strong>' + escapeHtml(planLabel(plan)) + '</div>' +
+      '<div><strong>試用開始：</strong>' + escapeHtml(res.trial_started_at || res.created_at || '-') + '</div>' +
+      '<div><strong>試用結束：</strong>' + escapeHtml(res.trial_ends_at || res.first_month_ends_at || '-') + '</div>' +
+      '<div><strong>預計開始收費日：</strong>' + escapeHtml(res.next_charge_at || '-') + '</div>' +
+      '<div><strong>試用後預估月費：</strong>' + escapeHtml(String(res.monthly_total || '-')) + '</div>' +
       '<div><strong>管理者帳號：</strong>' + escapeHtml(employeeId || '-') + '</div>' +
       '<div><strong>初始密碼：</strong>' + escapeHtml(password || '-') + '</div>' +
       '<div style="margin-top:10px;color:#bfdbfe;">請先截圖或複製帳號密碼，再進入企業管理後台。</div>' +
@@ -541,7 +613,11 @@
       '公司名稱：' + (companyName || '-'),
       '方案：' + planLabel(plan),
       '管理者帳號：' + (employeeId || '-'),
-      '初始密碼：' + (password || '-')
+      '初始密碼：' + (password || '-'),
+      '試用開始：' + (res.trial_started_at || res.created_at || '-'),
+      '試用結束：' + (res.trial_ends_at || res.first_month_ends_at || '-'),
+      '預計開始收費日：' + (res.next_charge_at || '-'),
+      '試用後預估月費：' + (res.monthly_total || '-')
     ].join('\n');
     if (copyBtn) copyBtn.onclick = function () {
       if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -566,6 +642,11 @@
       saveVerifyAuth(gas);
       var statusId = resolveStatusId(gas);
       setStatusSafe(statusId, 'success', (gas.provider === 'line' ? 'LINE' : 'Google') + ' 驗證成功。');
+      if (String(gas.flow || '').toLowerCase() === 'admin_login') {
+        adminLoginByVerifiedAuth(gas,gas.company_id || gas.company || '');
+        log('GAS 驗證成功，進入管理員登入', gas);
+        return gas;
+      }
       if (isCompanySignupGas(gas)) {
         showCompanyRegisterForm(gas);
       }
@@ -648,6 +729,7 @@
   window.ANG_VERIFY_NATIVE_AUTH_WITH_GAS = verifyNativeAuthWithGas;
 
   window.ANG_SHOW_COMPANY_REGISTER_FORM = showCompanyRegisterForm;
+  window.ANG_ADMIN_LOGIN_BY_VERIFIED_AUTH = adminLoginByVerifiedAuth;
   window.ANG_RECEIVE_GAS_RESULT = receiveGasResult;
 
 
