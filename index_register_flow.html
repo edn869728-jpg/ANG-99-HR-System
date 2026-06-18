@@ -1790,6 +1790,141 @@
     }
 
 
+
+
+    function clearVerificationStateForNewMethod(){
+      try { localStorage.removeItem('ang_pending_auth'); } catch(err) {}
+      try { localStorage.removeItem('ang_last_native_auth_result'); } catch(err2) {}
+      try { localStorage.removeItem('ang_last_native_gas_result'); } catch(err3) {}
+      try { localStorage.removeItem('ang_last_gas_response'); } catch(err4) {}
+      try { localStorage.removeItem('ang_verify_token'); } catch(err5) {}
+      try { localStorage.removeItem('ang_last_verify_token'); } catch(err6) {}
+      try { sessionStorage.removeItem('ang_verify_token'); } catch(err7) {}
+    }
+
+    function injectEmailVerifyStyle(){
+      if (document.getElementById('angEmailVerifyStyle')) return;
+      const style = document.createElement('style');
+      style.id = 'angEmailVerifyStyle';
+      style.textContent = [
+        '.ang-email-overlay{position:fixed;inset:0;z-index:999990;background:rgba(0,0,0,.56);display:flex;align-items:center;justify-content:center;padding:18px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}',
+        '.ang-email-card{width:min(360px,100%);border-radius:24px;background:var(--panel-bg,rgba(18,25,42,.96));border:1px solid var(--panel-border,rgba(255,255,255,.12));box-shadow:0 22px 60px rgba(0,0,0,.35);padding:20px;color:var(--main-text,#fff)}',
+        '.ang-email-title{margin:0 0 8px;font-size:22px;line-height:1.2;font-weight:1000}',
+        '.ang-email-sub{margin:0 0 16px;color:var(--muted-text,#cbd5e1);font-size:14px;line-height:1.55;font-weight:850}',
+        '.ang-email-input{width:100%;height:54px;border-radius:16px;border:1px solid var(--input-border,rgba(255,255,255,.16));background:var(--input-bg,rgba(255,255,255,.08));color:var(--main-text,#fff);font-size:24px;font-weight:1000;text-align:center;letter-spacing:.22em;outline:none;text-transform:none}',
+        '.ang-email-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}',
+        '.ang-email-btn{min-height:50px;border-radius:16px;border:none;font-size:15px;font-weight:1000;cursor:pointer}',
+        '.ang-email-btn.primary{grid-column:1/-1;background:var(--primary-bg,linear-gradient(90deg,#00d9ff,#7c3cff));color:#fff}',
+        '.ang-email-btn.secondary{background:var(--secondary-bg,rgba(255,255,255,.08));color:var(--secondary-text,#fff);border:1px solid var(--secondary-border,rgba(255,255,255,.18))}',
+        '.ang-email-status{display:none;margin-top:12px;padding:10px 12px;border-radius:14px;font-size:13px;line-height:1.45;font-weight:900;text-align:center}',
+        '.ang-email-status.show{display:block}',
+        '.ang-email-status.info{background:rgba(59,130,246,.16);color:#bfdbfe}',
+        '.ang-email-status.success{background:rgba(16,185,129,.16);color:#a7f3d0}',
+        '.ang-email-status.error{background:rgba(239,68,68,.16);color:#fecaca}',
+        '@media (max-width:430px){.ang-email-overlay{align-items:flex-end;padding:10px}.ang-email-card{border-radius:26px 26px 0 0}}'
+      ].join('\n');
+      document.head.appendChild(style);
+    }
+
+    function setEmailVerifyStatus(type,message){
+      const box = document.getElementById('angEmailVerifyStatus');
+      if (!box) return;
+      box.className = 'ang-email-status show ' + (type || 'info');
+      box.innerText = message || '';
+    }
+
+    function closeEmailVerifyOverlay(){
+      const overlay = document.getElementById('angEmailVerifyOverlay');
+      if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
+    }
+
+    function showEmailCodeOverlay(plan,email,statusId){
+      injectEmailVerifyStyle();
+      closeEmailVerifyOverlay();
+      const safePlan = String(plan || '').trim().toLowerCase();
+      const overlay = document.createElement('div');
+      overlay.id = 'angEmailVerifyOverlay';
+      overlay.className = 'ang-email-overlay';
+      overlay.innerHTML =
+        '<div class="ang-email-card">' +
+          '<h2 class="ang-email-title">Email 驗證碼</h2>' +
+          '<p class="ang-email-sub">驗證碼已寄到：<b>' + escapeButtonHtml(email) + '</b><br>請輸入 6 位數驗證碼，完成後會留在 App 內進入公司資料填寫。</p>' +
+          '<input id="angEmailCodeInput" class="ang-email-input" type="text" inputmode="numeric" maxlength="6" placeholder="000000" autocomplete="one-time-code" />' +
+          '<div class="ang-email-actions">' +
+            '<button id="angEmailVerifyBtn" type="button" class="ang-email-btn primary">驗證並繼續</button>' +
+            '<button id="angEmailResendBtn" type="button" class="ang-email-btn secondary">重寄驗證碼</button>' +
+            '<button id="angEmailCancelBtn" type="button" class="ang-email-btn secondary">換其他方式</button>' +
+          '</div>' +
+          '<div id="angEmailVerifyStatus" class="ang-email-status"></div>' +
+        '</div>';
+      document.body.appendChild(overlay);
+      const input = document.getElementById('angEmailCodeInput');
+      const verifyBtn = document.getElementById('angEmailVerifyBtn');
+      const resendBtn = document.getElementById('angEmailResendBtn');
+      const cancelBtn = document.getElementById('angEmailCancelBtn');
+      if (verifyBtn) verifyBtn.addEventListener('click',function(){ verifyPlanEmailCode(safePlan,email,statusId); });
+      if (resendBtn) resendBtn.addEventListener('click',function(){ requestPlanEmailVerification(safePlan); });
+      if (cancelBtn) cancelBtn.addEventListener('click',function(){ clearVerificationStateForNewMethod(); closeEmailVerifyOverlay(); setStatus(statusId,'info','已取消 Email 驗證，可以改用 Google / LINE。'); });
+      if (input) {
+        input.addEventListener('keydown',function(e){ if (e.key === 'Enter') verifyPlanEmailCode(safePlan,email,statusId); });
+        setTimeout(function(){ input.focus(); },120);
+      }
+      setEmailVerifyStatus('info','請查看信箱並輸入驗證碼。');
+    }
+
+    function verifyPlanEmailCode(plan,email,statusId){
+      const safePlan = String(plan || '').trim().toLowerCase();
+      const input = document.getElementById('angEmailCodeInput');
+      const code = String(input ? input.value : '').replace(/\D/g,'').trim();
+      if (!code || code.length < 6) { setEmailVerifyStatus('error','請輸入 6 位數驗證碼'); return; }
+      setEmailVerifyStatus('info','正在驗證 Email...');
+      callGasApi('verifyEmailCode',{
+        email:email,
+        code:code,
+        plan:safePlan,
+        flow:'company_signup',
+        device_id:APP_STATE.deviceId,
+        source:'entry_plan_email_in_app'
+      },25000).then(function(res){
+        if (!res || !res.ok) {
+          setEmailVerifyStatus('error',(res && (res.message || res.msg)) || 'Email 驗證失敗');
+          return;
+        }
+        const profile = res.profile || res.data || {};
+        const gas = Object.assign({},profile,{
+          ok:true,
+          message:res.message || 'Email 驗證完成',
+          provider:'email',
+          method:'email',
+          email:profile.email || email,
+          profile_name:profile.name || '',
+          name:profile.name || '',
+          flow:'company_signup',
+          plan:safePlan,
+          verify_token:profile.verify_token || res.verify_token || ''
+        });
+        try { localStorage.setItem('ang_last_gas_response',JSON.stringify(gas)); } catch(err) {}
+        try { localStorage.setItem('ang_verify_token',String(gas.verify_token || '')); } catch(err2) {}
+        try { localStorage.setItem('ang_verified_email',String(gas.email || email)); } catch(err3) {}
+        try { localStorage.setItem('ang_verified_provider','email'); } catch(err4) {}
+        try { localStorage.setItem('ang_verified_plan',safePlan); } catch(err5) {}
+        setEmailVerifyStatus('success','Email 驗證成功，正在開啟公司資料表...');
+        setStatus(statusId,'success','Email 驗證成功。');
+        setTimeout(function(){
+          closeEmailVerifyOverlay();
+          if (window.ANG_SHOW_COMPANY_REGISTER_FORM) {
+            window.ANG_SHOW_COMPANY_REGISTER_FORM(gas);
+          } else if (window.ANG_NATIVE_GAS_RESULT_RECEIVER) {
+            window.ANG_NATIVE_GAS_RESULT_RECEIVER({ ok:true, provider:'email', gas_response:gas });
+          } else {
+            setStatus(statusId,'success','Email 驗證成功，請重新整理後繼續填寫公司資料。');
+          }
+        },350);
+      }).catch(function(err){
+        setEmailVerifyStatus('error',err && err.message ? err.message : 'Email 驗證連線失敗');
+      });
+    }
+
     function requestAdminEmailLogin(){
       const companyCode = normalizeCompanyCode(document.getElementById('adminCompanyCode') ? document.getElementById('adminCompanyCode').value : '');
       const adminEmail = String(document.getElementById('adminEmail') ? document.getElementById('adminEmail').value : '').trim();
@@ -1822,12 +1957,25 @@
       const statusId = safePlan + 'PlanStatus';
       if (!safePlan) return;
       if (!isValidEmail(email)) { setStatus(statusId,'error','請輸入正確的 Email'); return; }
-      setStatus(statusId,'info','正在送出註冊驗證...');
-      if (window.google && google.script && google.script.run) {
-        google.script.run.withSuccessHandler(function(res){ if (!res || !res.ok) { setStatus(statusId,'error',(res && (res.message || res.msg)) || '驗證送出失敗'); return; } setStatus(statusId,'success',(res.message || res.msg) || '已送出驗證，請查看 Email'); if (res.nextUrl) { setTimeout(function(){ window.location.href = res.nextUrl; },650); } }).withFailureHandler(function(err){ setStatus(statusId,'error',err && err.message ? err.message : '連線失敗'); }).requestCompanySignupEmailVerification({ plan:safePlan, email:email, deviceId:APP_STATE.deviceId });
-        return;
-      }
-      window.location.href = APP_STATE.baseUrl + '?page=register&verify=email&plan=' + encodeURIComponent(safePlan) + '&email=' + encodeURIComponent(email);
+      clearVerificationStateForNewMethod();
+      try { localStorage.setItem('ang_email_signup_pending',JSON.stringify({ plan:safePlan, email:email, statusId:statusId, savedAt:Date.now() })); } catch(err) {}
+      setStatus(statusId,'info','正在寄出 Email 驗證碼...');
+      callGasApi('requestEmailCode',{
+        email:email,
+        plan:safePlan,
+        flow:'company_signup',
+        device_id:APP_STATE.deviceId,
+        source:'entry_plan_email_in_app'
+      },25000).then(function(res){
+        if (!res || !res.ok) {
+          setStatus(statusId,'error',(res && (res.message || res.msg)) || '驗證碼寄送失敗');
+          return;
+        }
+        setStatus(statusId,'success',(res.message || res.msg) || '驗證碼已寄出，請查看 Email');
+        showEmailCodeOverlay(safePlan,email,statusId);
+      }).catch(function(err){
+        setStatus(statusId,'error',err && err.message ? err.message : 'Email 驗證連線失敗');
+      });
     }
 
     function requestPlanGoogleVerification(plan){
@@ -1861,6 +2009,6 @@
 
     window.addEventListener('load',init);
   </script>
-  <script src="./native-google-bridge.js?v=20260618_authcode_2"></script>
+  <script src="./native-google-bridge.js?v=20260618_2"></script>
 </body>
 </html>
