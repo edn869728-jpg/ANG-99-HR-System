@@ -1,567 +1,2253 @@
 <!DOCTYPE html>
-<html>
+<!-- ANG employee integrated_all: base employee(43) + salary history/cycle + config.js API fallback -->
+
+
+<html lang="zh-Hant">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-  <title>員工首頁</title>
-
-  
-
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,viewport-fit=cover" name="viewport"/>
+<title>ANG Engine HR 系統</title>
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+<script src="config.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
+<style>
     :root{
-      --ang-page-1:#FF87E0;
-      --ang-page-2:#CCA4FF;
-      --ang-page-3:#8089FF;
-      --ang-page-4:#59DDFF;
-      --ang-current-main:var(--ang-page-1);
-      --ang-soft-bg:#f6f7fb;
-      --ang-card-bg:#ffffff;
-      --ang-card-text:#1f2937;
-      --ang-muted:#6b7280;
+      --bg:#f5f7fb;--card:#ffffff;--text:#111827;--muted:#6b7280;--line:#e5e7eb;--soft:#f3f4f6;--ok:#10b981;--warn:#f59e0b;--danger:#ef4444;
+      --emp:#FF87E0;--emp-deep:#B85DA3;--emp-soft:rgba(255,135,224,.12);--emp-soft2:rgba(255,135,224,.18);--emp-text:#8F4C7E;--emp-rgb:255,135,224;--emp-angle:135deg;--text-on-emp:#ffffff;
+      --emp-1:#FF87E0;--emp-2:#CCA4FF;--emp-3:#8089FF;--emp-4:#59DDFF;
+      --emp-gradient:linear-gradient(var(--emp-angle), var(--emp-1) 0%, var(--emp-2) 33%, var(--emp-3) 66%, var(--emp-4) 100%);
+      --schedule:#FF87E0;--schedule-rgb:255,135,224;--schedule-deep:#C04BB0;--schedule-text:#8A2E7B;--schedule-on:#ffffff;
+      --clock:#CCA4FF;--clock-rgb:204,164,255;--clock-deep:#8B5CCB;--clock-text:#69439D;--clock-on:#ffffff;
+      --salary:#8089FF;--salary-rgb:128,137,255;--salary-deep:#5B66DB;--salary-text:#4D56B5;--salary-on:#ffffff;
+      --upload:#59DDFF;--upload-rgb:89,221,255;--upload-deep:#2E9CB8;--upload-text:#246F83;--upload-on:#ffffff;
     }
-    body[data-theme="dark"]{
-      --ang-soft-bg:#060914;
-      --ang-card-bg:#111827;
-      --ang-card-text:#f9fafb;
-      --ang-muted:#cbd5e1;
-    }
-    body{
-      margin:0;
-      background:var(--ang-soft-bg);
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-      color:var(--ang-card-text);
-    }
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overflow-x:hidden}
+    body{padding-bottom:96px}
+    .topbar{position:sticky;top:0;z-index:1000;background:rgba(255,255,255,.96);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);padding:8px 12px;min-height:58px;display:flex;align-items:center;justify-content:space-between;gap:10px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+    .topbar-left{min-width:0;flex:0 0 auto;display:flex;align-items:center;gap:10px}
+    .topbar-right{text-align:right;min-width:0;flex:1 1 auto}
+    .brand-slot{display:flex;align-items:center;gap:10px;min-width:0}
+    .brand-logo{width:72px;height:72px;border-radius:22px;display:flex;align-items:center;justify-content:center;background:var(--emp-gradient);color:#fff;font-size:24px;font-weight:900;box-shadow:0 8px 18px rgba(var(--emp-rgb),.18);flex:0 0 auto;overflow:hidden;background-size:contain;background-position:center;background-repeat:no-repeat}
+    .brand-logo img{width:100%;height:100%;object-fit:contain;object-position:center;display:block}
+    .brand-title-wrap{min-width:0;display:flex;flex-direction:column;align-items:flex-start;line-height:1.05}
+    .brand-title-main{font-size:14px;font-weight:900;color:var(--emp-deep);letter-spacing:.2px;white-space:nowrap}
+    .brand-title-sub{margin-top:3px;font-size:10px;font-weight:800;color:#9ca3af;white-space:nowrap}
+    .title{font-size:16px;font-weight:900;line-height:1.05;color:var(--emp-deep);letter-spacing:.2px}
+    .sub-title{margin-top:2px;font-size:11px;font-weight:800;color:#9ca3af}
+    .safe{width:100%;padding:8px 8px 0}
+    .page{display:none}.page.active{display:block;animation:fadeIn .22s ease}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+    .card{width:100%;background:var(--card);border-radius:22px;padding:14px;margin-bottom:10px;box-shadow:0 8px 24px rgba(0,0,0,.05);border:1px solid rgba(0,0,0,.03);overflow:hidden}
+    .section-title{font-size:17px;font-weight:900;margin:0 0 10px;letter-spacing:.2px}
+    .label{display:block;font-size:13px;color:var(--muted);font-weight:900;margin:0 0 7px}
+    input,select,textarea{width:100%;min-width:0;border:none;outline:none;border-radius:16px;background:var(--soft);padding:13px 12px;font:inherit;color:var(--text);margin-bottom:10px}
+    textarea{resize:vertical;min-height:86px}
+    .btn-main,.btn-ghost,.btn-soft{border:none;outline:none;cursor:pointer;font:inherit;transition:transform .15s ease,box-shadow .18s ease,background .18s ease,color .18s ease}
+    .btn-main:active,.btn-ghost:active,.btn-soft:active,.week-tabs button:active,.record-top-tabs button:active,.upload-type-btn:active,.weekday-chip:active,.theme-color-btn:active{transform:scale(.98)}
+    .btn-main{width:100%;border-radius:18px;padding:14px 14px;background:var(--emp-gradient);color:var(--text-on-emp);font-weight:900;font-size:15px;box-shadow:0 12px 24px rgba(var(--emp-rgb),.22)}
+    .btn-ghost{width:100%;border-radius:16px;padding:13px 10px;background:linear-gradient(var(--emp-angle),rgba(var(--emp-rgb),.18),rgba(var(--emp-rgb),.30));color:var(--emp-deep);font-size:14px;font-weight:900;line-height:1.2;border:1px solid rgba(var(--emp-rgb),.22);box-shadow:0 10px 22px rgba(var(--emp-rgb),.10)}
+    .btn-ghost.active{background:var(--emp-gradient);color:var(--text-on-emp);box-shadow:0 12px 24px rgba(var(--emp-rgb),.22);border-color:transparent}
+    .btn-soft{width:100%;border-radius:16px;padding:13px;background:linear-gradient(var(--emp-angle),rgba(var(--emp-rgb),.20),rgba(var(--emp-rgb),.34));color:var(--emp-deep);font-size:14px;font-weight:900;border:1px solid rgba(var(--emp-rgb),.18);box-shadow:0 10px 22px rgba(var(--emp-rgb),.10)}
+    .mini-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+    .mini-row h3{margin:0;font-size:16px;font-weight:900}
+    .badge{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;padding:6px 10px;font-size:11px;font-weight:900;white-space:nowrap;background:linear-gradient(180deg,#ffffff 0%,rgba(var(--emp-rgb),.14) 100%);color:var(--emp-deep);border:1px solid rgba(var(--emp-rgb),.14)}
+    .badge.ok{background:#ecfdf5;color:#047857}.badge.warn{background:#fff7ed;color:#c2410c}.badge.danger{background:#fef2f2;color:#b91c1c}
+    .hero{background:var(--emp-gradient);color:#fff;border-radius:24px;padding:16px;margin-bottom:10px;box-shadow:0 12px 28px rgba(var(--emp-rgb),.22)}
+    .hero-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:12px}
+    .hello{font-size:22px;font-weight:900;line-height:1.1}
+    .hello-sub{margin-top:5px;font-size:12px;font-weight:800;opacity:.92}
+    .hero-chip{flex:0 0 auto;background:rgba(255,255,255,.17);border:1px solid rgba(255,255,255,.15);border-radius:999px;padding:8px 12px;font-size:11px;font-weight:900}
+    .next-shift{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.16);border-radius:18px;padding:13px 14px}
+    .next-shift small{display:block;font-size:11px;font-weight:800;margin-bottom:5px;opacity:.9}
+    .next-shift .big{font-size:18px;font-weight:900;line-height:1.2}
+    .status-grid-3,.tool-grid,.leave-v4-qty,.time-pair,.week-tabs,.record-top-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+    .status-grid-3{grid-template-columns:repeat(3,minmax(0,1fr));margin-bottom:10px}
+    .status-mini,.notice-item,.alert-item,.timeline-item,.record-item,.day-pay-item{background:linear-gradient(180deg,#ffffff 0%,rgba(var(--emp-rgb),.06) 100%);border:1px solid rgba(var(--emp-rgb),.10);border-radius:18px;padding:12px;box-shadow:0 8px 18px rgba(var(--emp-rgb),.04)}
+    .alert-item.warn{background:#fffaf0;border-color:#fde7bd}.alert-item.danger{background:#fff4f4;border-color:#fecaca}
+    .status-mini{min-width:0;text-align:center}
+    .status-mini small{display:block;font-size:10px;font-weight:900;color:var(--muted);margin-bottom:5px}
+    .status-mini .v{font-size:16px;font-weight:900;color:var(--text);line-height:1.15;word-break:break-word}
+    .notice-list,.alert-list,.timeline-list,.record-list,.day-pay-list{display:grid;gap:8px}
+    .item-title{font-size:14px;font-weight:900;line-height:1.35;margin-bottom:4px}
+    .item-meta{font-size:12px;color:var(--muted);line-height:1.5;word-break:break-word}
+    .leave-guide{background:#fffaf2;border:1px solid #fde6b6;border-radius:18px;padding:12px;margin-bottom:10px}
+    .leave-guide .g-title{font-size:14px;font-weight:900;color:#b45309;margin-bottom:4px}
+    .leave-guide .g-text{font-size:12px;color:var(--muted);line-height:1.5}
+    .week-tabs button,.record-top-tabs button{width:100%;min-width:0;border:none;border-radius:16px;padding:12px 8px;background:linear-gradient(var(--emp-angle),rgba(var(--emp-rgb),.14),rgba(var(--emp-rgb),.24));color:var(--emp-deep);font-size:14px;font-weight:900;cursor:pointer;white-space:pre-line;line-height:1.25;min-height:58px;border:1px solid rgba(var(--emp-rgb),.16);box-shadow:0 10px 20px rgba(var(--emp-rgb),.08)}
+    .week-tabs button.active,.record-top-tabs button.active{background:var(--emp-gradient);color:var(--text-on-emp);box-shadow:0 10px 20px rgba(var(--emp-rgb),.18);border-color:transparent}
+    .calendar-title{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
+    .calendar-title .t{font-size:15px;font-weight:900;color:var(--emp-deep)}
+    .calendar-title .s{font-size:12px;color:var(--muted);font-weight:900;white-space:nowrap}
+    .fc{background:#fff;border-radius:18px;padding:8px}
+    .fc .fc-toolbar-title{font-size:17px !important;font-weight:900 !important;color:var(--emp-deep)}
+    .fc .fc-col-header-cell-cushion{font-size:13px;font-weight:900;color:var(--emp-deep);padding:6px 4px}
+    .fc .fc-daygrid-day-number{font-size:13px;font-weight:900;color:var(--text);padding:6px 7px}
+    .fc .fc-day-today{background:rgba(var(--emp-rgb),.10) !important}
+    .fc .fc-button-primary{background:var(--emp-gradient) !important;color:var(--text-on-emp) !important;border:none !important;box-shadow:0 10px 20px rgba(var(--emp-rgb),.16) !important}
+    .fc .fc-view-harness,.fc .fc-scroller{height:auto !important;overflow:visible !important}
+    .fc-daygrid-day-frame{min-height:58px !important}
+    #cal-main,#cal-clock,#cal-salary-month{background:#fff;border-radius:18px;padding:8px;min-height:320px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.03)}
+    #cal-main .fc-daygrid-day-frame{min-height:76px !important}
+    #cal-clock .fc-daygrid-day-frame{min-height:88px !important}
+    #cal-clock .fc-daygrid-event{margin-top:2px !important;border-radius:8px;padding:1px 4px}
+    #cal-clock .fc-h-event{border:none}
+    #cal-clock .fc-event-title{font-size:10px;font-weight:900}
 
-    .page{
-      max-width:980px;
-      margin:0 auto;
-      padding:16px;
-      box-sizing:border-box;
+    /* 沒讀到後端資料 / FullCalendar CDN 失敗時，也先顯示空白月曆 */
+    .ang-empty-calendar{
+      background:#fff;
+      border-radius:18px;
+      padding:10px;
+      border:1px solid rgba(0,0,0,.04);
+      box-shadow:0 6px 16px rgba(0,0,0,.035);
     }
-
-    .top-space{
-      height:8px;
-    }
-
-    .hero{
-      position:relative;
-      background:linear-gradient(135deg,var(--ang-card-bg) 0%,rgba(128,137,255,.10) 100%);
-      border-radius:22px;
-      padding:22px 18px;
-      box-shadow:0 10px 30px rgba(0,0,0,.06);
-      margin-bottom:16px;
-    }
-
-    .hero-title{
-      font-size:28px;
-      font-weight:900;
-      margin:0 0 8px;
-      line-height:1.2;
-    }
-
-    .hero-sub{
-      font-size:14px;
-      color:var(--ang-muted);
-      line-height:1.6;
-    }
-
-    .grid{
-      display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:14px;
-    }
-
-    .card{
-      background:var(--ang-card-bg);
-      border-radius:20px;
-      padding:18px;
-      box-shadow:0 8px 24px rgba(0,0,0,.06);
-      box-sizing:border-box;
-    }
-
-    .card-title{
-      font-size:18px;
-      font-weight:900;
-      margin-bottom:10px;
-    }
-
-    .muted{
-      color:var(--ang-muted);
-      font-size:14px;
-      line-height:1.6;
-    }
-
-    .big{
-      font-size:24px;
-      font-weight:900;
-      line-height:1.2;
-    }
-
-    .row{
+    .ang-empty-calendar-head{
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap:12px;
-      margin-top:10px;
-      flex-wrap:wrap;
-    }
-
-    .btn{
-      appearance:none;
-      border:none;
-      border-radius:14px;
-      padding:12px 16px;
-      font-size:14px;
-      font-weight:800;
-      cursor:pointer;
-      background:#111827;
-      color:#fff;
-    }
-
-    .btn.light{
-      background:#eef2ff;
-      color:#3730a3;
-    }
-
-    .btn.gray{
-      background:#f3f4f6;
-      color:#111827;
-    }
-
-    .list{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    }
-
-    .list-item{
-      padding:12px 14px;
-      border-radius:14px;
-      background:#f8fafc;
-      border:1px solid #eef2f7;
-      font-size:14px;
-      line-height:1.5;
-    }
-
-    .empty{
-      padding:18px;
-      border-radius:16px;
-      background:#fafafa;
-      border:1px dashed #d1d5db;
-      color:var(--ang-muted);
-      font-size:14px;
-      text-align:center;
-    }
-
-    .footer-space{
-      height:24px;
-    }
-
-    .loading{
-      text-align:center;
-      color:var(--ang-muted);
-      padding:30px 16px;
-      font-size:14px;
-    }
-
-
-
-    .brand-switcher{
-      position:relative;
-      display:inline-block;
-      margin-bottom:12px;
-    }
-    .brand-logo-btn{
-      width:54px;
-      height:54px;
-      border-radius:18px;
-      border:0;
-      background:var(--ang-current-main);
-      color:#fff;
-      font-size:18px;
-      font-weight:1000;
-      box-shadow:0 10px 24px rgba(0,0,0,.16);
-      cursor:pointer;
-    }
-    .company-menu{
-      position:absolute;
-      top:62px;
-      left:0;
-      width:210px;
-      display:none;
-      z-index:50;
-      background:var(--ang-card-bg);
-      border:1px solid rgba(148,163,184,.28);
-      border-radius:20px;
-      box-shadow:0 18px 46px rgba(0,0,0,.18);
-      padding:8px;
-    }
-    .company-menu.show{display:grid;gap:8px;}
-    .company-menu button{
-      min-height:46px;
-      border:0;
-      border-radius:14px;
-      padding:10px 12px;
-      text-align:left;
-      font-size:14px;
+      gap:8px;
+      margin-bottom:8px;
+      color:var(--emp-deep);
+      font-size:15px;
       font-weight:900;
-      background:#f8fafc;
-      color:#111827;
-      cursor:pointer;
     }
-    body[data-theme="dark"] .company-menu button{background:#1f2937;color:#fff;}
-    .mode-tip{
-      display:inline-flex;
-      margin-top:10px;
-      padding:6px 10px;
-      border-radius:999px;
-      background:rgba(128,137,255,.12);
-      color:var(--ang-card-text);
+    .ang-empty-calendar-note{
+      color:#94a3b8;
+      font-size:11px;
+      font-weight:800;
+      white-space:nowrap;
+    }
+    .ang-empty-calendar-grid{
+      display:grid;
+      grid-template-columns:repeat(7,minmax(0,1fr));
+      border-top:1px solid var(--line);
+      border-left:1px solid var(--line);
+      overflow:hidden;
+      border-radius:14px;
+    }
+    .ang-empty-calendar-wd,.ang-empty-calendar-day{
+      min-height:34px;
+      border-right:1px solid var(--line);
+      border-bottom:1px solid var(--line);
+      display:flex;
+      align-items:flex-start;
+      justify-content:flex-end;
+      padding:6px;
       font-size:12px;
       font-weight:900;
+      color:var(--text);
+      background:#fff;
+    }
+    .ang-empty-calendar-wd{
+      min-height:30px;
+      align-items:center;
+      justify-content:center;
+      color:var(--emp-deep);
+      background:rgba(var(--emp-rgb),.08);
+    }
+    .ang-empty-calendar-day.out{color:#cbd5e1;background:#f8fafc}
+    .ang-empty-calendar-day.today{background:rgba(var(--emp-rgb),.12);box-shadow:inset 0 0 0 2px rgba(var(--emp-rgb),.24)}
+    .trend-card{position:relative;overflow:hidden;background:#fff;border-radius:22px;padding:14px;margin-bottom:10px;box-shadow:0 8px 24px rgba(0,0,0,.05);border:1px solid rgba(0,0,0,.03)}
+    .trend-card-soft{background:linear-gradient(180deg,#fff 0%,rgba(var(--emp-rgb),.03) 100%)}
+    .trend-bg{position:absolute;inset:0;pointer-events:none;opacity:.48}
+    .trend-bg svg{width:100%;height:100%}
+    .trend-bg polyline{fill:none;stroke:rgba(var(--emp-rgb),.30);stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+    .trend-split{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1px 1fr;gap:12px;align-items:center}
+    .trend-cell .value{font-size:26px;color:var(--emp-deep);font-weight:900}
+    .trend-cell small{display:block;color:var(--muted);font-size:11px;font-weight:900;margin-bottom:6px}
+    .trend-cell .sub{font-size:11px;color:var(--muted);margin-top:5px}
+    .trend-divider{width:1px;height:62px;background:rgba(var(--emp-rgb),.15)}
+    .weekday-strip{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin-bottom:10px}
+    .weekday-chip{border:none;border-radius:18px;padding:11px 5px 10px;background:linear-gradient(var(--emp-angle),rgba(var(--emp-rgb),.14),rgba(var(--emp-rgb),.26));color:var(--emp-deep);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:58px;white-space:normal;border:1px solid rgba(var(--emp-rgb),.18);box-shadow:0 10px 20px rgba(var(--emp-rgb),.10);transition:transform .15s ease,box-shadow .18s ease,background .18s ease,color .18s ease}
+    .weekday-main{font-size:13px;line-height:1.1;font-weight:900}
+    .weekday-date{font-size:11px;line-height:1;font-weight:800;opacity:.88}
+    .weekday-chip.active{background:var(--emp-gradient);color:var(--text-on-emp);border-color:transparent;box-shadow:0 14px 26px rgba(var(--emp-rgb),.20)}
+    .weekday-chip.active .weekday-date{opacity:.96}
+    .weekday-chip:disabled{opacity:.55;cursor:not-allowed;background:linear-gradient(180deg,#f8fafc 0%,rgba(var(--emp-rgb),.08) 100%);color:#94a3b8;border:1px dashed rgba(var(--emp-rgb),.18);box-shadow:none}
+    .weekday-chip-weekend{background:linear-gradient(var(--emp-angle),rgba(120,80,200,.13),rgba(120,80,200,.25));border-color:rgba(120,80,200,.22);color:#6d28d9}
+    .weekday-chip-weekend.active{background:linear-gradient(var(--emp-angle),#7c3aed,#a78bfa);color:#fff;border-color:transparent}
+    .weekday-chip-weekend:disabled{background:linear-gradient(180deg,#f5f3ff 0%,rgba(120,80,200,.08) 100%);color:#a78bfa;border:1px dashed rgba(120,80,200,.18)}
+    .weekday-col-header{min-height:36px;padding:6px 4px;border-radius:10px;font-size:12px}
+    .leave-v4-time{background:linear-gradient(180deg,#ffffff 0%,rgba(var(--schedule-rgb),.06) 100%);border:1px solid rgba(var(--schedule-rgb),.14);border-radius:22px;padding:16px;box-shadow:0 8px 18px rgba(var(--schedule-rgb),.05);margin-bottom:12px}
+    .leave-v4-time .label{display:block;margin:0 0 10px;font-size:15px;font-weight:900;color:var(--schedule-deep)}
+    .time-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;width:100%}
+    .time-grid input[type="date"]{grid-column:1 / -1;margin-bottom:0}
+    .time-grid select,.time-grid input{margin-bottom:0}
+    #page-schedule .time-grid input[type="date"],#page-schedule .time-grid select,#page-clock .time-grid input[type="date"],#page-clock .time-grid select{height:60px;border-radius:18px;background:#f3f4f6;border:1px solid rgba(var(--schedule-rgb),.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.7);font-size:17px;font-weight:900;color:#1f2937;padding:0 14px}
+    #page-clock .time-grid input[type="date"],#page-clock .time-grid select{border-color:rgba(var(--clock-rgb),.16)}
+    .leave-v4-qty-card{background:linear-gradient(180deg,#ffffff 0%,rgba(var(--schedule-rgb),.08) 100%);border:1px solid rgba(var(--schedule-rgb),.14);border-radius:22px;padding:14px}
+    .leave-v4-qty-head{font-size:18px;font-weight:900;margin:0 0 10px;color:var(--schedule-deep)}
+    .leave-v4-stepper{display:grid;grid-template-columns:44px minmax(0,1fr) 44px;gap:8px;align-items:center}
+    .leave-v4-stepper button{width:44px;height:44px;border:none;border-radius:16px;cursor:pointer;background:rgba(var(--schedule-rgb),.14);color:var(--schedule-deep);font-size:24px;font-weight:900}
+    .leave-v4-inline-input{text-align:center;font-size:22px;padding:10px 8px;margin:0;background:rgba(var(--schedule-rgb),.08);border:1px solid rgba(var(--schedule-rgb),.12);color:var(--schedule-deep)}
+    .leave-v4-hint{margin-top:8px;font-size:12px;color:var(--muted);line-height:1.5;font-weight:700}
+    .leave-v4-summary{background:linear-gradient(var(--emp-angle),rgba(var(--schedule-rgb),.96),rgba(var(--schedule-rgb),.72));color:#fff;border-radius:20px;padding:16px;margin-bottom:12px;box-shadow:0 12px 26px rgba(var(--schedule-rgb),.18)}
+    .leave-v4-summary small{display:block;font-size:12px;font-weight:800;opacity:.92;margin-bottom:6px}
+    .leave-v4-summary .big{font-size:30px;font-weight:900;line-height:1.1}
+    .leave-v4-summary .sub{font-size:13px;line-height:1.5;font-weight:800;opacity:.95;margin-top:6px;color:rgba(255,255,255,.96)}
+    .leave-types-v4{display:grid !important;grid-template-columns:repeat(3,1fr) !important;gap:8px !important;padding:10px 0 !important;width:100% !important;margin-bottom:12px}
+    .leave-type-btn-v4{width:auto !important;min-width:0 !important;max-width:none !important;margin:0 !important;padding:12px 4px !important;text-align:center;box-sizing:border-box;background:linear-gradient(180deg,#ffffff 0%,rgba(var(--schedule-rgb),.12) 100%);border:1px solid rgba(var(--schedule-rgb),.16);border-radius:16px;color:#be185d;font:inherit;font-size:14px !important;font-weight:900;cursor:pointer;box-shadow:0 8px 18px rgba(var(--schedule-rgb),.05)}
+    .leave-type-btn-v4 small{display:block;font-size:10px !important;color:#9d174d;margin-top:4px;opacity:.8;font-weight:800}
+    .leave-type-btn-v4.active{background:linear-gradient(var(--emp-angle),rgba(var(--schedule-rgb),.96),rgba(var(--schedule-rgb),.72));color:#fff;box-shadow:0 10px 20px rgba(var(--schedule-rgb),.18);border-color:transparent}
+    .leave-type-btn-v4.active small{color:rgba(255,255,255,.9)}
+    .salary-estimate-card{background:var(--emp-gradient);color:#fff;border-radius:20px;padding:14px;margin-bottom:10px;box-shadow:0 12px 26px rgba(var(--emp-rgb),.18)}
+    .salary-estimate-card small{display:block;font-size:11px;font-weight:800;opacity:.92;margin-bottom:6px}
+    .salary-estimate-card .big{font-size:28px;font-weight:900;line-height:1.1}
+    .salary-estimate-card .sub{font-size:11px;line-height:1.45;margin-top:6px;opacity:.94}
+    .upload-type-list{display:grid;gap:8px;margin-bottom:10px}
+    .upload-type-btn{position:relative;width:100%;min-width:0;border:none;border-radius:22px;background:linear-gradient(180deg,#ffffff 0%,rgba(var(--upload-rgb),.14) 100%);padding:18px 15px 18px 20px;text-align:left;font-size:21px;font-weight:900;color:var(--upload-deep);cursor:pointer;line-height:1.16;border:1px solid rgba(var(--upload-rgb),.16);box-shadow:0 12px 26px rgba(var(--upload-rgb),.08);overflow:hidden}
+    .upload-type-btn::before{content:'';position:absolute;left:0;top:10px;bottom:10px;width:7px;border-radius:0 999px 999px 0;background:rgba(var(--upload-rgb),.34)}
+    .upload-type-btn small{display:block;font-size:12.5px;line-height:1.5;color:#334155;font-weight:800;margin-top:7px}
+    .upload-type-btn.active{background:var(--emp-gradient);color:var(--text-on-emp);box-shadow:0 14px 28px rgba(var(--emp-rgb),.20);border-color:transparent}
+    .upload-type-btn.active small{color:rgba(255,255,255,.92)}
+    .upload-type-btn.active::before{background:rgba(255,255,255,.92)}
+    .upload-drop{border:2px dashed rgba(var(--upload-rgb),.22);border-radius:18px;background:linear-gradient(180deg,#ffffff 0%,rgba(var(--upload-rgb),.06) 100%);padding:18px 12px;text-align:center;margin-bottom:10px;box-shadow:inset 0 0 0 1px rgba(var(--upload-rgb),.06)}
+    .upload-drop i{font-size:34px;color:#d1d5db;margin-bottom:8px}
+    .upload-file-name{font-size:11px;color:var(--upload-deep);margin-bottom:8px;word-break:break-word}
+    .reimbursement-box{display:none;background:linear-gradient(180deg,#ffffff 0%,rgba(var(--upload-rgb),.10) 100%);border:1px solid rgba(var(--upload-rgb),.18);border-radius:16px;padding:12px;margin-bottom:10px;box-shadow:0 8px 18px rgba(var(--upload-rgb),.06)}
+    .theme-custom-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:10px}
+    .theme-custom-item{display:grid;gap:6px;margin:0}
+    .theme-custom-item span{font-size:11px;font-weight:900;color:var(--muted);text-align:center}
+    .theme-custom-item input[type="color"]{width:100%;height:52px;padding:4px;border-radius:14px;background:#fff;border:1px solid var(--line);margin:0;cursor:pointer}
+    .theme-custom-item input[type="color"]::-webkit-color-swatch-wrapper{padding:0;border-radius:10px;}
+    .theme-custom-item input[type="color"]::-webkit-color-swatch{border:none;border-radius:10px;}
+    .theme-custom-item input[type="color"]::-moz-color-swatch{border:none;border-radius:10px;}
+    .theme-custom-row{display:block;margin-top:10px}
+    .theme-picker-card{width:100%;margin-top:10px;margin-bottom:6px;background:rgba(var(--emp-rgb),0.08);border:1px solid rgba(var(--emp-rgb),0.18)}
+    .theme-picker-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+    .theme-picker-title{font-size:15px;font-weight:900;color:var(--emp-deep);line-height:1.2}
+    .theme-picker-sub{margin-top:4px;font-size:11px;color:var(--muted);font-weight:800;line-height:1.35}
+    .theme-picker-badge{flex:0 0 auto;padding:6px 10px;border-radius:999px;background:#fff;color:var(--emp-deep);font-size:10px;font-weight:900;box-shadow:0 4px 12px rgba(0,0,0,.06)}
+    .theme-picker-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+    .theme-angle-row{display:grid;grid-template-columns:56px minmax(0,1fr) 56px;gap:8px;align-items:center;margin-top:10px;margin-bottom:10px}
+    .theme-angle-btn{width:56px;height:56px;border:none;border-radius:18px;background:#fff;color:var(--emp-deep);font-size:22px;font-weight:900;cursor:pointer;box-shadow:0 8px 18px rgba(0,0,0,.08)}
+    .theme-angle-display{min-width:0;height:56px;border-radius:18px;display:flex;align-items:center;justify-content:center;text-align:center;padding:0 10px;background:var(--emp-gradient);color:var(--text-on-emp);font-size:12px;font-weight:900;box-shadow:inset 0 0 0 1px rgba(var(--emp-rgb),.14)}
+    .theme-angle-display span{display:block;line-height:1.25;word-break:break-word}
+    .theme-color-btn{position:relative;min-width:0;width:100%;height:58px;border:none;border-radius:18px;cursor:pointer;box-shadow:0 8px 18px rgba(0,0,0,.10);transition:transform .15s ease,box-shadow .15s ease,outline .15s ease}
+    .theme-color-btn.active{outline:3px solid #fff;box-shadow:0 0 0 3px var(--emp),0 10px 18px rgba(0,0,0,.18)}
+    .theme-color-btn::after{content:attr(data-label);position:absolute;left:50%;bottom:6px;transform:translateX(-50%);font-size:10px;font-weight:900;color:var(--preview-label-color,#fff);text-shadow:0 1px 2px rgba(0,0,0,.25);white-space:nowrap;pointer-events:none}
+    .schedule-confirm-wrap{display:grid;gap:8px;margin-bottom:12px}
+    .schedule-confirm-note{border-radius:16px;padding:10px 12px;background:linear-gradient(180deg,#ffffff 0%,rgba(var(--schedule-rgb),.08) 100%);border:1px dashed rgba(var(--schedule-rgb),.26);color:var(--schedule-deep);font-size:12px;font-weight:900;line-height:1.45}
+    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .nav{position:fixed;left:0;right:0;bottom:0;z-index:1200;width:100%;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:2px;background:rgba(255,255,255,.96);backdrop-filter:blur(14px);padding:7px 4px calc(7px + env(safe-area-inset-bottom));border-radius:20px 20px 0 0;box-shadow:0 -5px 18px rgba(0,0,0,.08)}
+    .nav-btn{min-width:0;width:100%;border:none;background:linear-gradient(180deg,#ffffff 0%,rgba(var(--emp-rgb),.08) 100%);padding:5px 1px;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:#6b7280;cursor:pointer;overflow:hidden;border-radius:16px;transition:transform .15s ease,box-shadow .18s ease,background .18s ease,color .18s ease}
+    .nav-btn i{font-size:18px;line-height:1;flex:0 0 auto}
+    .nav-btn span{display:block;width:100%;min-width:0;font-size:10px;line-height:1.1;text-align:center;font-weight:900;white-space:normal;word-break:break-word;overflow-wrap:anywhere}
+    .nav-btn.active{color:var(--emp-deep);background:linear-gradient(var(--emp-angle),rgba(var(--emp-rgb),.16),rgba(var(--emp-rgb),.30));box-shadow:0 10px 20px rgba(var(--emp-rgb),.10)}
+    .nav-btn.is-main{transform:translateY(-12px);background:var(--emp-gradient);color:#fff;border-radius:999px;min-height:64px;box-shadow:0 10px 20px rgba(var(--emp-rgb),.22)}
+    .nav-btn.is-main i{font-size:20px}.nav-btn.is-main span{font-size:9px}
+    .desktop-grid,.desktop-grid-2{display:block}
+
+    /* 日夜模式：不覆蓋主題色，只換底色與卡片明暗 */
+    body[data-daynight="night"]{background:#07111f;color:#e5eefb}
+    body[data-daynight="night"] .topbar,
+    body[data-daynight="night"] .nav{background:rgba(9,18,32,.94);border-color:rgba(255,255,255,.08)}
+    body[data-daynight="night"] .card,
+    body[data-daynight="night"] .trend-card,
+    body[data-daynight="night"] .notice-item,
+    body[data-daynight="night"] .alert-item,
+    body[data-daynight="night"] .status-mini,
+    body[data-daynight="night"] .salary-card,
+    body[data-daynight="night"] .leave-v4-time,
+    body[data-daynight="night"] .upload-drop,
+    body[data-daynight="night"] .reimbursement-box,
+    body[data-daynight="night"] .theme-picker-card{background:#0f1d33;color:#e5eefb;border-color:rgba(255,255,255,.08)}
+    body[data-daynight="night"] input,
+    body[data-daynight="night"] select,
+    body[data-daynight="night"] textarea{background:#0b1628;color:#e5eefb;border-color:rgba(255,255,255,.08)}
+    body[data-daynight="night"] .sub-title,
+    body[data-daynight="night"] .brand-title-sub,
+    body[data-daynight="night"] .item-meta,
+    body[data-daynight="night"] .muted,
+    body[data-daynight="night"] .trend-cell small,
+    body[data-daynight="night"] .trend-cell .sub,
+    body[data-daynight="night"] .status-mini small{color:#9fb0c8}
+    body[data-daynight="night"] .nav-btn{background:linear-gradient(180deg,#101f36 0%,rgba(var(--emp-rgb),.14) 100%);color:#b9c7dc}
+    body[data-daynight="night"] .nav-btn.active{color:#fff}
+    body[data-daynight="night"] #nav-daynight{color:#fff;background:linear-gradient(var(--emp-angle),rgba(var(--emp-rgb),.22),rgba(var(--emp-rgb),.38))}
+    body[data-daynight="day"] #nav-daynight{color:var(--emp-deep)}
+
+    .record-item-top,.day-pay-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px}
+    .record-date,.day-pay-date{font-size:14px;font-weight:900;line-height:1.3}
+    .record-hours,.day-pay-money{font-size:13px;font-weight:900;color:var(--emp-deep);white-space:nowrap}
+    #page-schedule .card{background:linear-gradient(180deg,#ffffff 0%,rgba(var(--schedule-rgb),.035) 100%);border-color:rgba(var(--schedule-rgb),.10);box-shadow:0 10px 24px rgba(var(--schedule-rgb),.06)}
+    #page-clock .card{background:linear-gradient(180deg,#ffffff 0%,rgba(var(--clock-rgb),.035) 100%);border-color:rgba(var(--clock-rgb),.10);box-shadow:0 10px 24px rgba(var(--clock-rgb),.06)}
+    #page-salary .card{background:linear-gradient(180deg,#ffffff 0%,rgba(var(--salary-rgb),.035) 100%);border-color:rgba(var(--salary-rgb),.10);box-shadow:0 10px 24px rgba(var(--salary-rgb),.06)}
+    #page-upload .card{background:linear-gradient(180deg,#ffffff 0%,rgba(var(--upload-rgb),.035) 100%);border-color:rgba(var(--upload-rgb),.10);box-shadow:0 10px 24px rgba(var(--upload-rgb),.06)}
+    body[data-active-page="schedule"] #nav-schedule{background:linear-gradient(var(--emp-angle),rgba(var(--schedule-rgb),.18),rgba(var(--schedule-rgb),.32));color:var(--schedule-deep)}
+    body[data-active-page="clock"] #nav-clock{background:linear-gradient(var(--emp-angle),rgba(var(--clock-rgb),.18),rgba(var(--clock-rgb),.32));color:var(--clock-deep)}
+    body[data-active-page="salary"] #nav-salary{background:linear-gradient(var(--emp-angle),rgba(var(--salary-rgb),.18),rgba(var(--salary-rgb),.32));color:var(--salary-deep)}
+    body[data-active-page="upload"] #nav-upload{background:linear-gradient(var(--emp-angle),rgba(var(--upload-rgb),.18),rgba(var(--upload-rgb),.32));color:var(--upload-deep)}
+    @media(max-width:640px){.leave-v4-qty{grid-template-columns:1fr}.time-grid{gap:10px}#page-schedule .time-grid input[type="date"],#page-schedule .time-grid select,#page-clock .time-grid input[type="date"],#page-clock .time-grid select{height:56px;font-size:16px;border-radius:16px}.leave-v4-time{padding:14px;border-radius:20px}}
+    @media(max-width:390px){.safe{padding:6px 6px 0}.card{padding:12px;border-radius:20px}.hello{font-size:20px}.theme-color-btn{height:54px;border-radius:16px}.theme-color-btn::after{font-size:9px}.theme-angle-row{grid-template-columns:50px minmax(0,1fr) 50px}.theme-angle-btn,.theme-angle-display{height:50px;border-radius:16px}.nav-btn span,.nav-btn.is-main span{font-size:9px}.weekday-main{font-size:12px}.weekday-date{font-size:10px}}
+    @media(min-width:768px){.safe{padding:12px 14px 0}.desktop-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:12px}.desktop-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.nav{padding-left:18px;padding-right:18px}}
+    .dpay-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(var(--emp-rgb),.08)}
+    .dpay-row:last-child{border-bottom:none}
+    .dpay-date{min-width:72px}
+    .dpay-date .d{font-size:14px;font-weight:900;color:var(--emp-deep)}
+    .dpay-date .t{font-size:11px;color:var(--muted);margin-top:2px}
+    .dpay-mid{flex:1}
+    .dpay-bar-track{height:6px;border-radius:4px;background:rgba(var(--emp-rgb),.12);overflow:hidden;margin-bottom:4px}
+    .dpay-bar-fill{height:100%;border-radius:4px;background:var(--emp-gradient);transition:width .4s ease}
+    .dpay-bar-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);font-weight:700}
+    .dpay-amount{font-size:20px;font-weight:900;color:var(--emp-deep);min-width:60px;text-align:right}
+    .dpay-amount.zero{color:var(--muted);font-size:14px}
+    .dpay-total-row{margin-top:12px;padding:12px 14px;background:var(--emp-gradient);border-radius:16px;display:flex;justify-content:space-between;align-items:center;color:#fff}
+    .dpay-total-row .label{font-size:13px;font-weight:800;opacity:.92}
+    .dpay-total-row .value{font-size:22px;font-weight:900}
+
+    /* Header 修正：公司名/副公司名只顯示資料，不再塞固定字；左右不重疊 */
+    .topbar{min-height:62px;align-items:center;overflow:hidden}
+    .topbar-left{flex:1 1 auto;min-width:0;overflow:hidden}
+    .topbar-right{flex:0 1 48%;max-width:48%;min-width:0;overflow:hidden;text-align:right}
+    .brand-slot{flex:1 1 auto;min-width:0;overflow:hidden}
+    .brand-logo{width:46px;height:46px;border-radius:16px;font-size:15px;line-height:1.05;padding:3px}
+    .brand-logo img{border-radius:13px}
+    .brand-title-wrap{min-width:0;max-width:100%;overflow:hidden}
+    .brand-title-main,.brand-title-sub,.title,.sub-title{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .brand-title-main:empty,.brand-title-sub:empty,.title:empty,.sub-title:empty{display:none}
+    .sub-title{line-height:1.35}
+    @media(max-width:430px){
+      .topbar{gap:8px;padding:7px 10px}
+      .topbar-right{flex-basis:46%;max-width:46%}
+      .brand-logo{width:42px;height:42px;border-radius:15px;font-size:14px}
+      .brand-title-main{font-size:13px}
+      .brand-title-sub{font-size:10px}
+      .title{font-size:13px}
+      .sub-title{font-size:10px}
     }
 
-    @media (max-width: 768px){
-      .page{
-        padding:12px;
-      }
+    /* 日夜切換：放在主頁下方，明確兩顆按鈕 */
+    .daynight-card{background:linear-gradient(180deg,#ffffff 0%,rgba(var(--emp-rgb),.06) 100%)}
+    .daynight-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+    .daynight-btn{width:100%;border:none;border-radius:18px;padding:14px 12px;background:#fff;color:var(--emp-deep);font-size:14px;font-weight:900;box-shadow:0 8px 18px rgba(0,0,0,.06);border:1px solid rgba(var(--emp-rgb),.16);cursor:pointer}
+    .daynight-btn.active{background:var(--emp-gradient);color:var(--text-on-emp);border-color:transparent;box-shadow:0 12px 24px rgba(var(--emp-rgb),.20)}
+    body[data-daynight="night"] .daynight-card{background:#0f1d33;color:#e5eefb;border-color:rgba(255,255,255,.08)}
+    body[data-daynight="night"] .daynight-btn{background:#0b1628;color:#dbeafe;border-color:rgba(255,255,255,.08)}
+    body[data-daynight="night"] .daynight-btn.active{background:var(--emp-gradient);color:var(--text-on-emp);border-color:transparent}
 
-      .grid{
-        grid-template-columns:1fr;
-      }
 
-      .hero-title{
-        font-size:24px;
-      }
+    /* v3：選休月模式不再顯示額外「週一～週日」標題列，只顯示每一天自己的週別＋日期 */
+    .weekday-strip.month-mode{grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+    .weekday-strip.month-mode .weekday-chip{min-height:58px;padding:9px 4px}
+    .weekday-strip.month-mode .weekday-main{font-size:12px}
+    .weekday-strip.month-mode .weekday-date{font-size:11px}
+    .calendar-spacer{min-height:1px}
+    .upload-type-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+    @media(max-width:520px){.upload-type-list{grid-template-columns:1fr}}
+    .upload-type-btn small{display:block;margin-top:5px;font-size:11px;line-height:1.35;font-weight:800;opacity:.76}
+    .nav-btn#nav-daynight span{font-size:9px;line-height:1.05}
+    body[data-daynight="night"]{--bg:#07111f;--card:#0f1d33;--text:#e5eefb;--muted:#9fb0c8;--line:rgba(255,255,255,.08);--soft:#0b1628;background:#07111f;color:#e5eefb}
+    body[data-daynight="night"] .safe{background:#07111f}
+    body[data-daynight="night"] #cal-main,
+    body[data-daynight="night"] #cal-clock,
+    body[data-daynight="night"] #cal-salary-month,
+    body[data-daynight="night"] #cal-upload,
+    body[data-daynight="night"] .ang-empty-calendar{background:#0f1d33;color:#e5eefb;border-color:rgba(255,255,255,.08)}
+    body[data-daynight="night"] .ang-empty-calendar-day{background:#0b1628;color:#dbeafe;border-color:rgba(255,255,255,.08)}
+    body[data-daynight="night"] .ang-empty-calendar-day.out{opacity:.35}
 
-      .big{
-        font-size:22px;
-      }
-    }
   </style>
 </head>
-<body>
-  <div id="navContainer">
+<body data-active-page="home" data-daynight="day">
+<div class="topbar">
+<div class="topbar-left">
+<div class="brand-slot" id="brandSlot">
+<div class="brand-logo" id="brandLogo">ANG</div>
+<div class="brand-title-wrap">
+<div class="brand-title-main" id="brandTitleMain"></div>
+<div class="brand-title-sub" id="brandTitleSub"></div>
+</div>
+</div>
+</div>
+<div class="topbar-right">
+<div class="title" id="topBrandTitle"></div>
+<div class="sub-title" id="topBrandSub"></div>
+</div>
+</div>
+<div class="safe">
+<!-- ========== 主頁 ========== -->
+<section class="page active" id="page-home">
+<div class="hero">
+<div class="hero-top">
+<div style="min-width:0"><div class="hello" id="helloName"></div><div class="hello-sub" id="helloStatus"></div></div>
+<div class="hero-chip" id="heroChip"></div>
+</div>
+<div class="next-shift">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+<div><small>今日狀態</small><div class="big" id="todayStatusText"></div></div>
+<div><small>明日班別</small><div class="big" id="tomorrowText" style="font-size:15px"></div></div>
+</div>
+</div>
+</div>
+<div class="trend-card">
+<div aria-hidden="true" class="trend-bg"><svg preserveaspectratio="none" viewbox="0 0 320 120"><polyline points="8,90 62,88 96,74 140,70 180,48 220,42 266,22 312,16"></polyline></svg></div>
+<div class="trend-split">
+<div class="trend-cell"><small>本週薪資累計</small><div class="value" id="home-week-salary"></div><div class="sub">依目前已打卡資料統計</div></div>
+<div class="trend-divider"></div>
+<div class="trend-cell"><small>本週工時</small><div class="value" id="home-week-hours"></div><div class="sub">含已完成日工時</div></div>
+</div>
+</div>
+<div class="trend-card trend-card-soft">
+<div aria-hidden="true" class="trend-bg"><svg preserveaspectratio="none" viewbox="0 0 320 120"><polyline points="8,102 54,98 94,92 138,76 182,64 220,54 260,44 312,26"></polyline></svg></div>
+<div class="trend-split">
+<div class="trend-cell"><small>本月薪資累計</small><div class="value" id="home-month-salary"></div><div class="sub">未含特殊加給</div></div>
+<div class="trend-divider"></div>
+<div class="trend-cell"><small>本月工時</small><div class="value" id="home-month-hours"></div><div class="sub">整月累計</div></div>
+</div>
+</div>
+<div class="status-grid-3">
+<div class="status-mini"><small>明天</small><div class="v" id="home-tomorrow-status"></div></div>
+<div class="status-mini"><small>後天</small><div class="v" id="home-after-status"></div></div>
+<div class="status-mini"><small>異常件數</small><div class="v" id="home-pending-count"></div></div>
+</div>
+<div class="desktop-grid">
+<div>
+<div class="card">
+<div class="mini-row"><h3>提醒事項</h3><span class="badge warn">請留意</span></div>
+<div class="alert-list" id="home-alert-list"></div>
+</div>
+<div class="card">
+<div class="mini-row"><h3>主管通知</h3><span class="badge ok">最新</span></div>
+<div class="notice-list" id="noticesBox"></div>
+</div>
+</div>
+<div>
+<div class="card">
+<div class="mini-row"><h3>近期動態</h3><span class="badge">摘要</span></div>
+<div class="timeline-list" id="recentActivitiesBox"></div>
+</div>
+</div>
+</div>
+<div class="card">
+<div class="mini-row"><h3>留言交流</h3><span class="badge">主管可審核</span></div>
+<textarea id="messageInput" placeholder="寫下建議、提醒或想跟主管說的話"></textarea>
+<button class="btn-main" onclick="submitMessage()" type="button">送出留言</button>
+<div class="notice-list" id="message-board" style="margin-top:10px"></div>
+</div>
+<div class="card theme-picker-card">
+<div class="theme-picker-head"><div><div class="theme-picker-title">主題顏色</div><div class="theme-picker-sub">下面四格都可自訂，整體漸層會直接用這四種顏色去跑</div></div><div class="theme-picker-badge" id="themeNameBadge">自訂四色</div></div>
+<div class="theme-picker-row" id="themePreviewRow">
+<button class="theme-color-btn active" onclick="applyVariation(0)" type="button"></button>
+<button class="theme-color-btn" onclick="applyVariation(1)" type="button"></button>
+<button class="theme-color-btn" onclick="applyVariation(2)" type="button"></button>
+<button class="theme-color-btn" onclick="applyVariation(3)" type="button"></button>
+</div>
+<div class="theme-angle-row">
+<button class="theme-angle-btn" onclick="rotateThemeAngle(-1)" type="button">↺</button>
+<div class="theme-angle-display" id="themeAngleDisplay"><span>左上 → 右下</span></div>
+<button class="theme-angle-btn" onclick="rotateThemeAngle(1)" type="button">↻</button>
+</div>
+<div class="theme-custom-grid">
+<label class="theme-custom-item"><span>色1</span><input id="themeColor1" oninput="updateThemeColor(0,this.value)" type="color" value="#FF87E0"/></label>
+<label class="theme-custom-item"><span>色2</span><input id="themeColor2" oninput="updateThemeColor(1,this.value)" type="color" value="#CCA4FF"/></label>
+<label class="theme-custom-item"><span>色3</span><input id="themeColor3" oninput="updateThemeColor(2,this.value)" type="color" value="#8089FF"/></label>
+<label class="theme-custom-item"><span>色4</span><input id="themeColor4" oninput="updateThemeColor(3,this.value)" type="color" value="#59DDFF"/></label>
+</div>
+<div class="theme-custom-row"><button class="btn-soft" onclick="resetThemePreset()" type="button">套回預設四色</button></div>
+</div>
+<div class="card daynight-card">
+<div class="mini-row"><h3>畫面模式</h3><span class="badge">白天 / 黑夜</span></div>
+<div class="daynight-row">
+<button class="daynight-btn" data-daynight-choice="day" onclick="setDayNightMode('day',true)" type="button"><i class="fa-solid fa-sun"></i> 白天</button>
+<button class="daynight-btn" data-daynight-choice="night" onclick="setDayNightMode('night',true)" type="button"><i class="fa-solid fa-moon"></i> 黑夜</button>
+</div>
+</div>
+</section>
+<!-- ========== 請假排班 ========== -->
+<section class="page" id="page-schedule">
+<div class="card">
+<div class="week-tabs">
+<button class="active" id="t-0" onclick="toggleWeek(0)">本週排班</button>
+<button id="t-1" onclick="toggleWeek(1)">下週排班</button>
+</div>
+<div class="weekday-strip" id="weekday-strip"></div>
+<div class="schedule-confirm-wrap">
+<button class="btn-soft" onclick="confirmScheduleSelection()" type="button">確認日期選擇</button>
+<div class="schedule-confirm-note" id="schedule-confirm-note">尚未選擇日期</div>
+</div>
+<div class="calendar-title" style="margin-bottom:10px"><div class="t" id="schedule-calendar-title">本週排班月曆</div><div class="s">固定顯示</div></div>
+<div id="cal-main" style="margin-bottom:12px"></div>
+<div id="shift-legend" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px"></div>
+<div class="leave-guide"><div class="g-title">請假申請說明</div><div class="g-text">假別保留 12 個按鈕式選項。<br/>開始 / 結束改成日期 + 小時 + 分鐘分開選，分鐘固定 5 分鐘一格。<br/>天數只整數；時數可 0.5，並會同步回推結束時間。</div></div>
+<h3 class="section-title">假別申請</h3>
+<div class="leave-types-v4" id="leave-type-grid-v4"></div>
+<div class="leave-v4-time"><label class="label">開始</label><div class="time-grid"><input id="leave-start-date" type="date"/><select id="leave-start-hour"></select><select id="leave-start-minute"></select></div></div>
+<div class="leave-v4-time"><label class="label">結束</label><div class="time-grid"><input id="leave-end-date" type="date"/><select id="leave-end-hour"></select><select id="leave-end-minute"></select></div></div>
+<div class="leave-v4-qty">
+<div class="leave-v4-qty-card"><div class="leave-v4-qty-head">請假天數</div><div class="leave-v4-stepper"><button id="leave-day-minus" type="button">－</button><input class="leave-v4-inline-input" id="leave-days-input" inputmode="numeric" value="1"/><button id="leave-day-plus" type="button">＋</button></div><div class="leave-v4-hint">以 1 天為單位。</div></div>
+<div class="leave-v4-qty-card"><div class="leave-v4-qty-head">時數</div><div class="leave-v4-stepper"><button id="leave-hour-minus" type="button">－</button><input class="leave-v4-inline-input" id="leave-hours-input" inputmode="decimal" value="0.0"/><button id="leave-hour-plus" type="button">＋</button></div><div class="leave-v4-hint">可用 0.5 小時。</div></div>
+</div>
+<div class="leave-v4-summary"><small>即時換算結果</small><div class="big" id="leave-v4-summary-text">1 天 0 小時</div><div class="sub" id="leave-v4-summary-sub">共 8.0 小時｜會同步回上方結束時間</div></div>
+<div id="leave-break-row" style="display:none;margin-bottom:12px">
+<label class="label">含休息時間</label>
+<select id="leave-break-select" style="margin-bottom:0">
+<option value="0">不含</option>
+<option value="1">含 1 次</option>
+</select>
+</div>
+<label class="label">請假事由 / 補充說明</label>
+<textarea id="leave-reason" placeholder="例如：看診、家庭因素、個人事務"></textarea>
+<button class="btn-main" onclick="submitLeave()">確認送出</button>
+</div>
+</section>
+<!-- ========== 打卡記錄 ========== -->
+<section class="page" id="page-clock">
+<div class="card" id="today-clock-status-card">
+<div class="mini-row"><h3>今日打卡狀態</h3><span class="badge ok">即時</span></div>
+<div id="today-clock-card"><div class="item-meta" style="text-align:center;padding:8px">載入中...</div></div>
+</div>
+<div class="card">
+<div class="calendar-title"><div><div class="t">打卡月曆</div><div class="item-meta">下方月曆固定顯示</div></div><div class="s">異常紅字</div></div>
+<div id="cal-clock"></div>
+</div>
+<div class="card">
+<div class="record-top-tabs">
+<button class="active" id="clock-tab-record" onclick="switchClockTab('record')">打卡記錄</button>
+<button id="clock-tab-apply" onclick="switchClockTab('apply')">補打卡申請</button>
+</div>
+<div id="clock-record-view">
+<div class="mini-row"><h3>實際打卡紀錄</h3><span class="badge danger" id="clock-anomaly-count" style="display:none"></span><span class="badge ok">月曆同步</span></div>
+<div class="record-list" id="clock-record-list"></div>
+</div>
+<div id="clock-apply-view" style="display:none">
+<div class="mini-row"><h3>補打卡申請</h3><button class="btn-soft" onclick="pickUploadType('補卡證明','例如：補卡日期、上下班別、補卡原因')" type="button">補卡證明</button></div>
+<label class="label">打卡類型</label>
+<select id="clock-type"><option>上班</option><option>下班</option><option>加班</option></select>
+<label class="label">補打卡時間</label>
+<div class="time-grid"><input id="clock-fix-date" type="date"/><select id="clock-fix-hour"></select><select id="clock-fix-minute"></select></div>
+<label class="label">補打卡原因</label>
+<textarea id="clock-note" placeholder="例如：漏刷、機器異常"></textarea>
+<button class="btn-main" onclick="saveClockRecord()">確認補登</button>
+</div>
+</div>
+</section>
+<!-- ========== 薪資明細 ========== -->
+<section class="page" id="page-salary">
+<div class="card">
+<div class="mini-row"><h3>薪資預估</h3><span class="badge ok">管理端設定</span></div>
+<div class="notice-item" style="margin-bottom:10px;">
+<div class="item-title">薪資計算週期</div>
+<div class="item-meta" id="salary-cycle-display">由管理員設定｜週結｜週一起算</div>
+</div>
+<div class="salary-estimate-card">
+<small id="salary-estimate-label">一週預估</small>
+<div class="big" id="salary-estimate-value">$0</div>
+<div class="sub" id="salary-estimate-note">依目前已完成打卡資料統計。</div>
+</div>
+<label class="label">已發薪資</label>
+<select id="salary-history-select" onchange="showSalaryHistoryDetail()"></select>
+<div class="item-meta" id="salary-history-detail">選取一筆已發薪資後，這裡會顯示摘要。</div>
+</div>
+<div class="desktop-grid-2">
+<div class="card"><div class="calendar-title"><div class="t">月曆檢視</div><div class="s">班別 / 休假 / 薪資</div></div><div id="cal-salary-month"></div></div>
+<div class="card"><div class="mini-row"><h3>每日薪資紀錄</h3><span class="badge ok">已出勤日</span></div><div class="day-pay-list" id="salary-day-pay-list"></div></div>
+</div>
+<div class="field-row" style="margin-top:10px">
+<div><label class="label">選擇月份</label><input id="slipMonth" type="month"/></div>
+<div style="display:flex;align-items:flex-end"><button class="btn-ghost" onclick="downloadSalarySlip()" type="button">📄 下載薪資單</button></div>
+</div>
+</section>
+<!-- ========== 資料上傳 ========== -->
+<section class="page" id="page-upload">
+<div class="card">
+<div class="calendar-title">
+<div><div class="t">我的申請記錄</div><div class="item-meta">排班 / 請假 / 申請一覽</div></div>
+<div class="s">月曆檢視</div>
+</div>
+<div id="cal-upload"></div>
+</div>
+<div class="card">
+<h3 class="section-title">資料上傳中心</h3>
+<div class="tool-grid" style="margin-bottom:10px">
+<button class="btn-ghost" id="btn-get-location" onclick="toggleLocation()" type="button">傳送位置資訊</button>
+<button class="btn-ghost" id="btn-reimbursement" onclick="toggleReimbursementBtn()" type="button">費用請款</button>
+</div>
+<div class="upload-type-list">
+<button class="upload-type-btn" id="upload-type-補卡證明" onclick="pickUploadType('補卡證明','例如：補卡日期、上下班別、補卡原因')">補卡證明<small>用於漏刷、機器異常、補登上下班紀錄</small></button>
+<button class="upload-type-btn" id="upload-type-請假證明" onclick="pickUploadType('請假證明','例如：假別、日期、證明用途')">請假證明<small>病假、事假、特休或其他請假補件</small></button>
+<button class="upload-type-btn" id="upload-type-醫生證明" onclick="pickUploadType('醫生證明','例如：就診日期、診所名稱')">醫生證明<small>看診、病假、診斷相關證明</small></button>
+<button class="upload-type-btn" id="upload-type-公費請款（預先發）" onclick="pickUploadType('公費請款（預先發）','例如：用途、預估金額、使用日期')">公費請款（預先發）<small>先行申請公費用途與預估金額</small></button>
+<button class="upload-type-btn" id="upload-type-代墊收據" onclick="pickUploadType('代墊收據','例如：代墊項目、金額、日期')">代墊收據<small>交通、購買、工作支出收據</small></button>
+<button class="upload-type-btn" id="upload-type-交通費憑證" onclick="pickUploadType('交通費憑證','例如：起訖地點、車資、日期')">交通費憑證<small>計程車、油資、停車費、大眾運輸</small></button>
+<button class="upload-type-btn" id="upload-type-採購憑證" onclick="pickUploadType('採購憑證','例如：品項、金額、用途')">採購憑證<small>物料、備品、耗材、臨時採購</small></button>
+<button class="upload-type-btn" id="upload-type-作業紀錄" onclick="pickUploadType('作業紀錄','例如：工作內容、完成時間')">作業紀錄<small>現場照片、執行情況、補件說明</small></button>
+<button class="upload-type-btn" id="upload-type-交接紀錄" onclick="pickUploadType('交接紀錄','例如：交接項目、接手人員')">交接紀錄<small>班別交接、物品交接、狀態說明</small></button>
+<button class="upload-type-btn" id="upload-type-位置資訊（外勤回報用）" onclick="pickUploadType('位置資訊（外勤回報用）','例如：外勤地點、到達時間')">位置資訊（外勤回報用）<small>外勤地點、到點紀錄與位置資訊</small></button>
+<button class="upload-type-btn" id="upload-type-客訴 / 異常回報" onclick="pickUploadType('客訴 / 異常回報','例如：事件時間、地點、處理狀況')">客訴 / 異常回報<small>現場異常、客訴、設備或流程問題</small></button>
+<button class="upload-type-btn" id="upload-type-設備維修回報" onclick="pickUploadType('設備維修回報','例如：設備名稱、故障狀況')">設備維修回報<small>設備損壞、維修紀錄、零件更換</small></button>
+<button class="upload-type-btn" id="upload-type-盤點 / 庫存紀錄" onclick="pickUploadType('盤點 / 庫存紀錄','例如：品項、數量、差異原因')">盤點 / 庫存紀錄<small>庫存盤點、缺料、報廢、差異補充</small></button>
+<button class="upload-type-btn" id="upload-type-教育訓練證明" onclick="pickUploadType('教育訓練證明','例如：課程名稱、日期')">教育訓練證明<small>訓練照片、簽到、證書或考核紀錄</small></button>
+<button class="upload-type-btn" id="upload-type-合約 / 文件補件" onclick="pickUploadType('合約 / 文件補件','例如：文件名稱、用途')">合約 / 文件補件<small>合約、切結書、人事文件或表單補件</small></button>
+<button class="upload-type-btn" id="upload-type-其他補件" onclick="pickUploadType('其他補件','例如：補件原因、關聯申請')">其他補件<small>無法歸類的附件與說明</small></button>
+</div>
+<label class="label">已選項目</label><input id="u-type" placeholder="請先點選上方項目" type="text"/>
+<label class="label">補充說明</label><textarea id="u-note" placeholder="請輸入補充說明"></textarea>
+<div class="reimbursement-box" id="reimbursement-box">
+<label class="label">請款金額</label><input id="r-amount" placeholder="輸入金額" type="number"/>
+<label class="label">請款項目</label><input id="r-item" placeholder="例如：車資、文具" type="text"/>
+</div>
+<label class="label">上傳檔案（照片/影片/PDF）</label>
+<input accept="image/*,video/*,application/pdf" id="u-file" onchange="updateFileName(this)" style="display:none" type="file"/>
+<div class="upload-drop"><i class="fa-solid fa-cloud-arrow-up"></i><div class="upload-file-name" id="f-name">尚未選擇檔案</div><button class="btn-ghost" onclick="document.getElementById('u-file').click()" type="button">選擇檔案</button></div>
+<button class="btn-main" onclick="submitUpload()">確認並上傳雲端</button>
+</div>
+<!-- iOS 捷徑設定 -->
+<div class="card">
+<div class="mini-row"><h3>iOS 捷徑設定</h3><span class="badge ok">快速打卡</span></div>
+<label class="label">選擇動作</label>
+<select id="shortcut-action-select">
+<option value="clock_in">上班打卡</option>
+<option value="clock_out">下班打卡</option>
+<option value="overtime">加班打卡</option>
+</select>
+<div class="tool-grid" style="margin-bottom:8px">
+<button class="btn-ghost" onclick="generateShortcutJson()" type="button">產生 JSON 設定</button>
+<button class="btn-ghost" onclick="copyShortcutJson()" type="button">複製 JSON</button>
+</div>
+<div class="tool-grid" style="margin-bottom:10px">
+<button class="btn-ghost" onclick="rebindDevice()" type="button">重新綁定裝置</button>
+<button class="btn-main" id="btn-send-clock" onclick="sendClockFromShortcut()" type="button">發送打卡</button>
+</div>
+<div class="check-row" style="margin-bottom:10px">
+<input id="shortcut-field-mode" type="checkbox"/>
+<label for="shortcut-field-mode">外勤模式（跳過位置驗證）</label>
+</div>
+<div id="shortcut-json-box" style="display:none;margin-bottom:10px">
+<label class="label">JSON 設定</label>
+<textarea id="shortcut-json-text" readonly="" style="font-size:12px;font-family:monospace;min-height:120px"></textarea>
+</div>
+<div class="notice-item" style="background:var(--soft);border-radius:14px;padding:10px;margin-top:4px">
+<div class="item-title" style="margin-bottom:6px">📱 iPhone 安裝說明</div>
+<div class="item-meta">1. 點擊「產生 JSON 設定」取得設定碼</div>
+<div class="item-meta">2. 點擊「複製 JSON」後貼入 iPhone「捷徑」App</div>
+<div class="item-meta">3. 在捷徑中新增「取得網頁內容」步驟，URL 填入 webAppUrl</div>
+<div class="item-meta">4. 請求主體選 JSON，貼上複製的設定碼</div>
+<div class="item-meta">5. 完成後即可透過 Siri 或主畫面捷徑一鍵打卡</div>
+</div>
+</div>
+</section>
+</div>
+<!-- ========== 底部導航 ========== -->
+<nav class="nav">
+<button class="nav-btn" id="nav-schedule" onclick="nav('schedule')"><i class="fa-solid fa-calendar-check"></i><span>請假排班</span></button>
+<button class="nav-btn" id="nav-clock" onclick="nav('clock')"><i class="fa-solid fa-clock-rotate-left"></i><span>打卡記錄</span></button>
+<button class="nav-btn is-main active" id="nav-home" onclick="handleEmployeeHomeClick()"><i class="fa-solid fa-house"></i><span>員工主頁</span></button>
+<button class="nav-btn" id="nav-salary" onclick="nav('salary')"><i class="fa-solid fa-money-check-dollar"></i><span>薪資明細</span></button>
+<button class="nav-btn" id="nav-upload" onclick="nav('upload')"><i class="fa-solid fa-file-arrow-up"></i><span>資料上傳</span></button>
+<button class="nav-btn" id="nav-daynight" onclick="toggleDayNightMode()" type="button"><i class="fa-solid fa-moon"></i><span id="daynightLabel">黑夜/白天</span></button>
+</nav>
+<script>
+    var APP_CTX={
+      id:'<?= typeof id!=="undefined"?id:"" ?>',
+      token:'<?= typeof token!=="undefined"?token:"" ?>',
+      page:'<?= typeof page!=="undefined"?page:"" ?>',
+      role:'<?= typeof role!=="undefined"?role:"" ?>',
+      name:'<?= typeof name!=="undefined"?name:"" ?>',
+      nickname:'<?= typeof nickname!=="undefined"?nickname:"" ?>',
+      webAppUrl:'<?= typeof webAppUrl!=="undefined"?webAppUrl:"" ?>'
+    };
 
-  </div>
+    var HOURLY_RATE=200;
+    var defaultThemeColors=['#FF87E0','#CCA4FF','#8089FF','#59DDFF'];
+    var gradientVariations=[
+      {order:[0,1,2,3],name:'順向'},{order:[0,2,1,3],name:'交錯'},
+      {order:[0,3,1,2],name:'分散'},{order:[3,2,1,0],name:'反向'}
+    ];
+    var themeAngles=[
+      {deg:'0deg',label:'左 → 右'},{deg:'45deg',label:'左下 → 右上'},
+      {deg:'90deg',label:'上 → 下'},{deg:'135deg',label:'左上 → 右下'},
+      {deg:'180deg',label:'右 → 左'},{deg:'225deg',label:'右上 → 左下'},
+      {deg:'270deg',label:'下 → 上'},{deg:'315deg',label:'右下 → 左上'}
+    ];
+    var leaveTypes=[
+      {key:'事假',tip:'建議提前申請',raw:'事假'},{key:'病假',tip:'可補件後申請',raw:'病假'},
+      {key:'特休',tip:'依年資額度',raw:'特休'},{key:'生理假',tip:'依規定使用',raw:'生理假'},
+      {key:'家庭照顧假',tip:'家庭照顧相關',raw:'家庭照顧假'},{key:'婚假',tip:'依制度天數',raw:'婚假'},
+      {key:'公傷假',tip:'職災/公傷使用',raw:'公傷假'},{key:'公務假',tip:'公務指派使用',raw:'公假'},
+      {key:'安胎假',tip:'依醫療需求',raw:'安胎假'},{key:'陪產檢假',tip:'依規定使用',raw:'陪產檢假'},
+      {key:'陪伴告別假',tip:'畫面委婉顯示',raw:'喪假'},{key:'育嬰留停',tip:'長天期流程',raw:'育嬰留停'}
+    ];
 
-  <div class="page">
-    <div class="top-space"></div>
+    var state={
+      employeeId:'',userToken:'',uploadType:'',salaryMode:'week',scheduleWeekOffset:0,clockTab:'record',
+      events:[],calendarData:{scheduleEvents:[],clockEvents:[],salaryEvents:[],uploadEvents:[]},preselectSettings:{mode:'week'},myPreselect:null,selectedWeekdays:[],scheduleConfirmMap:{0:'',1:''},messages:[],
+      themeColors:defaultThemeColors.slice(),activeThemeSlot:0,themeAngleIndex:3,
+      selectedLeaveType:'事假',leaveDays:1,leaveHours:0,leaveV4Bound:false,
+      workRecords:[],salaryHistory:[],profileName:'',
+      adminSalaryConfig:{mode:'week',weekStart:'週一',monthStart:'1號',lockWeekday:5,lockMonthDate:20},
+      publishedScheduleEvents:[],monthlySalary:0,leaveRows:[],uploads:[],shiftTypes:[]
+    };
 
-    <div id="loadingBox" class="loading">載入中...</div>
+    var calMain=null,calSalaryMonth=null,calClock=null,calUpload=null;
+    var currentVariation=Number(localStorage.getItem('ang_theme_variation')||0);
+    var currentUserId=APP_CTX.id;
+    var currentUserToken=APP_CTX.token;
+    var currentPage='home';
 
-    <div id="mainSection" style="display:none;">
-      <section class="hero">
-        <div class="brand-switcher">
-          <button class="brand-logo-btn" type="button" onclick="toggleCompanyMenu()">ANG</button>
-          <div class="company-menu" id="companyMenu"></div>
-        </div>
-        <div class="hero-title" id="mainTitle">員工首頁</div>
-        <div class="hero-sub">
-          歡迎回來，<span id="welcomeName">員工</span>
-          <span id="globalUserName" style="display:none;"></span>
-        </div>
-        <div class="mode-tip" id="modeTip">員工模式</div>
-      </section>
+    /* ==================== 工具函數 ==================== */
 
-      <section class="grid">
-        <div class="card">
-          <div class="card-title">今日狀態</div>
-          <div class="big" id="todayStatusText">尚未載入</div>
-          <div class="muted" id="todayStatusSub">正在讀取今日打卡資訊</div>
-          <div class="row">
-            <button class="btn" onclick="goClock()">前往打卡</button>
-            <button class="btn light" onclick="reloadDashboard()">重新整理</button>
-          </div>
-        </div>
+    // ANG.lo HR System Deploy Version: 129 - safeCall: avoid one render error breaking the rest of bootstrap/nav
+    function safeCall(fn,label){
+      try{ if(typeof fn==='function') return fn(); }
+      catch(e){ try{console.error('[ANG_SAFE_CALL]',label||'',e)}catch(_e){} }
+    }
+    function qs(id){return document.getElementById(id)}
+    function setText(id,v){var e=qs(id);if(e)e.innerText=v==null?'':String(v)}
+    function gas(){return typeof google!=='undefined'&&google.script&&google.script.run}
+    function esc(s){var d=document.createElement('div');d.textContent=s||'';return d.innerHTML}
+    function escapeHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
+    function showSuccess(m){Swal.fire('成功',m||'已完成','success')}
+    function showError(m){Swal.fire('錯誤',m||'操作失敗','error')}
+    function showWarning(m){Swal.fire('提醒',m||'請確認資料','warning')}
+    function formatMoney(v){return'$'+Number(v||0).toLocaleString('zh-TW')}
+    function formatHours(v){var n=Number(v||0);if(!isFinite(n))return'0h';return(Number.isInteger(n)?n:n.toFixed(2).replace(/\.00$/,'').replace(/(\.\d)0$/,'$1'))+'h'}
+    function formatYmdZh(d){if(!d)return'';var s=String(d).replace(/\//g,'-');var parts=s.split('-');if(parts.length>=3)return parts[1]+'/'+parts[2];return String(d)}
+    function pad2(n){return String(n).padStart(2,'0')}
+    function dateKey(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate())}
+    function parseYmd(ymd){if(!ymd)return null;var m=String(ymd).match(/^(\d{4})-(\d{2})-(\d{2})$/);if(!m)return null;return new Date(Number(m[1]),Number(m[2])-1,Number(m[3]),12,0,0,0)}
+    function startOfWeekMonday(d){var x=new Date(d);x.setHours(0,0,0,0);var day=x.getDay();x.setDate(x.getDate()+(day===0?-6:1-day));return x}
+    function endOfWeekMonday(d){var x=startOfWeekMonday(d);x.setDate(x.getDate()+6);x.setHours(23,59,59,999);return x}
+    function startOfMonth(d){return new Date(d.getFullYear(),d.getMonth(),1,0,0,0,0)}
+    function endOfMonth(d){return new Date(d.getFullYear(),d.getMonth()+1,0,23,59,59,999)}
+    function roundHalfStep_(n){return Math.round(Number(n||0)*2)/2}
+    function getMonthStartDayNumber(){
+      var raw=String((state.adminSalaryConfig&&state.adminSalaryConfig.monthStart)||'1').replace(/[^\d]/g,'');
+      var day=parseInt(raw||'1',10);
+      if(!isFinite(day)||day<1)day=1;
+      if(day>28)day=28;
+      return day;
+    }
+    function getShiftHoursForDate(dateObj){
+      var key=dateKey(dateObj);
+      var rec=(state.workRecords||[]).find(function(r){return String((r.date||'')).replace(/\//g,'-')===key;})||null;
+      var hours=Number((rec&&(rec.shiftHours||rec.hoursPlanned||rec.scheduledHours||rec.shiftTotalHours))||0);
+      if(hours>0)return roundHalfStep_(hours);
+      var st=(rec&&(rec.shiftStart||rec.scheduledStart))||state.shiftStartTime||(state.adminSalaryConfig&&state.adminSalaryConfig.shiftStart)||'';
+      var et=(rec&&(rec.shiftEnd||rec.scheduledEnd))||(state.adminSalaryConfig&&state.adminSalaryConfig.shiftEnd)||'';
+      if(st&&et){
+        var sp=String(st).split(':'), ep=String(et).split(':');
+        if(sp.length>=2&&ep.length>=2){
+          var s=Number(sp[0])*60+Number(sp[1]);
+          var e=Number(ep[0])*60+Number(ep[1]);
+          if(e<=s)e+=1440;
+          var h=(e-s)/60;
+          if(h>0)return roundHalfStep_(h);
+        }
+      }
+      return 8;
+    }
 
-        <div class="card">
-          <div class="card-title">個人資訊</div>
-          <div class="muted">員工編號</div>
-          <div class="big" id="employeeIdText">-</div>
-          <div class="row">
-            <button class="btn gray" onclick="goSalary()">查看薪資</button>
-            <button class="btn gray" onclick="logout()">登出</button>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-title">本月打卡紀錄</div>
-          <div id="monthClockBox" class="list">
-            <div class="empty">尚無資料</div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-title">快捷功能</div>
-          <div class="list">
-            <div class="list-item" onclick="goClock()" style="cursor:pointer;">🕒 打卡中心</div>
-            <div class="list-item" onclick="goSalary()" style="cursor:pointer;">💰 薪資查詢</div>
-            <div class="list-item" onclick="goUpload()" style="cursor:pointer;">📤 上傳資料</div>
-            <div class="list-item" onclick="goIndex()" style="cursor:pointer;">🏠 回首頁</div>
-          </div>
-        </div>
-      </section>
-
-      <div class="footer-space"></div>
-    </div>
-  </div>
-
-  <script>
     function getParams(){
-      const sp = new URLSearchParams(window.location.search);
-      return {
-        page: (sp.get('page') || '').trim().toLowerCase(),
-        id: (sp.get('id') || '').trim().toUpperCase(),
-        name: (sp.get('name') || '').trim()
+      var out={name:'',nickname:'',id:'',token:'',role:'',chip:'',status:'',next:'',theme:'',key:'',salaryMode:'',salaryWeekStart:'',salaryMonthStart:''};
+      try{var p=new URLSearchParams(window.location.search);Object.keys(out).forEach(function(k){out[k]=p.get(k)||''})}catch(e){}
+      return out;
+    }
+
+    function getDisplayName(){return String(APP_CTX.nickname||APP_CTX.name||state.profileName||localStorage.getItem('ang_employee_name')||state.employeeId||'').trim()}
+    function themeStorageKey(type){var id=String(state.employeeId||localStorage.getItem('ang_employee_id')||'ANG0000').trim()||'ANG0000';return'ang_theme_'+id+'_'+type}
+    function getStoredThemeValue(type,fallbackKey){return localStorage.getItem(themeStorageKey(type))||(fallbackKey?localStorage.getItem(fallbackKey):'')||''}
+    function normalizeHex(hex,fallback){var v=String(hex||'').trim();if(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(v))return v.toUpperCase();return fallback||'#FF87E0'}
+    function hexToRgb(hex){var h=normalizeHex(hex).replace('#','');var full=h.length===3?h.split('').map(function(x){return x+x}).join(''):h;var num=parseInt(full,16);return((num>>16)&255)+','+((num>>8)&255)+','+(num&255)}
+    function shiftColor(hex,amt){var h=normalizeHex(hex).replace('#','');var full=h.length===3?h.split('').map(function(x){return x+x}).join(''):h;var num=parseInt(full,16);var r=Math.max(0,Math.min(255,(num>>16)+amt));var g=Math.max(0,Math.min(255,((num>>8)&255)+amt));var b=Math.max(0,Math.min(255,(num&255)+amt));return'#'+((r<<16)|(g<<8)|b).toString(16).padStart(6,'0').toUpperCase()}
+    function getContrastColor(hex){var h=normalizeHex(hex).replace('#','');var full=h.length===3?h.split('').map(function(x){return x+x}).join(''):h;var num=parseInt(full,16);var yiq=((((num>>16)&255)*299)+(((num>>8)&255)*587)+((num&255)*114))/1000;return yiq>=150?'#111827':'#ffffff'}
+    function getVariationPalette(palette,vi){var v=gradientVariations[vi]||gradientVariations[0];return v.order.map(function(i){return palette[i]})}
+    function buildGradientCss(palette,vi,angle){var c=getVariationPalette(palette,vi);return'linear-gradient('+angle+', '+c[0]+' 0%, '+c[1]+' 33%, '+c[2]+' 66%, '+c[3]+' 100%)'}
+
+    function setAccentVars(root,prefix,color){
+      var rgb=hexToRgb(color);var on=getContrastColor(color);var isLight=on==='#111827';
+      root.style.setProperty('--'+prefix,color);root.style.setProperty('--'+prefix+'-rgb',rgb);root.style.setProperty('--'+prefix+'-on',on);
+      root.style.setProperty('--'+prefix+'-deep',shiftColor(color,isLight?-72:-24));root.style.setProperty('--'+prefix+'-text',shiftColor(color,isLight?-86:-60));
+      root.style.setProperty('--'+prefix+'-soft','rgba('+rgb+', .10)');root.style.setProperty('--'+prefix+'-soft2','rgba('+rgb+', .18)');
+    }
+
+    function getCurrentThemeAngle(){return document.documentElement.style.getPropertyValue('--emp-angle').trim()||'135deg'}
+    function syncThemeInputs(){['themeColor1','themeColor2','themeColor3','themeColor4'].forEach(function(id,idx){var el=qs(id);if(el)el.value=normalizeHex((state.themeColors||defaultThemeColors)[idx]||defaultThemeColors[idx],defaultThemeColors[idx])})}
+
+    function refreshThemePreviewButtons(){
+      var palette=(state.themeColors||defaultThemeColors).slice(0,4);while(palette.length<4)palette.push(defaultThemeColors[palette.length]);
+      var angle=getCurrentThemeAngle();
+      document.querySelectorAll('#themePreviewRow .theme-color-btn').forEach(function(btn,idx){
+        var vP=getVariationPalette(palette,idx);btn.style.background=buildGradientCss(palette,idx,angle);
+        btn.style.setProperty('--preview-label-color',getContrastColor(vP[0]));btn.setAttribute('data-label',gradientVariations[idx].name);btn.classList.toggle('active',idx===currentVariation);
+      });
+    }
+
+    function syncThemeAngleDisplay(){var el=qs('themeAngleDisplay');if(!el)return;var target=themeAngles.find(function(x){return x.deg===getCurrentThemeAngle()})||themeAngles[3];el.innerHTML='<span>漸層方向｜'+target.label+'</span>'}
+
+    function applyThemeColors(colors,save){
+      var palette=(Array.isArray(colors)?colors:defaultThemeColors).slice(0,4).map(function(c,idx){return normalizeHex(c,defaultThemeColors[idx])});
+      while(palette.length<4)palette.push(defaultThemeColors[palette.length]);state.themeColors=palette;
+      var root=document.documentElement;var displayColors=getVariationPalette(palette,currentVariation);var angle=getCurrentThemeAngle();
+      var primaryRgb=hexToRgb(palette[0]);var textOnEmp=getContrastColor(displayColors[0]);var isLightBase=getContrastColor(palette[0])==='#111827';
+      root.style.setProperty('--emp',palette[0]);root.style.setProperty('--emp-deep',shiftColor(palette[0],isLightBase?-72:-24));
+      root.style.setProperty('--emp-soft','rgba('+primaryRgb+', .12)');root.style.setProperty('--emp-soft2','rgba('+primaryRgb+', .18)');
+      root.style.setProperty('--emp-text',shiftColor(palette[0],isLightBase?-86:-60));root.style.setProperty('--emp-rgb',primaryRgb);
+      root.style.setProperty('--emp-1',displayColors[0]);root.style.setProperty('--emp-2',displayColors[1]);root.style.setProperty('--emp-3',displayColors[2]);root.style.setProperty('--emp-4',displayColors[3]);
+      root.style.setProperty('--text-on-emp',textOnEmp);root.style.setProperty('--emp-gradient',buildGradientCss(palette,currentVariation,angle));
+      setAccentVars(root,'schedule',palette[0]);setAccentVars(root,'clock',palette[1]);setAccentVars(root,'salary',palette[2]);setAccentVars(root,'upload',palette[3]);
+      var badge=qs('themeNameBadge');if(badge)badge.innerText='自訂四色｜'+gradientVariations[currentVariation].name;
+      if(save){localStorage.setItem(themeStorageKey('colors'),JSON.stringify(palette));localStorage.setItem('ang_theme_colors',JSON.stringify(palette));localStorage.setItem('ang_theme_variation',String(currentVariation))}
+      syncThemeInputs();refreshThemePreviewButtons();syncThemeAngleDisplay();refreshCalendars();
+    }
+
+    function setThemeAngle(deg,save){
+      var target=themeAngles.find(function(x){return x.deg===deg})||themeAngles[3];var root=document.documentElement;
+      root.style.setProperty('--emp-angle',target.deg);state.themeAngleIndex=themeAngles.findIndex(function(x){return x.deg===target.deg});
+      if(save){localStorage.setItem(themeStorageKey('angle'),target.deg);localStorage.setItem('ang_theme_angle',target.deg)}
+      root.style.setProperty('--emp-gradient',buildGradientCss(state.themeColors||defaultThemeColors,currentVariation,target.deg));
+      refreshThemePreviewButtons();syncThemeAngleDisplay();refreshCalendars();
+    }
+
+    function applyVariation(index){currentVariation=Math.max(0,Math.min(index,gradientVariations.length-1));localStorage.setItem('ang_theme_variation',String(currentVariation));applyThemeColors(state.themeColors,true)}
+    function rotateThemeAngle(step){var idx=themeAngles.findIndex(function(x){return x.deg===getCurrentThemeAngle()});if(idx<0)idx=3;idx=(idx+step+themeAngles.length)%themeAngles.length;setThemeAngle(themeAngles[idx].deg,true)}
+    function updateThemeColor(index,value){var p=(state.themeColors||defaultThemeColors).slice(0,4);while(p.length<4)p.push(defaultThemeColors[p.length]);p[index]=normalizeHex(value,defaultThemeColors[index]);state.themeColors=p;applyThemeColors(state.themeColors,true)}
+    function resetThemePreset(){state.themeColors=defaultThemeColors.slice();currentVariation=0;setThemeAngle('135deg',true);applyThemeColors(defaultThemeColors,true)}
+
+    function setLogo(source){
+      var el=qs('brandLogo');if(!el)return;var v=String(source||'').trim();
+      if(/^https?:\/\/|^data:image/i.test(v))el.innerHTML='<img src="'+v+'" alt="logo">';else el.textContent=v||'ANG';
+    }
+
+
+    /* ==================== Header / 日夜模式修正 ==================== */
+    function isBadHeaderValue(v){
+      if(v===undefined||v===null)return true;
+      var raw=String(v).trim();
+      if(!raw)return true;
+      if(raw.indexOf('<?')>-1||raw.indexOf('?>')>-1||/typeof\s+[^?]+\?/.test(raw))return true;
+      var compact=raw.replace(/\s+/g,' ').trim();
+      if(/^(undefined|null|nan|false|true|USER|讀取中|公司名稱|員工模式|未設定|無資料)$/i.test(compact))return true;
+      if(/^ANG\.lo\s*Engine$/i.test(compact)||/^ANG\s*Engine$/i.test(compact))return true;
+      if(/^EMPLOYEE\s*ID/i.test(compact)&&/undefined|null|未設定|無資料/i.test(compact))return true;
+      return false;
+    }
+
+    function cleanDataValue(){
+      for(var i=0;i<arguments.length;i++){
+        var v=arguments[i];
+        if(isBadHeaderValue(v))continue;
+        return String(v).trim();
+      }
+      return '';
+    }
+
+    function cleanEmployeeId(){
+      for(var i=0;i<arguments.length;i++){
+        var v=arguments[i];
+        if(isBadHeaderValue(v))continue;
+        var raw=String(v).trim().toUpperCase();
+        var m=raw.match(/[A-Z]{2,}\d{2,}/);
+        if(m)return m[0];
+      }
+      return '';
+    }
+
+    function readObjValue(obj,keys){
+      obj=obj||{};
+      for(var i=0;i<keys.length;i++){
+        var k=keys[i];
+        if(Object.prototype.hasOwnProperty.call(obj,k)&&!isBadHeaderValue(obj[k]))return obj[k];
+      }
+      return '';
+    }
+
+    function getHeaderBranchLabel(p,s){
+      p=p||{};s=s||{};
+      var so=s.store||s.branchInfo||s.branchData||{};
+      var po=p.store||p.branchInfo||p.branchData||{};
+      var raw=cleanDataValue(
+        readObjValue(so,['name','branch_name','branchName','store_name','storeName','shop_name','shopName']),
+        readObjValue(po,['name','branch_name','branchName','store_name','storeName','shop_name','shopName']),
+        s.branch_name,s.branchName,s.branch,s.store_name,s.storeName,s.store,s.shop_name,s.shopName,s.shop,
+        p.branch_name,p.branchName,p.branch,p.store_name,p.storeName,p.store,p.shop_name,p.shopName,p.shop
+      );
+      var code=cleanDataValue(s.branch_id,s.branchId,s.store_id,s.storeId,p.branch_id,p.branchId,p.store_id,p.storeId);
+      var v=raw||code;
+      if(!v)return '';
+      if(/分店|總店|總公司|本店|門市$|店$/.test(v))return v;
+      return v+'分店';
+    }
+
+    function renderTopHeader(p,s){
+      p=p||{};s=s||{};
+      var companyObj=s.company||s.companyInfo||s.companyData||p.company||p.companyInfo||{};
+      var id=cleanEmployeeId(p.id,p.employee_id,p.employeeId,state.employeeId,APP_CTX.id,localStorage.getItem('ang_employee_id'));
+      var company=cleanDataValue(
+        readObjValue(companyObj,['display_name','displayName','name','company_name','companyName','title','main_title','mainTitle','brand_name','brandName']),
+        s.company_display_name,s.companyDisplayName,s.company_name,s.companyName,s.company,s.company_title,s.companyTitle,s.brand_name,s.brandName,s.main_title,s.mainTitle,
+        p.company_name,p.companyName,p.company
+      );
+      var subtitle=cleanDataValue(
+        readObjValue(companyObj,['subtitle','sub_title','subTitle','sub_name','subName','company_subtitle','companySubtitle','company_sub_name','companySubName','secondary_name','secondaryName']),
+        s.company_subtitle,s.companySubtitle,s.company_sub_name,s.companySubName,s.sub_company_name,s.subCompanyName,s.secondary_company_name,s.secondaryCompanyName,s.system_sub,s.systemSub,
+        p.company_subtitle,p.companySubtitle,p.company_sub_name,p.sub_company_name
+      );
+      var branch=getHeaderBranchLabel(p,s);
+      var parts=[];
+      if(branch)parts.push(branch);
+      parts.push('HR系統');
+      if(id)parts.push(id);
+      setText('brandTitleMain',company);
+      setText('brandTitleSub',subtitle);
+      setText('topBrandTitle','');
+      setText('topBrandSub',parts.join('｜'));
+      var logo=cleanDataValue(
+        readObjValue(companyObj,['logo_url','logoUrl','logo','company_logo','companyLogo','logo_text','logoText']),
+        s.logo_url,s.logoUrl,s.company_logo,s.companyLogo,s.logo,s.logoValue,s.logo_text,s.logoText,s.fallback_text,s.fallbackText
+      );
+      setLogo(logo||'ANG');
+    }
+
+    function setValueOrBlank(id,v,formatter){
+      if(v===undefined||v===null||v==='')return setText(id,'');
+      setText(id,formatter?formatter(v):v);
+    }
+
+    function setDayNightMode(mode,save){
+      mode=(mode==='night')?'night':'day';
+      document.body.dataset.daynight=mode;
+      var btn=qs('nav-daynight'),label=qs('daynightLabel');
+      if(btn){
+        var icon=btn.querySelector('i');
+        if(icon)icon.className=mode==='night'?'fa-solid fa-sun':'fa-solid fa-moon';
+      }
+      if(label)label.innerText=mode==='night'?'白天模式':'黑夜模式';
+      document.querySelectorAll('[data-daynight-choice]').forEach(function(el){
+        el.classList.toggle('active',el.getAttribute('data-daynight-choice')===mode);
+      });
+      if(save!==false)localStorage.setItem('ang_daynight_mode',mode);
+    }
+
+    function toggleDayNightMode(){
+      var current=document.body.dataset.daynight||localStorage.getItem('ang_daynight_mode')||'day';
+      setDayNightMode(current==='night'?'day':'night',true);
+    }
+
+    /* ==================== 導航 ==================== */
+
+    function nav(id){
+      try{
+        currentPage=id;
+        document.querySelectorAll('.page').forEach(function(el){el.classList.remove('active')});
+        document.querySelectorAll('.nav-btn').forEach(function(el){el.classList.remove('active')});
+        var pe=qs('page-'+id),ne=qs('nav-'+id);
+        if(pe)pe.classList.add('active');if(ne)ne.classList.add('active');
+        document.body.dataset.activePage=id;
+      }catch(e){try{console.error('[ANG_SAFE_CALL]','nav.switch',e)}catch(_e){}}
+      if(id==='schedule'){safeCall(function(){if(calMain)calMain.render()},'nav.calMain');safeCall(renderWeekdayStrip,'nav.renderWeekdayStrip');safeCall(updateScheduleTitle,'nav.updateScheduleTitle');safeCall(syncWeekTabs,'nav.syncWeekTabs');safeCall(updateScheduleConfirmNote,'nav.updateScheduleConfirmNote');safeCall(loadPublishedScheduleCalendar,'nav.loadPublishedSchedule');safeCall(renderShiftLegend,'nav.renderShiftLegend');}
+      if(id==='salary')safeCall(function(){if(calSalaryMonth)calSalaryMonth.render()},'nav.calSalaryMonth');
+      if(id==='clock')safeCall(function(){if(calClock)calClock.render()},'nav.calClock');
+      if(id==='upload')safeCall(function(){if(calUpload)calUpload.render()},'nav.calUpload');
+    }
+
+    function buildPageUrl(pageName){
+      var base = String(APP_CTX.webAppUrl || window.location.href.split('#')[0].split('?')[0] || '').trim();
+      var id = encodeURIComponent(String(currentUserId || APP_CTX.id || '').trim());
+      var token = encodeURIComponent(String(currentUserToken || APP_CTX.token || '').trim());
+      var ts = Date.now();
+      return base
+        + '?page=' + encodeURIComponent(pageName || 'employee')
+        + '&id=' + id
+        + '&token=' + token
+        + '&_ts=' + ts;
+    }
+
+    function hardGo(pageName){
+      var url = buildPageUrl(pageName);
+      try{
+        window.location.replace(url);
+      }catch(err){
+        window.location.href = url;
+      }
+    }
+
+    function refreshCurrentPage(){
+      var url = buildPageUrl(currentPage === 'admin' ? 'admin' : 'employee');
+      try{
+        window.location.replace(url);
+      }catch(err){
+        window.location.href = url;
+      }
+    }
+
+    function goEmployee(){
+      hardGo('employee');
+    }
+
+    function goAdmin(){
+      hardGo('admin');
+    }
+
+    function handleEmployeeHomeClick(){
+      var role = String(APP_CTX.role || '').trim().toLowerCase();
+      var canEnterAdmin = ['creator','admin','manager'].indexOf(role) > -1;
+
+      if(currentPage === 'home'){
+        if(canEnterAdmin){
+          hardGo('admin');
+          return;
+        }
+        refreshCurrentPage();
+        return;
+      }
+
+      hardGo('employee');
+    }
+
+    /* ==================== API ==================== */
+
+    function apiPost(action,payload,callback){
+      var fp=Object.assign({},payload||{},{action:action});
+      if(!/^https?:/i.test(String(window.location.href||''))){showWarning('非正式環境');if(callback)callback({ok:false,message:'not_in_web'});return}
+      var apiUrl=String((window.ANG_HR_UTILS&&window.ANG_HR_UTILS.getApiUrl&&window.ANG_HR_UTILS.getApiUrl())||(APP_CTX&&APP_CTX.webAppUrl)||'').trim()||String(window.location.origin+window.location.pathname).trim();
+      Swal.fire({title:'處理中...',allowOutsideClick:false,didOpen:function(){Swal.showLoading()}});
+      var ctrl=new AbortController();var timer=setTimeout(function(){ctrl.abort()},20000);
+      fetch(apiUrl,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(fp),signal:ctrl.signal})
+      .then(function(r){if(!r.ok)throw new Error('HTTP_'+r.status);return r.text()})
+      .then(function(t){clearTimeout(timer);Swal.close();var d=null;try{d=t?JSON.parse(t):{}}catch(e){throw new Error('invalid_json')}if(d&&!d.ok&&d.message)showError(d.message);if(callback)callback(d)})
+      .catch(function(e){clearTimeout(timer);Swal.close();if(e&&e.name==='AbortError'){showError('連線逾時');if(callback)callback({ok:false,message:'timeout'});return}showError('連線錯誤');if(callback)callback({ok:false,message:'network_error'})})
+      .finally(function(){clearTimeout(timer)});
+    }
+
+    /* ==================== 初始化 ==================== */
+
+    function applyParamsFromUrl(){
+      var p=getParams();
+      var displayId=String(p.id||APP_CTX.id||localStorage.getItem('ang_employee_id')||'').trim().toUpperCase();
+      var displayToken=String(p.token||APP_CTX.token||'').trim();
+      state.employeeId=displayId;state.userToken=displayToken;currentUserId=displayId;currentUserToken=displayToken;
+      if(displayId)localStorage.setItem('ang_employee_id',displayId);
+      renderTopHeader({id:displayId,name:p.name||APP_CTX.name,nickname:p.nickname||APP_CTX.nickname},{});
+      var displayName=cleanDataValue(APP_CTX.nickname,p.nickname,APP_CTX.name,p.name);
+      setText('helloName',displayName?'哈囉，'+displayName:'');
+      setText('helloStatus','');
+      setText('heroChip','');
+      var savedColors=getStoredThemeValue('colors','ang_theme_colors');
+      if(savedColors){try{var parsed=JSON.parse(savedColors);if(Array.isArray(parsed)&&parsed.length===4)state.themeColors=parsed.map(normalizeHex)}catch(e){}}
+      setThemeAngle(getStoredThemeValue('angle','ang_theme_angle')||'135deg',false);applyThemeColors(state.themeColors,false);
+      setDayNightMode(localStorage.getItem('ang_daynight_mode')||'day',false);
+    }
+
+    function fillHourMinuteSelect_(hourId,minuteId){
+      var hEl=qs(hourId),mEl=qs(minuteId);if(!hEl||!mEl)return;hEl.innerHTML='';mEl.innerHTML='';
+      for(var h=0;h<24;h++){var o=document.createElement('option');o.value=String(h).padStart(2,'0');o.textContent=String(h).padStart(2,'0')+' 點';hEl.appendChild(o)}
+      for(var m=0;m<60;m+=5){var o2=document.createElement('option');o2.value=String(m).padStart(2,'0');o2.textContent=String(m).padStart(2,'0')+' 分';mEl.appendChild(o2)}
+    }
+
+    function setDateTimeToInputs_(dateId,hourId,minuteId,dateObj){
+      var dE=qs(dateId),hE=qs(hourId),mE=qs(minuteId);if(!dE||!hE||!mE)return;
+      var d=new Date(dateObj);d.setSeconds(0,0);var mins=Math.round(d.getMinutes()/5)*5;
+      if(mins>=60){d.setHours(d.getHours()+1);mins=0}d.setMinutes(mins,0,0);
+      var local=new Date(d.getTime()-d.getTimezoneOffset()*60000);
+      dE.value=local.toISOString().slice(0,10);hE.value=String(d.getHours()).padStart(2,'0');mE.value=String(d.getMinutes()).padStart(2,'0');
+    }
+
+    function getDateTimeFromInputs_(dateId,hourId,minuteId){
+      var dE=qs(dateId),hE=qs(hourId),mE=qs(minuteId);
+      if(!dE||!hE||!mE||!dE.value)return null;
+      var dt=new Date(dE.value+'T'+hE.value+':'+mE.value+':00');return isNaN(dt.getTime())?null:dt;
+    }
+
+    /* ==================== 請假 ==================== */
+
+    function normalizeLeaveV4Inputs_(){
+      var dayI=qs('leave-days-input'),hourI=qs('leave-hours-input');if(!dayI||!hourI)return;
+      var d=parseInt(dayI.value||'0',10);if(isNaN(d)||d<0)d=0;
+      var h=parseFloat(hourI.value||'0')||0;if(h<0)h=0;h=roundHalfStep_(h);
+      var refDate=getDateTimeFromInputs_('leave-start-date','leave-start-hour','leave-start-minute')||new Date();
+      var maxH=getShiftHoursForDate(refDate);
+      while(h>maxH){d+=1;h=roundHalfStep_(h-maxH);}
+      dayI.value=String(d);hourI.value=h.toFixed(1);
+      state.leaveDays=d;state.leaveHours=h;
+    }
+
+    function renderLeaveGrid(){
+      var wrap=qs('leave-type-grid-v4');if(!wrap)return;
+      if(!state.selectedLeaveType)state.selectedLeaveType=leaveTypes[0].key;wrap.innerHTML='';
+      leaveTypes.forEach(function(item){
+        var btn=document.createElement('button');btn.type='button';
+        btn.className='leave-type-btn-v4'+(state.selectedLeaveType===item.key?' active':'');
+        btn.innerHTML=escapeHtml(item.key)+'<small>'+escapeHtml(item.tip||'')+'</small>';
+        btn.onclick=function(){state.selectedLeaveType=item.key;renderLeaveGrid();syncLeaveSummary()};wrap.appendChild(btn);
+      });
+    }
+
+    function updateBreakOptions(){
+      var startH=parseInt((qs('leave-start-hour')||{}).value||'8',10);
+      var startM=parseInt((qs('leave-start-minute')||{}).value||'0',10);
+      var endH=parseInt((qs('leave-end-hour')||{}).value||'17',10);
+      var endM=parseInt((qs('leave-end-minute')||{}).value||'0',10);
+      var startPartial=!(startH===8&&startM===0);
+      var endPartial=!(endH===17&&endM===0);
+      var partial=(startPartial?1:0)+(endPartial?1:0);
+      var box=qs('leave-break-row');if(!box)return;
+      if(partial===0){box.style.display='none';return}
+      box.style.display='';
+      var sel=qs('leave-break-select');if(!sel)return;
+      var cur=sel.value;
+      sel.innerHTML='<option value="0">不含</option><option value="1">含 1 次</option>';
+      if(partial>=2)sel.innerHTML+='<option value="2">含 2 次</option>';
+      if(cur==='2'&&partial>=2)sel.value='2';else if(cur==='1')sel.value='1';else sel.value='0';
+    }
+
+    function syncLeaveTimeVisibility(){
+      var fullDay=Number(state.leaveHours||0)===0;
+      document.querySelectorAll('.leave-v4-time').forEach(function(el){el.style.display=fullDay?'none':'';});
+      var brk=qs('leave-break-row');if(brk)brk.style.display=fullDay?'none':'';
+    }
+
+    function syncLeaveSummary(){
+      normalizeLeaveV4Inputs_();var sT=qs('leave-v4-summary-text'),sS=qs('leave-v4-summary-sub');if(!sT||!sS)return;
+      var hours=Number(state.leaveHours||0);var days=Number(state.leaveDays||0);
+      var totalH=(days*8)+hours;
+      if(hours===0){
+        sT.innerText=days+' 天';
+        sS.innerText=(state.selectedLeaveType||'事假');
+      } else {
+        var start=getDateTimeFromInputs_('leave-start-date','leave-start-hour','leave-start-minute');
+        if(start){var end=new Date(start.getTime()+totalH*3600000);setDateTimeToInputs_('leave-end-date','leave-end-hour','leave-end-minute',end)}
+        var hT=hours%1===0?hours.toFixed(0):hours.toFixed(1);
+        sT.innerText=days+' 天 '+hT+' 小時';
+        if(state.shiftStartTime){
+          sS.innerText='共 '+totalH.toFixed(1)+' 小時｜'+(state.selectedLeaveType||'事假')+'｜會同步回上方結束時間';
+        } else {
+          sS.innerText='共 '+totalH.toFixed(1)+' 小時｜'+(state.selectedLeaveType||'事假');
+        }
+      }
+      updateBreakOptions();
+      syncLeaveTimeVisibility();
+    }
+
+    function syncLeaveV4FromRange_(){
+      var start=getDateTimeFromInputs_('leave-start-date','leave-start-hour','leave-start-minute');
+      var end=getDateTimeFromInputs_('leave-end-date','leave-end-hour','leave-end-minute');
+      if(!start||!end||end<=start){syncLeaveSummary();return}
+      var totalH=roundHalfStep_((end.getTime()-start.getTime())/3600000);var days=Math.floor(totalH/8);var hours=roundHalfStep_(totalH-(days*8));
+      if(hours>=7.5){days+=1;hours=0;}
+      state.leaveDays=days;state.leaveHours=hours;
+      if(qs('leave-days-input'))qs('leave-days-input').value=String(days);if(qs('leave-hours-input'))qs('leave-hours-input').value=hours.toFixed(1);
+      syncLeaveSummary();updateBreakOptions();
+    }
+
+    function bindLeaveV4_(){
+      if(state.leaveV4Bound)return;state.leaveV4Bound=true;
+      ['leave-start-date','leave-start-hour','leave-start-minute','leave-end-date','leave-end-hour','leave-end-minute'].forEach(function(id){var el=qs(id);if(el){el.addEventListener('change',syncLeaveV4FromRange_);el.addEventListener('input',syncLeaveV4FromRange_)}});
+      ['leave-days-input','leave-hours-input'].forEach(function(id){var el=qs(id);if(el){el.addEventListener('change',syncLeaveSummary);el.addEventListener('input',syncLeaveSummary)}});
+      if(qs('leave-day-minus'))qs('leave-day-minus').onclick=function(){state.leaveDays=Math.max(0,Number(state.leaveDays||0)-1);if(qs('leave-days-input'))qs('leave-days-input').value=String(state.leaveDays);syncLeaveSummary()};
+      if(qs('leave-day-plus'))qs('leave-day-plus').onclick=function(){state.leaveDays=Number(state.leaveDays||0)+1;if(qs('leave-days-input'))qs('leave-days-input').value=String(state.leaveDays);syncLeaveSummary()};
+      if(qs('leave-hour-minus'))qs('leave-hour-minus').onclick=function(){
+        var refDate=getDateTimeFromInputs_('leave-start-date','leave-start-hour','leave-start-minute')||new Date();
+        var maxH=getShiftHoursForDate(refDate);
+        var cur=roundHalfStep_(Number(state.leaveHours||0)-0.5);
+        if(cur<0){
+          if(Number(state.leaveDays||0)>0){state.leaveDays=Number(state.leaveDays||0)-1;cur=maxH+0.5;}else{cur=0;}
+        }
+        state.leaveHours=Math.max(0,roundHalfStep_(cur));
+        if(qs('leave-days-input'))qs('leave-days-input').value=String(state.leaveDays);
+        if(qs('leave-hours-input'))qs('leave-hours-input').value=state.leaveHours.toFixed(1);
+        syncLeaveSummary()
+      };
+      if(qs('leave-hour-plus'))qs('leave-hour-plus').onclick=function(){
+        var refDate=getDateTimeFromInputs_('leave-start-date','leave-start-hour','leave-start-minute')||new Date();
+        var maxH=getShiftHoursForDate(refDate);
+        state.leaveHours=roundHalfStep_(Number(state.leaveHours||0)+0.5);
+        if(state.leaveHours>maxH+0.5){state.leaveDays=Number(state.leaveDays||0)+1;state.leaveHours=0;}
+        if(qs('leave-days-input'))qs('leave-days-input').value=String(state.leaveDays);
+        if(qs('leave-hours-input'))qs('leave-hours-input').value=state.leaveHours.toFixed(1);
+        syncLeaveSummary()
       };
     }
 
-    function getBaseUrl(){
-      return window.location.origin + window.location.pathname;
+    function initDefaults(){
+      fillHourMinuteSelect_('leave-start-hour','leave-start-minute');fillHourMinuteSelect_('leave-end-hour','leave-end-minute');fillHourMinuteSelect_('clock-fix-hour','clock-fix-minute');
+      var shiftStart=state.shiftStartTime||(state.adminSalaryConfig&&state.adminSalaryConfig.shiftStart)||'';
+      var shiftEnd=(state.adminSalaryConfig&&state.adminSalaryConfig.shiftEnd)||'';
+      var now=new Date();now.setSeconds(0,0);
+      var start,end;
+      if(shiftStart){var sp=shiftStart.split(':');start=new Date(now);start.setHours(parseInt(sp[0],10),parseInt(sp[1]||0,10),0,0);}else{var mins=Math.ceil(now.getMinutes()/5)*5;start=new Date(now);if(mins>=60)start.setHours(start.getHours()+1,0,0,0);else start.setMinutes(mins,0,0);}
+      if(shiftEnd){var ep=shiftEnd.split(':');end=new Date(now);end.setHours(parseInt(ep[0],10),parseInt(ep[1]||0,10),0,0);if(end<=start)end=new Date(start.getTime()+getShiftHoursForDate(now)*3600000);}else{end=new Date(start.getTime()+getShiftHoursForDate(now)*3600000);}
+      setDateTimeToInputs_('leave-start-date','leave-start-hour','leave-start-minute',start);
+      setDateTimeToInputs_('leave-end-date','leave-end-hour','leave-end-minute',end);
+      setDateTimeToInputs_('clock-fix-date','clock-fix-hour','clock-fix-minute',start);
+      state.leaveDays=1;state.leaveHours=0;
+      if(qs('leave-days-input'))qs('leave-days-input').value='1';if(qs('leave-hours-input'))qs('leave-hours-input').value='0.0';
+      bindLeaveV4_();renderLeaveGrid();syncLeaveSummary();syncLeaveTimeVisibility();
     }
 
-    function buildUrl(page, id){
-      let url = getBaseUrl() + '?page=' + encodeURIComponent(page || 'employee');
-      if (id) url += '&id=' + encodeURIComponent(id);
-      return url;
+    /* ==================== 排班 ==================== */
+
+
+    function getPreselectMode(){
+      var ps=state.preselectSettings||{};
+      var ac=state.adminSalaryConfig||{};
+      var vals=[
+        ps.mode,ps.preselectMode,ps.selectMode,ps.selectionMode,ps.scheduleMode,ps.restMode,ps.rest_select_mode,ps.select_rest_mode,ps.offMode,ps.chooseMode,
+        ac.preselectMode,ac.selectMode,ac.selectionMode,ac.scheduleMode,ac.restMode,ac.rest_select_mode,ac.select_rest_mode,ac.offMode,ac.chooseMode,ac.mode,
+        state.preselectMode,state.scheduleSelectMode
+      ];
+      for(var i=0;i<vals.length;i++){
+        var v=String(vals[i]===undefined||vals[i]===null?'':vals[i]).toLowerCase().trim();
+        if(!v)continue;
+        if(v.indexOf('month')>-1||v.indexOf('monthly')>-1||v.indexOf('月')>-1)return 'month';
+        if(v.indexOf('week')>-1||v.indexOf('weekly')>-1||v.indexOf('週')>-1||v.indexOf('周')>-1)return 'week';
+      }
+      return 'week';
     }
 
-    function applyEmployeeTheme(){
-      const theme = localStorage.getItem('ang-hr-theme') || localStorage.getItem('ang_theme_mode') || localStorage.getItem('ang_app_theme') || 'dark';
-      document.body.dataset.theme = (theme === 'dark' || theme === 'night') ? 'dark' : 'light';
-      const pageIndexMap = { employee:0, clock:1, mysalary:2, upload:3 };
-      const p = getParams();
-      const idx = pageIndexMap[p.page || 'employee'] || 0;
-      const colors = ['#FF87E0','#CCA4FF','#8089FF','#59DDFF'];
-      document.documentElement.style.setProperty('--ang-current-main',colors[idx] || colors[0]);
+    function syncPreselectModeFromData(res,sys){
+      res=res||{};sys=sys||{};
+      var direct=cleanDataValue(
+        res.preselect_mode,res.preselectMode,res.select_mode,res.selectMode,res.selection_mode,res.selectionMode,res.schedule_mode,res.scheduleMode,res.rest_select_mode,res.select_rest_mode,res.choose_rest_mode,
+        sys.preselect_mode,sys.preselectMode,sys.select_mode,sys.selectMode,sys.selection_mode,sys.selectionMode,sys.schedule_mode,sys.scheduleMode,sys.rest_select_mode,sys.select_rest_mode,sys.choose_rest_mode
+      );
+      if(direct){state.preselectSettings=Object.assign({},state.preselectSettings||{},{mode:direct});}
+      state.adminSalaryConfig=Object.assign({},state.adminSalaryConfig||{},{mode:getPreselectMode()});
     }
 
-    function getCompanyMemberships(){
-      try {
-        const raw = localStorage.getItem('ang_company_memberships') || localStorage.getItem('ang_employee_companies') || '';
-        const arr = raw ? JSON.parse(raw) : [];
-        if (Array.isArray(arr) && arr.length) return arr.slice(0,3);
-      } catch(err) {}
-      const currentCompany = localStorage.getItem('ang_company_id') || '';
-      const currentName = localStorage.getItem('ang_company_name') || currentCompany || '目前公司';
-      const currentId = localStorage.getItem('emp_logged_in') || '';
-      return [{ company_id:currentCompany, company_name:currentName, employee_id:currentId }];
+    function getScheduleDatesForOffset(offset){
+      var mode=getPreselectMode();var now=new Date();now.setHours(0,0,0,0);
+      if(mode==='month'){
+        var startDay=getMonthStartDayNumber();
+        var base=new Date(now.getFullYear(),now.getMonth(),startDay);
+        if(now.getDate()<startDay)base.setMonth(base.getMonth()-1);
+        base.setMonth(base.getMonth()+offset);
+        var next=new Date(base.getFullYear(),base.getMonth()+1,startDay);
+        var end=new Date(next);end.setDate(end.getDate()-1);end.setHours(23,59,59,999);
+        var list=[];var cur=new Date(base);while(cur<=end){list.push(new Date(cur));cur.setDate(cur.getDate()+1)}return list;
+      }
+      var startDow=getPreselectStartDayOfWeek();var today=now.getDay();var diff=(today-startDow+7)%7;var ws=new Date(now);ws.setDate(now.getDate()-diff+(offset*7));
+      return Array.from({length:7},function(_,i){var d=new Date(ws);d.setDate(ws.getDate()+i);return d});
     }
 
-    function toggleCompanyMenu(){
-      const menu = document.getElementById('companyMenu');
-      if (!menu) return;
-      if (menu.classList.contains('show')) { menu.classList.remove('show'); return; }
-      const companies = getCompanyMemberships();
-      menu.innerHTML = companies.map(function(c){
-        return '<button type="button" onclick="switchCompany(\'' + escapeHtml(c.company_id || '') + '\',\'' + escapeHtml(c.employee_id || '') + '\')">' + escapeHtml(c.company_name || c.company_id || '公司') + '<br><small>' + escapeHtml(c.company_id || '') + '</small></button>';
-      }).join('') + '<button type="button" onclick="logout()">登出</button>';
-      menu.classList.add('show');
+    function updateScheduleTitle(){
+      var mode=getPreselectMode();var isMonth=mode==='month';
+      var d0=getScheduleDatesForOffset(0),d1=getScheduleDatesForOffset(1);
+      var curr=state.scheduleWeekOffset===0?d0:d1;
+      function fR(l){return(l[0].getMonth()+1)+'/'+l[0].getDate()+'～'+(l[l.length-1].getMonth()+1)+'/'+l[l.length-1].getDate()}
+      setText('t-0',(isMonth?'本月排班':'本週排班')+'\n'+fR(d0));
+      setText('t-1',(isMonth?'下月排班':'下週排班')+'\n'+fR(d1));
+      setText('schedule-calendar-title',(isMonth?(state.scheduleWeekOffset===0?'本月排班':'下月排班'):(state.scheduleWeekOffset===0?'本週排班':'下週排班'))+'（'+fR(curr)+'）');
     }
 
-    function switchCompany(companyId, employeeId){
-      if (companyId) localStorage.setItem('ang_company_id',companyId);
-      if (employeeId) localStorage.setItem('emp_logged_in',employeeId);
-      window.location.href = buildUrl('employee',employeeId || localStorage.getItem('emp_logged_in') || '');
+    function syncWeekTabs(){if(qs('t-0'))qs('t-0').classList.toggle('active',state.scheduleWeekOffset===0);if(qs('t-1'))qs('t-1').classList.toggle('active',state.scheduleWeekOffset===1)}
+    function toggleWeek(offset){state.scheduleWeekOffset=offset;state.selectedWeekdays=[];syncWeekTabs();updateScheduleTitle();renderWeekdayStrip();updateScheduleConfirmNote();refreshCalendars()}
+
+    function checkIsPeriodLocked(offset){
+      var mode=getPreselectMode();var now=new Date();
+      if(mode==='week'){var lockDay=Number((state.adminSalaryConfig&&state.adminSalaryConfig.lockWeekday)||5);var cd=now.getDay()===0?7:now.getDay();if(offset>1)return true;if(offset===1&&cd>lockDay)return true;return false}
+      var lockDate=Number((state.adminSalaryConfig&&state.adminSalaryConfig.lockMonthDate)||20);if(offset>1)return true;if(offset===1&&now.getDate()>lockDate)return true;return false;
     }
 
-    function goPage(page){
-      const id = window.currentId || (localStorage.getItem('emp_logged_in') || '').trim().toUpperCase();
-      window.location.href = buildUrl(page, id);
-    }
+    function renderWeekdayStrip(){
+      var mode=getPreselectMode();
+      var dates=getScheduleDatesForOffset(state.scheduleWeekOffset);
+      var names=['週日','週一','週二','週三','週四','週五','週六'];
+      var wrap=qs('weekday-strip');if(!wrap)return;
+      wrap.innerHTML='';
+      wrap.classList.toggle('month-mode',mode==='month');
+      var today=new Date();today.setHours(0,0,0,0);
+      var isLocked=checkIsPeriodLocked(state.scheduleWeekOffset);
 
-    function goLogin(){
-      window.location.href = buildUrl('login');
-    }
-
-    function goClock(){
-      goPage('clock');
-    }
-
-    function goSalary(){
-      goPage('mysalary');
-    }
-
-    function goUpload(){
-      goPage('upload');
-    }
-
-    function goIndex(){
-      const role = (localStorage.getItem('ang_role') || localStorage.getItem('role') || '').toLowerCase();
-      const canSwitch = ['creator','admin','manager','super_admin','super admin'].indexOf(role) >= 0 || localStorage.getItem('ang_can_switch_mode') === '1';
-      if (!canSwitch) { window.scrollTo({ top:0, behavior:'smooth' }); return; }
-      const current = localStorage.getItem('ang_current_mode') || 'employee';
-      const next = current === 'employee' ? 'admin' : 'employee';
-      localStorage.setItem('ang_current_mode',next);
-      if (next === 'admin') window.location.href = 'admin.html?company_id=' + encodeURIComponent(localStorage.getItem('ang_company_id') || '') + '&id=' + encodeURIComponent(localStorage.getItem('emp_logged_in') || '');
-      else window.location.href = buildUrl('employee',localStorage.getItem('emp_logged_in') || '');
-    }
-
-    function logout(){
-      localStorage.removeItem('isLoggedIn');
-      localStorage.removeItem('loginId');
-      localStorage.removeItem('emp_logged_in');
-      localStorage.removeItem('emp_name');
-      goLogin();
-    }
-
-    function showMainOnly(id, name){
-      const loadingBox = document.getElementById('loadingBox');
-      const mainSection = document.getElementById('mainSection');
-      const mainTitle = document.getElementById('mainTitle');
-      const welcomeName = document.getElementById('welcomeName');
-      const globalUserName = document.getElementById('globalUserName');
-      const employeeIdText = document.getElementById('employeeIdText');
-
-      if (loadingBox) loadingBox.style.display = 'none';
-      if (mainSection) mainSection.style.display = 'block';
-
-      if (mainTitle) mainTitle.innerText = '員工首頁';
-
-      const displayName = name || id || '員工';
-      if (welcomeName) welcomeName.innerText = displayName;
-      if (globalUserName) globalUserName.innerText = displayName;
-      if (employeeIdText) employeeIdText.innerText = id || '-';
-    }
-
-    function setTodayStatus(text, sub){
-      const todayStatusText = document.getElementById('todayStatusText');
-      const todayStatusSub = document.getElementById('todayStatusSub');
-      if (todayStatusText) todayStatusText.innerText = text || '尚無狀態';
-      if (todayStatusSub) todayStatusSub.innerText = sub || '';
-    }
-
-    function renderMonthClock(list){
-      const box = document.getElementById('monthClockBox');
-      if (!box) return;
-
-      if (!Array.isArray(list) || !list.length) {
-        box.innerHTML = '<div class="empty">尚無本月打卡紀錄</div>';
+      if(mode==='month'){
+        // 月模式：直接顯示整個月的每日按鈕；不再另外加一排「週一～週日」。
+        var firstDay=dates.length?dates[0].getDay():0;
+        for(var s=0;s<firstDay;s++){
+          var sp=document.createElement('div');
+          sp.className='calendar-spacer';
+          wrap.appendChild(sp);
+        }
+        dates.forEach(function(dObj,idx){
+          var locked=isLocked||dObj.getTime()<=today.getTime();
+          var isWeekend=(dObj.getDay()===0||dObj.getDay()===6);
+          var btn=document.createElement('button');btn.type='button';
+          btn.className='weekday-chip weekday-chip-month'+(isWeekend?' weekday-chip-weekend':'')+(!locked&&state.selectedWeekdays.indexOf(idx)>-1?' active':'');
+          if(locked)btn.disabled=true;
+          btn.innerHTML='<span class="weekday-main">'+names[dObj.getDay()]+'</span><span class="weekday-date">'+(dObj.getMonth()+1)+'/'+dObj.getDate()+'</span>';
+          (function(i,lk){
+            btn.onclick=function(){
+              if(lk)return;
+              if(state.selectedWeekdays.indexOf(i)>-1){
+                state.selectedWeekdays=state.selectedWeekdays.filter(function(x){return x!==i});
+              }else{
+                state.selectedWeekdays.push(i);
+              }
+              renderWeekdayStrip();updateScheduleConfirmNote();
+            };
+          })(idx,locked);
+          wrap.appendChild(btn);
+        });
         return;
       }
 
-      box.innerHTML = list.map(function(item){
-        const d = item.date || item.日期 || '-';
-        const inTime = item.in || item.clockIn || item.上班 || '-';
-        const outTime = item.out || item.clockOut || item.下班 || '-';
-        const hours = item.hours || item.工時 || '-';
+      // 週模式：只保留一排「星期 + 日期」。
+      dates.forEach(function(dObj,idx){
+        var locked=isLocked||dObj.getTime()<=today.getTime();
+        var isWeekend=(dObj.getDay()===0||dObj.getDay()===6);
+        var btn=document.createElement('button');btn.type='button';
+        btn.className='weekday-chip'+(isWeekend?' weekday-chip-weekend':'')+(!locked&&state.selectedWeekdays.indexOf(idx)>-1?' active':'');
+        if(locked)btn.disabled=true;
+        btn.innerHTML='<span class="weekday-main">'+names[dObj.getDay()]+'</span><span class="weekday-date">'+(dObj.getMonth()+1)+'/'+dObj.getDate()+'</span>';
+        (function(i,lk){
+          btn.onclick=function(){
+            if(lk)return;
+            if(state.selectedWeekdays.indexOf(i)>-1){
+              state.selectedWeekdays=state.selectedWeekdays.filter(function(x){return x!==i});
+            }else{
+              state.selectedWeekdays.push(i);
+            }
+            renderWeekdayStrip();updateScheduleConfirmNote();
+          };
+        })(idx,locked);
+        wrap.appendChild(btn);
+      });
+    }
 
-        return `
-          <div class="list-item">
-            <div><strong>${escapeHtml(d)}</strong></div>
-            <div>上班：${escapeHtml(String(inTime))}</div>
-            <div>下班：${escapeHtml(String(outTime))}</div>
-            <div>工時：${escapeHtml(String(hours))}</div>
-          </div>
-        `;
+    function getSelectedScheduleSummary(){
+      var dates=getScheduleDatesForOffset(state.scheduleWeekOffset);var idxs=(state.selectedWeekdays||[]).slice().sort(function(a,b){return a-b});if(!idxs.length)return'';
+      return idxs.map(function(idx){var d=dates[idx];return['週日','週一','週二','週三','週四','週五','週六'][d.getDay()]+' '+(d.getMonth()+1)+'/'+d.getDate()}).join('、');
+    }
+
+    function updateScheduleConfirmNote(){
+      var note=qs('schedule-confirm-note');if(!note)return;
+      var cur=getSelectedScheduleSummary();var saved=(state.scheduleConfirmMap&&state.scheduleConfirmMap[state.scheduleWeekOffset])||'';
+      if(cur){note.innerText='目前選擇：'+cur+'｜按「確認日期選擇」完成';return}
+      if(saved){note.innerText='上次確認：'+saved;return}note.innerText='尚未選擇日期';
+    }
+
+    function confirmScheduleSelection(){
+      var summary=getSelectedScheduleSummary();if(!summary){showWarning('請先選擇日期');return}
+      var mode=getPreselectMode();
+      apiPost('employeePreselect',{id:state.employeeId,token:state.userToken,weekOffset:state.scheduleWeekOffset,weekdays:(state.selectedWeekdays||[]).slice(),mode:mode},function(res){
+        if(res&&res.ok){
+          state.scheduleConfirmMap[state.scheduleWeekOffset]=summary;
+          var now=new Date();var timeStr=(now.getMonth()+1)+'/'+now.getDate()+' '+pad2(now.getHours())+':'+pad2(now.getMinutes());
+          var noteEl=qs('schedule-confirm-note');if(noteEl)noteEl.textContent='✅ 已送出：'+summary+'（'+timeStr+'）';
+          // 儲存狀態到 localStorage
+          var id=state.employeeId;
+          try{localStorage.setItem('ang_schedule_confirm_map_'+id,JSON.stringify(state.scheduleConfirmMap))}catch(e){}
+          try{localStorage.setItem('ang_schedule_week_offset_'+id,String(state.scheduleWeekOffset))}catch(e){}
+          try{localStorage.setItem('ang_schedule_selected_'+id+'_'+state.scheduleWeekOffset,JSON.stringify(state.selectedWeekdays))}catch(e){}
+          updateScheduleConfirmNote();showSuccess('已確認：'+summary);
+        }else{showError((res&&res.message)||'預選送出失敗')}
+      });
+    }
+
+    /* ==================== 打卡 ==================== */
+
+    function renderClockRecordList(){
+      var wrap=qs('clock-record-list');if(!wrap)return;
+      var records=state.workRecords||[];
+      if(!records.length){
+        wrap.innerHTML='<div class="record-item"><div class="item-title">目前沒有打卡記錄</div></div>';
+        return;
+      }
+      wrap.innerHTML=records.map(function(rec){
+        var inT=rec.inTime||rec.clockIn||'—';
+        var outT=rec.outTime||rec.clockOut||'—';
+        var abnormal=isClockAbnormal(rec);
+        var html='<div class="record-item">';
+        html+='<div class="record-item-top"><div class="record-date">'+escapeHtml(rec.date||'')+(rec.weekday?' <small style="font-weight:400;color:var(--muted)">'+escapeHtml(rec.weekday)+'</small>':'')+'</div>';
+        html+='<div class="record-hours">'+formatHours(rec.hours)+'</div></div>';
+        html+='<div style="font-size:12px;color:var(--muted)">上班：'+escapeHtml(inT)+' ／ 下班：'+escapeHtml(outT)+'</div>';
+        if(abnormal)html+='<div style="font-size:11px;color:#b91c1c;margin-top:4px">⚠️ 異常'+(rec.lateFlag?' · 遲到'+(rec.lateMinutes||0)+'分':'')+(rec.earlyLeaveFlag?' · 早退'+(rec.earlyLeaveMinutes||0)+'分':'')+'</div>';
+        html+='</div>';
+        return html;
       }).join('');
     }
 
-    function escapeHtml(str){
-      return String(str || '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
+    function renderTodayClockCard(){
+      var box=qs('today-clock-card');if(!box)return;
+      var today=new Date();var todayKey=dateKey(today);
+      var rec=(state.workRecords||[]).find(function(r){return(r.date||'').replace(/\//g,'-')===todayKey})||null;
+      if(!rec){box.innerHTML='<div class="item-meta" style="text-align:center;padding:8px">今日暫無排班或打卡記錄</div>';return}
+      var statusText=rec.status||(rec.clockIn&&rec.clockOut?'已完成':rec.clockIn?'上班中':'缺卡');
+      var statusColor=statusText==='已完成'?'var(--ok)':statusText==='上班中'?'var(--warn)':'var(--danger)';
+      var abnormal=isClockAbnormal(rec);
+      var html='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">';
+      html+='<div class="status-mini"><small>班別</small><div class="v">'+esc(rec.shiftName||rec.shift||'—')+'</div></div>';
+      html+='<div class="status-mini"><small>狀態</small><div class="v" style="color:'+statusColor+'">'+esc(statusText)+(abnormal?'<span style="margin-left:4px;background:#fef2f2;color:#b91c1c;border-radius:8px;padding:1px 7px;font-size:10px">異常</span>':'')+'</div></div>';
+      html+='<div class="status-mini"><small>應上班</small><div class="v">'+esc(rec.shiftStart||rec.scheduledStart||'—')+'</div></div>';
+      html+='<div class="status-mini"><small>應下班</small><div class="v">'+esc(rec.shiftEnd||rec.scheduledEnd||'—')+'</div></div>';
+      html+='<div class="status-mini"><small>實際上班</small><div class="v">'+esc(rec.clockIn||'—')+'</div></div>';
+      html+='<div class="status-mini"><small>實際下班</small><div class="v">'+esc(rec.clockOut||'—')+'</div></div>';
+      html+='</div>';
+      if(rec.hours!==undefined)html+='<div class="notice-item" style="margin-bottom:8px"><div class="item-title">今日計薪工時：'+formatHours(rec.hours)+'</div></div>';
+      if(rec.lateFlag)html+='<div class="alert-item warn" style="margin-bottom:8px"><div class="item-title">⚠️ 遲到 '+(rec.lateMinutes||0)+' 分鐘</div></div>';
+      if(rec.earlyLeaveFlag)html+='<div class="alert-item warn" style="margin-bottom:8px"><div class="item-title">⚠️ 早退 '+(rec.earlyLeaveMinutes||0)+' 分鐘</div></div>';
+      if(!rec.clockOut&&rec.clockIn){
+        html+='<button class="btn-ghost" type="button" style="margin-top:4px" onclick="applyMissingClockOut()">申請補下班卡</button>';
+      }
+      box.innerHTML=html;
+      var anomalyCount=(state.workRecords||[]).filter(function(r){return isClockAbnormal(r)}).length;
+      setText('home-pending-count',anomalyCount+'件');
     }
 
-    function loadTodayStatus(id){
-      if (!google || !google.script || !google.script.run) {
-        setTodayStatus('無法載入', 'google.script.run 不存在');
+    function applyMissingClockOut(){
+      var today=new Date();var todayStr=dateKey(today);
+      nav('clock');switchClockTab('apply');
+      if(qs('clock-type'))qs('clock-type').value='下班';
+      if(qs('clock-fix-date'))qs('clock-fix-date').value=todayStr;
+    }
+
+    function switchClockTab(tab){
+      state.clockTab=tab;
+      if(qs('clock-tab-record'))qs('clock-tab-record').className=tab==='record'?'active':'';
+      if(qs('clock-tab-apply'))qs('clock-tab-apply').className=tab==='apply'?'active':'';
+      if(qs('clock-record-view'))qs('clock-record-view').style.display=tab==='record'?'':'none';
+      if(qs('clock-apply-view'))qs('clock-apply-view').style.display=tab==='apply'?'':'none';
+    }
+
+    function saveClockRecord(){
+      var type=qs('clock-type')?qs('clock-type').value:'',note=qs('clock-note')?qs('clock-note').value.trim():'',date=qs('clock-fix-date')?qs('clock-fix-date').value:'',hour=qs('clock-fix-hour')?qs('clock-fix-hour').value:'',minute=qs('clock-fix-minute')?qs('clock-fix-minute').value:'';
+      if(!date){showWarning('請先選擇補打卡日期');return}
+      apiPost('employeeClockFix',{id:state.employeeId,token:state.userToken,type:type,timeVal:date+'T'+hour+':'+minute,note:note},function(res){if(res&&res.ok){if(qs('clock-note'))qs('clock-note').value='';showSuccess(res.message||'補打卡申請已送出');loadBootstrapData()}});
+    }
+
+    /* ==================== 薪資 ==================== */
+
+    function renderSalaryDayPayList(){
+      var wrap=qs('salary-day-pay-list');if(!wrap)return;
+      wrap.innerHTML='';
+      var records=state.workRecords||[];
+      if(!records.length){
+        wrap.innerHTML='<div class="day-pay-item"><div class="item-title">目前沒有薪資資料</div></div>';
         return;
       }
+      var maxPay=Math.max.apply(null,records.map(function(r){return Math.round(Number(r.hours||0)*HOURLY_RATE)}))||1;
+      var total=0;
+      var html='';
+      records.forEach(function(rec){
+        var pay=Math.round(Number(rec.hours||0)*HOURLY_RATE);
+        total+=pay;
+        var pct=Math.round(pay/maxPay*100);
+        html+='<div class="dpay-row">'
+          +'<div class="dpay-date"><div class="d">'+escapeHtml(formatYmdZh(rec.date))+'</div><div class="t">'+escapeHtml(rec.weekday||'')+'</div></div>'
+          +'<div class="dpay-mid">'
+          +'<div class="dpay-bar-track"><div class="dpay-bar-fill" style="width:'+pct+'%"></div></div>'
+          +'<div class="dpay-bar-labels"><span>'+escapeHtml(rec.inTime||'—')+' ～ '+escapeHtml(rec.outTime||'—')+'</span><span>'+formatHours(rec.hours)+'</span></div>'
+          +'</div>'
+          +'<div class="dpay-amount'+(pay===0?' zero':'')+'">'+formatMoney(pay)+'</div>'
+          +'</div>';
+      });
+      html+='<div class="dpay-total-row"><div class="label">本月累計</div><div class="value">'+formatMoney(total)+'</div></div>';
+      wrap.innerHTML=html;
+    }
 
-      google.script.run
-        .withSuccessHandler(function(res){
-          if (!res || !res.ok) {
-            setTodayStatus('讀取失敗', (res && (res.msg || res.message)) || '無法取得今日狀態');
-            return;
+    function sumHoursBetween(records,startDate,endDate){var list=Array.isArray(records)?records:[];var total=0;for(var i=0;i<list.length;i++){var d=parseYmd((list[i]||{}).date);if(d&&d>=startDate&&d<=endDate)total+=Number((list[i]||{}).hours||0)}return Math.round(total*100)/100}
+
+    function getPreselectStartDayOfWeek(){
+      var map={'日':0,'一':1,'二':2,'三':3,'四':4,'五':5,'六':6};
+      var ws=String((state.adminSalaryConfig||{}).weekStart||'').trim();
+      var lastChar=ws.slice(-1);
+      return map.hasOwnProperty(lastChar)?map[lastChar]:1;
+    }
+
+    function getWeekHours(){
+      var now=new Date();var cfg=state.adminSalaryConfig||{};
+      if(cfg.mode==='month'){
+        var monthStart=parseInt(String(cfg.monthStart||'1').replace(/[^0-9]/g,''),10)||1;
+        var y=now.getFullYear(),m=now.getMonth();
+        var sDate=new Date(y,m,monthStart,0,0,0,0);
+        if(now.getDate()<monthStart)sDate=new Date(y,m-1,monthStart,0,0,0,0);
+        var eDate=new Date(sDate.getFullYear(),sDate.getMonth()+1,monthStart-1,23,59,59,999);
+        return sumHoursBetween(state.workRecords,sDate,eDate);
+      }
+      var startDow=getPreselectStartDayOfWeek();
+      var curDow=now.getDay();var diff=(curDow-startDow+7)%7;
+      var ws=new Date(now);ws.setHours(0,0,0,0);ws.setDate(now.getDate()-diff);
+      var we=new Date(ws);we.setDate(ws.getDate()+6);we.setHours(23,59,59,999);
+      return sumHoursBetween(state.workRecords,ws,we);
+    }
+
+    function getMonthHours(){var now=new Date();return sumHoursBetween(state.workRecords,startOfMonth(now),endOfMonth(now))}
+
+    function syncSalaryEstimate(){
+      var wP=getWeekHours()*HOURLY_RATE,mP=getMonthHours()*HOURLY_RATE;
+      var cfg=state.adminSalaryConfig||{mode:'week'};var isM=cfg.mode==='month';
+      setText('salary-estimate-label',isM?'一個月預估':'一週預估');
+      setText('salary-estimate-value',formatMoney(isM?mP:wP));
+      setText('salary-estimate-note',isM?'依管理員設定的每月起算區間估算。':'依管理員設定的週起算區間估算。');
+    }
+
+
+    function fillSalaryHistorySelect(){
+      var sel=qs('salary-history-select');
+      if(!sel)return;
+      sel.innerHTML='';
+      var cfg=state.adminSalaryConfig||{mode:'week'};
+      var raw=Array.isArray(state.salaryHistory)?state.salaryHistory:[];
+      var filtered=raw.filter(function(item){
+        var key=String((item&&item.key)||'');
+        if(!key)return true;
+        return String(cfg.mode||'week').toLowerCase()==='month' ? key.indexOf('month-')===0 : key.indexOf('week-')===0;
+      });
+      if(!filtered.length&&raw.length)filtered=raw;
+      filtered.forEach(function(item,idx){
+        var op=document.createElement('option');
+        op.value=item.key||String(idx);
+        op.textContent=item.label||item.periodLabel||item.month||item.key||('薪資紀錄 '+(idx+1));
+        sel.appendChild(op);
+      });
+      showSalaryHistoryDetail();
+    }
+
+    function updateSalaryCycleDisplay(){
+      var el=qs('salary-cycle-display');
+      if(!el)return;
+      var cfg=state.adminSalaryConfig||{mode:'week',weekStart:'週一',monthStart:'1號'};
+      var mode=String(cfg.mode||'week').toLowerCase();
+      el.innerText=mode==='month'
+        ? '由管理員設定｜月結｜每月 '+(cfg.monthStart||'1號')+' 起算'
+        : '由管理員設定｜週結｜'+(cfg.weekStart||'週一')+' 起算';
+    }
+
+    function showSalaryHistoryDetail(){
+      var sel=qs('salary-history-select');
+      var detail=qs('salary-history-detail');
+      if(!sel||!detail)return;
+      if(!sel.value){
+        detail.innerText='選取一筆已發薪資後，這裡會顯示摘要。';
+        return;
+      }
+      var raw=Array.isArray(state.salaryHistory)?state.salaryHistory:[];
+      var item=raw.find(function(x,idx){return String(x.key||idx)===String(sel.value);});
+      if(!item){detail.innerText='查無資料';return;}
+      var amount=item.amount!==undefined?formatMoney(item.amount):(item.totalPay!==undefined?formatMoney(item.totalPay):'');
+      var issue=item.issueDate||item.paidDate||item.date||'';
+      var text=(item.label||item.periodLabel||item.month||item.key||'薪資紀錄');
+      if(amount)text+='｜'+amount;
+      if(issue)text+='｜發薪日 '+issue;
+      if(item.detail)text+='｜'+item.detail;
+      detail.innerText=text;
+    }
+
+    function downloadSalarySlip(){
+      var cfg=state.adminSalaryConfig||{};
+      var month=qs('slipMonth')?qs('slipMonth').value:'';
+      if(!month){Swal.fire('提醒',cfg.mode==='month'?'請選擇月份':'請先選擇對應月份作為查詢起點','warning');return}
+      if(!gas()){Swal.fire('提醒','非正式環境','warning');return}
+      Swal.fire({title:'載入中.',allowOutsideClick:false,didOpen:function(){Swal.showLoading()}});
+      google.script.run.withSuccessHandler(function(r){
+        Swal.close();if(!r||!r.ok){Swal.fire('提醒',r?r.message:'查無資料','warning');return}
+        var s=r.slip,d=s.detail||{};
+        var periodLabel=s.periodLabel||s.month||month;
+        var html='<div style="text-align:left;font-size:14px;line-height:2">';
+        html+='<b>員工：</b>'+s.empName+' ('+s.empId+')<br>';
+        html+='<b>'+(cfg.mode==='month'?'區間':'薪資單')+'：</b>'+periodLabel+'<br><hr>';
+        html+='<b>底薪：</b>$'+(d.baseSalary||0).toLocaleString()+'<br>';
+        html+='<b>加班費：</b>$'+(d.overtimePay||0).toLocaleString()+'<br>';
+        html+='<b>餐費：</b>$'+(d.mealAllowance||0).toLocaleString()+'<br>';
+        html+='<b>遲到扣款：</b>-$'+(d.lateDeduction||0).toLocaleString()+'<br>';
+        html+='<b>請假扣款：</b>-$'+(d.leaveDeduction||0).toLocaleString()+'<br>';
+        if(d.extras&&d.extras.length){d.extras.forEach(function(e){html+='<b>'+e.type+(e.name?' '+e.name:'')+'：</b>'+(e.isDeduct?'-':'')+'$'+Math.abs(e.amount||0).toLocaleString()+'<br>'})}
+        html+='<hr><b style="font-size:18px;color:#c45a10">實發合計：$'+(s.totalPay||0).toLocaleString()+'</b></div>';
+        Swal.fire({title:'薪資單',html:html,width:360,confirmButtonText:'關閉'});
+      }).withFailureHandler(function(e){Swal.close();Swal.fire('錯誤',String(e),'error')}).downloadSalarySlip({id:currentUserId,token:currentUserToken,month:month,mode:(cfg.mode||'week'),weekStart:(cfg.weekStart||'週一'),monthStart:(cfg.monthStart||'1號')});
+    }
+
+    /* ==================== 上傳 ==================== */
+
+    function pickUploadType(type,hint){
+      nav('upload');state.uploadType=type;
+      if(qs('u-type'))qs('u-type').value=type;if(qs('u-note'))qs('u-note').placeholder=hint||'請輸入補充說明';
+      document.querySelectorAll('.upload-type-btn').forEach(function(el){el.classList.remove('active')});
+      var target=qs('upload-type-'+type);if(target)target.classList.add('active');
+      if(qs('reimbursement-box'))qs('reimbursement-box').style.display=type==='公費請款（預先發）'?'block':'none';
+    }
+
+    function toggleLocation(){
+      var btn=qs('btn-get-location');var isActive=btn&&btn.classList.contains('active');
+      if(isActive){
+        if(btn)btn.classList.remove('active');
+        var note=qs('u-note');if(note)note.value=String(note.value||'').replace(/\n?位置：[-\d.,]+, [-\d.,]+/g,'').trim();
+        return;
+      }
+      if(!navigator.geolocation){showWarning('此裝置不支援定位');return}
+      navigator.geolocation.getCurrentPosition(function(pos){
+        var txt='位置：'+pos.coords.latitude.toFixed(4)+', '+pos.coords.longitude.toFixed(4);
+        var cur=qs('u-note')?qs('u-note').value.trim():'';
+        if(qs('u-note'))qs('u-note').value=cur?(cur+'\n'+txt):txt;
+        if(qs('u-type')&&!qs('u-type').value)pickUploadType('位置資訊（外勤回報用）','例如：外勤地點、到達時間');
+        if(btn)btn.classList.add('active');
+        showSuccess('已取得位置資訊');
+      },function(){showError('無法取得位置資訊')});
+    }
+
+    function toggleReimbursementBtn(){
+      var btn=qs('btn-reimbursement');var box=qs('reimbursement-box');
+      var isActive=btn&&btn.classList.contains('active');
+      if(isActive){
+        if(btn)btn.classList.remove('active');
+        if(box)box.style.display='none';
+      }else{
+        if(btn)btn.classList.add('active');
+        if(box)box.style.display='block';
+      }
+    }
+
+    function toggleReimbursement(){var box=qs('reimbursement-box');if(box)box.style.display=box.style.display==='block'?'none':'block'}
+    function updateFileName(input){setText('f-name',(input&&input.files&&input.files[0])?input.files[0].name:'尚未選擇檔案')}
+
+    function submitUpload(){
+      var type=qs('u-type')?qs('u-type').value.trim():'',note=qs('u-note')?qs('u-note').value.trim():'';
+      var fileInput=qs('u-file'),file=fileInput&&fileInput.files?fileInput.files[0]:null;
+      if(!type){showWarning('請先選擇上傳項目');return}
+      var extra={};if(type==='公費請款（預先發）'){extra.amount=qs('r-amount')?qs('r-amount').value.trim():'';extra.item=qs('r-item')?qs('r-item').value.trim():''}
+      function clearForm(){if(qs('u-type'))qs('u-type').value='';if(qs('u-note'))qs('u-note').value='';if(qs('u-file'))qs('u-file').value='';if(qs('r-amount'))qs('r-amount').value='';if(qs('r-item'))qs('r-item').value='';setText('f-name','尚未選擇檔案');document.querySelectorAll('.upload-type-btn').forEach(function(el){el.classList.remove('active')});}
+      // ANG.lo HR System Deploy Version: 129 - Fix 5: show Drive link on success, real error on failure
+      function send(payload){
+        apiPost('employeeUpload',Object.assign({id:state.employeeId,token:state.userToken,type:type,note:note},extra,payload||{}),function(res){
+          if(!res||!res.ok){showError((res&&res.message)||'上傳失敗');return;}
+          clearForm();
+          var msg=(res.message)||'資料已送出';
+          if(res.attachmentUrl){
+            Swal.fire({title:'上傳成功',html:esc(msg)+(res.fileName?'<br>檔名：'+esc(res.fileName):'')+'<br><a href="'+esc(res.attachmentUrl)+'" target="_blank" style="color:var(--emp-deep)">📎 開啟 Drive 檔案</a>',icon:'success'});
+          }else{
+            showSuccess(msg);
           }
-
-          const text =
-            res.text ||
-            res.statusText ||
-            res.status ||
-            '今日狀態已載入';
-
-          const sub =
-            res.subText ||
-            res.message ||
-            '已完成今日資料讀取';
-
-          setTodayStatus(text, sub);
-        })
-        .withFailureHandler(function(err){
-          setTodayStatus('讀取失敗', err && err.message ? err.message : String(err || 'error'));
-        })
-        .get_today_status(id);
+          loadBootstrapData();
+        });
+      }
+      if(file){var reader=new FileReader();reader.onload=function(e){var result=String((e&&e.target&&e.target.result)||'');send({fileName:file.name,fileMime:file.type,fileData:result.indexOf(',')>-1?result.split(',')[1]:result})};reader.onerror=function(){showError('檔案讀取失敗')};reader.readAsDataURL(file)}else{send({})}
     }
 
-    function loadMonthClock(id){
-      if (!google || !google.script || !google.script.run) {
-        renderMonthClock([]);
+    /* ==================== iOS 捷徑 ==================== */
+
+    var _shortcutJsonData = null;
+
+    function generateShortcutJson(){
+      var action=(qs('shortcut-action-select')||{}).value||'clock_in';
+      apiPost('generateIosShortcutJson',{id:state.employeeId,token:state.userToken,shortcutAction:action},function(res){
+        if(res&&res.ok&&res.json){
+          _shortcutJsonData=res.json;
+          var box=qs('shortcut-json-box'),txt=qs('shortcut-json-text');
+          if(box)box.style.display='';
+          if(txt)txt.value=res.json;
+          showSuccess('JSON 設定已產生，可複製後貼入捷徑 App');
+        }
+      });
+    }
+
+    function copyShortcutJson(){
+      var txt=qs('shortcut-json-text');
+      var content=txt?txt.value:(_shortcutJsonData||'');
+      if(!content){showError('請先點擊「產生 JSON 設定」');return}
+      if(navigator.clipboard&&navigator.clipboard.writeText){
+        navigator.clipboard.writeText(content).then(function(){showSuccess('JSON 已複製到剪貼簿')}).catch(function(){fallbackCopy_(content)});
+      }else{fallbackCopy_(content)}
+    }
+
+    function fallbackCopy_(text){
+      var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.focus();ta.select();
+      try{document.execCommand('copy');showSuccess('JSON 已複製到剪貼簿')}catch(e){showError('複製失敗，請手動複製')}
+      document.body.removeChild(ta);
+    }
+
+    function rebindDevice(){
+      var action=(qs('shortcut-action-select')||{}).value||'clock_in';
+      apiPost('generateIosShortcutJson',{id:state.employeeId,token:state.userToken,shortcutAction:action},function(res){
+        if(res&&res.ok&&res.json){
+          _shortcutJsonData=res.json;
+          var box=qs('shortcut-json-box'),txt=qs('shortcut-json-text');
+          if(box)box.style.display='';
+          if(txt)txt.value=res.json;
+          showSuccess('裝置已重新綁定，請重新複製 JSON 設定至捷徑 App');
+        }
+      });
+    }
+
+    function sendClockFromShortcut(){
+      var action=(qs('shortcut-action-select')||{}).value||'clock_in';
+      var isFieldMode=qs('shortcut-field-mode')&&qs('shortcut-field-mode').checked;
+      var needsLocation=(action==='clock_in'||action==='overtime')&&!isFieldMode;
+
+      if(needsLocation){
+        if(!navigator.geolocation){showError('此裝置不支援定位功能');return}
+        Swal.fire({title:'取得位置中...',allowOutsideClick:false,didOpen:function(){Swal.showLoading()}});
+        navigator.geolocation.getCurrentPosition(
+          function(pos){
+            Swal.close();
+            var lat=pos.coords.latitude;
+            var lng=pos.coords.longitude;
+            _doSendClock(action,lat,lng,false);
+          },
+          function(err){
+            Swal.close();
+            showError('無法取得位置：'+(err.message||'請確認定位權限已開啟'));
+          },
+          {timeout:10000,maximumAge:0,enableHighAccuracy:true}
+        );
+      }else{
+        _doSendClock(action,null,null,isFieldMode);
+      }
+    }
+
+    function _doSendClock(action,lat,lng,isFieldMode){
+      apiPost('employeeClock',{id:state.employeeId,token:state.userToken,action:action,source:isFieldMode?'field':'web',device:'web_shortcut',latitude:lat,longitude:lng,isFieldMode:isFieldMode},function(res){
+        if(res&&res.ok){showSuccess(res.message||'打卡成功');loadBootstrapData()}
+      });
+    }
+
+    /* ==================== 留言 ==================== */
+
+    function submitMessage(){
+      var input=qs('messageInput'),text=input?input.value.trim():'';
+      if(!text){showWarning('請輸入留言內容');return}
+      apiPost('employeeMessage',{id:state.employeeId,token:state.userToken,text:text},function(res){if(res&&res.ok){if(input)input.value='';showSuccess(res.message||'留言已送出');loadBootstrapData()}});
+    }
+
+    function submitLeave(){
+      var reason=qs('leave-reason')?qs('leave-reason').value.trim():'';
+      var start=getDateTimeFromInputs_('leave-start-date','leave-start-hour','leave-start-minute');
+      var end=getDateTimeFromInputs_('leave-end-date','leave-end-hour','leave-end-minute');
+      if(!start||!end){showWarning('請先選擇開始/結束時間');return}if(end<=start){showWarning('結束時間必須大於開始時間');return}
+      normalizeLeaveV4Inputs_();var selected=leaveTypes.find(function(item){return item.key===state.selectedLeaveType});if(!selected){showWarning('請先選擇假別');return}
+      var breakCount=Number((qs('leave-break-select')||{}).value||0);
+      apiPost('employeeLeave',{id:state.employeeId,token:state.userToken,startDate:qs('leave-start-date').value,endDate:qs('leave-end-date').value,startDateTime:qs('leave-start-date').value+' '+qs('leave-start-hour').value+':'+qs('leave-start-minute').value,endDateTime:qs('leave-end-date').value+' '+qs('leave-end-hour').value+':'+qs('leave-end-minute').value,days:Number(state.leaveDays||0),hours:Number(state.leaveHours||0),reason:reason,breakCount:breakCount,items:[{display:selected.key,raw:selected.raw,days:Number(state.leaveDays||0),hours:Number(state.leaveHours||0)}]},function(res){
+        if(res&&res.ok){if(qs('leave-reason'))qs('leave-reason').value='';state.selectedLeaveType='事假';state.leaveDays=1;state.leaveHours=0;if(qs('leave-days-input'))qs('leave-days-input').value='1';if(qs('leave-hours-input'))qs('leave-hours-input').value='0.0';renderLeaveGrid();syncLeaveSummary();showSuccess(res.message||'請假申請已送出');loadBootstrapData()}
+      });
+    }
+
+    // ==================== 渲染 ====================
+    var REVIEW_EVENTS_BOUND = false;
+    var REVIEW_BUSY = false;
+
+    // ANG.lo HR System Deploy Version: 129 - stricter blank-card filter
+    function hasReviewContent_(x){
+      if(!x) return false;
+      var status=String(x.status||x.review_status||'').toLowerCase().trim();
+      if(['approved','rejected','pass','deny','通過','退回','已通過','已退回'].indexOf(status)>-1) return false;
+      var id=String(x.rowKey||x.id||x.no||x.requestId||x.leave_id||x.clockfix_id||x.upload_id||x.salary_id||'').trim();
+      var emp=String(x.employee_id||x.employeeId||x.empId||x.user_id||x.empName||x.name||x.applicant||'').trim();
+      var main=String(x.title||x.type||x.leave_type||x.kind||x.reason||x.content||x.date||x.applyDate||x.start_date||x.month||'').trim();
+      return !!(id && (emp || main));
+    }
+
+    function renderReviewList(tid, items, canAct){
+      var box = qs(tid);
+      if (!box) return;
+
+      var list = (Array.isArray(items) ? items : []).filter(hasReviewContent_);
+      var card = box.closest('[data-autohide="1"]');
+
+      if (!list.length) {
+        box.innerHTML = '<div style="padding:8px 0;font-size:14px;color:var(--muted)">目前沒有資料</div>';
+        if (card) card.style.display = 'none';
         return;
       }
 
-      google.script.run
-        .withSuccessHandler(function(res){
-          if (!res || !res.ok) {
-            renderMonthClock([]);
-            return;
+      if (card) card.style.display = '';
+
+      var MAX = 5;
+      var shown = list.slice(0, MAX);
+      var html = shown.map(function(item, idx){
+        return _buildReviewCard_(item, idx, tid, canAct);
+      }).join('');
+
+      if (list.length > MAX) {
+        html += ''
+          + '<button class="btn-ghost js-show-all-reviews"'
+          + ' style="margin-top:6px"'
+          + ' data-tid="' + escAttr(tid) + '">'
+          + '顯示更多（共 ' + list.length + ' 筆）'
+          + '</button>';
+      }
+
+      box.innerHTML = html;
+    }
+
+    function _buildReviewCard_(item, idx, tid, canAct){
+      var step = item.currentStep ? '（待：' + esc(item.currentStep) + '）' : '';
+      var act = '';
+
+      if (canAct !== false && item.status === 'pending') {
+        act =
+          '<div class="review-actions">' +
+            '<button class="btn-success js-review-action" data-tid="' + escAttr(tid) + '" data-idx="' + idx + '" data-action="approved">通過</button>' +
+            '<button class="btn-danger js-review-action" data-tid="' + escAttr(tid) + '" data-idx="' + idx + '" data-action="rejected">退回</button>' +
+          '</div>';
+      }
+
+      var empName = esc(item.empName || item.name || item.applicant || '');
+      var applyDate = esc(item.date || item.applyDate || '');
+      var reason = esc(item.reason || item.note || item.desc || '');
+      var meta = '';
+
+      if (empName) meta += '<div class="item-meta">👤 ' + empName + '</div>';
+      if (applyDate) meta += '<div class="item-meta">📅 ' + applyDate + '</div>';
+      if (reason) meta += '<div class="item-meta" style="margin-top:4px;white-space:pre-wrap">💬 ' + reason + '</div>';
+
+      return ''
+        + '<div class="review-card">'
+        +   '<div class="mini-row">'
+        +     '<div class="item-title">' + esc(item.title || '') + '</div>'
+        +     '<span class="badge ' + statusCls(item.status) + '">' + statusLbl(item.status) + step + '</span>'
+        +   '</div>'
+        +   meta
+        +   act
+        + '</div>';
+    }
+
+    function bindReviewListEvents(){
+      if (REVIEW_EVENTS_BOUND) return;
+      REVIEW_EVENTS_BOUND = true;
+
+      document.addEventListener('click', function(e){
+        var moreBtn = e.target.closest('.js-show-all-reviews');
+        if (moreBtn) {
+          var tid = moreBtn.getAttribute('data-tid') || '';
+          if (tid) showAllReviews(tid);
+          return;
+        }
+
+        var actBtn = e.target.closest('.js-review-action');
+        if (actBtn) {
+          if (REVIEW_BUSY) return;
+
+          var tid2 = actBtn.getAttribute('data-tid') || '';
+          var idx = Number(actBtn.getAttribute('data-idx') || -1);
+          var action = actBtn.getAttribute('data-action') || '';
+
+          if (!tid2 || idx < 0 || !action) return;
+
+          REVIEW_BUSY = true;
+          Promise.resolve(doReview(tid2, idx, action))
+            .catch(function(err){
+              console.error(err);
+            })
+            .finally(function(){
+              REVIEW_BUSY = false;
+            });
+        }
+      }, false);
+    }
+
+    function showAllReviews(tid){
+      var list = getArr(tid);
+      var box = qs(tid);
+      if (!box) return;
+
+      list = Array.isArray(list) ? list : [];
+      if (!list.length) {
+        box.innerHTML = '<div style="padding:8px 0;font-size:14px;color:var(--muted)">目前沒有資料</div>';
+        return;
+      }
+
+      box.innerHTML = list.map(function(item, idx){
+        return _buildReviewCard_(item, idx, tid, true);
+      }).join('');
+    }
+
+    function renderPublishList(tid, items){
+      var box = qs(tid);
+      if (!box) return;
+
+      var list = Array.isArray(items) ? items : [];
+      if (!list.length) {
+        box.innerHTML = '<div class="notice-item"><div class="item-title">目前沒有資料</div></div>';
+        return;
+      }
+
+      box.innerHTML = list.map(function(i){
+        return ''
+          + '<div class="notice-item">'
+          +   '<div class="item-title">' + esc(i.title || '') + '</div>'
+          +   '<div class="item-meta">' + esc(i.desc || i.period || '') + '</div>'
+          + '</div>';
+      }).join('');
+    }
+
+    /* ==================== 月曆 ==================== */
+
+    function seedCalendarEvents(leaveRows){
+      state.events=[];
+      (state.workRecords||[]).forEach(function(item){var note=String(item.note||'');var isRest=!item.inTime&&!item.outTime&&note.indexOf('休')>-1;state.events.push({title:isRest?'休息':'上班',start:item.date,allDay:true,backgroundColor:isRest?'#cbd5e1':getEmployeeColor(),borderColor:isRest?'#cbd5e1':getEmployeeColor(),extendedProps:{type:isRest?'rest':'shift'}})});
+      (Array.isArray(leaveRows)?leaveRows:[]).forEach(function(item){var start=item.startDate||item.date;if(!start)return;state.events.push({title:item.type||item.display||'請假',start:start,allDay:true,backgroundColor:'rgba('+getEmployeeRgb()+',.18)',borderColor:'rgba('+getEmployeeRgb()+',.26)',textColor:getEmployeeTextColor(),extendedProps:{type:'leave'}})});
+    }
+
+    function normalizeCalendarEvent(ev){var copy=Object.assign({},ev);if(!copy.backgroundColor&&copy.extendedProps&&copy.extendedProps.type==='shift'){copy.backgroundColor=getEmployeeColor();copy.borderColor=getEmployeeColor()}return copy}
+
+
+
+    /* ==================== 空白月曆保底 ==================== */
+    function toDateOnly_(d){
+      var x=new Date(d||new Date());
+      if(isNaN(x.getTime()))x=new Date();
+      x.setHours(0,0,0,0);
+      return x;
+    }
+
+    function buildEmptyCalendarHtml_(label,baseDate){
+      var base=toDateOnly_(baseDate);
+      var year=base.getFullYear();
+      var month=base.getMonth();
+      var first=new Date(year,month,1);
+      var start=new Date(first);
+      start.setDate(first.getDate()-first.getDay());
+      var today=toDateOnly_(new Date());
+      var names=['日','一','二','三','四','五','六'];
+      var html='<div class="ang-empty-calendar">'
+        + '<div class="ang-empty-calendar-head"><span>'+esc(label||((month+1)+' 月'))+'</span><span class="ang-empty-calendar-note">尚無資料｜空白日曆</span></div>'
+        + '<div class="ang-empty-calendar-grid">';
+      names.forEach(function(n){html+='<div class="ang-empty-calendar-wd">週'+n+'</div>';});
+      for(var i=0;i<42;i++){
+        var d=new Date(start);d.setDate(start.getDate()+i);
+        var cls='ang-empty-calendar-day';
+        if(d.getMonth()!==month)cls+=' out';
+        if(d.getTime()===today.getTime())cls+=' today';
+        html+='<div class="'+cls+'"><span>'+(d.getDate())+'</span></div>';
+      }
+      html+='</div></div>';
+      return html;
+    }
+
+    function getMainCalendarBaseDate_(){
+      try{
+        var arr=getScheduleDatesForOffset(state.scheduleWeekOffset||0);
+        if(arr&&arr.length)return arr[0];
+      }catch(e){}
+      return new Date();
+    }
+
+    function renderEmptyCalendar(containerId,label,baseDate){
+      var el=qs(containerId);
+      if(!el)return;
+      // FullCalendar 已成功初始化時，不覆蓋它；只在沒讀到 / 沒載入 / 初始化失敗時補空白日曆。
+      if(el.classList.contains('fc')&&el.querySelector('.fc-view-harness'))return;
+      el.innerHTML=buildEmptyCalendarHtml_(label,baseDate);
+      el.setAttribute('data-empty-calendar','1');
+    }
+
+    function renderAllEmptyCalendars(){
+      renderEmptyCalendar('cal-main','排班月曆',getMainCalendarBaseDate_());
+      renderEmptyCalendar('cal-clock','打卡月曆',new Date());
+      renderEmptyCalendar('cal-salary-month','薪資月曆',new Date());
+      renderEmptyCalendar('cal-upload','申請記錄月曆',new Date());
+    }
+
+    function ensureCalendarsHaveBlankView(){
+      setTimeout(function(){
+        ['cal-main','cal-clock','cal-salary-month','cal-upload'].forEach(function(id){
+          var el=qs(id);
+          if(!el)return;
+          if(el.classList.contains('fc')&&el.querySelector('.fc-view-harness'))return;
+          if(id==='cal-main')renderEmptyCalendar(id,'排班月曆',getMainCalendarBaseDate_());
+          else if(id==='cal-clock')renderEmptyCalendar(id,'打卡月曆',new Date());
+          else if(id==='cal-salary-month')renderEmptyCalendar(id,'薪資月曆',new Date());
+          else renderEmptyCalendar(id,'申請記錄月曆',new Date());
+        });
+      },80);
+    }
+
+    function renderShiftLegend(){
+      var box=qs('shift-legend');if(!box)return;
+      var shifts=state.shiftTypes||[];
+      if(!shifts.length){box.innerHTML='';return;}
+      box.innerHTML=shifts.map(function(s){
+        var bg=s.color||'#888888';
+        return '<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:12px;font-size:12px;font-weight:700;background:'+esc(bg)+';color:#fff;">'+esc(s.name)+'</span>';
+      }).join('');
+    }
+
+    function initCalendars(){
+      if(typeof FullCalendar==='undefined'){renderAllEmptyCalendars();return;}
+      try{
+        var ms={initialView:'dayGridMonth',locale:'zh-tw',height:'auto',contentHeight:'auto',handleWindowResize:true,events:[]};
+        var cMain=qs('cal-main'),cSalary=qs('cal-salary-month'),cClock=qs('cal-clock'),cUpload=qs('cal-upload');
+        if(cMain)cMain.innerHTML='';
+        if(cSalary)cSalary.innerHTML='';
+        if(cClock)cClock.innerHTML='';
+        if(cUpload)cUpload.innerHTML='';
+        if(cMain){calMain=new FullCalendar.Calendar(cMain,ms);calMain.render();}
+        if(cSalary){calSalaryMonth=new FullCalendar.Calendar(cSalary,ms);calSalaryMonth.render();}
+        if(cClock){calClock=new FullCalendar.Calendar(cClock,ms);calClock.render();}
+        if(cUpload){calUpload=new FullCalendar.Calendar(cUpload,ms);calUpload.render();}
+        ensureCalendarsHaveBlankView();
+      }catch(e){
+        try{console.warn('initCalendars fallback',e)}catch(_e){}
+        renderAllEmptyCalendars();
+      }
+    }
+
+    function refreshCalendars(){
+      if(calMain){
+        calMain.removeAllEvents();
+        (state.publishedScheduleEvents||[]).forEach(function(ev){calMain.addEvent(ev)});
+        (state.events||[]).forEach(function(ev){if(ev.extendedProps&&ev.extendedProps.type==='leave')calMain.addEvent(normalizeCalendarEvent(ev))});
+      }
+      if(calSalaryMonth){
+        calSalaryMonth.removeAllEvents();
+        var monthRecs=state.workRecords||[];
+        var monthTotalHours=monthRecs.reduce(function(s,r){return s+Number(r.hours||0)},0);
+        var mSalary=Number(state.monthlySalary||0);
+        monthRecs.forEach(function(rec){
+          var dh=Number(rec.hours||0);
+          var pay=mSalary&&monthTotalHours>0?Math.round(mSalary/monthTotalHours*dh):Math.round(dh*HOURLY_RATE);
+          if(!dh)return;
+          calSalaryMonth.addEvent({title:formatMoney(pay),start:rec.date,allDay:true,backgroundColor:'rgba('+getEmployeeRgb()+',.14)',borderColor:'rgba('+getEmployeeRgb()+',.18)',textColor:getEmployeeTextColor()});
+        });
+      }
+      if(calClock){
+        calClock.removeAllEvents();
+        (state.workRecords||[]).forEach(function(rec){
+          if(rec.inTime)calClock.addEvent({title:'上班 '+rec.inTime,start:rec.date,allDay:true,backgroundColor:'#10b981',textColor:'#fff'});
+          if(rec.outTime)calClock.addEvent({title:'下班 '+rec.outTime,start:rec.date,allDay:true,backgroundColor:'#ef4444',textColor:'#fff'});
+          if(rec.overtimeIn)calClock.addEvent({title:'加班 '+rec.overtimeIn,start:rec.date,allDay:true,backgroundColor:'#f59e0b',textColor:'#fff'});
+        });
+        (state.events||[]).forEach(function(ev){if(ev.extendedProps&&ev.extendedProps.type==='leave')calClock.addEvent(normalizeCalendarEvent(ev))});
+      }
+      if(calUpload){
+        calUpload.removeAllEvents();
+        (state.workRecords||[]).forEach(function(rec){
+          if(!rec.inTime&&!rec.outTime)return;
+          calUpload.addEvent({title:rec.shiftCode&&rec.shiftCode!=='default'?rec.shiftCode:'上班',start:rec.date,allDay:true,backgroundColor:getEmployeeColor(),borderColor:getEmployeeColor(),textColor:'#ffffff'});
+        });
+        var statusIcon=function(s){return s==='已通過'?'✅':s==='已退回'?'❌':'⏳'};
+        var statusColor=function(s){return s==='已通過'?'#10b981':s==='已退回'?'#ef4444':'#f59e0b'};
+        (state.leaveRows||[]).forEach(function(row){
+          var d=row.startDate||row.date;if(!d)return;
+          d=String(d).replace(/\//g,'-');
+          var s=row.status||'待審核';
+          calUpload.addEvent({title:(row.type||'請假')+' '+statusIcon(s),start:d,allDay:true,backgroundColor:statusColor(s),textColor:'#fff'});
+        });
+        (state.clockFix||[]).forEach(function(row){
+          var d=row.date;if(!d)return;
+          d=String(d).replace(/\//g,'-');
+          var s=row.status||'待審核';
+          calUpload.addEvent({title:'補卡 '+statusIcon(s),start:d,allDay:true,backgroundColor:statusColor(s),textColor:'#fff'});
+        });
+        (state.uploads||[]).forEach(function(row){
+          var d=row.date;if(!d)return;
+          d=String(d).replace(/\//g,'-');
+          var s=row.status||'待審核';
+          calUpload.addEvent({title:(row.type||row.title||'上傳')+' '+statusIcon(s),start:d,allDay:true,backgroundColor:statusColor(s),textColor:'#fff'});
+        });
+      }
+      ensureCalendarsHaveBlankView();
+    }
+
+    /* ==================== 後端載入 ==================== */
+
+    function loadPublishedScheduleCalendar(){
+      var id=state.employeeId,token=state.userToken;
+      if(!id||!token){ensureCalendarsHaveBlankView();return;}
+      var cb=function(res){
+        if(!res||!res.ok){ensureCalendarsHaveBlankView();return;}
+        state.publishedScheduleEvents=Array.isArray(res.events)?res.events:[];
+        if(calMain){
+          calMain.removeAllEvents();
+          state.publishedScheduleEvents.forEach(function(ev){calMain.addEvent(ev)});
+          (state.events||[]).forEach(function(ev){if(ev.extendedProps&&ev.extendedProps.type==='leave')calMain.addEvent(normalizeCalendarEvent(ev))});
+        }
+      };
+      if(gas()){
+        google.script.run.withSuccessHandler(cb).withFailureHandler(function(){ensureCalendarsHaveBlankView();}).getPublishedScheduleForCalendar({id:id,token:token});
+      }else{
+        apiPost('getPublishedScheduleForCalendar',{id:id,token:token},cb);
+      }
+    }
+
+    function loadHeaderData(){
+      apiPost('employeeHeaderData',{id:state.employeeId,token:state.userToken},function(res){
+        if(!res||!res.ok)return;
+        var s=Object.assign({},res.system||{},res);
+        var p=Object.assign({},res.profile||{},{id:state.employeeId});
+        renderTopHeader(p,s);
+      });
+    }
+
+    // ANG.lo HR System Deploy Version: 129 - Fix 8: bootstrap data with fallbacks
+    function handleBootstrapData(res){
+      if(!res||!res.ok){ensureCalendarsHaveBlankView();return;}
+      var p=res.profile||{},s=Object.assign({},res.system||{},res);
+      try{renderTopHeader(p,s);}catch(e){}
+      try{
+        var displayName=cleanDataValue(p.nickname,p.name,state.profileName);
+        setText('helloName',displayName?'哈囉，'+displayName:'');
+      }catch(e){}
+      try{setText('helloStatus',cleanDataValue(res.todayStatus,(res.home&&res.home.todayStatus)));}catch(e){}
+      try{setText('heroChip',(p.chip&&!/manager|admin|creator|employee/i.test(String(p.chip)))?p.chip:'');}catch(e){}
+      try{
+        setValueOrBlank('home-week-salary',res.weekSalary,formatMoney);
+        setValueOrBlank('home-week-hours',res.weekHours,formatHours);
+        setValueOrBlank('home-month-salary',res.monthSalary,formatMoney);
+        setValueOrBlank('home-month-hours',res.monthHours,formatHours);
+        setText('home-tomorrow-status',cleanDataValue(res.tomorrowStatus));
+        setText('home-after-status',cleanDataValue(res.afterTomorrowStatus));
+        setValueOrBlank('home-pending-count',res.pendingCount,function(v){return Number(v||0)+'件'});
+      }catch(e){}
+      try{if(res.system&&res.system.hourly_rate){HOURLY_RATE=Number(res.system.hourly_rate)||200;}}catch(e){}
+      state.workRecords=Array.isArray(res.workRecords)?res.workRecords:(state.workRecords||[]);
+      state.messages=Array.isArray(res.messages)?res.messages:(state.messages||[]);
+      state.clockFix=Array.isArray(res.clockFix)?res.clockFix:(state.clockFix||[]);
+      state.leaveRows=Array.isArray(res.leaveRows)?res.leaveRows:(state.leaveRows||[]);
+      state.uploads=Array.isArray(res.uploads)?res.uploads:(state.uploads||[]);
+      state.salaryHistory=Array.isArray(res.salaryHistory)?res.salaryHistory.map(function(item){return {key:item.key||item.label||'',label:item.label||item.periodLabel||item.key||'',amount:Number(item.amount||item.totalPay||0),issueDate:item.issueDate||item.paidDate||item.date||'',detail:item.detail||item.note||''};}):(state.salaryHistory||[]);
+      state.calendarData=res.calendarData||state.calendarData||{scheduleEvents:[],clockEvents:[],salaryEvents:[],uploadEvents:[]};
+      state.preselectSettings=res.preselectSettings||state.preselectSettings||{mode:'week'};
+      syncPreselectModeFromData(res,s);
+      state.myPreselect=res.myPreselect||state.myPreselect||null;
+      state.monthlySalary=(res.profile&&Number(res.profile.monthlySalary||0))||0;
+      state.shiftStartTime=(s&&s.shiftStartTime)||state.shiftStartTime||'';
+      state.profileName=(p&&(p.nickname||p.name))||state.profileName||'';
+      if(res.adminSalaryConfig)state.adminSalaryConfig=Object.assign({},state.adminSalaryConfig||{},res.adminSalaryConfig);
+      syncPreselectModeFromData(res,s);
+      if(Array.isArray(res.shiftTypes))state.shiftTypes=res.shiftTypes;
+      try{if(s.hide_salary_for_employee==='true'){var ns=qs('nav-salary');if(ns)ns.style.display='none'}}catch(e){}
+      try{if(s.disable_clock_fix==='true'){var ca=qs('clock-tab-apply');if(ca)ca.style.display='none'}}catch(e){}
+      try{if(s.disable_file_upload==='true'){var ud=document.querySelector('.upload-drop');if(ud)ud.style.display='none'}}catch(e){}
+      try{initDefaults();}catch(e){console.warn('initDefaults error',e);}
+      try{renderTodayClockCard();}catch(e){console.warn('renderTodayClockCard error',e);}
+      try{seedCalendarEvents(state.leaveRows);refreshCalendars();renderMessageBoard();renderClockRecordList();renderSalaryDayPayList();syncSalaryEstimate();updateSalaryCycleDisplay();fillSalaryHistorySelect();}catch(e){console.warn('render error',e);}
+      try{updateScheduleTitle();syncWeekTabs();renderWeekdayStrip();renderShiftLegend();}catch(e){console.warn('schedule render error',e);}
+    }
+
+    function loadBootstrapData(){
+      var id=state.employeeId,token=state.userToken;
+      if(!id||!token){ensureCalendarsHaveBlankView();return}
+      if(gas()){
+        google.script.run.withSuccessHandler(function(res){if(res&&res.ok)handleBootstrapData(res);else ensureCalendarsHaveBlankView();}).withFailureHandler(function(){ensureCalendarsHaveBlankView();}).getEmployeeBootstrapData(id,token);
+      }else{
+        apiPost('employeeBootstrap',{id:id,token:token},function(res){if(res&&res.ok)handleBootstrapData(res);else ensureCalendarsHaveBlankView();});
+      }
+    }
+
+    /* ==================== 今日狀態（真實資料） ==================== */
+
+    function loadTodayStatus(){
+      if(!gas())return;
+      google.script.run.withSuccessHandler(function(r){
+        if(!r||!r.ok)return;
+        var el=qs('todayStatusText'),el2=qs('tomorrowText');
+        if(el){el.innerHTML=r.today.icon+' '+r.today.text;if(r.today.urgency==='danger')el.style.color='#fca5a5';else if(r.today.urgency==='warning')el.style.color='#fed7aa';else el.style.color=''}
+        if(el2)el2.textContent=r.tomorrow.text;
+      }).withFailureHandler(function(){}).getTodayStatus({id:currentUserId,token:currentUserToken});
+    }
+
+    /* ==================== 近期動態（真實資料） ==================== */
+
+    function loadRecentActivities(){
+      if(!gas())return;
+      google.script.run.withSuccessHandler(function(r){
+        var box=qs('recentActivitiesBox');if(!box)return;
+        if(!r||!r.ok||!r.activities||!r.activities.length){box.innerHTML='<div class="notice-item"><div class="item-title">暫無動態</div></div>';return}
+        box.innerHTML=r.activities.map(function(a){return'<div class="notice-item"><div class="item-title">'+a.icon+' '+esc(a.title)+'</div><div class="item-meta">'+esc(a.time)+'</div></div>'}).join('');
+      }).withFailureHandler(function(){}).getRecentActivities({id:currentUserId,token:currentUserToken});
+    }
+
+    /* ==================== 主管通知（真實資料） ==================== */
+
+    function loadNotices(){
+      if(!gas())return;
+      google.script.run.withSuccessHandler(function(r){
+        var box=qs('noticesBox');if(!box)return;
+        if(!r||!r.ok||!r.notices||!r.notices.length){box.innerHTML='<div class="notice-item"><div class="item-title">暫無通知</div></div>';return}
+        box.innerHTML=r.notices.map(function(n){return'<div class="notice-item"><div class="item-title">'+esc(n.title)+'</div><div class="item-meta">'+esc(n.content)+'</div><div class="item-meta" style="margin-top:4px;font-size:11px;color:#9ca3af">'+esc(n.author)+' · '+esc(n.time)+'</div></div>'}).join('');
+      }).withFailureHandler(function(){}).getNoticesForEmployee({id:currentUserId,token:currentUserToken});
+    }
+
+    /* ==================== 選休狀態恢復 ==================== */
+
+    function restoreScheduleState(){
+      var id=state.employeeId;if(!id)return;
+      try{
+        var savedMap=localStorage.getItem('ang_schedule_confirm_map_'+id);
+        if(savedMap){var m=JSON.parse(savedMap);if(m&&typeof m==='object')state.scheduleConfirmMap=m;}
+      }catch(e){}
+      try{
+        var savedOffset=localStorage.getItem('ang_schedule_week_offset_'+id);
+        if(savedOffset!==null){state.scheduleWeekOffset=Number(savedOffset)||0;}
+      }catch(e){}
+      [0,1].forEach(function(off){
+        try{
+          var k='ang_schedule_selected_'+id+'_'+off;
+          var v=localStorage.getItem(k);
+          if(v){var arr=JSON.parse(v);if(Array.isArray(arr)&&off===state.scheduleWeekOffset)state.selectedWeekdays=arr;}
+        }catch(e){}
+      });
+    }
+
+
+    function loadPreselectStatus(){
+      if(!gas())return;
+      google.script.run.withSuccessHandler(function(r){
+        if(!r||!r.ok)return;
+        var noteEl=qs('schedule-confirm-note');
+        var confirmBtn=document.querySelector('#page-schedule .btn-soft');
+        if(!r.isOpen){
+          if(noteEl)noteEl.textContent=r.reason||'選休已截止';
+          document.querySelectorAll('.weekday-chip').forEach(function(c){c.disabled=true;c.style.opacity='0.4'});
+          if(confirmBtn){confirmBtn.textContent='⏰ 預選已截止';confirmBtn.disabled=true;confirmBtn.style.background='#d1d5db';confirmBtn.style.color='#6b7280'}
+        }else{
+          if(confirmBtn){confirmBtn.textContent='確認日期選擇';confirmBtn.disabled=false;confirmBtn.style.background='';confirmBtn.style.color=''}
+        }
+      }).withFailureHandler(function(){}).isPreselectOpen({id:currentUserId,token:currentUserToken});
+    }
+
+    /* ==================== 設定變動輪詢（60秒） ==================== */
+
+    var lastSettingsHash='';
+    function checkForUpdates(){
+      if(!gas())return;
+      google.script.run.withSuccessHandler(function(r){
+        if(!r||!r.ok)return;var newHash=JSON.stringify(r.settings||'');
+        if(lastSettingsHash&&newHash!==lastSettingsHash)window.location.reload();lastSettingsHash=newHash;
+      }).withFailureHandler(function(){}).getSettingsHash({id:currentUserId,token:currentUserToken});
+    }
+
+    /* ==================== 主題初始化 ==================== */
+
+    function initThemePicker(){
+      try{var sv=Number(localStorage.getItem('ang_theme_variation')||0);currentVariation=Number.isFinite(sv)?Math.max(0,Math.min(sv,3)):0;syncThemeInputs();refreshThemePreviewButtons();syncThemeAngleDisplay();applyThemeColors(state.themeColors||defaultThemeColors,false)}catch(e){}
+    }
+
+    /* ==================== window.onload ==================== */
+
+    // ANG.lo HR System Deploy Version: 129 - safeCall guards: one render error must not break nav/bootstrap
+    window.onload=function(){
+      safeCall(initDefaults,'initDefaults');
+      safeCall(applyParamsFromUrl,'applyParamsFromUrl');
+      safeCall(restoreScheduleState,'restoreScheduleState');
+      safeCall(renderWeekdayStrip,'renderWeekdayStrip');
+      safeCall(renderClockRecordList,'renderClockRecordList');
+      safeCall(renderSalaryDayPayList,'renderSalaryDayPayList');
+      safeCall(typeof renderHomeSummary==='function'?renderHomeSummary:null,'renderHomeSummary');
+      safeCall(renderMessageBoard,'renderMessageBoard');
+      safeCall(initCalendars,'initCalendars');
+      safeCall(ensureCalendarsHaveBlankView,'ensureCalendarsHaveBlankView');
+      safeCall(initThemePicker,'initThemePicker');
+      safeCall(function(){setDayNightMode(localStorage.getItem('ang_daynight_mode')||'day',false)},'restoreDayNightMode');
+      safeCall(seedCalendarEvents,'seedCalendarEvents');
+      safeCall(refreshCalendars,'refreshCalendars');
+      safeCall(syncLeaveSummary,'syncLeaveSummary');
+      safeCall(syncSalaryEstimate,'syncSalaryEstimate');
+      safeCall(function(){switchClockTab('record')},'switchClockTab');
+      safeCall(syncWeekTabs,'syncWeekTabs');
+      safeCall(updateScheduleTitle,'updateScheduleTitle');
+      safeCall(updateScheduleConfirmNote,'updateScheduleConfirmNote');
+
+      // 確保導航按鈕在 DOM ready 後才綁定，不被初始化錯誤中斷
+      safeCall(function(){
+        document.querySelectorAll('.nav-btn').forEach(function(btn){
+          if(!btn.getAttribute('data-nav-bound')){
+            btn.setAttribute('data-nav-bound','1');
           }
+        });
+      },'bindNavButtons');
 
-          const list = res.list || res.data || res.records || [];
-          renderMonthClock(list);
-        })
-        .withFailureHandler(function(){
-          renderMonthClock([]);
-        })
-        .get_month_clock(id);
-    }
+      setTimeout(function(){safeCall(loadHeaderData,'loadHeaderData')},150);
+      setTimeout(function(){safeCall(loadBootstrapData,'loadBootstrapData')},800);
 
-    function reloadDashboard(){
-      const id = window.currentId || (localStorage.getItem('emp_logged_in') || '').trim().toUpperCase();
-      if (!id) {
-        goLogin();
-        return;
-      }
-      loadTodayStatus(id);
-      loadMonthClock(id);
-    }
-
-    function bootstrapEmployeePage(){
-      applyEmployeeTheme();
-      const p = getParams();
-      const idFromUrl = p.id;
-      const savedId = (localStorage.getItem('emp_logged_in') || '').trim().toUpperCase();
-      const savedName = (localStorage.getItem('emp_name') || '').trim();
-
-      if (!savedId) {
-        goLogin();
-        return;
-      }
-
-      if (!idFromUrl) {
-        window.location.replace(buildUrl('employee', savedId));
-        return;
-      }
-
-      if (idFromUrl !== savedId) {
-        logout();
-        return;
-      }
-
-      window.currentId = savedId;
-      window.currentName = savedName || p.name || savedId;
-
-      showMainOnly(savedId, window.currentName);
-      loadTodayStatus(savedId);
-      loadMonthClock(savedId);
-    }
-
-    window.addEventListener('load', bootstrapEmployeePage);
+      safeCall(function(){loadTodayStatus();setInterval(loadTodayStatus,30000);},'loadTodayStatus');
+      safeCall(loadRecentActivities,'loadRecentActivities');
+      safeCall(loadNotices,'loadNotices');
+      safeCall(loadPreselectStatus,'loadPreselectStatus');
+      safeCall(function(){setInterval(checkForUpdates,60000);checkForUpdates();},'checkForUpdates');
+    };
   </script>
 </body>
 </html>
