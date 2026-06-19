@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
   <title>ANG Engine 管理中心</title>
+  <!-- ANG_ADMIN_FAST_BOOT_V24 -->
   <link id="angDefaultFavicon" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%20512%20512%27%3E%3Cdefs%3E%3ClinearGradient%20id%3D%27g%27%20x1%3D%270%27%20y1%3D%270%27%20x2%3D%271%27%20y2%3D%271%27%3E%3Cstop%20stop-color%3D%27%23ff882f%27/%3E%3Cstop%20offset%3D%27.55%27%20stop-color%3D%27%23ff6d1d%27/%3E%3Cstop%20offset%3D%271%27%20stop-color%3D%27%23ffac73%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width%3D%27512%27%20height%3D%27512%27%20rx%3D%27120%27%20fill%3D%27url%28%23g%29%27/%3E%3Ctext%20x%3D%27256%27%20y%3D%27306%27%20text-anchor%3D%27middle%27%20font-family%3D%27Arial%2C%20Helvetica%2C%20sans-serif%27%20font-size%3D%27150%27%20font-weight%3D%27900%27%20fill%3D%27white%27%3EANG%3C/text%3E%3C/svg%3E">
   <link id="angAppleIcon" rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%20512%20512%27%3E%3Cdefs%3E%3ClinearGradient%20id%3D%27g%27%20x1%3D%270%27%20y1%3D%270%27%20x2%3D%271%27%20y2%3D%271%27%3E%3Cstop%20stop-color%3D%27%23ff882f%27/%3E%3Cstop%20offset%3D%27.55%27%20stop-color%3D%27%23ff6d1d%27/%3E%3Cstop%20offset%3D%271%27%20stop-color%3D%27%23ffac73%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width%3D%27512%27%20height%3D%27512%27%20rx%3D%27120%27%20fill%3D%27url%28%23g%29%27/%3E%3Ctext%20x%3D%27256%27%20y%3D%27306%27%20text-anchor%3D%27middle%27%20font-family%3D%27Arial%2C%20Helvetica%2C%20sans-serif%27%20font-size%3D%27150%27%20font-weight%3D%27900%27%20fill%3D%27white%27%3EANG%3C/text%3E%3C/svg%3E">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -145,9 +146,6 @@
     .salary-review-table td{padding:8px;border-bottom:1px solid rgba(0,0,0,.06);font-size:12px}
     .salary-review-table td:first-child{font-weight:900;color:var(--muted);width:96px}
     .salary-review-total{font-size:22px;font-weight:900;color:var(--emp-deep);text-align:right;margin-top:8px}
-    .review-chain-forced{opacity:.72;filter:saturate(.85)}
-    .review-chain-forced label::after{content:'（多級自動）';font-size:11px;color:var(--emp-deep);margin-left:4px}
-
     .fab-badge{position:absolute;top:-2px;right:-2px;min-width:16px;height:16px;border-radius:999px;background:#ef4444;color:#fff;font-size:9px;font-weight:900;display:flex;align-items:center;justify-content:center;padding:0 4px}
     .fab-badge:empty{display:none}
 
@@ -269,12 +267,6 @@
       .fab-sat.sat-data{right:12px!important;bottom:188px!important}
     }
 
-  
-    /* === 資料讀取中狀態 === */
-    .ang-loading-state{display:flex;align-items:center;justify-content:center;gap:8px;min-height:42px;padding:11px 12px;border-radius:16px;background:linear-gradient(180deg,#fff,rgba(var(--emp-rgb),.07));border:1px dashed rgba(var(--emp-rgb),.22);color:var(--emp-deep);font-size:14px;font-weight:900;text-align:center}
-    .ang-loading-state small{display:block;color:var(--muted);font-size:11px;font-weight:800;margin-top:3px;line-height:1.35}
-    .ang-loading-dot{width:8px;height:8px;border-radius:999px;background:currentColor;opacity:.55;animation:angAdminLoadPulse 1s infinite ease-in-out}
-    @keyframes angAdminLoadPulse{0%,100%{transform:scale(.72);opacity:.35}50%{transform:scale(1.18);opacity:.85}}
   </style>
 </head>
 <body>
@@ -352,14 +344,6 @@
         <div class="stat-mini" style="cursor:pointer" onclick="document.getElementById('admClockFixList').closest('[data-autohide]').scrollIntoView({behavior:'smooth'})"><small>待審補卡</small><div class="v" id="admClockFixPending">0</div></div>
         <div class="stat-mini" style="cursor:pointer" onclick="navTo('salary')"><small>待審薪資</small><div class="v" id="admSalaryPending">0</div></div>
         <div class="stat-mini" style="cursor:pointer" onclick="document.getElementById('admLeaveList').closest('[data-autohide]').scrollIntoView({behavior:'smooth'})"><small>待審請假</small><div class="v" id="admLeavePending">0</div></div>
-      </div>
-
-      <!-- 混合班設定：Admin 權限 -->
-      <div class="card" id="adminMixedModeCard">
-        <div class="mini-row"><h3>混合班設定</h3><span class="badge ok">Admin</span></div>
-        <div class="notice-item"><div class="item-title">混合班權限移至 Admin</div><div class="item-meta">班別名稱與時間仍由 Creator 建立；是否啟用「不固定班別 / 混合班」，由 Admin 直接切換。</div></div>
-        <div class="check-row"><input type="checkbox" id="chkMixedMode"><label for="chkMixedMode">啟用混合班（不固定班別）</label></div>
-        <button class="btn-main" type="button" onclick="saveMixedModeAdmin()">儲存混合班設定</button>
       </div>
 
       <!-- 補打卡審核 -->
@@ -450,39 +434,37 @@
         <div class="mini-row"><h3>審核流程設定</h3><span class="badge ok">Creator</span></div>
         <div class="notice-item">
           <div class="item-title">多級審核改為單項控制</div>
-          <div class="item-meta">每個審核類型可以自己決定要不要多級審核。啟用後固定從 Manager 第一關開始，再交由 Admin 最終審核；若公司沒有 Manager，後端會自動降回單層 Admin。</div>
+          <div class="item-meta">每個審核類型可以自己決定要不要多級審核；例如薪資要雙層、請假只要一層，就分開開關。</div>
         </div>
         <input type="checkbox" id="chkMultiLevel" checked style="display:none" aria-hidden="true">
 
         <label class="label">請假</label>
-        <div class="check-row"><input type="checkbox" id="chkLeaveMulti" checked onchange="syncReviewChainUI()"><label for="chkLeaveMulti">請假啟用多級審核</label></div>
-        <div class="check-row"><input type="checkbox" id="chkLeaveManager" checked><label for="chkLeaveManager">Manager 第一關</label></div>
-        <div class="check-row"><input type="checkbox" id="chkLeaveAdmin"><label for="chkLeaveAdmin">Admin 最終關</label></div>
+        <div class="check-row"><input type="checkbox" id="chkLeaveMulti" checked><label for="chkLeaveMulti">請假啟用多級審核</label></div>
+        <div class="check-row"><input type="checkbox" id="chkLeaveManager" checked><label for="chkLeaveManager">Manager</label></div>
+        <div class="check-row"><input type="checkbox" id="chkLeaveAdmin"><label for="chkLeaveAdmin">Admin</label></div>
 
         <label class="label">補打卡</label>
-        <div class="check-row"><input type="checkbox" id="chkClockfixMulti" checked onchange="syncReviewChainUI()"><label for="chkClockfixMulti">補打卡啟用多級審核</label></div>
-        <div class="check-row"><input type="checkbox" id="chkClockfixManager" checked><label for="chkClockfixManager">Manager 第一關</label></div>
-        <div class="check-row"><input type="checkbox" id="chkClockfixAdmin"><label for="chkClockfixAdmin">Admin 最終關</label></div>
+        <div class="check-row"><input type="checkbox" id="chkClockfixMulti" checked><label for="chkClockfixMulti">補打卡啟用多級審核</label></div>
+        <div class="check-row"><input type="checkbox" id="chkClockfixManager" checked><label for="chkClockfixManager">Manager</label></div>
+        <div class="check-row"><input type="checkbox" id="chkClockfixAdmin"><label for="chkClockfixAdmin">Admin</label></div>
 
         <label class="label">上傳資料</label>
-        <div class="check-row"><input type="checkbox" id="chkUploadMulti" checked onchange="syncReviewChainUI()"><label for="chkUploadMulti">上傳資料啟用多級審核</label></div>
-        <div class="check-row"><input type="checkbox" id="chkUploadManager" checked><label for="chkUploadManager">Manager 第一關</label></div>
-        <div class="check-row"><input type="checkbox" id="chkUploadAdmin"><label for="chkUploadAdmin">Admin 最終關</label></div>
+        <div class="check-row"><input type="checkbox" id="chkUploadMulti" checked><label for="chkUploadMulti">上傳資料啟用多級審核</label></div>
+        <div class="check-row"><input type="checkbox" id="chkUploadManager" checked><label for="chkUploadManager">Manager</label></div>
+        <div class="check-row"><input type="checkbox" id="chkUploadAdmin"><label for="chkUploadAdmin">Admin</label></div>
 
         <label class="label">留言</label>
-        <div class="check-row"><input type="checkbox" id="chkMsgMulti" checked onchange="syncReviewChainUI()"><label for="chkMsgMulti">留言啟用多級審核</label></div>
-        <div class="check-row"><input type="checkbox" id="chkMsgManager" checked><label for="chkMsgManager">Manager 第一關</label></div>
-        <div class="check-row"><input type="checkbox" id="chkMsgAdmin"><label for="chkMsgAdmin">Admin 最終關</label></div>
+        <div class="check-row"><input type="checkbox" id="chkMsgMulti" checked><label for="chkMsgMulti">留言啟用多級審核</label></div>
+        <div class="check-row"><input type="checkbox" id="chkMsgManager" checked><label for="chkMsgManager">Manager</label></div>
+        <div class="check-row"><input type="checkbox" id="chkMsgAdmin"><label for="chkMsgAdmin">Admin</label></div>
 
         <label class="label">薪資</label>
-        <div class="check-row"><input type="checkbox" id="chkSalaryMulti" checked onchange="syncReviewChainUI()"><label for="chkSalaryMulti">薪資啟用多級審核</label></div>
-        <div class="check-row"><input type="checkbox" id="chkSalaryManager"><label for="chkSalaryManager">Manager 第一關</label></div>
-        <div class="check-row"><input type="checkbox" id="chkSalaryAdmin" checked><label for="chkSalaryAdmin">Admin 最終關</label></div>
+        <div class="check-row"><input type="checkbox" id="chkSalaryMulti" checked><label for="chkSalaryMulti">薪資啟用多級審核</label></div>
+        <div class="check-row"><input type="checkbox" id="chkSalaryManager"><label for="chkSalaryManager">Manager</label></div>
+        <div class="check-row"><input type="checkbox" id="chkSalaryAdmin" checked><label for="chkSalaryAdmin">Admin</label></div>
 
         <label class="label">通知發布</label>
-        <div class="check-row"><input type="checkbox" id="chkNoticeMulti" onchange="syncReviewChainUI()"><label for="chkNoticeMulti">通知發布啟用多級審核</label></div>
-        <div class="check-row"><input type="checkbox" id="chkNoticeManager"><label for="chkNoticeManager">Manager 第一關</label></div>
-        <div class="check-row"><input type="checkbox" id="chkNoticeAdmin" checked><label for="chkNoticeAdmin">Admin 最終關</label></div>
+        <div class="check-row"><input type="checkbox" id="chkNoticeMulti"><label for="chkNoticeMulti">通知發布啟用多級審核</label></div>
         <div class="check-row"><input type="checkbox" id="chkManagerNoticeNeedsAdmin"><label for="chkManagerNoticeNeedsAdmin">Manager 發布通知需要 Admin 審核</label></div>
         <label class="label">薪資法定費用是否啟用</label>
         <div class="check-row"><input type="checkbox" id="chkSalaryLaborIns" checked><label for="chkSalaryLaborIns">啟用勞保費</label></div>
@@ -499,7 +481,7 @@
       <!-- 班別設定 -->
       <div class="card">
         <div class="mini-row"><h3>班別設定</h3><span class="badge ok">Creator</span></div>
-        <div class="notice-item"><div class="item-title">混合班由 Admin 控制</div><div class="item-meta">Creator 只建立班別名稱、上下班時間與休息分鐘；啟用/停用混合班請到 Admin 管理頁。</div></div>
+        <div class="check-row"><input type="checkbox" id="chkMixedMode"><label for="chkMixedMode">啟用混合班（不固定班別）</label></div>
         <div id="shiftListBox"></div>
         <button class="btn-ghost" style="margin-bottom:10px" onclick="addShiftRow()">＋ 新增班別</button>
         <button class="btn-main" onclick="saveShiftTypes()">儲存班別設定</button>
@@ -753,7 +735,7 @@
     var UTOKEN=String(CTX.token||'').trim();
     var UROLE=String(CTX.role||'Employee').trim();
     var logoDataUrl='';
-    var mgrData={},admData={},crtData={},ADMIN_DATA_LOADING=true;
+    var mgrData={},admData={},crtData={};
     var currentPage='home';
     var salaryDraft=null;
     var REVIEW_BUSY=false;
@@ -1282,23 +1264,10 @@
 
     // ==================== 審核流程 ====================
 
+    function buildApprovers(pre){var a=[];if(qs('chk'+pre+'Manager')&&qs('chk'+pre+'Manager').checked)a.push('Manager');if(qs('chk'+pre+'Admin')&&qs('chk'+pre+'Admin').checked)a.push('Admin');return a.join(',')||'Manager'}
     function reviewBool(id, fallback){var el=qs(id);return el?!!el.checked:!!fallback}
     function setReviewBool(id, val){var el=qs(id);if(el)el.checked=String(val||'false')==='true'}
-    var REVIEW_MULTI_ID_MAP={Leave:'chkLeaveMulti',Clockfix:'chkClockfixMulti',Upload:'chkUploadMulti',Msg:'chkMsgMulti',Salary:'chkSalaryMulti',Notice:'chkNoticeMulti'};
-    function isReviewMulti(pre){return reviewBool(REVIEW_MULTI_ID_MAP[pre],false)}
     function anyReviewMultiLevelEnabled(){return ['chkLeaveMulti','chkClockfixMulti','chkUploadMulti','chkMsgMulti','chkSalaryMulti','chkNoticeMulti'].some(function(id){return reviewBool(id,false);})}
-    function buildApprovers(pre){
-      // v10：只要單項啟用多級審核，一律 Manager → Admin；最高權限仍由 Admin 最終審核。
-      // 若公司沒有 Manager，後端 v10 helper 會自動降回單層 Admin。
-      if(isReviewMulti(pre))return 'Manager,Admin';
-      var a=[];if(qs('chk'+pre+'Manager')&&qs('chk'+pre+'Manager').checked)a.push('Manager');if(qs('chk'+pre+'Admin')&&qs('chk'+pre+'Admin').checked)a.push('Admin');return a.join(',')||'Admin';
-    }
-    function syncOneReviewChain(pre){
-      var multi=isReviewMulti(pre), mgr=qs('chk'+pre+'Manager'), adm=qs('chk'+pre+'Admin');
-      if(multi){if(mgr)mgr.checked=true;if(adm)adm.checked=true;}
-      [mgr,adm].forEach(function(el){if(!el)return;el.disabled=multi;var row=el.closest&&el.closest('.check-row');if(row)row.classList.toggle('review-chain-forced',multi);});
-    }
-    function syncReviewChainUI(){['Leave','Clockfix','Upload','Msg','Salary','Notice'].forEach(syncOneReviewChain);if(qs('chkMultiLevel'))qs('chkMultiLevel').checked=anyReviewMultiLevelEnabled();}
 
     function saveApproverSettings(){
       if(!gas())return warn('非正式環境');loading('儲存中...');
@@ -1324,8 +1293,7 @@
         upload_approvers:buildApprovers('Upload'),
         message_approvers:buildApprovers('Msg'),
         salary_approvers:buildApprovers('Salary'),
-        notice_approvers:buildApprovers('Notice'),
-        managerNoticeNeedsAdmin:(isReviewMulti('Notice')||(qs('chkManagerNoticeNeedsAdmin')&&qs('chkManagerNoticeNeedsAdmin').checked))?'true':'false'
+        managerNoticeNeedsAdmin:(qs('chkManagerNoticeNeedsAdmin')&&qs('chkManagerNoticeNeedsAdmin').checked)?'true':'false'
       };
       if(qs('chkMultiLevel'))qs('chkMultiLevel').checked=payload.multi_level_review_enabled==='true';
       google.script.run.withSuccessHandler(function(r){Swal.close();r&&r.ok?ok(r.message):err(r?r.message:'失敗')}).withFailureHandler(function(e){Swal.close();err(String(e))})
@@ -1347,24 +1315,6 @@
       box.innerHTML=shiftRows.map(function(s,idx){
         return'<div class="extra-row"><input type="text" placeholder="班別名稱" value="'+esc(s.name)+'" onchange="shiftRows['+idx+'].name=this.value" style="flex:1"><input type="time" value="'+s.startTime+'" onchange="shiftRows['+idx+'].startTime=this.value" style="width:90px"><span>～</span><input type="time" value="'+s.endTime+'" onchange="shiftRows['+idx+'].endTime=this.value" style="width:90px"><input type="number" value="'+s.breakMinutes+'" onchange="shiftRows['+idx+'].breakMinutes=Number(this.value)" style="width:50px" placeholder="休"><button class="del-btn" onclick="removeShiftRow('+idx+')">✕</button></div>';
       }).join('');
-    }
-
-    function saveMixedModeAdmin(){
-      if(!gas())return warn('非正式環境');
-      var enabled=!!(qs('chkMixedMode')&&qs('chkMixedMode').checked);
-      loading('儲存混合班設定中...');
-      // 先用 v10 後端函式；若尚未貼後端補丁，再退回舊 saveShiftTypes。
-      try{
-        google.script.run.withSuccessHandler(function(r){Swal.close();r&&r.ok?ok(r.message||'混合班設定已儲存'):err(r?r.message:'失敗')})
-          .withFailureHandler(function(e){
-            var valid=(shiftRows||[]).filter(function(s){return s&&String(s.name||'').trim();});
-            if(!valid.length){Swal.close();return err('後端尚未安裝 saveMixedModeSetting，且目前沒有班別可用舊方式儲存。請先套用 v10 後端補丁。');}
-            google.script.run.withSuccessHandler(function(r2){Swal.close();r2&&r2.ok?ok(r2.message||'混合班設定已儲存'):err(r2?r2.message:'失敗')})
-              .withFailureHandler(function(e2){Swal.close();err(String(e2));})
-              .saveShiftTypes({userId:UID,token:UTOKEN,shifts:valid,mixedMode:enabled});
-          })
-          .saveMixedModeSetting({userId:UID,token:UTOKEN,mixedMode:enabled});
-      }catch(e){Swal.close();err(String(e));}
     }
 
     function saveShiftTypes(){
@@ -1644,23 +1594,6 @@
       });
     }
 
-    
-
-    function loadingBlockHtml_(title,sub){
-      return '<div class="ang-loading-state"><span class="ang-loading-dot"></span><div>'+esc(title||'資料讀取中...')+(sub?'<small>'+esc(sub)+'</small>':'')+'</div></div>';
-    }
-    function setAdminLoadingPlaceholders(){
-      ADMIN_DATA_LOADING=true;
-      ['mgrLeavePending','mgrUploadPending','mgrMsgPending','admClockFixPending','admSalaryPending','admLeavePending','salaryCenterBadge'].forEach(function(id){var el=qs(id);if(el)el.textContent='讀取中';});
-      ['homeImportantList','mgrImportantList','admImportantList'].forEach(function(id){var el=qs(id);if(el)el.innerHTML=loadingBlockHtml_('重要通知讀取中...','正在整理待處理項目');});
-      ['mgrLeaveList','mgrUploadList','mgrMessageList','admClockFixList','admSalaryList','admLeaveList','admUploadList','admMessageList','mgrScheduleList','admNoticeList','mgrNoticeList'].forEach(function(id){var el=qs(id);if(el)el.innerHTML=loadingBlockHtml_('資料讀取中...','資料載入完成後會自動更新');});
-    }
-    function setAdminLoadFailedPlaceholders(message){
-      ADMIN_DATA_LOADING=false;
-      var text=message||'資料讀取失敗，請稍後重新整理';
-      ['homeImportantList','mgrImportantList','admImportantList'].forEach(function(id){var el=qs(id);if(el)el.innerHTML='<div class="item-meta">'+esc(text)+'</div>';});
-    }
-
     function importantItemHtml(title,sub,count,targetId){
       if(!count)return '';
       return '<div class="important-item" onclick="openImportantTarget(\''+esc(targetId)+'\')"><div><b>'+esc(title)+'</b><small>'+esc(sub)+'</small></div><div class="ib-num">'+count+'</div></div>';
@@ -1681,10 +1614,6 @@
     }
 
     function renderImportantBoards(){
-      if(ADMIN_DATA_LOADING){
-        ['mgrImportantList','admImportantList','homeImportantList'].forEach(function(id){var el=qs(id);if(el)el.innerHTML=loadingBlockHtml_('重要通知讀取中...','正在整理待處理項目');});
-        return;
-      }
       var mLeave=countPending(mgrData.leaveReviews),mUp=countPending(mgrData.receiveReviews),mMsg=countPending(mgrData.messageReviews);
       var aClock=countPending(admData.clockFixReviews),aSal=countPending(admData.salaryReviews),aLeave=countPending(admData.leaveReviews),aUp=countPending(admData.receiveReviews);
       var mgrHtml='';
@@ -1735,7 +1664,7 @@
     // ==================== 資料載入 ====================
 
     function applyMgr(r){
-      if(!r||!r.ok){setAdminLoadFailedPlaceholders((r&&r.message)||'Manager 資料讀取失敗');return;}ADMIN_DATA_LOADING=false;mgrData=r;
+      if(!r||!r.ok)return;markBootstrapReady();mgrData=r;
       if(r.system)applyAdminBrandFromSystem(r.system);
       setText('mgrLeavePending',countPending(r.leaveReviews));
       setText('mgrUploadPending',countPending(r.receiveReviews));
@@ -1751,7 +1680,7 @@
     }
 
     function applyAdm(r){
-      if(!r||!r.ok){setAdminLoadFailedPlaceholders((r&&r.message)||'Admin 資料讀取失敗');return;}ADMIN_DATA_LOADING=false;admData=r;
+      if(!r||!r.ok)return;markBootstrapReady();admData=r;
       setText('admClockFixPending',countPending(r.clockFixReviews));
       setText('admSalaryPending',countPending(r.salaryReviews));
       setText('admLeavePending',countPending(r.leaveReviews));
@@ -1776,7 +1705,7 @@
     }
 
     function applyCrt(r){
-      if(!r||!r.ok){setAdminLoadFailedPlaceholders((r&&r.message)||'Creator 資料讀取失敗');return;}ADMIN_DATA_LOADING=false;crtData=r;
+      if(!r||!r.ok)return;markBootstrapReady();crtData=r;
       if(r.approverSettings){
         var aps=r.approverSettings||{};
         var oldGlobal=String(aps.multi_level_review_enabled||'true')!=='false';
@@ -1795,9 +1724,7 @@
         function sc(pre,v){var a=String(v||'Manager').split(',');if(qs('chk'+pre+'Manager'))qs('chk'+pre+'Manager').checked=a.indexOf('Manager')>-1;if(qs('chk'+pre+'Admin'))qs('chk'+pre+'Admin').checked=a.indexOf('Admin')>-1}
         sc('Leave',aps.leave_approvers);sc('Clockfix',aps.clockfix_approvers);
         sc('Upload',aps.upload_approvers);sc('Msg',aps.message_approvers);
-        sc('Salary',aps.salary_approvers);sc('Notice',aps.notice_approvers||((String(aps.manager_notice_needs_admin||'false')==='true')?'Manager,Admin':'Admin'));
-        if(qs('chkManagerNoticeNeedsAdmin'))qs('chkManagerNoticeNeedsAdmin').checked=String(aps.manager_notice_needs_admin||'false')==='true';
-        syncReviewChainUI();
+        sc('Salary',aps.salary_approvers); if(qs('chkManagerNoticeNeedsAdmin'))qs('chkManagerNoticeNeedsAdmin').checked=String(aps.manager_notice_needs_admin||'false')==='true';
       }
       if(r.preselectSettings)applyPreselectUI(r.preselectSettings);
       // 班別
@@ -1805,7 +1732,7 @@
         shiftRows=Array.isArray(r.shiftTypes)?r.shiftTypes:[];
         renderShiftRows();
       }
-      if(r.mixedMode!==undefined&&qs('chkMixedMode'))qs('chkMixedMode').checked=r.mixedMode===true||r.mixedMode==='true';
+      if(r.mixedMode!==undefined)qs('chkMixedMode').checked=r.mixedMode===true||r.mixedMode==='true';
       if(r.system){
         applyAdminBrandFromSystem(r.system);
         applySalaryLegalSettingsFromSystem(r.system);
@@ -1821,7 +1748,6 @@
 
     // ANG.lo HR System Deploy Version: 129 - Fix 1: proper refresh clears UI first
     function loadAll(){
-      setAdminLoadingPlaceholders();
       if(!gas()){applyVisibility();var a0=getAllowed();if(a0.indexOf('manager')>-1)apiPost('getManagerBootstrapData',{},applyMgr,true);if(a0.indexOf('admin')>-1)apiPost('getAdminBootstrapData',{},applyAdm,true);if(a0.indexOf('creator')>-1)apiPost('getCreatorBootstrapData',{},applyCrt,true);return}
       // 重置審核清單顯示，等資料回來再 render
       ['mgrLeaveList','mgrUploadList','mgrMessageList','admClockFixList','admSalaryList','admLeaveList','admUploadList','admMessageList','mgrScheduleList'].forEach(function(id){
@@ -1829,10 +1755,106 @@
         box.innerHTML='<div style="padding:8px 0;font-size:14px;color:var(--muted)">讀取中...</div>';
       });
       var a=getAllowed();
-      if(a.indexOf('manager')>-1)google.script.run.withSuccessHandler(applyMgr).withFailureHandler(function(e){setAdminLoadFailedPlaceholders('Manager 資料讀取失敗');}).getManagerBootstrapData(UID,UTOKEN);
-      if(a.indexOf('admin')>-1)google.script.run.withSuccessHandler(applyAdm).withFailureHandler(function(e){setAdminLoadFailedPlaceholders('Admin 資料讀取失敗');}).getAdminBootstrapData(UID,UTOKEN);
-      if(a.indexOf('creator')>-1)google.script.run.withSuccessHandler(applyCrt).withFailureHandler(function(e){setAdminLoadFailedPlaceholders('Creator 資料讀取失敗');}).getCreatorBootstrapData(UID,UTOKEN);
+      if(a.indexOf('manager')>-1)google.script.run.withSuccessHandler(applyMgr).withFailureHandler(function(){}).getManagerBootstrapData(UID,UTOKEN);
+      if(a.indexOf('admin')>-1)google.script.run.withSuccessHandler(applyAdm).withFailureHandler(function(){}).getAdminBootstrapData(UID,UTOKEN);
+      if(a.indexOf('creator')>-1){
+        google.script.run.withSuccessHandler(applyCrt).withFailureHandler(function(){}).getCreatorBootstrapData(UID,UTOKEN);
+        loadRetentionSettings();
+      }
     }
+
+
+
+    // ==================== 資料保存 / 定期清除 ====================
+
+    function retentionCompanyId(){
+      return String(CTX.companyId || localStorage.getItem('ang_company_id') || '').trim();
+    }
+
+    function setRetentionStatus(html){
+      var box=qs('retentionStatus');
+      if(!box)return;
+      if(!html){box.style.display='none';box.innerHTML='';return;}
+      box.style.display='';
+      box.innerHTML=html;
+    }
+
+    function loadRetentionSettings(){
+      if(!gas())return;
+      var companyId=retentionCompanyId();
+      if(!companyId)return;
+      google.script.run
+        .withSuccessHandler(function(r){
+          if(!r||!r.ok)return;
+          if(qs('retentionMonths'))qs('retentionMonths').value=String(r.retention_months||'6');
+          if(qs('retentionPolicy'))qs('retentionPolicy').value=String(r.retention_policy||'delete_old_records');
+          setRetentionStatus('<div class="item-title">目前保存：'+esc(r.retention_months||'')+' 個月｜'+esc(r.data_hosting_mode||'')+'</div><div class="item-meta">公司試算表：'+esc(r.company_spreadsheet_id||'')+'<br>上次清除：'+esc(r.last_cleanup_at||'尚未執行')+'</div>');
+        })
+        .withFailureHandler(function(){})
+        .getCompanyRetentionSettingsV26({userId:UID,token:UTOKEN,company_id:companyId});
+    }
+
+    function saveRetentionSettings(){
+      if(!gas())return warn('非正式環境');
+      var companyId=retentionCompanyId();
+      if(!companyId)return warn('缺少 company_id');
+      loading('儲存資料保存規則...');
+      google.script.run
+        .withSuccessHandler(function(r){
+          Swal.close();
+          if(!r||!r.ok){err(r?r.message:'儲存失敗');return;}
+          ok('資料保存規則已儲存：'+r.retention_months+' 個月');
+          loadRetentionSettings();
+        })
+        .withFailureHandler(function(e){Swal.close();err(String(e));})
+        .saveCompanyRetentionSettingsV26({userId:UID,token:UTOKEN,company_id:companyId,retention_months:(qs('retentionMonths')||{}).value,retention_policy:(qs('retentionPolicy')||{}).value});
+    }
+
+    function summarizeCleanupResult(r){
+      var list=(r&&r.results)||[];
+      var html='<div class="item-title">'+esc(r&&r.message||'完成')+'</div>';
+      html+='<div class="item-meta">公司數：'+esc(r&&r.company_count||0)+'｜預計清除：'+esc(r&&r.total_would_delete_rows||0)+'｜已清除：'+esc(r&&r.total_deleted_rows||0)+'</div>';
+      list.slice(0,5).forEach(function(c){
+        html+='<div class="item-meta" style="margin-top:6px">'+esc(c.company_id)+'｜保留 '+esc(c.retention_months)+' 個月｜'+(c.dry_run?'預計':'已')+'清除 '+esc(c.dry_run?c.would_delete_rows:c.deleted_rows)+' 筆</div>';
+      });
+      return html;
+    }
+
+    function previewRetentionCleanup(){
+      if(!gas())return warn('非正式環境');
+      var companyId=retentionCompanyId();
+      if(!companyId)return warn('缺少 company_id');
+      loading('預覽清除資料中...');
+      google.script.run
+        .withSuccessHandler(function(r){Swal.close();if(!r||!r.ok){err(r?r.message:'預覽失敗');return;}setRetentionStatus(summarizeCleanupResult(r));})
+        .withFailureHandler(function(e){Swal.close();err(String(e));})
+        .cleanupOldDataRetentionV26({userId:UID,token:UTOKEN,company_id:companyId,dry_run:true,retention_months:(qs('retentionMonths')||{}).value});
+    }
+
+    function runRetentionCleanupNow(){
+      if(!gas())return warn('非正式環境');
+      var companyId=retentionCompanyId();
+      if(!companyId)return warn('缺少 company_id');
+      Swal.fire({title:'確認清除過舊資料？',text:'會依保存期限刪除過舊紀錄。人員資料與公司資料不會刪。',icon:'warning',showCancelButton:true,confirmButtonText:'清除',cancelButtonText:'取消'})
+        .then(function(x){
+          if(!x.isConfirmed)return;
+          loading('清除過舊資料中...');
+          google.script.run
+            .withSuccessHandler(function(r){Swal.close();if(!r||!r.ok){err(r?r.message:'清除失敗');return;}setRetentionStatus(summarizeCleanupResult(r));ok('清除完成');})
+            .withFailureHandler(function(e){Swal.close();err(String(e));})
+            .cleanupOldDataRetentionV26({userId:UID,token:UTOKEN,company_id:companyId,dry_run:false,retention_months:(qs('retentionMonths')||{}).value});
+        });
+    }
+
+    function setupRetentionCleanupTrigger(){
+      if(!gas())return warn('非正式環境');
+      loading('建立每日自動清除...');
+      google.script.run
+        .withSuccessHandler(function(r){Swal.close();r&&r.ok?ok(r.message||'已啟用定期清除'):err(r?r.message:'建立失敗');})
+        .withFailureHandler(function(e){Swal.close();err(String(e));})
+        .setupDataRetentionTriggerV26({userId:UID,token:UTOKEN,hour:3});
+    }
+
 
     // ==================== 薪資管理 ====================
 
@@ -2086,8 +2108,6 @@
       applyEmployeeTheme();
       initMonthSelects();
       renderShiftRows();
-      syncReviewChainUI();
-      setAdminLoadingPlaceholders();
       // 初始化時隱藏所有 autohide card，等資料回來後才顯示
       document.querySelectorAll('[data-autohide="1"]').forEach(function(c){c.style.display='none'});
       applyVisibility();
@@ -2095,7 +2115,7 @@
       renderImportantBoards();
       var now=new Date();var ym=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
       if(qs('salaryMonth'))qs('salaryMonth').value=ym;
-      setTimeout(loadAll,300);
+      setTimeout(loadAll,60);
     }
 
     init();
