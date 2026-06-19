@@ -981,6 +981,108 @@
       background:rgba(255,255,255,.065)!important;
     }
 
+
+    /* ANG_THEME_ASSET_SYNC_V22
+       日光 / 暗夜切換時，詢問是否連同 APP 圖示與開場動畫一起更換。 */
+    .theme-sync-modal{
+      position:absolute;
+      inset:0;
+      z-index:999;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:22px;
+      background:rgba(0,0,0,.42);
+      backdrop-filter:blur(16px);
+      -webkit-backdrop-filter:blur(16px);
+    }
+    .theme-sync-modal.active{display:flex;}
+    .theme-sync-card{
+      width:100%;
+      max-width:330px;
+      border-radius:26px;
+      padding:20px 18px 18px;
+      border:1px solid rgba(255,255,255,.20);
+      background:rgba(18,25,42,.82);
+      box-shadow:0 22px 54px rgba(0,0,0,.34);
+      color:#fff;
+      backdrop-filter:blur(24px);
+      -webkit-backdrop-filter:blur(24px);
+    }
+    body:not([data-theme="dark"]) .theme-sync-card{
+      border:1px solid rgba(226,232,240,.88);
+      background:rgba(255,255,255,.86);
+      color:#0f172a;
+      box-shadow:0 22px 54px rgba(15,23,42,.18);
+    }
+    .theme-sync-title{
+      margin:0;
+      font-size:20px;
+      line-height:1.25;
+      font-weight:1000;
+      letter-spacing:.02em;
+      text-align:center;
+    }
+    .theme-sync-text{
+      margin:12px 0 0;
+      color:rgba(226,232,240,.86);
+      font-size:14px;
+      line-height:1.55;
+      font-weight:850;
+      letter-spacing:.02em;
+      text-align:center;
+    }
+    body:not([data-theme="dark"]) .theme-sync-text{color:#475569;}
+    .theme-sync-note{
+      margin:12px 0 0;
+      padding:10px 12px;
+      border-radius:16px;
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.12);
+      color:rgba(226,232,240,.86);
+      font-size:12px;
+      line-height:1.5;
+      font-weight:850;
+      text-align:left;
+    }
+    body:not([data-theme="dark"]) .theme-sync-note{
+      background:rgba(248,250,252,.82);
+      border:1px solid rgba(203,213,225,.72);
+      color:#475569;
+    }
+    .theme-sync-actions{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:10px;
+      margin-top:16px;
+    }
+    .theme-sync-actions button{
+      width:100%;
+      min-height:50px;
+      border-radius:17px;
+      padding:12px 14px;
+      font-size:15px;
+      line-height:1.25;
+      font-weight:1000;
+      letter-spacing:.03em;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      text-shadow:none!important;
+    }
+    .theme-sync-yes{background:var(--primary-bg);color:#fff!important;box-shadow:var(--primary-shadow);}
+    .theme-sync-no{
+      background:rgba(255,255,255,.08);
+      color:#fff!important;
+      border:1px solid rgba(255,255,255,.16);
+    }
+    body:not([data-theme="dark"]) .theme-sync-no{
+      background:#f8fafc;
+      color:#1e1b4b!important;
+      border:1px solid rgba(99,102,241,.22);
+    }
+
   </style>
 </head>
 
@@ -993,6 +1095,21 @@
       <span class="sun" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2.2M12 19.8V22M4.93 4.93l1.56 1.56M17.51 17.51l1.56 1.56M2 12h2.2M19.8 12H22M4.93 19.07l1.56-1.56M17.51 6.49l1.56-1.56"></path></svg></span>
       <span class="moon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 14.2A8.6 8.6 0 0 1 9.8 3a7.5 7.5 0 1 0 11.2 11.2z"></path></svg></span>
     </button>
+
+    <div id="themeSyncModal" class="theme-sync-modal" aria-hidden="true">
+      <div class="theme-sync-card" role="dialog" aria-modal="true" aria-labelledby="themeSyncTitle">
+        <h2 class="theme-sync-title" id="themeSyncTitle">是否一起更換 APP 外觀？</h2>
+        <p class="theme-sync-text" id="themeSyncText">你正在切換日光 / 暗夜版本。</p>
+        <div class="theme-sync-note">
+          選「否」：只切換這次畫面，下次開啟會恢復原本版本。<br />
+          選「是」：同步更換 APP 圖示與 opening video，並關閉 APP 讓原生端套用。
+        </div>
+        <div class="theme-sync-actions">
+          <button class="theme-sync-yes" type="button" onclick="resolveThemeAssetChange(true)">是，一起更換並關閉 APP</button>
+          <button class="theme-sync-no" type="button" onclick="resolveThemeAssetChange(false)">否，只換這次畫面</button>
+        </div>
+      </div>
+    </div>
 
     <section id="homeView" class="view active">
       <div class="top-space"></div>
@@ -1275,6 +1392,8 @@
       showHome();
     }
 
+    const ANG_THEME_ASSET_STATE = { pendingTheme:'', previousTheme:'' };
+
     function initTheme(themeFromUrl){
       const body = document.body;
       const toggle = document.querySelector('.theme-toggle');
@@ -1284,13 +1403,133 @@
         body.dataset.theme = isDark ? 'dark' : 'light';
         toggle.setAttribute('aria-pressed',String(isDark));
       }
+      window.__angApplyEntryTheme = applyTheme;
       const savedTheme = localStorage.getItem(storageKey);
       applyTheme(themeFromUrl || savedTheme || 'dark');
       toggle.addEventListener('click',function(){
-        const nextTheme = body.dataset.theme === 'dark' ? 'light' : 'dark';
-        applyTheme(nextTheme);
-        localStorage.setItem(storageKey,nextTheme);
+        const previousTheme = body.dataset.theme === 'dark' ? 'dark' : 'light';
+        const nextTheme = previousTheme === 'dark' ? 'light' : 'dark';
+        openThemeAssetConfirm(nextTheme,previousTheme);
       });
+    }
+
+    function getThemeDisplayName(theme){
+      return (theme === 'dark' || theme === 'night') ? '暗夜版' : '日光版';
+    }
+
+    function openThemeAssetConfirm(nextTheme,previousTheme){
+      ANG_THEME_ASSET_STATE.pendingTheme = (nextTheme === 'dark' || nextTheme === 'night') ? 'dark' : 'light';
+      ANG_THEME_ASSET_STATE.previousTheme = (previousTheme === 'dark' || previousTheme === 'night') ? 'dark' : 'light';
+      const modal = document.getElementById('themeSyncModal');
+      const text = document.getElementById('themeSyncText');
+      if (text) text.innerText = '要切換成「' + getThemeDisplayName(ANG_THEME_ASSET_STATE.pendingTheme) + '」，是否連同 APP 圖示與 opening video 一起更換？';
+      if (modal) {
+        modal.classList.add('active');
+        modal.setAttribute('aria-hidden','false');
+      }
+    }
+
+    function closeThemeAssetConfirm(){
+      const modal = document.getElementById('themeSyncModal');
+      if (modal) {
+        modal.classList.remove('active');
+        modal.setAttribute('aria-hidden','true');
+      }
+    }
+
+    function resolveThemeAssetChange(shouldSyncApp){
+      const nextTheme = ANG_THEME_ASSET_STATE.pendingTheme || (document.body.dataset.theme === 'dark' ? 'light' : 'dark');
+      const previousTheme = ANG_THEME_ASSET_STATE.previousTheme || (nextTheme === 'dark' ? 'light' : 'dark');
+      if (typeof window.__angApplyEntryTheme === 'function') window.__angApplyEntryTheme(nextTheme);
+      closeThemeAssetConfirm();
+      if (!shouldSyncApp) {
+        try {
+          sessionStorage.setItem('ang-hr-session-theme',nextTheme);
+          localStorage.setItem('ang-hr-theme-not-saved',JSON.stringify({ theme:nextTheme, previousTheme:previousTheme, savedAt:Date.now() }));
+        } catch(_err) {}
+        return;
+      }
+      try {
+        localStorage.setItem('ang-hr-theme',nextTheme);
+        localStorage.setItem('ang-app-theme-assets',nextTheme);
+        localStorage.setItem('ang-app-theme-assets-pending',JSON.stringify({ theme:nextTheme, icon:nextTheme, openingVideo:nextTheme, closeApp:true, savedAt:Date.now() }));
+      } catch(_err2) {}
+      requestNativeThemeAssetSwap(nextTheme);
+    }
+
+    function requestNativeThemeAssetSwap(theme){
+      const finalTheme = (theme === 'dark' || theme === 'night') ? 'dark' : 'light';
+      const payload = {
+        theme:finalTheme,
+        mode:finalTheme,
+        icon:finalTheme === 'dark' ? 'night' : 'day',
+        openingVideo:finalTheme === 'dark' ? 'night' : 'day',
+        closeApp:true,
+        source:'index_theme_toggle'
+      };
+      let bridge = null;
+      let called = false;
+      try { bridge = (typeof getNativeBridge === 'function') ? getNativeBridge() : (window.ANGHRApp || window.AndroidBridge || window.AndroidNative || window.WebAppInterface || null); } catch(_e) { bridge = null; }
+      if (bridge) {
+        called = callNativeThemeMethod(bridge,'setThemeAssets',payload) || called;
+        called = callNativeThemeMethod(bridge,'switchThemeAssets',payload) || called;
+        called = callNativeThemeMethod(bridge,'changeThemeAssets',payload) || called;
+        called = callNativeThemeMethod(bridge,'setDayNightAssets',payload) || called;
+        called = callNativeThemeMethod(bridge,'switchDayNightAssets',payload) || called;
+        called = callNativeThemeMethod(bridge,'setLauncherIconAndOpeningVideo',payload) || called;
+        called = callNativeThemeMethod(bridge,'changeLauncherIcon',payload) || called;
+        called = callNativeThemeMethod(bridge,'setOpeningVideo',payload) || called;
+      }
+      try {
+        if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.angThemeAssets) {
+          window.webkit.messageHandlers.angThemeAssets.postMessage(payload);
+          called = true;
+        }
+      } catch(_iosErr) {}
+      try {
+        if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.ANGTheme && typeof window.Capacitor.Plugins.ANGTheme.setThemeAssets === 'function') {
+          window.Capacitor.Plugins.ANGTheme.setThemeAssets(payload);
+          called = true;
+        }
+      } catch(_capErr) {}
+      setTimeout(function(){ closeAppForThemeSwap(bridge,payload,called); },260);
+    }
+
+    function callNativeThemeMethod(bridge,methodName,payload){
+      try {
+        if (!bridge || typeof bridge[methodName] !== 'function') return false;
+        try { bridge[methodName](JSON.stringify(payload)); return true; } catch(_jsonErr) {}
+        try { bridge[methodName](payload.theme,payload.icon,payload.openingVideo); return true; } catch(_argsErr) {}
+        try { bridge[methodName](payload.theme); return true; } catch(_themeErr) {}
+      } catch(_err) {}
+      return false;
+    }
+
+    function closeAppForThemeSwap(bridge,payload,called){
+      try {
+        if (bridge) {
+          if (typeof bridge.closeAppForThemeSwap === 'function') { bridge.closeAppForThemeSwap(JSON.stringify(payload)); return; }
+          if (typeof bridge.restartForThemeSwap === 'function') { bridge.restartForThemeSwap(JSON.stringify(payload)); return; }
+          if (typeof bridge.closeApp === 'function') { bridge.closeApp(); return; }
+          if (typeof bridge.finish === 'function') { bridge.finish(); return; }
+          if (typeof bridge.exitApp === 'function') { bridge.exitApp(); return; }
+        }
+      } catch(_bridgeCloseErr) {}
+      try {
+        if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.angCloseApp) {
+          window.webkit.messageHandlers.angCloseApp.postMessage(payload);
+          return;
+        }
+      } catch(_iosCloseErr) {}
+      try {
+        if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App && typeof window.Capacitor.Plugins.App.exitApp === 'function') {
+          window.Capacitor.Plugins.App.exitApp();
+          return;
+        }
+      } catch(_capCloseErr) {}
+      if (!called) {
+        window.alert('已儲存為' + getThemeDisplayName(payload.theme) + '。目前瀏覽器沒有 APP 原生橋接，請關閉 APP 後重新開啟套用圖示與 opening video。');
+      }
     }
 
     function getParams(){ const sp = new URLSearchParams(window.location.search); const data = {}; sp.forEach(function(value,key){ data[key] = String(value || '').trim(); }); return data; }
