@@ -209,69 +209,324 @@
     .dpay-total-row{margin-top:12px;padding:12px 14px;background:var(--emp-gradient);border-radius:16px;display:flex;justify-content:space-between;align-items:center;color:#fff}
     .dpay-total-row .label{font-size:13px;font-weight:800;opacity:.92}
     .dpay-total-row .value{font-size:22px;font-weight:900}
-  
 
-    /* === ANG-99-HR 0603：日光 / 暗夜切換鈕，固定右上，不撞底部導航 === */
+
+    /* ANG_0603_DAY_NIGHT_FROM_INDEX_EMPLOYEE
+       來源：index.html 右上角日光 / 暗夜 pill 開關；只套到 employee，不修改 index。 */
+    :root{
+      --toggle-bg:rgba(255,255,255,.74);
+      --toggle-border:rgba(148,163,184,.34);
+      --toggle-shadow:0 10px 24px rgba(15,23,42,.12);
+      --toggle-icon-dim:rgba(71,85,105,.72);
+      --toggle-thumb-bg:#ffffff;
+      --toggle-thumb-shadow:0 6px 14px rgba(15,23,42,.16);
+      --toggle-thumb-x:0px;
+    }
+    body[data-theme="dark"]{
+      --bg:#050816;
+      --card:rgba(18,25,42,.96);
+      --text:#ffffff;
+      --muted:#cbd5e1;
+      --line:rgba(255,255,255,.10);
+      --soft:rgba(255,255,255,.07);
+      --toggle-bg:rgba(15,23,42,.52);
+      --toggle-border:rgba(255,255,255,.12);
+      --toggle-shadow:0 10px 24px rgba(0,0,0,.28);
+      --toggle-icon-dim:rgba(226,232,240,.68);
+      --toggle-thumb-bg:rgba(255,255,255,.15);
+      --toggle-thumb-shadow:0 0 18px rgba(0,217,255,.16);
+      --toggle-thumb-x:28px;
+      background:#050816;
+    }
+    .topbar{padding-right:84px;}
     .ang-daynight-toggle{
       position:fixed;
-      top:calc(10px + env(safe-area-inset-top));
-      right:12px;
-      z-index:1600;
-      width:48px;
-      height:48px;
-      border:none;
-      outline:none;
+      top:calc(14px + env(safe-area-inset-top));
+      right:14px;
+      width:58px;
+      height:30px;
+      padding:3px;
+      border:1px solid var(--toggle-border);
       border-radius:999px;
+      background:var(--toggle-bg);
+      box-shadow:var(--toggle-shadow);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      z-index:2200;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      align-items:center;
+      justify-items:center;
+      appearance:none;
+      -webkit-appearance:none;
+      overflow:hidden;
       cursor:pointer;
+    }
+    .ang-daynight-toggle::before{
+      content:"";
+      position:absolute;
+      left:3px;
+      top:3px;
+      width:24px;
+      height:24px;
+      border-radius:50%;
+      background:var(--toggle-thumb-bg);
+      box-shadow:var(--toggle-thumb-shadow);
+      transform:translateX(var(--toggle-thumb-x));
+      transition:transform .25s ease,background .25s ease,box-shadow .25s ease;
+    }
+    .ang-daynight-toggle span{
+      position:relative;
+      z-index:1;
+      width:24px;
+      height:24px;
       display:flex;
       align-items:center;
       justify-content:center;
-      font-size:21px;
-      font-weight:900;
-      color:#111827;
-      background:rgba(255,255,255,.92);
-      -webkit-backdrop-filter:blur(14px);
-      backdrop-filter:blur(14px);
-      box-shadow:0 8px 24px rgba(0,0,0,.14);
-      border:1px solid rgba(255,255,255,.62);
+      color:var(--toggle-icon-dim);
+      pointer-events:none;
     }
-    .ang-daynight-toggle:active{transform:scale(.94)}
-    .topbar-right{padding-right:58px}
-    body.ang-night{
-      --bg:#0f172a;
-      --card:#182235;
-      --text:#f8fafc;
-      --muted:#cbd5e1;
-      --line:#334155;
-      --soft:#243046;
-      color:var(--text);
-      background:var(--bg);
+    .ang-daynight-toggle svg{
+      width:14px;
+      height:14px;
+      stroke:currentColor;
+      fill:none;
+      stroke-width:2.1;
+      stroke-linecap:round;
+      stroke-linejoin:round;
     }
-    body.ang-night .topbar{background:rgba(15,23,42,.94);box-shadow:0 2px 14px rgba(0,0,0,.28)}
-    body.ang-night .card,
-    body.ang-night .trend-card,
-    body.ang-night .fc,
-    body.ang-night .notice-item,
-    body.ang-night .alert-item,
-    body.ang-night .timeline-item,
-    body.ang-night .record-item,
-    body.ang-night .day-pay-item,
-    body.ang-night .review-card{
-      background:linear-gradient(180deg,rgba(30,41,59,.96) 0%,rgba(var(--emp-rgb),.08) 100%);
-      color:var(--text);
+    body:not([data-theme="dark"]) .ang-daynight-toggle .sun{color:#0f172a;}
+    body[data-theme="dark"] .ang-daynight-toggle .moon{color:#fff;filter:drop-shadow(0 0 5px rgba(255,255,255,.32));}
+    body[data-theme="dark"] .topbar,
+    body[data-theme="dark"] .nav{
+      background:rgba(15,23,42,.94);
+      box-shadow:0 2px 14px rgba(0,0,0,.26);
       border-color:rgba(255,255,255,.08);
     }
-    body.ang-night input,
-    body.ang-night select,
-    body.ang-night textarea{background:#243046;color:#f8fafc}
-    body.ang-night .nav{background:rgba(15,23,42,.96);box-shadow:0 -5px 18px rgba(0,0,0,.32)}
-    body.ang-night .nav-btn{background:linear-gradient(180deg,rgba(30,41,59,.98) 0%,rgba(var(--emp-rgb),.10) 100%);color:#cbd5e1}
-    body.ang-night .ang-daynight-toggle{background:rgba(30,41,59,.94);color:#fff;border-color:rgba(255,255,255,.14)}
-    @media(max-width:390px){.ang-daynight-toggle{right:8px;width:44px;height:44px;font-size:19px}.topbar-right{padding-right:50px}}
+    body[data-theme="dark"] .card,
+    body[data-theme="dark"] .trend-card,
+    body[data-theme="dark"] .status-mini,
+    body[data-theme="dark"] .notice-item,
+    body[data-theme="dark"] .alert-item,
+    body[data-theme="dark"] .timeline-item,
+    body[data-theme="dark"] .record-item,
+    body[data-theme="dark"] .day-pay-item,
+    body[data-theme="dark"] .leave-v4-time,
+    body[data-theme="dark"] .leave-v4-qty-card,
+    body[data-theme="dark"] .upload-drop,
+    body[data-theme="dark"] .reimbursement-box,
+    body[data-theme="dark"] .fc,
+    body[data-theme="dark"] #cal-main,
+    body[data-theme="dark"] #cal-clock,
+    body[data-theme="dark"] #cal-salary-month,
+    body[data-theme="dark"] #cal-upload{
+      background:linear-gradient(180deg,rgba(18,25,42,.96) 0%,rgba(15,23,42,.94) 100%) !important;
+      color:var(--text) !important;
+      border-color:rgba(255,255,255,.10) !important;
+      box-shadow:0 10px 26px rgba(0,0,0,.22) !important;
+    }
+    body[data-theme="dark"] input,
+    body[data-theme="dark"] select,
+    body[data-theme="dark"] textarea{
+      background:rgba(255,255,255,.07) !important;
+      color:#fff !important;
+      border:1px solid rgba(255,255,255,.10) !important;
+    }
+    body[data-theme="dark"] input::placeholder,
+    body[data-theme="dark"] textarea::placeholder{color:rgba(226,232,240,.62) !important;}
+    body[data-theme="dark"] .brand-title-sub,
+    body[data-theme="dark"] .sub-title,
+    body[data-theme="dark"] .item-meta,
+    body[data-theme="dark"] .feature-desc,
+    body[data-theme="dark"] .leave-v4-hint{color:var(--muted) !important;}
+    body[data-theme="dark"] .nav-btn{
+      background:linear-gradient(180deg,rgba(30,41,59,.92) 0%,rgba(var(--emp-rgb),.10) 100%);
+      color:#cbd5e1;
+    }
+    body[data-theme="dark"] .btn-ghost,
+    body[data-theme="dark"] .btn-soft,
+    body[data-theme="dark"] .week-tabs button,
+    body[data-theme="dark"] .record-top-tabs button,
+    body[data-theme="dark"] .weekday-chip{
+      color:#ffffff;
+      border-color:rgba(255,255,255,.13);
+      box-shadow:0 10px 22px rgba(0,0,0,.20);
+    }
+    body[data-theme="dark"] .fc-theme-standard td,
+    body[data-theme="dark"] .fc-theme-standard th,
+    body[data-theme="dark"] .fc-theme-standard .fc-scrollgrid{border-color:rgba(255,255,255,.10) !important;}
+    body[data-theme="dark"] .fc .fc-daygrid-day-number,
+    body[data-theme="dark"] .fc .fc-toolbar-title{color:#ffffff !important;}
+    @media(max-width:390px){.topbar{padding-right:78px;}.ang-daynight-toggle{right:10px;}}
 
-  </style>
+  
+
+    /* ANG_0603_COMPANY_SWITCHER_MENU_START
+       LOGO 公司選單：最多三間公司；登出固定最下格；切換公司優先回員工主頁。 */
+    .brand-slot,
+    .brand-logo{cursor:pointer;user-select:none;-webkit-user-select:none;touch-action:manipulation;}
+    .brand-slot:active,
+    .brand-logo:active{transform:scale(.985);}
+    .ang-company-switcher-backdrop{
+      position:fixed;
+      inset:0;
+      z-index:2290;
+      display:none;
+      background:transparent;
+    }
+    .ang-company-switcher-backdrop.open{display:block;}
+    .ang-company-switcher{
+      position:fixed;
+      top:calc(92px + env(safe-area-inset-top));
+      left:12px;
+      width:min(286px,calc(100vw - 24px));
+      z-index:2300;
+      display:none;
+      transform-origin:32px -8px;
+      animation:angCompanyDrop .18s ease both;
+    }
+    .ang-company-switcher.open{display:block;}
+    @keyframes angCompanyDrop{
+      from{opacity:0;transform:translateY(-8px) scale(.97);}
+      to{opacity:1;transform:translateY(0) scale(1);}
+    }
+    .ang-company-panel{
+      width:100%;
+      padding:10px;
+      border-radius:30px;
+      background:rgba(255,255,255,.94);
+      border:1px solid rgba(148,163,184,.22);
+      box-shadow:0 18px 44px rgba(15,23,42,.18);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      display:grid;
+      gap:8px;
+    }
+    .ang-company-title{
+      padding:2px 6px 4px;
+      font-size:12px;
+      line-height:1.35;
+      font-weight:900;
+      color:var(--muted);
+    }
+    .ang-company-item{
+      width:100%;
+      min-height:74px;
+      border:none;
+      border-radius:24px;
+      padding:10px 12px;
+      display:grid;
+      grid-template-columns:46px minmax(0,1fr) auto;
+      gap:10px;
+      align-items:center;
+      text-align:left;
+      cursor:pointer;
+      background:linear-gradient(135deg,rgba(var(--emp-rgb),.14),rgba(255,255,255,.94));
+      color:var(--text);
+      box-shadow:0 10px 22px rgba(var(--emp-rgb),.08);
+      border:1px solid rgba(var(--emp-rgb),.16);
+      font:inherit;
+    }
+    .ang-company-item:active{transform:scale(.985);}
+    .ang-company-item.active{
+      background:var(--emp-gradient);
+      color:var(--text-on-emp);
+      border-color:transparent;
+      box-shadow:0 14px 28px rgba(var(--emp-rgb),.22);
+    }
+    .ang-company-mark{
+      width:46px;
+      height:46px;
+      border-radius:18px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+      background:rgba(255,255,255,.72);
+      color:var(--emp-deep);
+      font-size:15px;
+      font-weight:1000;
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.45);
+      flex:0 0 auto;
+    }
+    .ang-company-mark img{width:100%;height:100%;object-fit:cover;display:block;}
+    .ang-company-name{
+      min-width:0;
+      font-size:15px;
+      line-height:1.2;
+      font-weight:1000;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .ang-company-meta{
+      margin-top:4px;
+      font-size:11px;
+      line-height:1.3;
+      font-weight:800;
+      color:rgba(100,116,139,.92);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .ang-company-item.active .ang-company-meta{color:rgba(255,255,255,.88);}
+    .ang-company-check{
+      width:24px;
+      height:24px;
+      border-radius:999px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:rgba(255,255,255,.24);
+      font-size:14px;
+      font-weight:1000;
+      color:inherit;
+      opacity:.95;
+    }
+    .ang-company-logout{
+      margin-top:2px;
+      background:linear-gradient(135deg,rgba(239,68,68,.10),rgba(255,255,255,.95));
+      border-color:rgba(239,68,68,.18);
+      color:#b91c1c;
+    }
+    .ang-company-logout .ang-company-mark{color:#b91c1c;background:rgba(254,242,242,.92);}
+    body[data-theme="dark"] .ang-company-panel,
+    body.ang-night .ang-company-panel{
+      background:rgba(15,23,42,.94);
+      border-color:rgba(255,255,255,.10);
+      box-shadow:0 18px 44px rgba(0,0,0,.35);
+    }
+    body[data-theme="dark"] .ang-company-item,
+    body.ang-night .ang-company-item{
+      background:linear-gradient(135deg,rgba(var(--emp-rgb),.18),rgba(30,41,59,.96));
+      color:#fff;
+      border-color:rgba(255,255,255,.10);
+      box-shadow:0 10px 24px rgba(0,0,0,.22);
+    }
+    body[data-theme="dark"] .ang-company-item.active,
+    body.ang-night .ang-company-item.active{background:var(--emp-gradient);color:var(--text-on-emp);}
+    body[data-theme="dark"] .ang-company-meta,
+    body.ang-night .ang-company-meta{color:rgba(226,232,240,.76);}
+    body[data-theme="dark"] .ang-company-logout,
+    body.ang-night .ang-company-logout{
+      background:linear-gradient(135deg,rgba(239,68,68,.18),rgba(30,41,59,.96));
+      color:#fecaca;
+      border-color:rgba(239,68,68,.22);
+    }
+    @media(max-width:390px){
+      .ang-company-switcher{top:calc(88px + env(safe-area-inset-top));left:8px;width:min(280px,calc(100vw - 16px));}
+      .ang-company-item{min-height:70px;border-radius:22px;}
+    }
+    /* ANG_0603_COMPANY_SWITCHER_MENU_END */
+</style>
 </head>
 <body data-active-page="home">
+
+  <button class="ang-daynight-toggle" id="angDayNightToggle" type="button" aria-label="切換日光與暗夜模式" aria-pressed="false" onclick="angToggleDayNight()">
+    <span class="sun" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2.2M12 19.8V22M4.93 4.93l1.56 1.56M17.51 17.51l1.56 1.56M2 12h2.2M19.8 12H22M4.93 19.07l1.56-1.56M17.51 6.49l1.56-1.56"></path></svg></span>
+    <span class="moon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 14.2A8.6 8.6 0 0 1 9.8 3a7.5 7.5 0 1 0 11.2 11.2z"></path></svg></span>
+  </button>
+
 
   <div class="topbar">
     <div class="topbar-left">
@@ -291,7 +546,7 @@
 
   <div class="safe">
 
-    <!-- ========== 主頁 ========== -->
+    
     <section id="page-home" class="page active">
       <div class="hero">
         <div class="hero-top">
@@ -378,7 +633,7 @@
       </div>
     </section>
 
-    <!-- ========== 請假排班 ========== -->
+    
     <section id="page-schedule" class="page">
       <div class="card">
         <div class="week-tabs">
@@ -416,7 +671,7 @@
       </div>
     </section>
 
-    <!-- ========== 打卡記錄 ========== -->
+    
     <section id="page-clock" class="page">
       <div class="card" id="today-clock-status-card">
         <div class="mini-row"><h3>今日打卡狀態</h3><span class="badge ok">即時</span></div>
@@ -448,7 +703,7 @@
       </div>
     </section>
 
-    <!-- ========== 薪資明細 ========== -->
+    
     <section id="page-salary" class="page">
       <div class="card">
         <div class="mini-row"><h3>薪資預估</h3><span class="badge ok">管理端設定</span></div>
@@ -464,7 +719,7 @@
       </div>
     </section>
 
-    <!-- ========== 資料上傳 ========== -->
+    
     <section id="page-upload" class="page">
       <div class="card">
         <div class="calendar-title">
@@ -499,7 +754,7 @@
         <button class="btn-main" onclick="submitUpload()">確認並上傳雲端</button>
       </div>
 
-      <!-- iOS 捷徑設定 -->
+      
       <div class="card">
         <div class="mini-row"><h3>iOS 捷徑設定</h3><span class="badge ok">快速打卡</span></div>
         <label class="label">選擇動作</label>
@@ -538,7 +793,7 @@
 
   </div>
 
-  <!-- ========== 底部導航 ========== -->
+  
   <nav class="nav">
     <button class="nav-btn" id="nav-schedule" onclick="nav('schedule')"><i class="fa-solid fa-calendar-check"></i><span>請假排班</span></button>
     <button class="nav-btn" id="nav-clock" onclick="nav('clock')"><i class="fa-solid fa-clock-rotate-left"></i><span>打卡記錄</span></button>
@@ -549,13 +804,13 @@
 
     <script>
     var APP_CTX={
-      id:'<?= typeof id!=="undefined"?id:"" ?>',
-      token:'<?= typeof token!=="undefined"?token:"" ?>',
-      page:'<?= typeof page!=="undefined"?page:"" ?>',
-      role:'<?= typeof role!=="undefined"?role:"" ?>',
-      name:'<?= typeof name!=="undefined"?name:"" ?>',
-      nickname:'<?= typeof nickname!=="undefined"?nickname:"" ?>',
-      webAppUrl:'<?= typeof webAppUrl!=="undefined"?webAppUrl:"" ?>'
+      id:'ANG0603',
+      token:'0273d013afe64538aeb3f52d18d289ab1775139447000',
+      page:'employee',
+      role:'Creator',
+      name:'米馳浩',
+      nickname:'米米',
+      webAppUrl:'https:\/\/script.google.com\/macros\/s\/AKfycbxmSMR9pqT1njaiANL5Ca8VmbWI4KbdUFnpSAJeE2WQGbITjwml2S4eGY4QNknlJA0FRw\/exec'
     };
 
     var HOURLY_RATE=200;
@@ -595,9 +850,9 @@
     var currentUserToken=APP_CTX.token;
     var currentPage='home';
 
-    /* ==================== 工具函數 ==================== */
+     
 
-    // ANG.lo HR System Deploy Version: 129 - safeCall: avoid one render error breaking the rest of bootstrap/nav
+    
     function safeCall(fn,label){
       try{ if(typeof fn==='function') return fn(); }
       catch(e){ try{console.error('[ANG_SAFE_CALL]',label||'',e)}catch(_e){} }
@@ -719,7 +974,7 @@
       if(/^https?:\/\/|^data:image/i.test(v))el.innerHTML='<img src="'+v+'" alt="logo">';else el.textContent=v||'ANG';
     }
 
-    /* ==================== 導航 ==================== */
+     
 
     function nav(id){
       try{
@@ -778,19 +1033,24 @@
       var role = String(APP_CTX.role || '').trim().toLowerCase();
       var canEnterAdmin = ['creator','admin','manager'].indexOf(role) > -1;
 
+      // 底部中間「員工主頁」規則：
+      // 1. 目前已在員工首頁，且有管理權限：只導向同一支 GAS 的 page=admin。
+      // 2. 目前已在員工首頁，但沒有管理權限：只回到頁面最上方，不重整、不外跳。
+      // 3. 目前在請假 / 打卡 / 薪資 / 上傳：只切回本頁內的員工首頁，不跳其他網站。
       if(currentPage === 'home'){
         if(canEnterAdmin){
           hardGo('admin');
           return;
         }
-        refreshCurrentPage();
+        try{ window.scrollTo({top:0,behavior:'smooth'}); }catch(err){ window.scrollTo(0,0); }
         return;
       }
 
-      hardGo('employee');
+      nav('home');
+      try{ window.scrollTo({top:0,behavior:'smooth'}); }catch(err2){ window.scrollTo(0,0); }
     }
 
-    /* ==================== API ==================== */
+     
 
     function apiPost(action,payload,callback){
       var fp=Object.assign({},payload||{},{action:action});
@@ -805,7 +1065,7 @@
       .finally(function(){clearTimeout(timer)});
     }
 
-    /* ==================== 初始化 ==================== */
+     
 
     function applyParamsFromUrl(){
       var p=getParams();
@@ -841,7 +1101,7 @@
       var dt=new Date(dE.value+'T'+hE.value+':'+mE.value+':00');return isNaN(dt.getTime())?null:dt;
     }
 
-    /* ==================== 請假 ==================== */
+     
 
     function normalizeLeaveV4Inputs_(){
       var dayI=qs('leave-days-input'),hourI=qs('leave-hours-input');if(!dayI||!hourI)return;
@@ -967,7 +1227,7 @@
       bindLeaveV4_();renderLeaveGrid();syncLeaveSummary();syncLeaveTimeVisibility();
     }
 
-    /* ==================== 排班 ==================== */
+     
 
     function getScheduleDatesForOffset(offset){
       var mode=(state.adminSalaryConfig&&state.adminSalaryConfig.mode)||'week';var now=new Date();now.setHours(0,0,0,0);
@@ -1033,7 +1293,7 @@
           wrap.appendChild(btn);
         });
       }else{
-        // 先加週星期標籤（第一行）
+        
         dates.forEach(function(dObj,idx){
           var locked=isLocked||dObj.getTime()<=today.getTime();
           var isWeekend=(dObj.getDay()===0||dObj.getDay()===6);
@@ -1055,7 +1315,7 @@
           })(idx,locked);
           wrap.appendChild(hdr);
         });
-        // 再加日期 chip（第二行）
+        
         dates.forEach(function(dObj,idx){
           var locked=isLocked||dObj.getTime()<=today.getTime();
           var isWeekend=(dObj.getDay()===0||dObj.getDay()===6);
@@ -1091,7 +1351,7 @@
           state.scheduleConfirmMap[state.scheduleWeekOffset]=summary;
           var now=new Date();var timeStr=(now.getMonth()+1)+'/'+now.getDate()+' '+pad2(now.getHours())+':'+pad2(now.getMinutes());
           var noteEl=qs('schedule-confirm-note');if(noteEl)noteEl.textContent='✅ 已送出：'+summary+'（'+timeStr+'）';
-          // 儲存狀態到 localStorage
+          
           var id=state.employeeId;
           try{localStorage.setItem('ang_schedule_confirm_map_'+id,JSON.stringify(state.scheduleConfirmMap))}catch(e){}
           try{localStorage.setItem('ang_schedule_week_offset_'+id,String(state.scheduleWeekOffset))}catch(e){}
@@ -1101,7 +1361,7 @@
       });
     }
 
-    /* ==================== 打卡 ==================== */
+     
 
     function renderClockRecordList(){
       var wrap=qs('clock-record-list');if(!wrap)return;
@@ -1172,7 +1432,7 @@
       apiPost('employeeClockFix',{id:state.employeeId,token:state.userToken,type:type,timeVal:date+'T'+hour+':'+minute,note:note},function(res){if(res&&res.ok){if(qs('clock-note'))qs('clock-note').value='';showSuccess(res.message||'補打卡申請已送出');loadBootstrapData()}});
     }
 
-    /* ==================== 薪資 ==================== */
+     
 
     function renderSalaryDayPayList(){
       var wrap=qs('salary-day-pay-list');if(!wrap)return;
@@ -1262,7 +1522,7 @@
       }).withFailureHandler(function(e){Swal.close();Swal.fire('錯誤',String(e),'error')}).downloadSalarySlip({id:currentUserId,token:currentUserToken,month:month,mode:(cfg.mode||'week'),weekStart:(cfg.weekStart||'週一'),monthStart:(cfg.monthStart||'1號')});
     }
 
-    /* ==================== 上傳 ==================== */
+     
 
     function pickUploadType(type,hint){
       nav('upload');state.uploadType=type;
@@ -1311,7 +1571,7 @@
       if(!type){showWarning('請先選擇上傳項目');return}
       var extra={};if(type==='公費請款（預先發）'){extra.amount=qs('r-amount')?qs('r-amount').value.trim():'';extra.item=qs('r-item')?qs('r-item').value.trim():''}
       function clearForm(){if(qs('u-type'))qs('u-type').value='';if(qs('u-note'))qs('u-note').value='';if(qs('u-file'))qs('u-file').value='';if(qs('r-amount'))qs('r-amount').value='';if(qs('r-item'))qs('r-item').value='';setText('f-name','尚未選擇檔案');document.querySelectorAll('.upload-type-btn').forEach(function(el){el.classList.remove('active')});}
-      // ANG.lo HR System Deploy Version: 129 - Fix 5: show Drive link on success, real error on failure
+      
       function send(payload){
         apiPost('employeeUpload',Object.assign({id:state.employeeId,token:state.userToken,type:type,note:note},extra,payload||{}),function(res){
           if(!res||!res.ok){showError((res&&res.message)||'上傳失敗');return;}
@@ -1328,7 +1588,7 @@
       if(file){var reader=new FileReader();reader.onload=function(e){var result=String((e&&e.target&&e.target.result)||'');send({fileName:file.name,fileMime:file.type,fileData:result.indexOf(',')>-1?result.split(',')[1]:result})};reader.onerror=function(){showError('檔案讀取失敗')};reader.readAsDataURL(file)}else{send({})}
     }
 
-    /* ==================== iOS 捷徑 ==================== */
+     
 
     var _shortcutJsonData = null;
 
@@ -1405,7 +1665,7 @@
       });
     }
 
-    /* ==================== 留言 ==================== */
+     
 
     function submitMessage(){
       var input=qs('messageInput'),text=input?input.value.trim():'';
@@ -1425,11 +1685,11 @@
       });
     }
 
-    // ==================== 渲染 ====================
+    
     var REVIEW_EVENTS_BOUND = false;
     var REVIEW_BUSY = false;
 
-    // ANG.lo HR System Deploy Version: 129 - stricter blank-card filter
+    
     function hasReviewContent_(x){
       if(!x) return false;
       var status=String(x.status||x.review_status||'').toLowerCase().trim();
@@ -1574,7 +1834,7 @@
       }).join('');
     }
 
-    /* ==================== 月曆 ==================== */
+     
 
     function seedCalendarEvents(leaveRows){
       state.events=[];
@@ -1660,7 +1920,7 @@
       }
     }
 
-    /* ==================== 後端載入 ==================== */
+     
 
     function loadPublishedScheduleCalendar(){
       var id=state.employeeId,token=state.userToken;
@@ -1685,7 +1945,7 @@
       apiPost('employeeHeaderData',{},function(res){if(!res||!res.ok)return;if(res.brandTitleMain)setText('brandTitleMain',res.brandTitleMain);if(res.brandTitleSub)setText('brandTitleSub',res.brandTitleSub);setLogo(res.logoValue||'ANG');setText('topBrandTitle','ANG.lo Engine');setText('topBrandSub','HR 系統｜'+(state.employeeId||APP_CTX.id||'讀取中'))});
     }
 
-    // ANG.lo HR System Deploy Version: 129 - Fix 8: bootstrap data with fallbacks
+    
     function handleBootstrapData(res){
       if(!res||!res.ok)return;
       var p=res.profile||{},s=res.system||{};
@@ -1736,7 +1996,7 @@
       }
     }
 
-    /* ==================== 今日狀態（真實資料） ==================== */
+     
 
     function loadTodayStatus(){
       if(!gas())return;
@@ -1748,7 +2008,7 @@
       }).withFailureHandler(function(){}).getTodayStatus({id:currentUserId,token:currentUserToken});
     }
 
-    /* ==================== 近期動態（真實資料） ==================== */
+     
 
     function loadRecentActivities(){
       if(!gas())return;
@@ -1759,7 +2019,7 @@
       }).withFailureHandler(function(){}).getRecentActivities({id:currentUserId,token:currentUserToken});
     }
 
-    /* ==================== 主管通知（真實資料） ==================== */
+     
 
     function loadNotices(){
       if(!gas())return;
@@ -1770,7 +2030,7 @@
       }).withFailureHandler(function(){}).getNoticesForEmployee({id:currentUserId,token:currentUserToken});
     }
 
-    /* ==================== 選休狀態恢復 ==================== */
+     
 
     function restoreScheduleState(){
       var id=state.employeeId;if(!id)return;
@@ -1808,7 +2068,7 @@
       }).withFailureHandler(function(){}).isPreselectOpen({id:currentUserId,token:currentUserToken});
     }
 
-    /* ==================== 設定變動輪詢（60秒） ==================== */
+     
 
     var lastSettingsHash='';
     function checkForUpdates(){
@@ -1819,15 +2079,15 @@
       }).withFailureHandler(function(){}).getSettingsHash({id:currentUserId,token:currentUserToken});
     }
 
-    /* ==================== 主題初始化 ==================== */
+     
 
     function initThemePicker(){
       try{var sv=Number(localStorage.getItem('ang_theme_variation')||0);currentVariation=Number.isFinite(sv)?Math.max(0,Math.min(sv,3)):0;syncThemeInputs();refreshThemePreviewButtons();syncThemeAngleDisplay();applyThemeColors(state.themeColors||defaultThemeColors,false)}catch(e){}
     }
 
-    /* ==================== window.onload ==================== */
+     
 
-    // ANG.lo HR System Deploy Version: 129 - safeCall guards: one render error must not break nav/bootstrap
+    
     window.onload=function(){
       safeCall(initDefaults,'initDefaults');
       safeCall(applyParamsFromUrl,'applyParamsFromUrl');
@@ -1848,7 +2108,7 @@
       safeCall(updateScheduleTitle,'updateScheduleTitle');
       safeCall(updateScheduleConfirmNote,'updateScheduleConfirmNote');
 
-      // 確保導航按鈕在 DOM ready 後才綁定，不被初始化錯誤中斷
+      
       safeCall(function(){
         document.querySelectorAll('.nav-btn').forEach(function(btn){
           if(!btn.getAttribute('data-nav-bound')){
@@ -1870,52 +2130,471 @@
 
 
   <script>
-    /* ANG-99-HR 0603：日光 / 暗夜切換，右上角，不動 index */
+    /* ANG_0603_DAY_NIGHT_AND_SESSION_FIX */
     (function(){
-      var KEY='ang_99_hr_daynight_mode';
-      var btnId='angDayNightToggle';
-      function isNight(){return String(localStorage.getItem(KEY)||'day')==='night'}
-      function nativeBridge(){return window.ANGNative||window.AngNative||window.AngHrApp||null}
-      function setMode(mode,fullReplace){
-        mode=mode==='night'?'night':'day';
-        localStorage.setItem(KEY,mode);
-        document.body.classList.toggle('ang-night',mode==='night');
-        document.documentElement.setAttribute('data-ang-mode',mode);
-        var b=document.getElementById(btnId);
-        if(b){b.innerHTML=mode==='night'?'☀️':'🌙';b.setAttribute('aria-label',mode==='night'?'切換日光':'切換暗夜')}
-        if(fullReplace){
-          var bridge=nativeBridge();
-          try{
-            if(bridge&&typeof bridge.applyAppearanceMode==='function'){
-              bridge.applyAppearanceMode(mode,'true');
-            }else if(bridge&&typeof bridge.toast==='function'){
-              bridge.toast('已切換'+(mode==='night'?'暗夜':'日光')+'模式');
-            }
-          }catch(e){}
-          window.dispatchEvent(new CustomEvent('ang-theme-full-replace',{detail:{mode:mode,video:mode==='day'?'night_to_day':'day_to_night'}}));
-        }
-      }
-      window.angApplyDayNight=function(mode,fullReplace){setMode(mode,!!fullReplace)};
-      window.angToggleDayNight=function(){
-        var next=isNight()?'day':'night';
-        var label=next==='night'?'暗夜':'日光';
-        var msg='要完整更換為「'+label+'」嗎？\n\n選「是」會同步通知 ANG-99-HR App 更換 App icon / 開場影片，並由 App 自動重開。\n選「否」只切換目前頁面顏色。';
-        if(window.Swal){
-          Swal.fire({title:'切換'+label+'模式',text:'是否完整更換 App icon 與開場影片？',icon:'question',showCancelButton:true,confirmButtonText:'是，完整更換',cancelButtonText:'只換畫面'}).then(function(r){setMode(next,!!r.isConfirmed)});
-        }else{
-          setMode(next,window.confirm(msg));
-        }
+      var THEME_KEY = 'ang-hr-theme';
+      var LEGACY_KEY = 'ang_99_hr_daynight_mode';
+      var SESSION_KEYS = {
+        company:'ang_hr_active_company_id',
+        employee:'ang_hr_active_employee_id',
+        token:'ang_hr_active_login_token',
+        device:'ang_hr_device_id'
       };
-      function boot(){
-        if(!document.getElementById(btnId)){
-          var b=document.createElement('button');
-          b.type='button';b.id=btnId;b.className='ang-daynight-toggle';b.onclick=window.angToggleDayNight;document.body.appendChild(b);
-        }
-        setMode(isNight()?'night':'day',false);
+
+      function getParam(name){
+        try { return new URLSearchParams(window.location.search).get(name) || ''; }
+        catch(err){ return ''; }
       }
-      if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+
+      function normalizeTheme(value){
+        value = String(value || '').trim().toLowerCase();
+        if (value === 'dark' || value === 'night' || value === '暗夜') return 'dark';
+        if (value === 'light' || value === 'day' || value === '日光') return 'light';
+        return '';
+      }
+
+      function getOrCreateDeviceId(){
+        try {
+          var saved = localStorage.getItem(SESSION_KEYS.device) || localStorage.getItem('ang_device_id') || '';
+          if (!saved) {
+            saved = 'DEV-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).slice(2,10).toUpperCase();
+          }
+          localStorage.setItem(SESSION_KEYS.device,saved);
+          localStorage.setItem('ang_device_id',saved);
+          return saved;
+        } catch(err) {
+          return 'DEV-' + Date.now().toString(36).toUpperCase();
+        }
+      }
+
+      function persistEmployeeSession(){
+        try {
+          var ctx = window.APP_CTX || {};
+          var companyId = String(getParam('company_id') || getParam('company') || ctx.company_id || ctx.company || localStorage.getItem(SESSION_KEYS.company) || '').trim().toUpperCase();
+          var employeeId = String(getParam('employee_id') || getParam('id') || ctx.employee_id || ctx.id || '').trim().toUpperCase();
+          var token = String(getParam('session_token') || getParam('loginToken') || getParam('token') || ctx.session_token || ctx.loginToken || ctx.token || localStorage.getItem('ang_hr_active_login_token') || localStorage.getItem('session_token') || localStorage.getItem('loginToken') || localStorage.getItem('emp_login_token') || '').trim();
+          var deviceId = getOrCreateDeviceId();
+          if (companyId) {
+            localStorage.setItem(SESSION_KEYS.company,companyId);
+            localStorage.setItem('company_id',companyId);
+          }
+          if (employeeId) {
+            localStorage.setItem(SESSION_KEYS.employee,employeeId);
+            localStorage.setItem('employee_id',employeeId);
+            localStorage.setItem('emp_logged_in',employeeId);
+            localStorage.setItem('loginId',employeeId);
+          }
+          if (token) {
+            localStorage.setItem(SESSION_KEYS.token,token);
+            localStorage.setItem('session_token',token);
+            localStorage.setItem('emp_login_token',token);
+            localStorage.setItem('loginToken',token);
+          }
+          localStorage.setItem('isLoggedIn','1');
+          if (ctx.role) { localStorage.setItem('ang_user_role',String(ctx.role)); localStorage.setItem('ang_employee_role',String(ctx.role)); }
+          if (ctx.name || ctx.nickname) localStorage.setItem('emp_name',String(ctx.nickname || ctx.name || ''));
+          window.ANG_EMPLOYEE_SESSION = { company_id:companyId, employee_id:employeeId, token:token, device_id:deviceId };
+        } catch(err) {}
+      }
+
+      function nativeBridge(){
+        return window.ANGNative || window.ANGHRApp || window.AndroidBridge || window.AndroidNative || window.WebAppInterface || null;
+      }
+
+      function applyNativeAppearance(mode, fullReplace){
+        var dayNight = mode === 'dark' ? 'night' : 'day';
+        var payload = {
+          mode:dayNight,
+          theme:mode,
+          fullReplace:!!fullReplace,
+          replaceAppIcon:!!fullReplace,
+          replaceOpeningVideo:!!fullReplace,
+          restartApp:!!fullReplace,
+          transitionVideo:mode === 'light' ? 'night_to_day' : 'day_to_night'
+        };
+        var bridge = nativeBridge();
+        try {
+          if (bridge && typeof bridge.applyAppearanceMode === 'function') {
+            bridge.applyAppearanceMode(dayNight, !!fullReplace);
+            return true;
+          }
+          if (bridge && typeof bridge.applyDayNightMode === 'function') {
+            bridge.applyDayNightMode(JSON.stringify(payload));
+            return true;
+          }
+          if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.ANGAppearance) {
+            window.webkit.messageHandlers.ANGAppearance.postMessage(payload);
+            return true;
+          }
+        } catch(err) {}
+        try { window.dispatchEvent(new CustomEvent('ang-theme-full-replace',{ detail:payload })); } catch(err2) {}
+        return false;
+      }
+
+      function applyTheme(mode, save){
+        mode = normalizeTheme(mode) || 'dark';
+        document.body.dataset.theme = mode;
+        var btn = document.getElementById('angDayNightToggle');
+        if (btn) btn.setAttribute('aria-pressed',String(mode === 'dark'));
+        if (save) {
+          try {
+            localStorage.setItem(THEME_KEY,mode);
+            localStorage.setItem(LEGACY_KEY,mode === 'dark' ? 'night' : 'day');
+          } catch(err) {}
+        }
+      }
+
+      function askFullReplace(nextMode){
+        var label = nextMode === 'dark' ? '暗夜' : '日光';
+        if (window.Swal && typeof Swal.fire === 'function') {
+          return Swal.fire({
+            title:'完整更換嗎？',
+            text:'要切換成' + label + '模式，是否同步更換 App icon 與開場影片？',
+            icon:'question',
+            showCancelButton:true,
+            showDenyButton:true,
+            confirmButtonText:'完整更換',
+            denyButtonText:'只切頁面',
+            cancelButtonText:'取消'
+          }).then(function(res){
+            if (res.isConfirmed) return 'full';
+            if (res.isDenied) return 'page';
+            return 'cancel';
+          });
+        }
+        return Promise.resolve(window.confirm('要完整更換 App icon 與開場影片嗎？') ? 'full' : 'page');
+      }
+
+      window.angApplyDayNight = function(mode, save){ applyTheme(mode, save !== false); };
+      window.angToggleDayNight = function(){
+        var current = normalizeTheme(document.body.dataset.theme) || 'dark';
+        var next = current === 'dark' ? 'light' : 'dark';
+        askFullReplace(next).then(function(choice){
+          if (choice === 'cancel') return;
+          applyTheme(next,true);
+          if (choice === 'full') applyNativeAppearance(next,true);
+        });
+      };
+
+      function init(){
+        persistEmployeeSession();
+        var saved = normalizeTheme(getParam('theme')) || normalizeTheme(localStorage.getItem(THEME_KEY)) || normalizeTheme(localStorage.getItem(LEGACY_KEY)) || 'dark';
+        applyTheme(saved,false);
+      }
+
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',init);
+      else init();
     })();
   </script>
 
+
+
+  <script>
+    /* ANG_0603_COMPANY_SWITCHER_AND_HOME_TOGGLE_START
+       8. LOGO 展開公司切換選單：最多 3 間公司，登出固定最下格。
+       9. 首頁鍵：有權限者員工 / 管理互切，無權限者只滑到頂部。 */
+    (function(){
+      var MAX_COMPANIES = 3;
+      var ACTIVE_COMPANY_KEY = 'ang_hr_active_company_id';
+      var COMPANY_LIST_KEYS = ['ang_hr_company_list','ang_company_list','ang_employee_companies','ang_hr_employee_companies'];
+      var menuReady = false;
+      var menuEl = null;
+      var backdropEl = null;
+
+      function safeText(v){ return String(v == null ? '' : v).trim(); }
+      function safeUpper(v){ return safeText(v).toUpperCase(); }
+      function qsLocal(id){ return document.getElementById(id); }
+      function getParam(name){
+        try { return new URLSearchParams(window.location.search).get(name) || ''; }
+        catch(err){ return ''; }
+      }
+      function escapeHtmlLocal(s){
+        return safeText(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+      }
+      function getCurrentEmployeeId(){
+        return safeUpper(getParam('employee_id') || getParam('id') || window.currentUserId || (window.APP_CTX && (APP_CTX.employee_id || APP_CTX.id)) || localStorage.getItem('ang_employee_id') || localStorage.getItem('employee_id') || localStorage.getItem('loginId') || '');
+      }
+      function getCurrentToken(){
+        return safeText(getParam('session_token') || getParam('loginToken') || getParam('token') || window.currentUserToken || (window.APP_CTX && (APP_CTX.session_token || APP_CTX.loginToken || APP_CTX.token)) || localStorage.getItem('ang_hr_active_login_token') || localStorage.getItem('session_token') || localStorage.getItem('loginToken') || localStorage.getItem('emp_login_token') || '');
+      }
+      function getCurrentCompanyId(){
+        return safeUpper(getParam('company_id') || getParam('company') || (window.ANG_EMPLOYEE_SESSION && ANG_EMPLOYEE_SESSION.company_id) || (window.APP_CTX && (APP_CTX.company_id || APP_CTX.companyId || APP_CTX.company)) || localStorage.getItem(ACTIVE_COMPANY_KEY) || localStorage.getItem('company_id') || localStorage.getItem('ang_company_id') || 'MAIN');
+      }
+      function getDeviceId(){
+        var saved = '';
+        try { saved = localStorage.getItem('ang_hr_device_id') || localStorage.getItem('ang_device_id') || localStorage.getItem('device_id') || ''; } catch(err) {}
+        if (!saved) saved = 'DEV-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).slice(2,10).toUpperCase();
+        try {
+          localStorage.setItem('ang_hr_device_id',saved);
+          localStorage.setItem('ang_device_id',saved);
+          localStorage.setItem('device_id',saved);
+        } catch(err2) {}
+        return saved;
+      }
+      function getBaseWebAppUrl(){
+        var ctxUrl = safeText(window.APP_CTX && APP_CTX.webAppUrl);
+        if (/^https?:\/\//i.test(ctxUrl)) return ctxUrl;
+        try { return window.location.href.split('#')[0].split('?')[0]; }
+        catch(err){ return ''; }
+      }
+      function companyInitial(name,id){
+        var n = safeText(name || id || 'ANG');
+        var clean = n.replace(/\s+/g,'');
+        if (/^[A-Za-z0-9]/.test(clean)) return clean.slice(0,3).toUpperCase();
+        return clean.slice(0,2) || 'ANG';
+      }
+      function normalizeCompany(raw, idx){
+        raw = raw || {};
+        if (typeof raw === 'string') raw = { id:raw, name:raw };
+        var id = safeUpper(raw.company_id || raw.companyId || raw.company || raw.id || raw.code || raw.key || raw.value || raw.spreadsheet_id || raw.spreadsheetId || '');
+        var name = safeText(raw.company_name || raw.companyName || raw.name || raw.label || raw.title || raw.display || '');
+        if (!id && name) id = safeUpper(name);
+        if (!id && idx === 0) id = getCurrentCompanyId();
+        if (!name) name = id === 'MAIN' ? '目前公司' : (id || '公司');
+        return {
+          id:id || ('COMPANY_' + (idx + 1)),
+          name:name,
+          role:safeText(raw.role || raw.userRole || raw.permission || raw.titleRole || ''),
+          employee_id:safeUpper(raw.employee_id || raw.employeeId || raw.emp_id || raw.empId || raw.idNo || getCurrentEmployeeId()),
+          token:safeText(raw.session_token || raw.loginToken || raw.token || raw.key || getCurrentToken()),
+          logo:safeText(raw.logo || raw.logo_url || raw.logoUrl || raw.icon || ''),
+          primary:!!(raw.primary || raw.isPrimary || raw.main)
+        };
+      }
+      function readListFromLocalStorage(){
+        for (var i=0;i<COMPANY_LIST_KEYS.length;i++){
+          try {
+            var raw = localStorage.getItem(COMPANY_LIST_KEYS[i]);
+            if (!raw) continue;
+            var parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) return parsed;
+          } catch(err) {}
+        }
+        return [];
+      }
+      function collectCompanySources(){
+        var out = [];
+        var ctx = window.APP_CTX || {};
+        var st = window.state || {};
+        [
+          ctx.company_memberships,
+          ctx.companyMemberships,
+          ctx.companies,
+          ctx.companyList,
+          ctx.company_list,
+          st.company_memberships,
+          st.companyMemberships,
+          st.companies,
+          st.companyList,
+          st.company_list,
+          window.ANG_COMPANIES,
+          window.ANG_COMPANY_LIST,
+          readListFromLocalStorage()
+        ].forEach(function(list){ if (Array.isArray(list)) out = out.concat(list); });
+        return out;
+      }
+      function getCompanies(){
+        var currentId = getCurrentCompanyId();
+        var currentName = safeText((window.APP_CTX && (APP_CTX.company_name || APP_CTX.companyName)) || localStorage.getItem('ang_company_name') || '目前公司');
+        var list = collectCompanySources().map(normalizeCompany).filter(function(c){ return !!c.id; });
+        var exists = list.some(function(c){ return c.id === currentId; });
+        if (!exists) list.unshift(normalizeCompany({ id:currentId, name:currentName, primary:true },0));
+        var seen = {};
+        list = list.filter(function(c){
+          if (!c || !c.id || seen[c.id]) return false;
+          seen[c.id] = true;
+          return true;
+        });
+        list.sort(function(a,b){
+          if (a.id === currentId) return -1;
+          if (b.id === currentId) return 1;
+          if (a.primary && !b.primary) return -1;
+          if (b.primary && !a.primary) return 1;
+          return 0;
+        });
+        return list.slice(0,MAX_COMPANIES);
+      }
+      function ensureMenu(){
+        if (menuReady) return;
+        menuReady = true;
+        backdropEl = document.createElement('div');
+        backdropEl.className = 'ang-company-switcher-backdrop';
+        backdropEl.id = 'angCompanySwitcherBackdrop';
+        backdropEl.addEventListener('click',closeMenu);
+        menuEl = document.createElement('div');
+        menuEl.className = 'ang-company-switcher';
+        menuEl.id = 'angCompanySwitcher';
+        menuEl.setAttribute('aria-hidden','true');
+        document.body.appendChild(backdropEl);
+        document.body.appendChild(menuEl);
+      }
+      function renderMenu(){
+        ensureMenu();
+        var companies = getCompanies();
+        var active = getCurrentCompanyId();
+        var html = '<div class="ang-company-panel" role="menu" aria-label="公司切換">';
+        html += '<div class="ang-company-title">切換公司（最多三間）</div>';
+        companies.forEach(function(c){
+          var isActive = c.id === active;
+          var mark = c.logo ? '<img src="' + escapeHtmlLocal(c.logo) + '" alt="">' : escapeHtmlLocal(companyInitial(c.name,c.id));
+          html += '<button type="button" class="ang-company-item' + (isActive ? ' active' : '') + '" data-company-id="' + escapeHtmlLocal(c.id) + '">'
+            + '<span class="ang-company-mark">' + mark + '</span>'
+            + '<span style="min-width:0"><span class="ang-company-name">' + escapeHtmlLocal(c.name) + '</span>'
+            + '<span class="ang-company-meta">' + escapeHtmlLocal((isActive ? '目前公司' : '切換到員工主頁') + (c.role ? '｜' + c.role : '')) + '</span></span>'
+            + '<span class="ang-company-check">' + (isActive ? '✓' : '›') + '</span>'
+            + '</button>';
+        });
+        html += '<button type="button" class="ang-company-item ang-company-logout" data-company-action="logout">'
+          + '<span class="ang-company-mark"><i class="fa-solid fa-arrow-right-from-bracket"></i></span>'
+          + '<span style="min-width:0"><span class="ang-company-name">登出</span><span class="ang-company-meta">清除本機登入資料</span></span>'
+          + '<span class="ang-company-check">⌄</span>'
+          + '</button>';
+        html += '</div>';
+        menuEl.innerHTML = html;
+        Array.prototype.forEach.call(menuEl.querySelectorAll('[data-company-id]'),function(btn){
+          btn.addEventListener('click',function(){
+            var id = btn.getAttribute('data-company-id') || '';
+            var target = getCompanies().filter(function(c){ return c.id === id; })[0];
+            if (target) switchCompany(target);
+          });
+        });
+        var logoutBtn = menuEl.querySelector('[data-company-action="logout"]');
+        if (logoutBtn) logoutBtn.addEventListener('click',logoutEmployee);
+      }
+      function openMenu(){
+        renderMenu();
+        if (backdropEl) backdropEl.classList.add('open');
+        if (menuEl) { menuEl.classList.add('open'); menuEl.setAttribute('aria-hidden','false'); }
+      }
+      function closeMenu(){
+        if (backdropEl) backdropEl.classList.remove('open');
+        if (menuEl) { menuEl.classList.remove('open'); menuEl.setAttribute('aria-hidden','true'); }
+      }
+      function toggleMenu(evt){
+        if (evt) { evt.preventDefault(); evt.stopPropagation(); }
+        ensureMenu();
+        if (menuEl && menuEl.classList.contains('open')) closeMenu();
+        else openMenu();
+      }
+      function saveCompanySession(c){
+        try {
+          localStorage.setItem(ACTIVE_COMPANY_KEY,c.id);
+          localStorage.setItem('company_id',c.id);
+          localStorage.setItem('ang_company_id',c.id);
+          localStorage.setItem('ang_company_name',c.name || c.id);
+          if (c.employee_id) {
+            localStorage.setItem('ang_hr_active_employee_id',c.employee_id);
+            localStorage.setItem('ang_employee_id',c.employee_id);
+            localStorage.setItem('employee_id',c.employee_id);
+            localStorage.setItem('emp_logged_in',c.employee_id);
+            localStorage.setItem('loginId',c.employee_id);
+          }
+          if (c.token) {
+            localStorage.setItem('ang_hr_active_login_token',c.token);
+            localStorage.setItem('session_token',c.token);
+            localStorage.setItem('emp_login_token',c.token);
+            localStorage.setItem('loginToken',c.token);
+          }
+          localStorage.setItem('isLoggedIn','1');
+        } catch(err) {}
+      }
+      function goEmployeeHomeWithCompany(c){
+        var base = getBaseWebAppUrl();
+        var employeeId = encodeURIComponent(c.employee_id || getCurrentEmployeeId());
+        var token = encodeURIComponent(c.token || getCurrentToken());
+        var deviceId = encodeURIComponent(getDeviceId());
+        if (/^https?:\/\//i.test(base)) {
+          var url = base
+            + '?page=employee'
+            + '&company_id=' + encodeURIComponent(c.id)
+            + '&id=' + employeeId
+            + '&token=' + token
+            + '&device_id=' + deviceId
+            + '&role=' + encodeURIComponent((window.APP_CTX && APP_CTX.role) || localStorage.getItem('ang_user_role') || localStorage.getItem('ang_employee_role') || '')
+            + '&_ts=' + Date.now();
+          try { window.location.replace(url); } catch(err){ window.location.href = url; }
+          return;
+        }
+        if (typeof window.nav === 'function') window.nav('home');
+        try { window.scrollTo({top:0,behavior:'smooth'}); } catch(err2){ window.scrollTo(0,0); }
+      }
+      function switchCompany(c){
+        closeMenu();
+        saveCompanySession(c);
+        // 切換公司一律優先跳到員工主頁；不使用其他外部網站。
+        goEmployeeHomeWithCompany(c);
+      }
+      function logoutEmployee(){
+        closeMenu();
+        try {
+          [
+            ACTIVE_COMPANY_KEY,'company_id','ang_company_id','ang_company_name',
+            'ang_hr_active_employee_id','ang_hr_active_login_token','ang_employee_id','employee_id',
+            'emp_logged_in','emp_login_token','loginToken','session_token','loginId','isLoggedIn','emp_name'
+          ].forEach(function(k){ localStorage.removeItem(k); });
+        } catch(err) {}
+        var base = getBaseWebAppUrl();
+        if (/^https?:\/\//i.test(base)) {
+          try { window.location.replace(base + '?page=index&_ts=' + Date.now()); }
+          catch(err2){ window.location.href = base + '?page=index&_ts=' + Date.now(); }
+          return;
+        }
+        try { window.location.reload(); } catch(err3) {}
+      }
+      function userCanAdmin(){
+        var role = safeText((window.APP_CTX && APP_CTX.role) || window.UROLE || getParam('role') || localStorage.getItem('ang_user_role') || localStorage.getItem('ang_employee_role') || localStorage.getItem('ang_role') || '').toLowerCase();
+        return ['creator','admin','manager'].indexOf(role) > -1;
+      }
+      function adminEmployeeToggleFromHome(){
+        var isAdminPage = safeText((window.APP_CTX && APP_CTX.page) || getParam('page')).toLowerCase() === 'admin';
+        var base = getBaseWebAppUrl();
+        var employeeId = encodeURIComponent(getCurrentEmployeeId());
+        var token = encodeURIComponent(getCurrentToken());
+        var companyId = encodeURIComponent(getCurrentCompanyId());
+        var deviceId = encodeURIComponent(getDeviceId());
+        var targetPage = isAdminPage ? 'employee' : 'admin';
+        if (/^https?:\/\//i.test(base)) {
+          var role = encodeURIComponent((window.APP_CTX && APP_CTX.role) || localStorage.getItem('ang_user_role') || localStorage.getItem('ang_employee_role') || '');
+          var url = base + '?page=' + targetPage + '&company_id=' + companyId + '&id=' + employeeId + '&token=' + token + '&device_id=' + deviceId + '&role=' + role + '&_ts=' + Date.now();
+          try { window.location.replace(url); } catch(err){ window.location.href = url; }
+          return;
+        }
+        if (targetPage === 'admin' && typeof window.hardGo === 'function') window.hardGo('admin');
+        else if (targetPage === 'employee' && typeof window.hardGo === 'function') window.hardGo('employee');
+      }
+
+      window.angSwitchCompany = switchCompany;
+      window.angOpenCompanySwitcher = openMenu;
+      window.angCloseCompanySwitcher = closeMenu;
+
+      // 覆蓋首頁鍵：首頁有管理權限就員工/管理互切；無權限只滑頂；非首頁只回本頁員工主頁。
+      window.handleEmployeeHomeClick = function(){
+        if (safeText(window.currentPage || 'home') === 'home') {
+          if (userCanAdmin()) { adminEmployeeToggleFromHome(); return; }
+          try { window.scrollTo({top:0,behavior:'smooth'}); } catch(err){ window.scrollTo(0,0); }
+          return;
+        }
+        if (typeof window.nav === 'function') window.nav('home');
+        try { window.scrollTo({top:0,behavior:'smooth'}); } catch(err2){ window.scrollTo(0,0); }
+      };
+
+      function bind(){
+        ensureMenu();
+        ['brandSlot','brandLogo'].forEach(function(id){
+          var el = qsLocal(id);
+          if (el && !el.getAttribute('data-company-switch-bound')) {
+            el.setAttribute('data-company-switch-bound','1');
+            el.setAttribute('role','button');
+            el.setAttribute('aria-label','開啟公司切換選單');
+            el.addEventListener('click',toggleMenu,false);
+          }
+        });
+        document.addEventListener('keydown',function(evt){ if (evt.key === 'Escape') closeMenu(); },false);
+      }
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',bind,false);
+      else bind();
+    })();
+    /* ANG_0603_COMPANY_SWITCHER_AND_HOME_TOGGLE_END */
+  </script>
 </body>
 </html>
