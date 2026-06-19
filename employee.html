@@ -361,29 +361,6 @@
     body[data-daynight="night"] .hero-daynight-inline .daynight-btn.active{background:var(--emp-gradient);color:var(--text-on-emp);border-color:transparent}
 
 
-    /* v14：日光 / 暗夜切換鈕固定在上方橫幅右邊，樣式與入口頁一致 */
-    .topbar-right{display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:4px}
-    .topbar-daynight-toggle{
-      width:58px;height:30px;padding:3px;border:1px solid rgba(148,163,184,.34);border-radius:999px;
-      background:rgba(255,255,255,.74);box-shadow:0 10px 24px rgba(15,23,42,.12);
-      backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
-      display:grid;grid-template-columns:1fr 1fr;align-items:center;justify-items:center;
-      position:relative;overflow:hidden;cursor:pointer;flex:0 0 auto;appearance:none;-webkit-appearance:none;
-    }
-    .topbar-daynight-toggle::before{
-      content:"";position:absolute;left:3px;top:3px;width:24px;height:24px;border-radius:50%;
-      background:#fff;box-shadow:0 6px 14px rgba(15,23,42,.16);
-      transform:translateX(0);transition:transform .25s ease,background .25s ease,box-shadow .25s ease;
-    }
-    .topbar-daynight-toggle span{position:relative;z-index:1;width:24px;height:24px;display:flex;align-items:center;justify-content:center;color:rgba(71,85,105,.72);pointer-events:none;font-size:13px}
-    .topbar-daynight-toggle .sun{color:#0f172a}
-    body[data-daynight="night"] .topbar-daynight-toggle{background:rgba(15,23,42,.52);border-color:rgba(255,255,255,.12);box-shadow:0 10px 24px rgba(0,0,0,.28)}
-    body[data-daynight="night"] .topbar-daynight-toggle::before{transform:translateX(28px);background:rgba(255,255,255,.15);box-shadow:0 0 18px rgba(0,217,255,.16)}
-    body[data-daynight="night"] .topbar-daynight-toggle span{color:rgba(226,232,240,.68)}
-    body[data-daynight="night"] .topbar-daynight-toggle .moon{color:#fff;filter:drop-shadow(0 0 5px rgba(255,255,255,.32))}
-    .hero-daynight-inline{display:none!important}
-
-
   </style>
 </head>
 <body data-active-page="home" data-daynight="day">
@@ -398,10 +375,6 @@
 </div>
 </div>
 <div class="topbar-right">
-<button class="topbar-daynight-toggle" id="topbarDaynightToggle" type="button" aria-label="切換日光與暗夜模式" aria-pressed="false" onclick="toggleDayNightMode()">
-<span class="sun" aria-hidden="true"><i class="fa-solid fa-sun"></i></span>
-<span class="moon" aria-hidden="true"><i class="fa-solid fa-moon"></i></span>
-</button>
 <div class="title" id="topBrandTitle"></div>
 <div class="sub-title" id="topBrandSub"></div>
 </div>
@@ -960,11 +933,6 @@
     function setDayNightMode(mode,save){
       mode=(mode==='night')?'night':'day';
       document.body.dataset.daynight=mode;
-      var topToggle=qs('topbarDaynightToggle');
-      if(topToggle){
-        topToggle.setAttribute('aria-pressed',String(mode==='night'));
-        topToggle.title=mode==='night'?'切換白天模式':'切換黑夜模式';
-      }
       var btn=qs('nav-daynight'),label=qs('daynightLabel');
       if(btn){
         var icon=btn.querySelector('i');
@@ -2305,5 +2273,57 @@
       safeCall(function(){setInterval(checkForUpdates,60000);checkForUpdates();},'checkForUpdates');
     };
   </script>
+
+<!-- ANG_V28_SHARED_UI：日夜完整更換、LOGO 公司切換、登出、首頁模式切換 -->
+<style>
+  /* 日光 / 暗夜鈕：位置與 index.html 一樣，固定在右上，不再撞到底部導航 */
+  :root{--ang-toggle-bg:rgba(255,255,255,.74);--ang-toggle-border:rgba(148,163,184,.34);--ang-toggle-shadow:0 10px 24px rgba(15,23,42,.12);--ang-toggle-icon-dim:rgba(71,85,105,.72);--ang-toggle-thumb-bg:#ffffff;--ang-toggle-thumb-shadow:0 6px 14px rgba(15,23,42,.16);--ang-toggle-thumb-x:0px;}
+  body[data-daynight="night"]{--ang-toggle-bg:rgba(15,23,42,.52);--ang-toggle-border:rgba(255,255,255,.12);--ang-toggle-shadow:0 10px 24px rgba(0,0,0,.28);--ang-toggle-icon-dim:rgba(226,232,240,.68);--ang-toggle-thumb-bg:rgba(255,255,255,.15);--ang-toggle-thumb-shadow:0 0 18px rgba(0,217,255,.16);--ang-toggle-thumb-x:28px;}
+  .topbar{padding-right:86px!important;}
+  .ang-v28-daynight-btn{position:fixed;top:14px;right:14px;z-index:1600;width:58px;height:30px;padding:3px;border:1px solid var(--ang-toggle-border);border-radius:999px;background:var(--ang-toggle-bg);box-shadow:var(--ang-toggle-shadow);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);display:grid;grid-template-columns:1fr 1fr;align-items:center;justify-items:center;appearance:none;-webkit-appearance:none;overflow:hidden;color:var(--ang-toggle-icon-dim);}
+  .ang-v28-daynight-btn::before{content:"";position:absolute;left:3px;top:3px;width:24px;height:24px;border-radius:50%;background:var(--ang-toggle-thumb-bg);box-shadow:var(--ang-toggle-thumb-shadow);transform:translateX(var(--ang-toggle-thumb-x));transition:transform .25s ease,background .25s ease,box-shadow .25s ease;}
+  .ang-v28-daynight-btn span{position:relative;z-index:1;width:24px;height:24px;display:flex;align-items:center;justify-content:center;color:var(--ang-toggle-icon-dim);pointer-events:none;}
+  .ang-v28-daynight-btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round;}
+  body:not([data-daynight="night"]) .ang-v28-daynight-btn .sun{color:#0f172a;}
+  body[data-daynight="night"] .ang-v28-daynight-btn .moon{color:#fff;filter:drop-shadow(0 0 5px rgba(255,255,255,.32));}
+  .ang-v28-company-menu{position:fixed;left:10px;top:66px;z-index:1500;display:none;min-width:210px;max-width:calc(100vw - 20px);padding:10px;border-radius:20px;background:rgba(255,255,255,.96);box-shadow:0 16px 40px rgba(15,23,42,.18);border:1px solid rgba(148,163,184,.24);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+  .ang-v28-company-menu.active{display:block}.ang-v28-company-item{width:100%;display:flex;align-items:center;gap:10px;text-align:left;border:0;background:#f8fafc;color:#111827;border-radius:16px;padding:11px;margin:0 0 8px;font-weight:900}.ang-v28-company-item:last-child{margin-bottom:0}.ang-v28-company-avatar{width:34px;height:34px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:var(--emp-gradient);color:#fff;font-weight:900;flex:0 0 auto}.ang-v28-company-name{font-size:14px;line-height:1.2}.ang-v28-company-sub{font-size:11px;color:#6b7280;margin-top:2px}.ang-v28-company-logout{background:#fef2f2!important;color:#b91c1c!important}.ang-v28-company-current{outline:2px solid rgba(var(--emp-rgb,255,122,33),.32)}
+  body[data-daynight="night"]{--bg:#07111f;--card:#101b2d;--text:#e5eefb;--muted:#9fb0c6;--line:rgba(255,255,255,.10);--soft:#172238;color:var(--text);background:var(--bg)}
+  body[data-daynight="night"] .topbar{background:rgba(8,15,28,.92);box-shadow:0 2px 14px rgba(0,0,0,.26)}
+  body[data-daynight="night"] .card,body[data-daynight="night"] .notice-item,body[data-daynight="night"] .review-card,body[data-daynight="night"] .people-card{background:linear-gradient(180deg,#101b2d 0%,rgba(var(--emp-rgb,255,122,33),.075) 100%);border-color:rgba(255,255,255,.09);box-shadow:0 10px 24px rgba(0,0,0,.22)}
+  body[data-daynight="night"] input,body[data-daynight="night"] select,body[data-daynight="night"] textarea{background:#172238;color:#e5eefb}body[data-daynight="night"] .ang-v28-company-menu{background:rgba(8,15,28,.96);border-color:rgba(255,255,255,.12)}body[data-daynight="night"] .ang-v28-company-item{background:#172238;color:#e5eefb}body[data-daynight="night"] .ang-v28-company-sub{color:#9fb0c6}
+</style>
+<div id="angV28CompanyMenu" class="ang-v28-company-menu" aria-hidden="true"></div>
+<button id="angV28DayNightBtn" class="ang-v28-daynight-btn" type="button" title="日光 / 暗夜" aria-label="切換日光與暗夜模式" aria-pressed="false">
+  <span class="sun" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2.2M12 19.8V22M4.93 4.93l1.56 1.56M17.51 17.51l1.56 1.56M2 12h2.2M19.8 12H22M4.93 19.07l1.56-1.56M17.51 6.49l1.56-1.56"></path></svg></span>
+  <span class="moon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 14.2A8.6 8.6 0 0 1 9.8 3a7.5 7.5 0 1 0 11.2 11.2z"></path></svg></span>
+</button>
+<script>
+(function(){
+  function q(id){return document.getElementById(id)}
+  function esc(s){return String(s||'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+  function getBridge(){return window.ANGHRApp||window.AndroidBridge||window.AndroidNative||window.WebAppInterface||null}
+  function currentDayNight(){return (document.body.getAttribute('data-daynight')||localStorage.getItem('ang_daynight_mode')||localStorage.getItem('ang-hr-theme')||'day').replace('dark','night').replace('light','day')}
+  function applyDayNight(mode,save){mode=(mode==='night'||mode==='dark')?'night':'day';document.body.setAttribute('data-daynight',mode);var btn=q('angV28DayNightBtn');if(btn){btn.setAttribute('aria-pressed',mode==='night'?'true':'false');btn.classList.toggle('is-night',mode==='night')}if(save){localStorage.setItem('ang_daynight_mode',mode);localStorage.setItem('ang-hr-theme',mode==='night'?'dark':'light')}}
+  function nativeThemeSwap(mode){var payload={theme:mode==='night'?'dark':'light',mode:mode,icon:mode,openingVideo:mode==='night'?'day_to_night':'night_to_day',closeApp:true,source:'v28_all_pages'};var b=getBridge();try{if(b){if(typeof b.setThemeAssets==='function'){b.setThemeAssets(JSON.stringify(payload));}else if(typeof b.setFullTheme==='function'){b.setFullTheme(mode, payload.openingVideo);}setTimeout(function(){try{if(typeof b.closeAppForThemeSwap==='function')b.closeAppForThemeSwap(JSON.stringify(payload));else if(typeof b.restartForThemeSwap==='function')b.restartForThemeSwap(JSON.stringify(payload));else if(typeof b.closeApp==='function')b.closeApp();else if(typeof b.finish==='function')b.finish();}catch(e){}},250);return true}}catch(e){}return false}
+  function askDayNight(){var now=currentDayNight();var next=now==='night'?'day':'night';var msg='要切換成「'+(next==='night'?'暗夜版':'日光版')+'」嗎？\n\n按「確定」＝同步更換 APP icon 與 opening video，並關閉/重開 APP。\n按「取消」＝只切換這次頁面，下次恢復原本設定。';if(confirm(msg)){applyDayNight(next,true);if(!nativeThemeSwap(next)){alert('已儲存設定。若 APP 未自動關閉，請手動關閉再開啟。')}}else{applyDayNight(next,false);sessionStorage.setItem('ang_daynight_session_only',next)}}
+  function parseCompanies(){var arr=[];try{arr=JSON.parse(localStorage.getItem('ang_employee_companies')||'[]')||[]}catch(e){}var company=localStorage.getItem('ang_company_id')||'';var name=(document.getElementById('brandTitleMain')||{}).innerText||company||'目前公司';if(company&&!arr.some(function(x){return String(x.company_id||x.id).toUpperCase()===String(company).toUpperCase()})){arr.unshift({company_id:company,company_name:name})}return arr.slice(0,3)}
+  function buildEmployeeUrl(company){var id=localStorage.getItem('ang_employee_id')||((window.state&&state.employeeId)||'');var token=localStorage.getItem('ang_employee_token')||localStorage.getItem('emp_login_token')||((window.state&&state.userToken)||'');return 'employee.html?company_id='+encodeURIComponent(company)+'&id='+encodeURIComponent(id)+'&token='+encodeURIComponent(token)+'&_ts='+Date.now()}
+  function toggleCompanyMenu(){var menu=q('angV28CompanyMenu');if(!menu)return;var active=menu.classList.contains('active');if(active){menu.classList.remove('active');menu.setAttribute('aria-hidden','true');return}var list=parseCompanies();var current=(localStorage.getItem('ang_company_id')||'').toUpperCase();var html=list.map(function(c){var id=String(c.company_id||c.id||'').toUpperCase();var nm=c.company_name||c.name||id;return '<button class="ang-v28-company-item '+(id===current?'ang-v28-company-current':'')+'" type="button" data-company="'+esc(id)+'"><span class="ang-v28-company-avatar">'+esc((nm||id).slice(0,1))+'</span><span><span class="ang-v28-company-name">'+esc(nm)+'</span><span class="ang-v28-company-sub">'+esc(id)+'</span></span></button>'}).join('');html+='<button class="ang-v28-company-item ang-v28-company-logout" type="button" data-logout="1"><span class="ang-v28-company-avatar">⎋</span><span><span class="ang-v28-company-name">登出</span><span class="ang-v28-company-sub">回到 Index 入口頁</span></span></button>';menu.innerHTML=html;menu.querySelectorAll('[data-company]').forEach(function(b){b.onclick=function(){var company=this.getAttribute('data-company');localStorage.setItem('ang_company_id',company);location.href=buildEmployeeUrl(company)}});var lo=menu.querySelector('[data-logout]');if(lo)lo.onclick=function(){localStorage.setItem('ang_employee_manual_logout','1');['ang_employee_token','emp_login_token','isLoggedIn'].forEach(function(k){localStorage.removeItem(k)});location.href='index.html?logout=1&_ts='+Date.now()};menu.classList.add('active');menu.setAttribute('aria-hidden','false')}
+  function loadCompanies(){try{var api=(window.ANG_HR_UTILS&&ANG_HR_UTILS.getApiUrl&&ANG_HR_UTILS.getApiUrl())||((window.CTX&&CTX.webAppUrl)||'');var id=localStorage.getItem('ang_employee_id')||((window.state&&state.employeeId)||'');var token=localStorage.getItem('ang_employee_token')||localStorage.getItem('emp_login_token')||((window.state&&state.userToken)||'');if(!api||!id||!token)return;fetch(api,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'getEmployeeCompanyMemberships',id:id,employee_id:id,token:token,session_token:token,device_id:localStorage.getItem('ang_device_id')||''})}).then(function(r){return r.text()}).then(function(t){var d={};try{d=JSON.parse(t||'{}')}catch(e){}if(d&&d.ok&&Array.isArray(d.companies))localStorage.setItem('ang_employee_companies',JSON.stringify(d.companies.slice(0,3)))})}catch(e){}}
+  function enhanceHomeModeSwitch(){var old=window.handleHomeClick;if(typeof old==='function'&&!old.__v28){var f=function(){try{var role=String(window.UROLE||localStorage.getItem('ang_user_role')||localStorage.getItem('ang_employee_role')||'').toLowerCase();if((window.currentPage||'home')==='home'){if(['creator','admin','manager'].indexOf(role)>=0){if(location.pathname.toLowerCase().indexOf('admin')>=0){location.href='employee.html?id='+encodeURIComponent(localStorage.getItem('ang_employee_id')||'')+'&token='+encodeURIComponent(localStorage.getItem('ang_employee_token')||localStorage.getItem('emp_login_token')||'')+'&company_id='+encodeURIComponent(localStorage.getItem('ang_company_id')||'')}else{location.href='admin.html?id='+encodeURIComponent(localStorage.getItem('ang_employee_id')||'')+'&token='+encodeURIComponent(localStorage.getItem('ang_employee_token')||localStorage.getItem('emp_login_token')||'')+'&role='+encodeURIComponent(localStorage.getItem('ang_employee_role')||'Admin')+'&company_id='+encodeURIComponent(localStorage.getItem('ang_company_id')||'')}return}else{window.scrollTo({top:0,behavior:'smooth'});return}}}catch(e){}return old.apply(this,arguments)};f.__v28=true;window.handleHomeClick=f}}
+  function init(){applyDayNight(sessionStorage.getItem('ang_daynight_session_only')||currentDayNight(),false);var btn=q('angV28DayNightBtn');if(btn)btn.onclick=askDayNight;var logo=q('brandLogo')||q('brandSlot');if(logo){logo.style.cursor='pointer';logo.onclick=function(e){e.stopPropagation();toggleCompanyMenu()}}document.addEventListener('click',function(e){var m=q('angV28CompanyMenu');if(m&&m.classList.contains('active')&&!m.contains(e.target)&&!(q('brandLogo')&&q('brandLogo').contains(e.target))){m.classList.remove('active')}});loadCompanies();enhanceHomeModeSwitch()}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();setTimeout(init,1000);
+})();
+</script>
+
+<script>
+(function(){
+  function getApi(){try{return (window.ANG_HR_UTILS&&ANG_HR_UTILS.getApiUrl&&ANG_HR_UTILS.getApiUrl())||(window.CTX&&CTX.webAppUrl)||''}catch(e){return''}}
+  function verifySession(){try{var api=getApi();var id=localStorage.getItem('ang_employee_id')||((window.state&&state.employeeId)||'');var token=localStorage.getItem('ang_employee_token')||localStorage.getItem('emp_login_token')||((window.state&&state.userToken)||'');var company=localStorage.getItem('ang_company_id')||((window.CTX&&CTX.companyId)||'');var device=localStorage.getItem('ang_device_id')||((window.CTX&&CTX.deviceId)||'');if(!api||!id||!token||!company)return;fetch(api,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'verifyEmployeeSession',company_id:company,id:id,employee_id:id,token:token,session_token:token,device_id:device})}).then(function(r){return r.text()}).then(function(t){var d={};try{d=JSON.parse(t||'{}')}catch(e){}if(!d.ok){localStorage.setItem('ang_employee_manual_logout','1');location.href='index.html?session_expired=1&_ts='+Date.now()}else{localStorage.removeItem('ang_employee_manual_logout');if(Array.isArray(d.companies))localStorage.setItem('ang_employee_companies',JSON.stringify(d.companies.slice(0,3)))}})}catch(e){}}
+  var old=window.onload;window.onload=function(){if(typeof old==='function')old.apply(this,arguments);setTimeout(verifySession,1100)};
+})();
+</script>
+
 </body>
 </html>
