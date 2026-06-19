@@ -2,10 +2,8 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
   <title>ANG HR SYSTEMS｜ENTRY</title>
-  <script src="config.js"></script>
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
   <link rel="preload" as="image" href="https://pub-51476fa95e5148749c1b932e123dc797.r2.dev/ang-entry-bg-day.png?v=20260613-r2-html" referrerpolicy="no-referrer" />
   <link rel="preload" as="image" href="https://pub-51476fa95e5148749c1b932e123dc797.r2.dev/ang-entry-bg-night.png?v=20260613-r2-html" referrerpolicy="no-referrer" />
   <style>
@@ -953,155 +951,35 @@
       }
     }
 
-  
 
-    /* ANG_V19：照上傳版外觀，只補原本註冊流程 / 玻璃卡片 / 手勢鎖定 */
-    .sheet-carousel{
-      overflow-y:hidden!important;
-      overscroll-behavior-x:contain!important;
-      overscroll-behavior-y:none!important;
-      scroll-snap-type:x mandatory!important;
-      scroll-behavior:smooth!important;
-      touch-action:none!important;
-    }
+    /* ANG_INDEX_V21_FEATURES_GLASS_FIX
+       保留原本流程，只補方案特色與卡片玻璃感。 */
     .plan-sheet{
-      scroll-snap-align:center!important;
-      opacity:.44!important;
-      filter:brightness(.84) saturate(.90)!important;
-      transform:scale(.935) translateY(14px)!important;
-      transition:opacity .28s var(--ease),filter .28s var(--ease),transform .28s var(--ease),box-shadow .28s var(--ease),background .28s ease!important;
-      touch-action:none!important;
+      background:rgba(255,255,255,.16)!important;
+      border-color:rgba(255,255,255,.24)!important;
+      backdrop-filter:blur(30px) saturate(1.18)!important;
+      -webkit-backdrop-filter:blur(30px) saturate(1.18)!important;
     }
-    .plan-sheet.active{
-      opacity:1!important;
-      filter:none!important;
-      transform:scale(1) translateY(0)!important;
-    }
-    .plan-sheet:not(.active) .sheet-detail{
-      pointer-events:none!important;
-    }
-    .plan-sheet:not(.active)::after{
-      content:"";
-      position:absolute;
-      inset:0;
-      z-index:3;
-      pointer-events:none;
-      background:rgba(15,23,42,.10);
-    }
-    body[data-theme="dark"] .plan-sheet:not(.active)::after{
-      background:rgba(0,0,0,.16);
-    }
-    .plan-sheet:not(.login),
-    .plan-sheet:not(.login) .sheet-summary,
-    .feature-card,
-    .feature-icon-box,
-    .signup-summary-box,
-    .flow-section,
-    .flow-verify-box{
-      backdrop-filter:blur(22px)!important;
-      -webkit-backdrop-filter:blur(22px)!important;
-    }
-    .feature-card,
-    .feature-card.green,
-    .feature-card.blue,
-    .feature-card.purple,
-    .feature-card.orange{
-      background:linear-gradient(135deg,rgba(255,255,255,.22),rgba(255,255,255,.08))!important;
-      border-color:rgba(255,255,255,.20)!important;
-    }
-    body:not([data-theme="dark"]) .feature-card,
-    body:not([data-theme="dark"]) .feature-card.green,
-    body:not([data-theme="dark"]) .feature-card.blue,
-    body:not([data-theme="dark"]) .feature-card.purple,
-    body:not([data-theme="dark"]) .feature-card.orange{
-      background:linear-gradient(135deg,rgba(255,255,255,.72),rgba(255,255,255,.32))!important;
-      border-color:rgba(255,255,255,.58)!important;
-      box-shadow:0 12px 28px rgba(124,60,255,.08)!important;
-    }
-    body[data-theme="dark"] .feature-card,
-    body[data-theme="dark"] .feature-card.green,
-    body[data-theme="dark"] .feature-card.blue,
-    body[data-theme="dark"] .feature-card.purple,
-    body[data-theme="dark"] .feature-card.orange{
-      background:linear-gradient(135deg,rgba(255,255,255,.10),rgba(255,255,255,.035))!important;
+    body[data-theme="dark"] .plan-sheet{
+      background:rgba(12,18,34,.56)!important;
       border-color:rgba(255,255,255,.12)!important;
     }
-    input[type="email"],
-    input[type="tel"],
-    .inline-input{
-      text-transform:none!important;
-      letter-spacing:.01em!important;
+    .plan-sheet:not(.active){
+      opacity:.44;
+      filter:saturate(.82) brightness(.84);
     }
-
-    .signup-flow-view .top-space{min-height:86px;flex:0 0 86px;}
-    .signup-flow-panel{
-      margin-top:0;
-      min-height:calc(100% - 86px);
-      max-height:calc(100% - 86px);
-      overflow-y:auto;
-      overscroll-behavior:contain;
-      padding-bottom:calc(24px + env(safe-area-inset-bottom));
-      scrollbar-width:none;
+    .plan-sheet.active{
+      opacity:1;
+      filter:none;
     }
-    .signup-flow-panel::-webkit-scrollbar{display:none;}
-    .signup-summary-box{
-      margin:6px 0 14px;
-      padding:14px;
-      border-radius:20px;
-      background:linear-gradient(135deg,rgba(255,255,255,.22),rgba(255,255,255,.08));
-      border:1px solid rgba(255,255,255,.22);
-      box-shadow:0 12px 28px rgba(15,23,42,.08);
+    .feature-card{
+      background:rgba(255,255,255,.13)!important;
+      backdrop-filter:blur(18px)!important;
+      -webkit-backdrop-filter:blur(18px)!important;
     }
-    body:not([data-theme="dark"]) .signup-summary-box{
-      background:linear-gradient(135deg,rgba(255,255,255,.76),rgba(255,255,255,.38));
-      border-color:rgba(255,255,255,.62);
+    body[data-theme="dark"] .feature-card{
+      background:rgba(255,255,255,.065)!important;
     }
-    .signup-summary-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px;}
-    .signup-plan-pill{display:inline-flex;align-items:center;justify-content:center;min-height:28px;padding:6px 10px;border-radius:999px;background:rgba(128,137,255,.16);border:1px solid rgba(128,137,255,.20);color:var(--main-text);font-size:12px;font-weight:1000;}
-    .signup-email-text{font-size:14px;font-weight:950;color:var(--main-text);line-height:1.45;word-break:break-all;}
-    .flow-section{
-      margin-top:14px;
-      padding:14px;
-      border-radius:20px;
-      background:linear-gradient(135deg,rgba(255,255,255,.18),rgba(255,255,255,.06));
-      border:1px solid rgba(255,255,255,.16);
-    }
-    body:not([data-theme="dark"]) .flow-section{
-      background:linear-gradient(135deg,rgba(255,255,255,.70),rgba(255,255,255,.32));
-      border-color:rgba(255,255,255,.58);
-    }
-    .flow-section-title{margin:0 0 8px;color:var(--main-text);font-size:17px;line-height:1.25;font-weight:1000;}
-    .flow-section-sub{margin:0 0 12px;color:var(--muted-text);font-size:13px;line-height:1.55;font-weight:850;}
-    .inline-grid-2{display:grid;grid-template-columns:minmax(0,1fr) 112px;gap:10px;align-items:end;}
-    .inline-grid-2 button,.small-action{
-      min-height:50px;
-      border-radius:16px;
-      padding:12px 14px;
-      background:var(--primary-bg);
-      color:#fff!important;
-      font-size:15px;
-      font-weight:1000;
-      box-shadow:var(--primary-shadow);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-    }
-    .inline-grid-2 button:disabled{opacity:.55;filter:saturate(.7);cursor:not-allowed;}
-    .flow-actions{display:grid;gap:10px;margin-top:14px;}
-    .small-action.outline-action{background:var(--secondary-bg)!important;color:var(--secondary-text)!important;border:1px solid var(--secondary-border)!important;box-shadow:none!important;}
-    .flow-verify-box{
-      display:none;
-      margin-top:14px;
-      padding:13px 14px;
-      border-radius:18px;
-      background:rgba(16,185,129,.13);
-      border:1px solid rgba(16,185,129,.22);
-    }
-    .flow-verify-box.show{display:block;}
-    .flow-verify-title{color:#10b981;font-size:15px;font-weight:1000;margin-bottom:4px;}
-    .flow-verify-meta{color:var(--main-text);font-size:13px;line-height:1.55;font-weight:850;white-space:pre-wrap;}
-    @media (max-width:370px){.inline-grid-2{grid-template-columns:1fr;}.inline-grid-2 button{width:100%;}}
 
   </style>
 </head>
@@ -1223,11 +1101,13 @@
             <div class="sheet-summary"><div class="sheet-summary-grid"><div class="grid-title"><h2 class="sheet-title">Basic</h2></div><div class="grid-tag"><div class="sheet-tag">實施方案</div></div><div class="grid-pills"><div class="mini-pills"><span class="mini-pill">打卡</span><span class="mini-pill">排班</span><span class="mini-pill">員工資料</span></div></div><div class="grid-price"><div class="sheet-price">$199<span>/月</span></div></div></div></div>
             <div class="sheet-detail">
               <div class="feature-stack">
-                <div class="feature-card green"><div class="feature-icon-box">👤</div><div class="feature-copy"><h3 class="feature-title">員工資料（Personnel）</h3><p class="feature-desc">員工資料建立，集中管理核心資訊</p></div><div class="feature-mini"><span class="feature-badge">員工資料</span><span>⚙️</span></div></div>
-                <div class="feature-card green"><div class="feature-icon-box">☝️</div><div class="feature-copy"><h3 class="feature-title">打卡（Attendance）</h3><p class="feature-desc">NFC / QR / 按鈕備援打卡，本月打卡紀錄</p></div><div class="feature-mini"><span class="feature-badge">打卡</span><span>🕒</span></div></div>
-                <div class="feature-card green"><div class="feature-icon-box">🗓️</div><div class="feature-copy"><h3 class="feature-title">排班（Schedule）</h3><p class="feature-desc">基礎排班管理，建立出勤規則</p></div><div class="feature-mini"><span class="feature-badge">排班</span><span>⏱️</span></div></div>
+                <div class="feature-card green"><div class="feature-icon-box">👤</div><div class="feature-copy"><h3 class="feature-title">員工資料（Personnel）</h3><p class="feature-desc">建立員工基本資料、員編與在職狀態，集中管理人員名單。</p></div><div class="feature-mini"><span class="feature-badge">人員</span><span>⚙️</span></div></div>
+                <div class="feature-card green"><div class="feature-icon-box">🔐</div><div class="feature-copy"><h3 class="feature-title">開通綁定（Activation）</h3><p class="feature-desc">一次性開通碼、QR 備援與設備綁定，避免員工帳號被亂用。</p></div><div class="feature-mini"><span class="feature-badge">開通</span><span>📲</span></div></div>
+                <div class="feature-card green"><div class="feature-icon-box">☝️</div><div class="feature-copy"><h3 class="feature-title">打卡（Attendance）</h3><p class="feature-desc">支援 NFC / QR / 按鈕備援打卡，保留本日狀態與本月紀錄。</p></div><div class="feature-mini"><span class="feature-badge">打卡</span><span>🕒</span></div></div>
+                <div class="feature-card green"><div class="feature-icon-box">🗓️</div><div class="feature-copy"><h3 class="feature-title">排班（Schedule）</h3><p class="feature-desc">基礎班表、班別設定與出勤規則，先完成日常出勤管理。</p></div><div class="feature-mini"><span class="feature-badge">排班</span><span>⏱️</span></div></div>
+                <div class="feature-card green"><div class="feature-icon-box">📋</div><div class="feature-copy"><h3 class="feature-title">基本查詢（Records）</h3><p class="feature-desc">員工可查看自己的打卡與基本資訊，管理端可做基本查詢。</p></div><div class="feature-mini"><span class="feature-badge">查詢</span><span>🔎</span></div></div>
               </div>
-              <div class="note">適合單店或小型團隊先建立基本出勤流程。</div>
+              <div class="note">適合單店、小型團隊或第一次導入人資系統的公司，先把員工資料、開通、打卡與基本排班穩定建立起來。</div>
               <div class="inline-form"><div><div class="inline-label">註冊 Email</div><input class="inline-input" id="basicSignupEmail" type="email" inputmode="email" autocomplete="email" placeholder="name@company.com" /></div></div>
               <div class="sheet-action"><button type="button" data-action-key="plan-email" data-plan="basic">選擇 Basic 並驗證 Email</button><div class="auth-provider-row"><button class="google-action" type="button" data-action-key="plan-google" data-plan="basic">Google 驗證</button><button class="line-action" type="button" data-action-key="plan-line" data-plan="basic">LINE 驗證</button></div><div id="basicPlanStatus" class="status"></div></div>
             </div>
@@ -1238,11 +1118,13 @@
             <div class="sheet-summary"><div class="sheet-summary-grid"><div class="grid-title"><h2 class="sheet-title">Plus</h2></div><div class="grid-tag"><div class="sheet-tag">推薦方案</div></div><div class="grid-pills"><div class="mini-pills"><span class="mini-pill">請假</span><span class="mini-pill">補卡</span><span class="mini-pill">審核</span></div></div><div class="grid-price"><div class="sheet-price">$399<span>/月</span></div></div></div></div>
             <div class="sheet-detail">
               <div class="feature-stack">
-                <div class="feature-card blue"><div class="feature-icon-box">📝</div><div class="feature-copy"><h3 class="feature-title">請假（Leave）</h3><p class="feature-desc">請假申請與主管審核，支援正式流程</p></div><div class="feature-mini"><span class="feature-badge">請假</span><span>✅</span></div></div>
-                <div class="feature-card blue"><div class="feature-icon-box">🕘</div><div class="feature-copy"><h3 class="feature-title">補卡（Correction）</h3><p class="feature-desc">漏打卡補登與審核，保留紀錄</p></div><div class="feature-mini"><span class="feature-badge">補卡</span><span>🛠️</span></div></div>
-                <div class="feature-card blue"><div class="feature-icon-box">📣</div><div class="feature-copy"><h3 class="feature-title">公告（Notice）</h3><p class="feature-desc">主管公告與員工留言，重要訊息集中</p></div><div class="feature-mini"><span class="feature-badge">公告</span><span>💬</span></div></div>
+                <div class="feature-card blue"><div class="feature-icon-box">📝</div><div class="feature-copy"><h3 class="feature-title">請假（Leave）</h3><p class="feature-desc">員工提出請假申請，主管可審核並留下正式紀錄。</p></div><div class="feature-mini"><span class="feature-badge">請假</span><span>✅</span></div></div>
+                <div class="feature-card blue"><div class="feature-icon-box">🕘</div><div class="feature-copy"><h3 class="feature-title">補卡（Correction）</h3><p class="feature-desc">漏打卡可提出補登申請，由管理員審核後才寫入紀錄。</p></div><div class="feature-mini"><span class="feature-badge">補卡</span><span>🛠️</span></div></div>
+                <div class="feature-card blue"><div class="feature-icon-box">🗓️</div><div class="feature-copy"><h3 class="feature-title">進階排班（Schedule）</h3><p class="feature-desc">支援週排班、月排班與選休流程，讓班表更接近正式管理。</p></div><div class="feature-mini"><span class="feature-badge">班表</span><span>📆</span></div></div>
+                <div class="feature-card blue"><div class="feature-icon-box">📣</div><div class="feature-copy"><h3 class="feature-title">公告留言（Notice）</h3><p class="feature-desc">主管公告、員工留言與重要訊息集中，不再散落在聊天群。</p></div><div class="feature-mini"><span class="feature-badge">公告</span><span>💬</span></div></div>
+                <div class="feature-card blue"><div class="feature-icon-box">⚠️</div><div class="feature-copy"><h3 class="feature-title">異常管理（Exception）</h3><p class="feature-desc">遲到、缺卡、請假、補卡集中檢視，方便主管快速處理。</p></div><div class="feature-mini"><span class="feature-badge">異常</span><span>🔎</span></div></div>
               </div>
-              <div class="note">適合已經開始正式管理班表與審核流程的公司。</div>
+              <div class="note">適合已經開始正式管理班表、請假、補卡與主管審核流程的公司。</div>
               <div class="inline-form"><div><div class="inline-label">註冊 Email</div><input class="inline-input" id="plusSignupEmail" type="email" inputmode="email" autocomplete="email" placeholder="name@company.com" /></div></div>
               <div class="sheet-action"><button type="button" data-action-key="plan-email" data-plan="plus">選擇 Plus 並驗證 Email</button><div class="auth-provider-row"><button class="google-action" type="button" data-action-key="plan-google" data-plan="plus">Google 驗證</button><button class="line-action" type="button" data-action-key="plan-line" data-plan="plus">LINE 驗證</button></div><div id="plusPlanStatus" class="status"></div></div>
             </div>
@@ -1253,11 +1135,13 @@
             <div class="sheet-summary"><div class="sheet-summary-grid"><div class="grid-title"><h2 class="sheet-title">Premium</h2></div><div class="grid-tag"><div class="sheet-tag">完整方案</div></div><div class="grid-pills"><div class="mini-pills"><span class="mini-pill">薪資</span><span class="mini-pill">分店</span><span class="mini-pill">報表</span></div></div><div class="grid-price"><div class="sheet-price">$699<span>/月</span></div></div></div></div>
             <div class="sheet-detail">
               <div class="feature-stack">
-                <div class="feature-card purple"><div class="feature-icon-box">💰</div><div class="feature-copy"><h3 class="feature-title">薪資（Payroll）</h3><p class="feature-desc">薪資試算、月結管理與工時計算</p></div><div class="feature-mini"><span class="feature-badge">薪資</span><span>📊</span></div></div>
-                <div class="feature-card purple"><div class="feature-icon-box">🏬</div><div class="feature-copy"><h3 class="feature-title">分店（Branch）</h3><p class="feature-desc">分店資料分流，跨店查看與管理</p></div><div class="feature-mini"><span class="feature-badge">分店</span><span>🔀</span></div></div>
-                <div class="feature-card purple"><div class="feature-icon-box">🛡️</div><div class="feature-copy"><h3 class="feature-title">權限（Roles）</h3><p class="feature-desc">角色權限分層，完整管理儀表板</p></div><div class="feature-mini"><span class="feature-badge">權限</span><span>⚙️</span></div></div>
+                <div class="feature-card purple"><div class="feature-icon-box">💰</div><div class="feature-copy"><h3 class="feature-title">薪資（Payroll）</h3><p class="feature-desc">依正式班表與實際打卡計算工時，支援薪資試算與月結管理。</p></div><div class="feature-mini"><span class="feature-badge">薪資</span><span>📊</span></div></div>
+                <div class="feature-card purple"><div class="feature-icon-box">⏱️</div><div class="feature-copy"><h3 class="feature-title">工時計算（Hours）</h3><p class="feature-desc">加班、請假、扣款與員工自付項目可納入計算，降低人工整理。</p></div><div class="feature-mini"><span class="feature-badge">工時</span><span>🧾</span></div></div>
+                <div class="feature-card purple"><div class="feature-icon-box">🏬</div><div class="feature-copy"><h3 class="feature-title">分店（Branch）</h3><p class="feature-desc">分店資料分流、跨店查看與彙整，適合多門市或多據點管理。</p></div><div class="feature-mini"><span class="feature-badge">分店</span><span>🔀</span></div></div>
+                <div class="feature-card purple"><div class="feature-icon-box">🛡️</div><div class="feature-copy"><h3 class="feature-title">權限（Roles）</h3><p class="feature-desc">Creator / Admin / Manager 權限分層，避免每個人都能動全部資料。</p></div><div class="feature-mini"><span class="feature-badge">權限</span><span>⚙️</span></div></div>
+                <div class="feature-card purple"><div class="feature-icon-box">📈</div><div class="feature-copy"><h3 class="feature-title">報表（Reports）</h3><p class="feature-desc">出勤、工時、薪資與異常資料彙整，方便月底檢查與決策。</p></div><div class="feature-mini"><span class="feature-badge">報表</span><span>📌</span></div></div>
               </div>
-              <div class="note">適合已經正式營運，需要完整人資、排班、出勤與薪資流程的公司。</div>
+              <div class="note">適合正式營運、需要薪資、分店、權限、報表與完整人資流程的公司。</div>
               <div class="inline-form"><div><div class="inline-label">註冊 Email</div><input class="inline-input" id="premiumSignupEmail" type="email" inputmode="email" autocomplete="email" placeholder="name@company.com" /></div></div>
               <div class="sheet-action"><button type="button" data-action-key="plan-email" data-plan="premium">選擇 Premium 並驗證 Email</button><div class="auth-provider-row"><button class="google-action" type="button" data-action-key="plan-google" data-plan="premium">Google 驗證</button><button class="line-action" type="button" data-action-key="plan-line" data-plan="premium">LINE 驗證</button></div><div id="premiumPlanStatus" class="status"></div></div>
             </div>
@@ -1265,72 +1149,7 @@
         </div>
       </section>
     </section>
-  
-
-    <section id="signupFlowView" class="view signup-flow-view">
-      <div class="top-space"></div>
-      <div class="panel signup-flow-panel">
-        <div class="entry-top-row">
-          <h1 class="section-title">公司註冊</h1>
-          <button class="back-btn" type="button" onclick="backToPlans()">返回</button>
-        </div>
-
-        <div class="signup-summary-box">
-          <div class="signup-summary-row">
-            <span class="signup-plan-pill" id="signupSelectedPlan">方案</span>
-            <span class="signup-plan-pill" id="signupAuthMethod">Email 驗證</span>
-          </div>
-          <div class="signup-email-text" id="signupSelectedEmail">尚未選擇 Email</div>
-        </div>
-
-        <div class="flow-section" id="signupEmailCodeSection">
-          <h3 class="flow-section-title">Email 驗證碼</h3>
-          <div class="flow-section-sub">請輸入 Email 收到的 6 位數驗證碼。未收到可等倒數結束後重寄，每天最多 5 次。</div>
-          <div class="inline-grid-2">
-            <div>
-              <div class="inline-label">驗證碼</div>
-              <input class="inline-input" id="signupEmailCode" type="text" inputmode="numeric" maxlength="8" placeholder="6 位數驗證碼" />
-            </div>
-            <button type="button" id="signupResendCodeBtn" onclick="resendSignupEmailCode()">重寄</button>
-          </div>
-          <div class="flow-actions">
-            <button class="small-action" type="button" onclick="verifySignupEmailCode()">確認驗證碼</button>
-          </div>
-        </div>
-
-        <div id="signupVerifiedBox" class="flow-verify-box">
-          <div class="flow-verify-title">身份驗證成功</div>
-          <div class="flow-verify-meta" id="signupVerifiedMeta"></div>
-        </div>
-
-        <div class="flow-section">
-          <h3 class="flow-section-title">公司資料</h3>
-          <div class="inline-form">
-            <div><div class="inline-label">公司 / 店名</div><input class="inline-input" id="signupCompanyName" type="text" placeholder="請輸入公司或店名" /></div>
-            <div><div class="inline-label">管理員姓名</div><input class="inline-input" id="signupAdminName" type="text" placeholder="請輸入管理員姓名" /></div>
-            <div><div class="inline-label">聯絡電話</div><input class="inline-input" id="signupAdminPhone" type="tel" inputmode="tel" placeholder="手機或公司電話" /></div>
-            <div><div class="inline-label">生日 / 身分驗證資料</div><input class="inline-input" id="signupIdentityNote" type="text" placeholder="用於避免重複註冊，可填生日或識別資料" /></div>
-          </div>
-        </div>
-
-        <div class="flow-section">
-          <h3 class="flow-section-title">Google Drive 資料上傳資料夾</h3>
-          <div class="flow-section-sub">資料上傳會存到這個資料夾。測試會上傳 <strong>ANG_FOLDER_TEST.txt</strong>，測試成功後才可以建立公司。</div>
-          <div class="inline-grid-2">
-            <div><div class="inline-label">Drive 資料夾 ID 或網址</div><input class="inline-input" id="signupDriveFolderId" type="text" placeholder="貼上資料夾網址或資料夾 ID" /></div>
-            <button type="button" onclick="testSignupDriveFolder()">測試</button>
-          </div>
-          <div id="signupDriveFolderStatus" class="status"></div>
-        </div>
-
-        <div class="flow-actions">
-          <button class="small-action" type="button" onclick="createCompanyFromSignupFlow()">建立公司並啟用方案</button>
-          <button class="small-action outline-action" type="button" onclick="backToPlans()">返回選方案</button>
-        </div>
-        <div id="signupFlowStatus" class="status"></div>
-      </div>
-    </section>
-</main>
+  </main>
 
   <script>
     const ANG_DATA_URLS = {
@@ -2039,12 +1858,25 @@
       const statusId = safePlan + 'PlanStatus';
       if (!safePlan) return;
       if (!isValidEmail(email)) { setStatus(statusId,'error','請輸入正確的 Email'); return; }
+      try {
+        sessionStorage.setItem('ang_signup_plan',safePlan);
+        sessionStorage.setItem('ang_signup_email',email);
+        sessionStorage.setItem('ang_signup_started_at',String(Date.now()));
+      } catch(err) {}
+      const fallbackNextUrl = APP_STATE.baseUrl + '?page=register&step=email_code&verify=email&plan=' + encodeURIComponent(safePlan) + '&email=' + encodeURIComponent(email);
       setStatus(statusId,'info','正在送出註冊驗證...');
       if (window.google && google.script && google.script.run) {
-        google.script.run.withSuccessHandler(function(res){ if (!res || !res.ok) { setStatus(statusId,'error',(res && (res.message || res.msg)) || '驗證送出失敗'); return; } setStatus(statusId,'success',(res.message || res.msg) || '已送出驗證，請查看 Email'); if (res.nextUrl) { setTimeout(function(){ window.location.href = res.nextUrl; },650); } }).withFailureHandler(function(err){ setStatus(statusId,'error',err && err.message ? err.message : '連線失敗'); }).requestCompanySignupEmailVerification({ plan:safePlan, email:email, deviceId:APP_STATE.deviceId });
+        google.script.run.withSuccessHandler(function(res){
+          if (!res || !res.ok) { setStatus(statusId,'error',(res && (res.message || res.msg)) || '驗證送出失敗'); return; }
+          const nextUrl = String(res.nextUrl || res.registerUrl || fallbackNextUrl).trim();
+          setStatus(statusId,'success',(res.message || res.msg) || '已送出驗證，請查看 Email');
+          setTimeout(function(){ window.location.href = nextUrl; },650);
+        }).withFailureHandler(function(err){
+          setStatus(statusId,'error',err && err.message ? err.message : '連線失敗');
+        }).requestCompanySignupEmailVerification({ plan:safePlan, email:email, deviceId:APP_STATE.deviceId });
         return;
       }
-      window.location.href = APP_STATE.baseUrl + '?page=register&verify=email&plan=' + encodeURIComponent(safePlan) + '&email=' + encodeURIComponent(email);
+      window.location.href = fallbackNextUrl;
     }
 
     function requestPlanGoogleVerification(plan){
@@ -2075,332 +1907,6 @@
       if (callAndroidNativeAuth('line','company_signup',safePlan,{ source:'entry_plan_line' },statusId)) return;
       openLineAuthUrl(routeUrl('companyRegister',safePlan,{ page:'register', verify:'line', plan:safePlan, source:'entry_plan_line' }),statusId);
     }
-
-
-
-    /* ANG_V19_ORIGINAL_FLOW_PATCH：方案卡先填 Email，下一頁輸入驗證碼 / 公司資料 / Drive 測試 */
-    const ANG_SIGNUP_FLOW = {
-      plan:'',
-      email:'',
-      provider:'email',
-      method:'Email 驗證',
-      name:'',
-      verify_token:'',
-      emailVerified:false,
-      driveTest:null,
-      cooldownTimer:null,
-      cooldownLeft:0
-    };
-
-    function getTodayKey(){
-      const d = new Date();
-      return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
-    }
-
-    function emailSendCountKey(plan,email){
-      return 'ang_email_verify_count_' + getTodayKey() + '_' + String(plan || '').toLowerCase() + '_' + String(email || '').toLowerCase();
-    }
-
-    function getEmailSendCount(plan,email){
-      return Number(localStorage.getItem(emailSendCountKey(plan,email)) || '0') || 0;
-    }
-
-    function increaseEmailSendCount(plan,email){
-      const key = emailSendCountKey(plan,email);
-      const next = getEmailSendCount(plan,email) + 1;
-      localStorage.setItem(key,String(next));
-      return next;
-    }
-
-    function getPlanStatusId(plan){
-      const safePlan = String(plan || '').trim().toLowerCase();
-      return safePlan ? safePlan + 'PlanStatus' : 'signupFlowStatus';
-    }
-
-    function gasRun(action,payload){
-      const body = Object.assign({},payload || {},{ action:action });
-      if (window.google && google.script && google.script.run) {
-        return new Promise(function(resolve,reject){
-          try {
-            const runner = google.script.run.withSuccessHandler(function(res){ resolve(res || {}); }).withFailureHandler(function(err){ reject(err || new Error('GAS 執行失敗')); });
-            if (typeof runner[action] === 'function') runner[action](body);
-            else if (typeof runner.api === 'function') runner.api(body);
-            else reject(new Error('找不到 GAS 函式：' + action));
-          } catch(err) { reject(err); }
-        });
-      }
-      if (typeof callGasApi === 'function') return callGasApi(action,body,25000);
-      return Promise.reject(new Error('無法連線 GAS API'));
-    }
-
-    const originalSetViewV19 = typeof setView === 'function' ? setView : null;
-    function setView(viewId){
-      ['homeView','employeeEntryView','managerEntryView','signupFlowView'].forEach(function(id){
-        const el = document.getElementById(id);
-        if (el) el.classList.remove('active');
-      });
-      const target = document.getElementById(viewId);
-      if (target) target.classList.add('active');
-      if (viewId !== 'managerEntryView') phone.classList.remove('expanded');
-    }
-
-    function updateSignupFlowSummary(){
-      const planName = formatPlanName(ANG_SIGNUP_FLOW.plan);
-      setText('signupSelectedPlan',planName);
-      setText('signupAuthMethod',ANG_SIGNUP_FLOW.method || 'Email 驗證');
-      setText('signupSelectedEmail',ANG_SIGNUP_FLOW.email || '尚未選擇 Email');
-      const verifiedBox = document.getElementById('signupVerifiedBox');
-      const codeSection = document.getElementById('signupEmailCodeSection');
-      const meta = document.getElementById('signupVerifiedMeta');
-      if (ANG_SIGNUP_FLOW.emailVerified) {
-        if (verifiedBox) verifiedBox.classList.add('show');
-        if (codeSection) codeSection.style.display = 'none';
-        if (meta) meta.innerText = '註冊方式：' + (ANG_SIGNUP_FLOW.method || 'Email 驗證') + '\n帳號名稱：' + (ANG_SIGNUP_FLOW.name || ANG_SIGNUP_FLOW.email || '-') + '\nEmail：' + (ANG_SIGNUP_FLOW.email || '-');
-      } else {
-        if (verifiedBox) verifiedBox.classList.remove('show');
-        if (codeSection) codeSection.style.display = 'block';
-        if (meta) meta.innerText = '';
-      }
-    }
-
-    function startSignupCooldown(seconds){
-      const btn = document.getElementById('signupResendCodeBtn');
-      if (ANG_SIGNUP_FLOW.cooldownTimer) clearInterval(ANG_SIGNUP_FLOW.cooldownTimer);
-      ANG_SIGNUP_FLOW.cooldownLeft = Number(seconds || 60);
-      function render(){
-        if (!btn) return;
-        if (ANG_SIGNUP_FLOW.cooldownLeft > 0) {
-          btn.disabled = true;
-          btn.innerText = ANG_SIGNUP_FLOW.cooldownLeft + '秒';
-        } else {
-          btn.disabled = false;
-          btn.innerText = '重寄';
-          clearInterval(ANG_SIGNUP_FLOW.cooldownTimer);
-          ANG_SIGNUP_FLOW.cooldownTimer = null;
-        }
-      }
-      render();
-      ANG_SIGNUP_FLOW.cooldownTimer = setInterval(function(){
-        ANG_SIGNUP_FLOW.cooldownLeft -= 1;
-        render();
-      },1000);
-    }
-
-    function resetSignupFlow(plan,email,provider,method){
-      ANG_SIGNUP_FLOW.plan = String(plan || '').trim().toLowerCase();
-      ANG_SIGNUP_FLOW.email = String(email || '').trim();
-      ANG_SIGNUP_FLOW.provider = provider || 'email';
-      ANG_SIGNUP_FLOW.method = method || 'Email 驗證';
-      ANG_SIGNUP_FLOW.name = '';
-      ANG_SIGNUP_FLOW.verify_token = '';
-      ANG_SIGNUP_FLOW.emailVerified = provider && provider !== 'email';
-      ANG_SIGNUP_FLOW.driveTest = null;
-      const code = document.getElementById('signupEmailCode');
-      if (code) code.value = '';
-      ['signupCompanyName','signupAdminName','signupAdminPhone','signupIdentityNote','signupDriveFolderId'].forEach(function(id){
-        const el = document.getElementById(id);
-        if (el) el.value = '';
-      });
-      setStatus('signupFlowStatus','','');
-      setStatus('signupDriveFolderStatus','','');
-      updateSignupFlowSummary();
-    }
-
-    function showSignupFlow(plan,email,provider,method){
-      resetSignupFlow(plan,email,provider,method);
-      setView('signupFlowView');
-      setTimeout(function(){
-        const focusTarget = ANG_SIGNUP_FLOW.emailVerified ? document.getElementById('signupCompanyName') : document.getElementById('signupEmailCode');
-        if (focusTarget) focusTarget.focus();
-      },180);
-    }
-
-    function requestPlanEmailVerification(plan){
-      const safePlan = String(plan || '').trim().toLowerCase();
-      const input = document.getElementById(safePlan + 'SignupEmail');
-      const email = String(input ? input.value : '').trim();
-      const statusId = getPlanStatusId(safePlan);
-      if (!safePlan) return;
-      if (!isValidEmail(email)) { setStatus(statusId,'error','請輸入正確的 Email'); return; }
-      if (getEmailSendCount(safePlan,email) >= 5) { setStatus(statusId,'error','今天這個 Email 已達 5 次驗證碼上限，請明天再試或改用 Google / LINE 驗證。'); return; }
-      setStatus(statusId,'info','正在寄出 Email 驗證碼...');
-      gasRun('requestCompanySignupEmailVerification',{ plan:safePlan, email:email, deviceId:APP_STATE.deviceId, device_id:APP_STATE.deviceId, source:'entry_plan_email' }).then(function(res){
-        if (!res || !res.ok) { setStatus(statusId,'error',(res && (res.message || res.msg)) || '驗證碼寄送失敗'); return; }
-        increaseEmailSendCount(safePlan,email);
-        setStatus(statusId,'success',(res.message || res.msg) || '驗證碼已寄出，請到下一頁輸入。');
-        showSignupFlow(safePlan,email,'email','Email 驗證');
-        startSignupCooldown(60);
-      }).catch(function(err){ setStatus(statusId,'error',err && err.message ? err.message : '驗證碼寄送失敗'); });
-    }
-
-    function resendSignupEmailCode(){
-      const plan = ANG_SIGNUP_FLOW.plan;
-      const email = ANG_SIGNUP_FLOW.email;
-      if (!plan || !email) { setStatus('signupFlowStatus','error','請先選擇方案並填 Email'); return; }
-      if (ANG_SIGNUP_FLOW.cooldownLeft > 0) { setStatus('signupFlowStatus','info','請等待 ' + ANG_SIGNUP_FLOW.cooldownLeft + ' 秒後再重寄'); return; }
-      if (getEmailSendCount(plan,email) >= 5) { setStatus('signupFlowStatus','error','今天這個 Email 已達 5 次驗證碼上限'); return; }
-      setStatus('signupFlowStatus','info','正在重寄驗證碼...');
-      gasRun('requestCompanySignupEmailVerification',{ plan:plan, email:email, deviceId:APP_STATE.deviceId, device_id:APP_STATE.deviceId, resend:true, source:'entry_plan_email_resend' }).then(function(res){
-        if (!res || !res.ok) { setStatus('signupFlowStatus','error',(res && (res.message || res.msg)) || '重寄失敗'); return; }
-        increaseEmailSendCount(plan,email);
-        setStatus('signupFlowStatus','success',(res.message || res.msg) || '已重寄驗證碼');
-        startSignupCooldown(60);
-      }).catch(function(err){ setStatus('signupFlowStatus','error',err && err.message ? err.message : '重寄失敗'); });
-    }
-
-    function verifySignupEmailCode(){
-      const code = String(document.getElementById('signupEmailCode') ? document.getElementById('signupEmailCode').value : '').trim().replace(/\s+/g,'');
-      if (!ANG_SIGNUP_FLOW.plan || !ANG_SIGNUP_FLOW.email) { setStatus('signupFlowStatus','error','請先選擇方案並填 Email'); return; }
-      if (!code) { setStatus('signupFlowStatus','error','請輸入 Email 驗證碼'); return; }
-      setStatus('signupFlowStatus','info','正在確認驗證碼...');
-      gasRun('verifyCompanySignupEmailCode',{ plan:ANG_SIGNUP_FLOW.plan, email:ANG_SIGNUP_FLOW.email, code:code, verify_code:code, deviceId:APP_STATE.deviceId, device_id:APP_STATE.deviceId }).then(function(res){
-        if (!res || !res.ok) { setStatus('signupFlowStatus','error',(res && (res.message || res.msg)) || '驗證碼錯誤或已過期'); return; }
-        ANG_SIGNUP_FLOW.emailVerified = true;
-        ANG_SIGNUP_FLOW.provider = 'email';
-        ANG_SIGNUP_FLOW.method = 'Email 驗證';
-        ANG_SIGNUP_FLOW.name = res.name || res.display_name || ANG_SIGNUP_FLOW.email;
-        ANG_SIGNUP_FLOW.verify_token = res.verify_token || res.token || '';
-        updateSignupFlowSummary();
-        setStatus('signupFlowStatus','success','Email 驗證成功，請繼續填寫公司資料與 Drive 資料夾。');
-        setTimeout(function(){ const el = document.getElementById('signupCompanyName'); if (el) el.focus(); },120);
-      }).catch(function(err){ setStatus('signupFlowStatus','error',err && err.message ? err.message : '驗證失敗'); });
-    }
-
-    function markPlanVerified(plan,data){
-      data = data || {};
-      const safePlan = String(plan || ANG_SIGNUP_FLOW.plan || '').trim().toLowerCase();
-      const email = String(data.email || ANG_SIGNUP_FLOW.email || '').trim();
-      if (!safePlan) return;
-      ANG_SIGNUP_FLOW.plan = safePlan;
-      ANG_SIGNUP_FLOW.email = email;
-      ANG_SIGNUP_FLOW.provider = data.provider || ANG_SIGNUP_FLOW.provider || 'google';
-      ANG_SIGNUP_FLOW.method = data.method || (ANG_SIGNUP_FLOW.provider === 'line' ? 'LINE 驗證' : 'Google 驗證');
-      ANG_SIGNUP_FLOW.name = data.name || data.profile_name || email || '';
-      ANG_SIGNUP_FLOW.verify_token = data.verify_token || data.token || '';
-      ANG_SIGNUP_FLOW.emailVerified = true;
-      ANG_SIGNUP_FLOW.driveTest = null;
-      setView('signupFlowView');
-      updateSignupFlowSummary();
-      setStatus('signupFlowStatus','success','身份驗證成功，請繼續填寫公司資料與 Drive 資料夾。');
-      setTimeout(function(){ const el = document.getElementById('signupCompanyName'); if (el) el.focus(); },160);
-    }
-
-    function requestPlanGoogleVerification(plan){
-      const safePlan = String(plan || '').trim().toLowerCase();
-      const input = document.getElementById(safePlan + 'SignupEmail');
-      const email = String(input ? input.value : '').trim();
-      const statusId = getPlanStatusId(safePlan);
-      if (!safePlan) return;
-      if (callAndroidNativeAuth('google','company_signup',safePlan,{ email:email, source:'entry_plan_google' },statusId)) return;
-      if (window.google && google.accounts && google.accounts.id) {
-        setStatus(statusId,'info','正在開啟 Google 驗證...');
-        try {
-          google.accounts.id.initialize({
-            client_id:ANG_DATA_URLS.googleClientId,
-            callback:function(resp){
-              const token = resp && resp.credential ? resp.credential : '';
-              if (!token) { setStatus(statusId,'error','Google 沒有回傳 credential'); return; }
-              gasRun('verifyNativeGoogleIdToken',{ provider:'google', flow:'company_signup', plan:safePlan, email:email, id_token:token, credential:token, device_id:APP_STATE.deviceId, source:'entry_plan_google_browser' }).then(function(res){
-                if (!res || !res.ok) { setStatus(statusId,'error',(res && (res.message || res.msg)) || 'Google 驗證失敗'); return; }
-                markPlanVerified(safePlan,{ provider:'google', method:'Google 驗證', email:res.email || email, name:res.name || res.profile_name || '', verify_token:res.verify_token || res.token || '' });
-              }).catch(function(err){ setStatus(statusId,'error',err && err.message ? err.message : 'Google 驗證失敗'); });
-            }
-          });
-          google.accounts.id.prompt(function(n){ if (n && n.isNotDisplayed && n.isNotDisplayed()) setStatus(statusId,'info','Google 視窗未顯示，請改用 Email 驗證或 App 原生驗證。'); });
-        } catch(err) { setStatus(statusId,'error',err && err.message ? err.message : 'Google 驗證啟動失敗'); }
-        return;
-      }
-      setStatus(statusId,'error','Google 驗證尚未載入，請稍後再試或改用 Email 驗證。');
-    }
-
-    function requestPlanLineVerification(plan){
-      const safePlan = String(plan || '').trim().toLowerCase();
-      const input = document.getElementById(safePlan + 'SignupEmail');
-      const email = String(input ? input.value : '').trim();
-      const statusId = getPlanStatusId(safePlan);
-      if (!safePlan) return;
-      if (callAndroidNativeAuth('line','company_signup',safePlan,{ email:email, source:'entry_plan_line' },statusId)) return;
-      setStatus(statusId,'info','LINE 驗證請在 App 原生端啟動；網頁版可先使用 Email 驗證。');
-    }
-
-    function handleGasVerifySuccess(statusId,res){
-      if (!res || !res.ok) { setStatus(statusId,'error',(res && (res.message || res.msg)) || 'GAS 驗證失敗'); return; }
-      const sid = String(statusId || '');
-      const pending = loadPendingNativeAuth ? loadPendingNativeAuth() : null;
-      const plan = pending && pending.plan ? pending.plan : sid.replace('PlanStatus','');
-      if (sid.indexOf('PlanStatus') > -1 || (pending && pending.flow === 'company_signup')) {
-        markPlanVerified(plan,{ provider:(pending && pending.provider) || res.provider || 'google', method:((pending && pending.provider) === 'line' || res.provider === 'line') ? 'LINE 驗證' : 'Google 驗證', email:res.email || (pending && pending.email) || '', name:res.name || res.profile_name || '', verify_token:res.verify_token || res.token || '' });
-        clearPendingNativeAuth && clearPendingNativeAuth();
-        return;
-      }
-      if (res.verify_token) { try { sessionStorage.setItem('ang_verify_token',String(res.verify_token)); localStorage.setItem('ang_last_verify_token',String(res.verify_token)); } catch(err) {} }
-      if (res.email) { try { sessionStorage.setItem('ang_verified_email',String(res.email)); } catch(err2) {} }
-      setStatus(statusId,'success','GAS 驗證成功，可以繼續下一步。');
-      clearPendingNativeAuth && clearPendingNativeAuth();
-    }
-
-    function extractDriveFolderId(value){
-      const raw = String(value || '').trim();
-      if (!raw) return '';
-      const m1 = raw.match(/\/folders\/([a-zA-Z0-9_-]+)/);
-      if (m1) return m1[1];
-      const m2 = raw.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-      if (m2) return m2[1];
-      return raw.replace(/^['\"]|['\"]$/g,'').trim();
-    }
-
-    function testSignupDriveFolder(){
-      const folderInput = document.getElementById('signupDriveFolderId');
-      const folderId = extractDriveFolderId(folderInput ? folderInput.value : '');
-      if (!ANG_SIGNUP_FLOW.emailVerified) { setStatus('signupDriveFolderStatus','error','請先完成 Email / Google / LINE 驗證'); return; }
-      if (!folderId) { setStatus('signupDriveFolderStatus','error','請輸入 Google Drive 資料夾 ID 或網址'); return; }
-      setStatus('signupDriveFolderStatus','info','正在測試上傳 ANG_FOLDER_TEST.txt...');
-      gasRun('testCompanyDriveFolderAccess',{ plan:ANG_SIGNUP_FLOW.plan, folderId:folderId, folder_id:folderId, drive_folder_id:folderId, company_drive_folder_id:folderId, test_file_name:'ANG_FOLDER_TEST.txt', fileName:'ANG_FOLDER_TEST.txt', verify_token:ANG_SIGNUP_FLOW.verify_token || '', auth_provider:ANG_SIGNUP_FLOW.provider || '', auth_email:ANG_SIGNUP_FLOW.email || '' }).then(function(res){
-        if (!res || !res.ok) { ANG_SIGNUP_FLOW.driveTest = null; setStatus('signupDriveFolderStatus','error',(res && (res.message || res.msg)) || 'Drive 測試失敗'); return; }
-        ANG_SIGNUP_FLOW.driveTest = { ok:true, folderId:folderId };
-        setStatus('signupDriveFolderStatus','success','Drive 測試成功，ANG_FOLDER_TEST.txt 已完成上傳。');
-      }).catch(function(err){ ANG_SIGNUP_FLOW.driveTest = null; setStatus('signupDriveFolderStatus','error',err && err.message ? err.message : 'Drive 測試失敗'); });
-    }
-
-    function testCompanyDriveFolder(){ testSignupDriveFolder(); }
-
-    function createCompanyFromSignupFlow(){
-      if (!ANG_SIGNUP_FLOW.emailVerified) { setStatus('signupFlowStatus','error','請先完成 Email / Google / LINE 驗證'); return; }
-      if (!ANG_SIGNUP_FLOW.driveTest || !ANG_SIGNUP_FLOW.driveTest.ok) { setStatus('signupDriveFolderStatus','error','請先測試 Google Drive 資料夾，測試成功後才能建立公司'); return; }
-      const companyName = String(document.getElementById('signupCompanyName') ? document.getElementById('signupCompanyName').value : '').trim();
-      const adminName = String(document.getElementById('signupAdminName') ? document.getElementById('signupAdminName').value : '').trim();
-      const adminPhone = String(document.getElementById('signupAdminPhone') ? document.getElementById('signupAdminPhone').value : '').trim();
-      const identityNote = String(document.getElementById('signupIdentityNote') ? document.getElementById('signupIdentityNote').value : '').trim();
-      if (!companyName) { setStatus('signupFlowStatus','error','請輸入公司 / 店名'); return; }
-      if (!adminName) { setStatus('signupFlowStatus','error','請輸入管理員姓名'); return; }
-      if (!adminPhone) { setStatus('signupFlowStatus','error','請輸入聯絡電話'); return; }
-      if (!identityNote) { setStatus('signupFlowStatus','error','請輸入生日 / 身分驗證資料，避免重複註冊'); return; }
-      setStatus('signupFlowStatus','info','正在建立公司資料...');
-      gasRun('registerCompany',{ plan:ANG_SIGNUP_FLOW.plan, company_name:companyName, companyName:companyName, admin_name:adminName, adminName:adminName, admin_phone:adminPhone, phone:adminPhone, admin_identity_note:identityNote, identity_note:identityNote, admin_email:ANG_SIGNUP_FLOW.email || '', email:ANG_SIGNUP_FLOW.email || '', auth_provider:ANG_SIGNUP_FLOW.provider || '', auth_name:ANG_SIGNUP_FLOW.name || '', verify_token:ANG_SIGNUP_FLOW.verify_token || '', drive_folder_id:ANG_SIGNUP_FLOW.driveTest.folderId, company_drive_folder_id:ANG_SIGNUP_FLOW.driveTest.folderId, device_id:APP_STATE.deviceId }).then(function(res){
-        if (!res || !res.ok) { setStatus('signupFlowStatus','error',(res && (res.message || res.msg)) || '公司建立失敗'); return; }
-        setStatus('signupFlowStatus','success',(res.message || res.msg) || '公司建立成功，正在前往管理後台...');
-        if (res.nextUrl || res.adminUrl || res.url) {
-          setTimeout(function(){ window.location.href = res.nextUrl || res.adminUrl || res.url; },700);
-          return;
-        }
-        const companyId = res.company_id || res.companyCode || res.company || '';
-        setTimeout(function(){ window.location.href = APP_STATE.baseUrl + '?page=admin' + (companyId ? '&company=' + encodeURIComponent(companyId) : ''); },700);
-      }).catch(function(err){ setStatus('signupFlowStatus','error',err && err.message ? err.message : '公司建立失敗'); });
-    }
-
-    function backToPlans(){
-      setView('managerEntryView');
-      const plan = ANG_SIGNUP_FLOW.plan || 'premium';
-      setTimeout(function(){ setActiveManagerSheet(plan,true); phone.classList.add('expanded'); },80);
-    }
-
-    window.startPlanEmailSignup = requestPlanEmailVerification;
-    window.resendSignupEmailCode = resendSignupEmailCode;
-    window.verifySignupEmailCode = verifySignupEmailCode;
-    window.testCompanyDriveFolder = testCompanyDriveFolder;
-    window.testSignupDriveFolder = testSignupDriveFolder;
-    window.createCompanyFromSignupFlow = createCompanyFromSignupFlow;
-    window.backToPlans = backToPlans;
 
     window.addEventListener('load',init);
   </script>
