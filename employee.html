@@ -1,18 +1,14 @@
 <!DOCTYPE html>
-<!-- ANG employee integrated_all: base employee(43) + salary history/cycle + config.js API fallback -->
-
-
 <html lang="zh-Hant">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,viewport-fit=cover" name="viewport"/>
-<title>ANG Engine HR 系統</title>
-<link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet"/>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
-<script src="config.js"></script>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
-<style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,viewport-fit=cover">
+  <title>ANG Engine HR 系統</title>
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
     :root{
       --bg:#f5f7fb;--card:#ffffff;--text:#111827;--muted:#6b7280;--line:#e5e7eb;--soft:#f3f4f6;--ok:#10b981;--warn:#f59e0b;--danger:#ef4444;
       --emp:#FF87E0;--emp-deep:#B85DA3;--emp-soft:rgba(255,135,224,.12);--emp-soft2:rgba(255,135,224,.18);--emp-text:#8F4C7E;--emp-rgb:255,135,224;--emp-angle:135deg;--text-on-emp:#ffffff;
@@ -95,61 +91,6 @@
     #cal-clock .fc-daygrid-event{margin-top:2px !important;border-radius:8px;padding:1px 4px}
     #cal-clock .fc-h-event{border:none}
     #cal-clock .fc-event-title{font-size:10px;font-weight:900}
-
-    /* 沒讀到後端資料 / FullCalendar CDN 失敗時，也先顯示空白月曆 */
-    .ang-empty-calendar{
-      background:#fff;
-      border-radius:18px;
-      padding:10px;
-      border:1px solid rgba(0,0,0,.04);
-      box-shadow:0 6px 16px rgba(0,0,0,.035);
-    }
-    .ang-empty-calendar-head{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:8px;
-      margin-bottom:8px;
-      color:var(--emp-deep);
-      font-size:15px;
-      font-weight:900;
-    }
-    .ang-empty-calendar-note{
-      color:#94a3b8;
-      font-size:11px;
-      font-weight:800;
-      white-space:nowrap;
-    }
-    .ang-empty-calendar-grid{
-      display:grid;
-      grid-template-columns:repeat(7,minmax(0,1fr));
-      border-top:1px solid var(--line);
-      border-left:1px solid var(--line);
-      overflow:hidden;
-      border-radius:14px;
-    }
-    .ang-empty-calendar-wd,.ang-empty-calendar-day{
-      min-height:34px;
-      border-right:1px solid var(--line);
-      border-bottom:1px solid var(--line);
-      display:flex;
-      align-items:flex-start;
-      justify-content:flex-end;
-      padding:6px;
-      font-size:12px;
-      font-weight:900;
-      color:var(--text);
-      background:#fff;
-    }
-    .ang-empty-calendar-wd{
-      min-height:30px;
-      align-items:center;
-      justify-content:center;
-      color:var(--emp-deep);
-      background:rgba(var(--emp-rgb),.08);
-    }
-    .ang-empty-calendar-day.out{color:#cbd5e1;background:#f8fafc}
-    .ang-empty-calendar-day.today{background:rgba(var(--emp-rgb),.12);box-shadow:inset 0 0 0 2px rgba(var(--emp-rgb),.24)}
     .trend-card{position:relative;overflow:hidden;background:#fff;border-radius:22px;padding:14px;margin-bottom:10px;box-shadow:0 8px 24px rgba(0,0,0,.05);border:1px solid rgba(0,0,0,.03)}
     .trend-card-soft{background:linear-gradient(180deg,#fff 0%,rgba(var(--emp-rgb),.03) 100%)}
     .trend-bg{position:absolute;inset:0;pointer-events:none;opacity:.48}
@@ -232,7 +173,7 @@
     .schedule-confirm-wrap{display:grid;gap:8px;margin-bottom:12px}
     .schedule-confirm-note{border-radius:16px;padding:10px 12px;background:linear-gradient(180deg,#ffffff 0%,rgba(var(--schedule-rgb),.08) 100%);border:1px dashed rgba(var(--schedule-rgb),.26);color:var(--schedule-deep);font-size:12px;font-weight:900;line-height:1.45}
     .field-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-    .nav{position:fixed;left:0;right:0;bottom:0;z-index:1200;width:100%;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:2px;background:rgba(255,255,255,.96);backdrop-filter:blur(14px);padding:7px 4px calc(7px + env(safe-area-inset-bottom));border-radius:20px 20px 0 0;box-shadow:0 -5px 18px rgba(0,0,0,.08)}
+    .nav{position:fixed;left:0;right:0;bottom:0;z-index:1200;width:100%;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:2px;background:rgba(255,255,255,.96);backdrop-filter:blur(14px);padding:7px 4px calc(7px + env(safe-area-inset-bottom));border-radius:20px 20px 0 0;box-shadow:0 -5px 18px rgba(0,0,0,.08)}
     .nav-btn{min-width:0;width:100%;border:none;background:linear-gradient(180deg,#ffffff 0%,rgba(var(--emp-rgb),.08) 100%);padding:5px 1px;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:#6b7280;cursor:pointer;overflow:hidden;border-radius:16px;transition:transform .15s ease,box-shadow .18s ease,background .18s ease,color .18s ease}
     .nav-btn i{font-size:18px;line-height:1;flex:0 0 auto}
     .nav-btn span{display:block;width:100%;min-width:0;font-size:10px;line-height:1.1;text-align:center;font-weight:900;white-space:normal;word-break:break-word;overflow-wrap:anywhere}
@@ -240,36 +181,6 @@
     .nav-btn.is-main{transform:translateY(-12px);background:var(--emp-gradient);color:#fff;border-radius:999px;min-height:64px;box-shadow:0 10px 20px rgba(var(--emp-rgb),.22)}
     .nav-btn.is-main i{font-size:20px}.nav-btn.is-main span{font-size:9px}
     .desktop-grid,.desktop-grid-2{display:block}
-
-    /* 日夜模式：不覆蓋主題色，只換底色與卡片明暗 */
-    body[data-daynight="night"]{background:#07111f;color:#e5eefb}
-    body[data-daynight="night"] .topbar,
-    body[data-daynight="night"] .nav{background:rgba(9,18,32,.94);border-color:rgba(255,255,255,.08)}
-    body[data-daynight="night"] .card,
-    body[data-daynight="night"] .trend-card,
-    body[data-daynight="night"] .notice-item,
-    body[data-daynight="night"] .alert-item,
-    body[data-daynight="night"] .status-mini,
-    body[data-daynight="night"] .salary-card,
-    body[data-daynight="night"] .leave-v4-time,
-    body[data-daynight="night"] .upload-drop,
-    body[data-daynight="night"] .reimbursement-box,
-    body[data-daynight="night"] .theme-picker-card{background:#0f1d33;color:#e5eefb;border-color:rgba(255,255,255,.08)}
-    body[data-daynight="night"] input,
-    body[data-daynight="night"] select,
-    body[data-daynight="night"] textarea{background:#0b1628;color:#e5eefb;border-color:rgba(255,255,255,.08)}
-    body[data-daynight="night"] .sub-title,
-    body[data-daynight="night"] .brand-title-sub,
-    body[data-daynight="night"] .item-meta,
-    body[data-daynight="night"] .muted,
-    body[data-daynight="night"] .trend-cell small,
-    body[data-daynight="night"] .trend-cell .sub,
-    body[data-daynight="night"] .status-mini small{color:#9fb0c8}
-    body[data-daynight="night"] .nav-btn{background:linear-gradient(180deg,#101f36 0%,rgba(var(--emp-rgb),.14) 100%);color:#b9c7dc}
-    body[data-daynight="night"] .nav-btn.active{color:#fff}
-    body[data-daynight="night"] #nav-daynight{color:#fff;background:linear-gradient(var(--emp-angle),rgba(var(--emp-rgb),.22),rgba(var(--emp-rgb),.38))}
-    body[data-daynight="day"] #nav-daynight{color:var(--emp-deep)}
-
     .record-item-top,.day-pay-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px}
     .record-date,.day-pay-date{font-size:14px;font-weight:900;line-height:1.3}
     .record-hours,.day-pay-money{font-size:13px;font-weight:900;color:var(--emp-deep);white-space:nowrap}
@@ -298,352 +209,345 @@
     .dpay-total-row{margin-top:12px;padding:12px 14px;background:var(--emp-gradient);border-radius:16px;display:flex;justify-content:space-between;align-items:center;color:#fff}
     .dpay-total-row .label{font-size:13px;font-weight:800;opacity:.92}
     .dpay-total-row .value{font-size:22px;font-weight:900}
+  
 
-    /* Header 修正：公司名/副公司名只顯示資料，不再塞固定字；左右不重疊 */
-    .topbar{min-height:62px;align-items:center;overflow:hidden}
-    .topbar-left{flex:1 1 auto;min-width:0;overflow:hidden}
-    .topbar-right{flex:0 1 48%;max-width:48%;min-width:0;overflow:hidden;text-align:right}
-    .brand-slot{flex:1 1 auto;min-width:0;overflow:hidden}
-    .brand-logo{width:46px;height:46px;border-radius:16px;font-size:15px;line-height:1.05;padding:3px}
-    .brand-logo img{border-radius:13px}
-    .brand-title-wrap{min-width:0;max-width:100%;overflow:hidden}
-    .brand-title-main,.brand-title-sub,.title,.sub-title{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .brand-title-main:empty,.brand-title-sub:empty,.title:empty,.sub-title:empty{display:none}
-    .sub-title{line-height:1.35}
-    @media(max-width:430px){
-      .topbar{gap:8px;padding:7px 10px}
-      .topbar-right{flex-basis:46%;max-width:46%}
-      .brand-logo{width:42px;height:42px;border-radius:15px;font-size:14px}
-      .brand-title-main{font-size:13px}
-      .brand-title-sub{font-size:10px}
-      .title{font-size:13px}
-      .sub-title{font-size:10px}
+    /* === ANG-99-HR 0603：日光 / 暗夜切換鈕，固定右上，不撞底部導航 === */
+    .ang-daynight-toggle{
+      position:fixed;
+      top:calc(10px + env(safe-area-inset-top));
+      right:12px;
+      z-index:1600;
+      width:48px;
+      height:48px;
+      border:none;
+      outline:none;
+      border-radius:999px;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:21px;
+      font-weight:900;
+      color:#111827;
+      background:rgba(255,255,255,.92);
+      -webkit-backdrop-filter:blur(14px);
+      backdrop-filter:blur(14px);
+      box-shadow:0 8px 24px rgba(0,0,0,.14);
+      border:1px solid rgba(255,255,255,.62);
     }
-
-    /* 日夜切換：放在主頁下方，明確兩顆按鈕 */
-    .daynight-card{background:linear-gradient(180deg,#ffffff 0%,rgba(var(--emp-rgb),.06) 100%)}
-    .daynight-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-    .daynight-btn{width:100%;border:none;border-radius:18px;padding:14px 12px;background:#fff;color:var(--emp-deep);font-size:14px;font-weight:900;box-shadow:0 8px 18px rgba(0,0,0,.06);border:1px solid rgba(var(--emp-rgb),.16);cursor:pointer}
-    .daynight-btn.active{background:var(--emp-gradient);color:var(--text-on-emp);border-color:transparent;box-shadow:0 12px 24px rgba(var(--emp-rgb),.20)}
-    body[data-daynight="night"] .daynight-card{background:#0f1d33;color:#e5eefb;border-color:rgba(255,255,255,.08)}
-    body[data-daynight="night"] .daynight-btn{background:#0b1628;color:#dbeafe;border-color:rgba(255,255,255,.08)}
-    body[data-daynight="night"] .daynight-btn.active{background:var(--emp-gradient);color:var(--text-on-emp);border-color:transparent}
-
-
-    /* v3：選休月模式不再顯示額外「週一～週日」標題列，只顯示每一天自己的週別＋日期 */
-    .weekday-strip.month-mode{grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
-    .weekday-strip.month-mode .weekday-chip{min-height:58px;padding:9px 4px}
-    .weekday-strip.month-mode .weekday-main{font-size:12px}
-    .weekday-strip.month-mode .weekday-date{font-size:11px}
-    .calendar-spacer{min-height:1px}
-    .upload-type-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-    @media(max-width:520px){.upload-type-list{grid-template-columns:1fr}}
-    .upload-type-btn small{display:block;margin-top:5px;font-size:11px;line-height:1.35;font-weight:800;opacity:.76}
-    .nav-btn#nav-daynight span{font-size:9px;line-height:1.05}
-    body[data-daynight="night"]{--bg:#07111f;--card:#0f1d33;--text:#e5eefb;--muted:#9fb0c8;--line:rgba(255,255,255,.08);--soft:#0b1628;background:#07111f;color:#e5eefb}
-    body[data-daynight="night"] .safe{background:#07111f}
-    body[data-daynight="night"] #cal-main,
-    body[data-daynight="night"] #cal-clock,
-    body[data-daynight="night"] #cal-salary-month,
-    body[data-daynight="night"] #cal-upload,
-    body[data-daynight="night"] .ang-empty-calendar{background:#0f1d33;color:#e5eefb;border-color:rgba(255,255,255,.08)}
-    body[data-daynight="night"] .ang-empty-calendar-day{background:#0b1628;color:#dbeafe;border-color:rgba(255,255,255,.08)}
-    body[data-daynight="night"] .ang-empty-calendar-day.out{opacity:.35}
-
-
-    /* v4：日光 / 暗夜改放在工號下面，不再佔底部導航 */
-    .hero-id-line{margin-top:4px;font-size:12px;font-weight:900;opacity:.92;letter-spacing:.2px}
-    .hero-id-line:empty{display:none}
-    .hero-daynight-inline{display:flex;gap:8px;margin-top:8px;max-width:220px}
-    .hero-daynight-inline .daynight-btn{padding:9px 10px;border-radius:999px;font-size:12px;box-shadow:none;background:rgba(255,255,255,.18);color:#fff;border:1px solid rgba(255,255,255,.24)}
-    .hero-daynight-inline .daynight-btn.active{background:#fff;color:var(--emp-deep);border-color:#fff;box-shadow:0 8px 18px rgba(0,0,0,.10)}
-    body[data-daynight="night"] .hero-daynight-inline .daynight-btn{background:rgba(255,255,255,.12);color:#e5eefb;border-color:rgba(255,255,255,.20)}
-    body[data-daynight="night"] .hero-daynight-inline .daynight-btn.active{background:var(--emp-gradient);color:var(--text-on-emp);border-color:transparent}
-
+    .ang-daynight-toggle:active{transform:scale(.94)}
+    .topbar-right{padding-right:58px}
+    body.ang-night{
+      --bg:#0f172a;
+      --card:#182235;
+      --text:#f8fafc;
+      --muted:#cbd5e1;
+      --line:#334155;
+      --soft:#243046;
+      color:var(--text);
+      background:var(--bg);
+    }
+    body.ang-night .topbar{background:rgba(15,23,42,.94);box-shadow:0 2px 14px rgba(0,0,0,.28)}
+    body.ang-night .card,
+    body.ang-night .trend-card,
+    body.ang-night .fc,
+    body.ang-night .notice-item,
+    body.ang-night .alert-item,
+    body.ang-night .timeline-item,
+    body.ang-night .record-item,
+    body.ang-night .day-pay-item,
+    body.ang-night .review-card{
+      background:linear-gradient(180deg,rgba(30,41,59,.96) 0%,rgba(var(--emp-rgb),.08) 100%);
+      color:var(--text);
+      border-color:rgba(255,255,255,.08);
+    }
+    body.ang-night input,
+    body.ang-night select,
+    body.ang-night textarea{background:#243046;color:#f8fafc}
+    body.ang-night .nav{background:rgba(15,23,42,.96);box-shadow:0 -5px 18px rgba(0,0,0,.32)}
+    body.ang-night .nav-btn{background:linear-gradient(180deg,rgba(30,41,59,.98) 0%,rgba(var(--emp-rgb),.10) 100%);color:#cbd5e1}
+    body.ang-night .ang-daynight-toggle{background:rgba(30,41,59,.94);color:#fff;border-color:rgba(255,255,255,.14)}
+    @media(max-width:390px){.ang-daynight-toggle{right:8px;width:44px;height:44px;font-size:19px}.topbar-right{padding-right:50px}}
 
   </style>
 </head>
-<body data-active-page="home" data-daynight="day">
-<div class="topbar">
-<div class="topbar-left">
-<div class="brand-slot" id="brandSlot">
-<div class="brand-logo" id="brandLogo">ANG</div>
-<div class="brand-title-wrap">
-<div class="brand-title-main" id="brandTitleMain"></div>
-<div class="brand-title-sub" id="brandTitleSub"></div>
-</div>
-</div>
-</div>
-<div class="topbar-right">
-<div class="title" id="topBrandTitle"></div>
-<div class="sub-title" id="topBrandSub"></div>
-</div>
-</div>
-<div class="safe">
-<!-- ========== 主頁 ========== -->
-<section class="page active" id="page-home">
-<div class="hero">
-<div class="hero-top">
-<div style="min-width:0"><div class="hello" id="helloName"></div><div class="hello-sub" id="helloStatus"></div><div class="hero-id-line" id="heroEmployeeIdLine"></div><div class="hero-daynight-inline" id="heroDaynightInline"><button class="daynight-btn" data-daynight-choice="day" onclick="setDayNightMode('day',true)" type="button"><i class="fa-solid fa-sun"></i> 白天</button><button class="daynight-btn" data-daynight-choice="night" onclick="setDayNightMode('night',true)" type="button"><i class="fa-solid fa-moon"></i> 黑夜</button></div></div>
-<div class="hero-chip" id="heroChip"></div>
-</div>
-<div class="next-shift">
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-<div><small>今日狀態</small><div class="big" id="todayStatusText"></div></div>
-<div><small>明日班別</small><div class="big" id="tomorrowText" style="font-size:15px"></div></div>
-</div>
-</div>
-</div>
-<div class="trend-card">
-<div aria-hidden="true" class="trend-bg"><svg preserveaspectratio="none" viewbox="0 0 320 120"><polyline points="8,90 62,88 96,74 140,70 180,48 220,42 266,22 312,16"></polyline></svg></div>
-<div class="trend-split">
-<div class="trend-cell"><small>本週薪資累計</small><div class="value" id="home-week-salary"></div><div class="sub">依目前已打卡資料統計</div></div>
-<div class="trend-divider"></div>
-<div class="trend-cell"><small>本週工時</small><div class="value" id="home-week-hours"></div><div class="sub">含已完成日工時</div></div>
-</div>
-</div>
-<div class="trend-card trend-card-soft">
-<div aria-hidden="true" class="trend-bg"><svg preserveaspectratio="none" viewbox="0 0 320 120"><polyline points="8,102 54,98 94,92 138,76 182,64 220,54 260,44 312,26"></polyline></svg></div>
-<div class="trend-split">
-<div class="trend-cell"><small>本月薪資累計</small><div class="value" id="home-month-salary"></div><div class="sub">未含特殊加給</div></div>
-<div class="trend-divider"></div>
-<div class="trend-cell"><small>本月工時</small><div class="value" id="home-month-hours"></div><div class="sub">整月累計</div></div>
-</div>
-</div>
-<div class="status-grid-3">
-<div class="status-mini"><small>明天</small><div class="v" id="home-tomorrow-status"></div></div>
-<div class="status-mini"><small>後天</small><div class="v" id="home-after-status"></div></div>
-<div class="status-mini"><small>異常件數</small><div class="v" id="home-pending-count"></div></div>
-</div>
-<div class="desktop-grid">
-<div>
-<div class="card">
-<div class="mini-row"><h3>提醒事項</h3><span class="badge warn">請留意</span></div>
-<div class="alert-list" id="home-alert-list"></div>
-</div>
-<div class="card">
-<div class="mini-row"><h3>主管通知</h3><span class="badge ok">最新</span></div>
-<div class="notice-list" id="noticesBox"></div>
-</div>
-</div>
-<div>
-<div class="card">
-<div class="mini-row"><h3>近期動態</h3><span class="badge">摘要</span></div>
-<div class="timeline-list" id="recentActivitiesBox"></div>
-</div>
-</div>
-</div>
-<div class="card">
-<div class="mini-row"><h3>留言交流</h3><span class="badge">主管可審核</span></div>
-<textarea id="messageInput" placeholder="寫下建議、提醒或想跟主管說的話"></textarea>
-<button class="btn-main" onclick="submitMessage()" type="button">送出留言</button>
-<div class="notice-list" id="message-board" style="margin-top:10px"></div>
-</div>
-<div class="card theme-picker-card">
-<div class="theme-picker-head"><div><div class="theme-picker-title">主題顏色</div><div class="theme-picker-sub">下面四格都可自訂，整體漸層會直接用這四種顏色去跑</div></div><div class="theme-picker-badge" id="themeNameBadge">自訂四色</div></div>
-<div class="theme-picker-row" id="themePreviewRow">
-<button class="theme-color-btn active" onclick="applyVariation(0)" type="button"></button>
-<button class="theme-color-btn" onclick="applyVariation(1)" type="button"></button>
-<button class="theme-color-btn" onclick="applyVariation(2)" type="button"></button>
-<button class="theme-color-btn" onclick="applyVariation(3)" type="button"></button>
-</div>
-<div class="theme-angle-row">
-<button class="theme-angle-btn" onclick="rotateThemeAngle(-1)" type="button">↺</button>
-<div class="theme-angle-display" id="themeAngleDisplay"><span>左上 → 右下</span></div>
-<button class="theme-angle-btn" onclick="rotateThemeAngle(1)" type="button">↻</button>
-</div>
-<div class="theme-custom-grid">
-<label class="theme-custom-item"><span>色1</span><input id="themeColor1" oninput="updateThemeColor(0,this.value)" type="color" value="#FF87E0"/></label>
-<label class="theme-custom-item"><span>色2</span><input id="themeColor2" oninput="updateThemeColor(1,this.value)" type="color" value="#CCA4FF"/></label>
-<label class="theme-custom-item"><span>色3</span><input id="themeColor3" oninput="updateThemeColor(2,this.value)" type="color" value="#8089FF"/></label>
-<label class="theme-custom-item"><span>色4</span><input id="themeColor4" oninput="updateThemeColor(3,this.value)" type="color" value="#59DDFF"/></label>
-</div>
-<div class="theme-custom-row"><button class="btn-soft" onclick="resetThemePreset()" type="button">套回預設四色</button></div>
-</div>
-</section>
-<!-- ========== 請假排班 ========== -->
-<section class="page" id="page-schedule">
-<div class="card">
-<div class="week-tabs">
-<button class="active" id="t-0" onclick="toggleWeek(0)">本週排班</button>
-<button id="t-1" onclick="toggleWeek(1)">下週排班</button>
-</div>
-<div class="weekday-strip" id="weekday-strip"></div>
-<div class="schedule-confirm-wrap">
-<button class="btn-soft" onclick="confirmScheduleSelection()" type="button">確認日期選擇</button>
-<div class="schedule-confirm-note" id="schedule-confirm-note">尚未選擇日期</div>
-</div>
-<div class="calendar-title" style="margin-bottom:10px"><div class="t" id="schedule-calendar-title">本週排班月曆</div><div class="s">固定顯示</div></div>
-<div id="cal-main" style="margin-bottom:12px"></div>
-<div id="shift-legend" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px"></div>
-<div class="leave-guide"><div class="g-title">請假申請說明</div><div class="g-text">假別保留 12 個按鈕式選項。<br/>開始 / 結束改成日期 + 小時 + 分鐘分開選，分鐘固定 5 分鐘一格。<br/>天數只整數；時數可 0.5，並會同步回推結束時間。</div></div>
-<h3 class="section-title">假別申請</h3>
-<div class="leave-types-v4" id="leave-type-grid-v4"></div>
-<div class="leave-v4-time"><label class="label">開始</label><div class="time-grid"><input id="leave-start-date" type="date"/><select id="leave-start-hour"></select><select id="leave-start-minute"></select></div></div>
-<div class="leave-v4-time"><label class="label">結束</label><div class="time-grid"><input id="leave-end-date" type="date"/><select id="leave-end-hour"></select><select id="leave-end-minute"></select></div></div>
-<div class="leave-v4-qty">
-<div class="leave-v4-qty-card"><div class="leave-v4-qty-head">請假天數</div><div class="leave-v4-stepper"><button id="leave-day-minus" type="button">－</button><input class="leave-v4-inline-input" id="leave-days-input" inputmode="numeric" value="1"/><button id="leave-day-plus" type="button">＋</button></div><div class="leave-v4-hint">以 1 天為單位。</div></div>
-<div class="leave-v4-qty-card"><div class="leave-v4-qty-head">時數</div><div class="leave-v4-stepper"><button id="leave-hour-minus" type="button">－</button><input class="leave-v4-inline-input" id="leave-hours-input" inputmode="decimal" value="0.0"/><button id="leave-hour-plus" type="button">＋</button></div><div class="leave-v4-hint">可用 0.5 小時。</div></div>
-</div>
-<div class="leave-v4-summary"><small>即時換算結果</small><div class="big" id="leave-v4-summary-text">1 天 0 小時</div><div class="sub" id="leave-v4-summary-sub">共 8.0 小時｜會同步回上方結束時間</div></div>
-<div id="leave-break-row" style="display:none;margin-bottom:12px">
-<label class="label">含休息時間</label>
-<select id="leave-break-select" style="margin-bottom:0">
-<option value="0">不含</option>
-<option value="1">含 1 次</option>
-</select>
-</div>
-<label class="label">請假事由 / 補充說明</label>
-<textarea id="leave-reason" placeholder="例如：看診、家庭因素、個人事務"></textarea>
-<button class="btn-main" onclick="submitLeave()">確認送出</button>
-</div>
-</section>
-<!-- ========== 打卡記錄 ========== -->
-<section class="page" id="page-clock">
-<div class="card" id="today-clock-status-card">
-<div class="mini-row"><h3>今日打卡狀態</h3><span class="badge ok">即時</span></div>
-<div id="today-clock-card"><div class="item-meta" style="text-align:center;padding:8px">載入中...</div></div>
-</div>
-<div class="card">
-<div class="calendar-title"><div><div class="t">打卡月曆</div><div class="item-meta">下方月曆固定顯示</div></div><div class="s">異常紅字</div></div>
-<div id="cal-clock"></div>
-</div>
-<div class="card">
-<div class="record-top-tabs">
-<button class="active" id="clock-tab-record" onclick="switchClockTab('record')">打卡記錄</button>
-<button id="clock-tab-apply" onclick="switchClockTab('apply')">補打卡申請</button>
-</div>
-<div id="clock-record-view">
-<div class="mini-row"><h3>實際打卡紀錄</h3><span class="badge danger" id="clock-anomaly-count" style="display:none"></span><span class="badge ok">月曆同步</span></div>
-<div class="record-list" id="clock-record-list"></div>
-</div>
-<div id="clock-apply-view" style="display:none">
-<div class="mini-row"><h3>補打卡申請</h3><button class="btn-soft" onclick="pickUploadType('補卡證明','例如：補卡日期、上下班別、補卡原因')" type="button">補卡證明</button></div>
-<label class="label">打卡類型</label>
-<select id="clock-type"><option>上班</option><option>下班</option><option>加班</option></select>
-<label class="label">補打卡時間</label>
-<div class="time-grid"><input id="clock-fix-date" type="date"/><select id="clock-fix-hour"></select><select id="clock-fix-minute"></select></div>
-<label class="label">補打卡原因</label>
-<textarea id="clock-note" placeholder="例如：漏刷、機器異常"></textarea>
-<button class="btn-main" onclick="saveClockRecord()">確認補登</button>
-</div>
-</div>
-</section>
-<!-- ========== 薪資明細 ========== -->
-<section class="page" id="page-salary">
-<div class="card">
-<div class="mini-row"><h3>薪資預估</h3><span class="badge ok">管理端設定</span></div>
-<div class="notice-item" style="margin-bottom:10px;">
-<div class="item-title">薪資計算週期</div>
-<div class="item-meta" id="salary-cycle-display">由管理員設定｜週結｜週一起算</div>
-</div>
-<div class="salary-estimate-card">
-<small id="salary-estimate-label">一週預估</small>
-<div class="big" id="salary-estimate-value">$0</div>
-<div class="sub" id="salary-estimate-note">依目前已完成打卡資料統計。</div>
-</div>
-<label class="label">已發薪資</label>
-<select id="salary-history-select" onchange="showSalaryHistoryDetail()"></select>
-<div class="item-meta" id="salary-history-detail">選取一筆已發薪資後，這裡會顯示摘要。</div>
-</div>
-<div class="desktop-grid-2">
-<div class="card"><div class="calendar-title"><div class="t">月曆檢視</div><div class="s">班別 / 休假 / 薪資</div></div><div id="cal-salary-month"></div></div>
-<div class="card"><div class="mini-row"><h3>每日薪資紀錄</h3><span class="badge ok">已出勤日</span></div><div class="day-pay-list" id="salary-day-pay-list"></div></div>
-</div>
-<div class="field-row" style="margin-top:10px">
-<div><label class="label">選擇月份</label><input id="slipMonth" type="month"/></div>
-<div style="display:flex;align-items:flex-end"><button class="btn-ghost" onclick="downloadSalarySlip()" type="button">📄 下載薪資單</button></div>
-</div>
-</section>
-<!-- ========== 資料上傳 ========== -->
-<section class="page" id="page-upload">
-<div class="card">
-<div class="calendar-title">
-<div><div class="t">我的申請記錄</div><div class="item-meta">排班 / 請假 / 申請一覽</div></div>
-<div class="s">月曆檢視</div>
-</div>
-<div id="cal-upload"></div>
-</div>
-<div class="card">
-<h3 class="section-title">資料上傳中心</h3>
-<div class="tool-grid" style="margin-bottom:10px">
-<button class="btn-ghost" id="btn-get-location" onclick="toggleLocation()" type="button">傳送位置資訊</button>
-<button class="btn-ghost" id="btn-reimbursement" onclick="toggleReimbursementBtn()" type="button">費用請款</button>
-</div>
-<div class="upload-type-list">
-<button class="upload-type-btn" id="upload-type-補卡證明" onclick="pickUploadType('補卡證明','例如：補卡日期、上下班別、補卡原因')">補卡證明<small>用於漏刷、機器異常、補登上下班紀錄</small></button>
-<button class="upload-type-btn" id="upload-type-請假證明" onclick="pickUploadType('請假證明','例如：假別、日期、證明用途')">請假證明<small>病假、事假、特休或其他請假補件</small></button>
-<button class="upload-type-btn" id="upload-type-醫生證明" onclick="pickUploadType('醫生證明','例如：就診日期、診所名稱')">醫生證明<small>看診、病假、診斷相關證明</small></button>
-<button class="upload-type-btn" id="upload-type-公費請款（預先發）" onclick="pickUploadType('公費請款（預先發）','例如：用途、預估金額、使用日期')">公費請款（預先發）<small>先行申請公費用途與預估金額</small></button>
-<button class="upload-type-btn" id="upload-type-代墊收據" onclick="pickUploadType('代墊收據','例如：代墊項目、金額、日期')">代墊收據<small>交通、購買、工作支出收據</small></button>
-<button class="upload-type-btn" id="upload-type-交通費憑證" onclick="pickUploadType('交通費憑證','例如：起訖地點、車資、日期')">交通費憑證<small>計程車、油資、停車費、大眾運輸</small></button>
-<button class="upload-type-btn" id="upload-type-採購憑證" onclick="pickUploadType('採購憑證','例如：品項、金額、用途')">採購憑證<small>物料、備品、耗材、臨時採購</small></button>
-<button class="upload-type-btn" id="upload-type-作業紀錄" onclick="pickUploadType('作業紀錄','例如：工作內容、完成時間')">作業紀錄<small>現場照片、執行情況、補件說明</small></button>
-<button class="upload-type-btn" id="upload-type-交接紀錄" onclick="pickUploadType('交接紀錄','例如：交接項目、接手人員')">交接紀錄<small>班別交接、物品交接、狀態說明</small></button>
-<button class="upload-type-btn" id="upload-type-位置資訊（外勤回報用）" onclick="pickUploadType('位置資訊（外勤回報用）','例如：外勤地點、到達時間')">位置資訊（外勤回報用）<small>外勤地點、到點紀錄與位置資訊</small></button>
-<button class="upload-type-btn" id="upload-type-客訴 / 異常回報" onclick="pickUploadType('客訴 / 異常回報','例如：事件時間、地點、處理狀況')">客訴 / 異常回報<small>現場異常、客訴、設備或流程問題</small></button>
-<button class="upload-type-btn" id="upload-type-設備維修回報" onclick="pickUploadType('設備維修回報','例如：設備名稱、故障狀況')">設備維修回報<small>設備損壞、維修紀錄、零件更換</small></button>
-<button class="upload-type-btn" id="upload-type-盤點 / 庫存紀錄" onclick="pickUploadType('盤點 / 庫存紀錄','例如：品項、數量、差異原因')">盤點 / 庫存紀錄<small>庫存盤點、缺料、報廢、差異補充</small></button>
-<button class="upload-type-btn" id="upload-type-教育訓練證明" onclick="pickUploadType('教育訓練證明','例如：課程名稱、日期')">教育訓練證明<small>訓練照片、簽到、證書或考核紀錄</small></button>
-<button class="upload-type-btn" id="upload-type-合約 / 文件補件" onclick="pickUploadType('合約 / 文件補件','例如：文件名稱、用途')">合約 / 文件補件<small>合約、切結書、人事文件或表單補件</small></button>
-<button class="upload-type-btn" id="upload-type-其他補件" onclick="pickUploadType('其他補件','例如：補件原因、關聯申請')">其他補件<small>無法歸類的附件與說明</small></button>
-</div>
-<label class="label">已選項目</label><input id="u-type" placeholder="請先點選上方項目" type="text"/>
-<label class="label">補充說明</label><textarea id="u-note" placeholder="請輸入補充說明"></textarea>
-<div class="reimbursement-box" id="reimbursement-box">
-<label class="label">請款金額</label><input id="r-amount" placeholder="輸入金額" type="number"/>
-<label class="label">請款項目</label><input id="r-item" placeholder="例如：車資、文具" type="text"/>
-</div>
-<label class="label">上傳檔案（照片/影片/PDF）</label>
-<input accept="image/*,video/*,application/pdf" id="u-file" onchange="updateFileName(this)" style="display:none" type="file"/>
-<div class="upload-drop"><i class="fa-solid fa-cloud-arrow-up"></i><div class="upload-file-name" id="f-name">尚未選擇檔案</div><button class="btn-ghost" onclick="document.getElementById('u-file').click()" type="button">選擇檔案</button></div>
-<button class="btn-main" onclick="submitUpload()">確認並上傳雲端</button>
-</div>
-<!-- iOS 捷徑設定 -->
-<div class="card">
-<div class="mini-row"><h3>iOS 捷徑設定</h3><span class="badge ok">快速打卡</span></div>
-<label class="label">選擇動作</label>
-<select id="shortcut-action-select">
-<option value="clock_in">上班打卡</option>
-<option value="clock_out">下班打卡</option>
-<option value="overtime">加班打卡</option>
-</select>
-<div class="tool-grid" style="margin-bottom:8px">
-<button class="btn-ghost" onclick="generateShortcutJson()" type="button">產生 JSON 設定</button>
-<button class="btn-ghost" onclick="copyShortcutJson()" type="button">複製 JSON</button>
-</div>
-<div class="tool-grid" style="margin-bottom:10px">
-<button class="btn-ghost" onclick="rebindDevice()" type="button">重新綁定裝置</button>
-<button class="btn-main" id="btn-send-clock" onclick="sendClockFromShortcut()" type="button">發送打卡</button>
-</div>
-<div class="check-row" style="margin-bottom:10px">
-<input id="shortcut-field-mode" type="checkbox"/>
-<label for="shortcut-field-mode">外勤模式（跳過位置驗證）</label>
-</div>
-<div id="shortcut-json-box" style="display:none;margin-bottom:10px">
-<label class="label">JSON 設定</label>
-<textarea id="shortcut-json-text" readonly="" style="font-size:12px;font-family:monospace;min-height:120px"></textarea>
-</div>
-<div class="notice-item" style="background:var(--soft);border-radius:14px;padding:10px;margin-top:4px">
-<div class="item-title" style="margin-bottom:6px">📱 iPhone 安裝說明</div>
-<div class="item-meta">1. 點擊「產生 JSON 設定」取得設定碼</div>
-<div class="item-meta">2. 點擊「複製 JSON」後貼入 iPhone「捷徑」App</div>
-<div class="item-meta">3. 在捷徑中新增「取得網頁內容」步驟，URL 填入 webAppUrl</div>
-<div class="item-meta">4. 請求主體選 JSON，貼上複製的設定碼</div>
-<div class="item-meta">5. 完成後即可透過 Siri 或主畫面捷徑一鍵打卡</div>
-</div>
-</div>
-</section>
-</div>
-<!-- ========== 底部導航 ========== -->
-<nav class="nav">
-<button class="nav-btn" id="nav-schedule" onclick="nav('schedule')"><i class="fa-solid fa-calendar-check"></i><span>請假排班</span></button>
-<button class="nav-btn" id="nav-clock" onclick="nav('clock')"><i class="fa-solid fa-clock-rotate-left"></i><span>打卡記錄</span></button>
-<button class="nav-btn is-main active" id="nav-home" onclick="handleEmployeeHomeClick()"><i class="fa-solid fa-house"></i><span>員工主頁</span></button>
-<button class="nav-btn" id="nav-salary" onclick="nav('salary')"><i class="fa-solid fa-money-check-dollar"></i><span>薪資明細</span></button>
-<button class="nav-btn" id="nav-upload" onclick="nav('upload')"><i class="fa-solid fa-file-arrow-up"></i><span>資料上傳</span></button>
-</nav>
-<script>
+<body data-active-page="home">
+
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="brand-slot" id="brandSlot">
+        <div class="brand-logo" id="brandLogo">ANG</div>
+        <div class="brand-title-wrap">
+          <div class="brand-title-main" id="brandTitleMain">ANG.lo</div>
+          <div class="brand-title-sub" id="brandTitleSub">Humanized system technology</div>
+        </div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="title" id="topBrandTitle">ANG.lo Engine</div>
+      <div class="sub-title" id="topBrandSub">HR 系統｜讀取中</div>
+    </div>
+  </div>
+
+  <div class="safe">
+
+    <!-- ========== 主頁 ========== -->
+    <section id="page-home" class="page active">
+      <div class="hero">
+        <div class="hero-top">
+          <div style="min-width:0"><div class="hello" id="helloName">哈囉，讀取中</div><div class="hello-sub" id="helloStatus"></div></div>
+          <div class="hero-chip" id="heroChip">標準版</div>
+        </div>
+        <div class="next-shift">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div><small>今日狀態</small><div class="big" id="todayStatusText">載入中...</div></div>
+            <div><small>明日班別</small><div class="big" style="font-size:15px" id="tomorrowText">載入中...</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="trend-card">
+        <div class="trend-bg" aria-hidden="true"><svg viewBox="0 0 320 120" preserveAspectRatio="none"><polyline points="8,90 62,88 96,74 140,70 180,48 220,42 266,22 312,16"></polyline></svg></div>
+        <div class="trend-split">
+          <div class="trend-cell"><small>本週薪資累計</small><div class="value" id="home-week-salary">$0</div><div class="sub">依目前已打卡資料統計</div></div>
+          <div class="trend-divider"></div>
+          <div class="trend-cell"><small>本週工時</small><div class="value" id="home-week-hours">0h</div><div class="sub">含已完成日工時</div></div>
+        </div>
+      </div>
+      <div class="trend-card trend-card-soft">
+        <div class="trend-bg" aria-hidden="true"><svg viewBox="0 0 320 120" preserveAspectRatio="none"><polyline points="8,102 54,98 94,92 138,76 182,64 220,54 260,44 312,26"></polyline></svg></div>
+        <div class="trend-split">
+          <div class="trend-cell"><small>本月薪資累計</small><div class="value" id="home-month-salary">$0</div><div class="sub">未含特殊加給</div></div>
+          <div class="trend-divider"></div>
+          <div class="trend-cell"><small>本月工時</small><div class="value" id="home-month-hours">0h</div><div class="sub">整月累計</div></div>
+        </div>
+      </div>
+
+      <div class="status-grid-3">
+        <div class="status-mini"><small>明天</small><div class="v" id="home-tomorrow-status">—</div></div>
+        <div class="status-mini"><small>後天</small><div class="v" id="home-after-status">—</div></div>
+        <div class="status-mini"><small>異常件數</small><div class="v" id="home-pending-count">0件</div></div>
+      </div>
+
+      <div class="desktop-grid">
+        <div>
+          <div class="card">
+            <div class="mini-row"><h3>提醒事項</h3><span class="badge warn">請留意</span></div>
+            <div class="alert-list" id="home-alert-list"></div>
+          </div>
+          <div class="card">
+            <div class="mini-row"><h3>主管通知</h3><span class="badge ok">最新</span></div>
+            <div class="notice-list" id="noticesBox">載入中...</div>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <div class="mini-row"><h3>近期動態</h3><span class="badge">摘要</span></div>
+            <div class="timeline-list" id="recentActivitiesBox">載入中...</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="mini-row"><h3>留言交流</h3><span class="badge">主管可審核</span></div>
+        <textarea id="messageInput" placeholder="寫下建議、提醒或想跟主管說的話"></textarea>
+        <button class="btn-main" type="button" onclick="submitMessage()">送出留言</button>
+        <div class="notice-list" id="message-board" style="margin-top:10px"></div>
+      </div>
+
+      <div class="card theme-picker-card">
+        <div class="theme-picker-head"><div><div class="theme-picker-title">主題顏色</div><div class="theme-picker-sub">下面四格都可自訂，整體漸層會直接用這四種顏色去跑</div></div><div class="theme-picker-badge" id="themeNameBadge">自訂四色</div></div>
+        <div class="theme-picker-row" id="themePreviewRow">
+          <button class="theme-color-btn active" type="button" onclick="applyVariation(0)"></button>
+          <button class="theme-color-btn" type="button" onclick="applyVariation(1)"></button>
+          <button class="theme-color-btn" type="button" onclick="applyVariation(2)"></button>
+          <button class="theme-color-btn" type="button" onclick="applyVariation(3)"></button>
+        </div>
+        <div class="theme-angle-row">
+          <button class="theme-angle-btn" type="button" onclick="rotateThemeAngle(-1)">↺</button>
+          <div class="theme-angle-display" id="themeAngleDisplay"><span>左上 → 右下</span></div>
+          <button class="theme-angle-btn" type="button" onclick="rotateThemeAngle(1)">↻</button>
+        </div>
+        <div class="theme-custom-grid">
+          <label class="theme-custom-item"><span>色1</span><input type="color" id="themeColor1" value="#FF87E0" oninput="updateThemeColor(0,this.value)"></label>
+          <label class="theme-custom-item"><span>色2</span><input type="color" id="themeColor2" value="#CCA4FF" oninput="updateThemeColor(1,this.value)"></label>
+          <label class="theme-custom-item"><span>色3</span><input type="color" id="themeColor3" value="#8089FF" oninput="updateThemeColor(2,this.value)"></label>
+          <label class="theme-custom-item"><span>色4</span><input type="color" id="themeColor4" value="#59DDFF" oninput="updateThemeColor(3,this.value)"></label>
+        </div>
+        <div class="theme-custom-row"><button class="btn-soft" type="button" onclick="resetThemePreset()">套回預設四色</button></div>
+      </div>
+    </section>
+
+    <!-- ========== 請假排班 ========== -->
+    <section id="page-schedule" class="page">
+      <div class="card">
+        <div class="week-tabs">
+          <button id="t-0" class="active" onclick="toggleWeek(0)">本週排班</button>
+          <button id="t-1" onclick="toggleWeek(1)">下週排班</button>
+        </div>
+        <div class="weekday-strip" id="weekday-strip"></div>
+        <div class="schedule-confirm-wrap">
+          <button class="btn-soft" type="button" onclick="confirmScheduleSelection()">確認日期選擇</button>
+          <div class="schedule-confirm-note" id="schedule-confirm-note">尚未選擇日期</div>
+        </div>
+        <div class="calendar-title" style="margin-bottom:10px"><div class="t" id="schedule-calendar-title">本週排班月曆</div><div class="s">固定顯示</div></div>
+        <div id="cal-main" style="margin-bottom:12px"></div>
+        <div id="shift-legend" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px"></div>
+        <div class="leave-guide"><div class="g-title">請假申請說明</div><div class="g-text">假別保留 12 個按鈕式選項。<br>開始 / 結束改成日期 + 小時 + 分鐘分開選，分鐘固定 5 分鐘一格。<br>天數只整數；時數可 0.5，並會同步回推結束時間。</div></div>
+        <h3 class="section-title">假別申請</h3>
+        <div id="leave-type-grid-v4" class="leave-types-v4"></div>
+        <div class="leave-v4-time"><label class="label">開始</label><div class="time-grid"><input type="date" id="leave-start-date"><select id="leave-start-hour"></select><select id="leave-start-minute"></select></div></div>
+        <div class="leave-v4-time"><label class="label">結束</label><div class="time-grid"><input type="date" id="leave-end-date"><select id="leave-end-hour"></select><select id="leave-end-minute"></select></div></div>
+        <div class="leave-v4-qty">
+          <div class="leave-v4-qty-card"><div class="leave-v4-qty-head">請假天數</div><div class="leave-v4-stepper"><button type="button" id="leave-day-minus">－</button><input class="leave-v4-inline-input" id="leave-days-input" inputmode="numeric" value="1"><button type="button" id="leave-day-plus">＋</button></div><div class="leave-v4-hint">以 1 天為單位。</div></div>
+          <div class="leave-v4-qty-card"><div class="leave-v4-qty-head">時數</div><div class="leave-v4-stepper"><button type="button" id="leave-hour-minus">－</button><input class="leave-v4-inline-input" id="leave-hours-input" inputmode="decimal" value="0.0"><button type="button" id="leave-hour-plus">＋</button></div><div class="leave-v4-hint">可用 0.5 小時。</div></div>
+        </div>
+        <div class="leave-v4-summary"><small>即時換算結果</small><div class="big" id="leave-v4-summary-text">1 天 0 小時</div><div class="sub" id="leave-v4-summary-sub">共 8.0 小時｜會同步回上方結束時間</div></div>
+        <div id="leave-break-row" style="display:none;margin-bottom:12px">
+          <label class="label">含休息時間</label>
+          <select id="leave-break-select" style="margin-bottom:0">
+            <option value="0">不含</option>
+            <option value="1">含 1 次</option>
+          </select>
+        </div>
+        <label class="label">請假事由 / 補充說明</label>
+        <textarea id="leave-reason" placeholder="例如：看診、家庭因素、個人事務"></textarea>
+        <button class="btn-main" onclick="submitLeave()">確認送出</button>
+      </div>
+    </section>
+
+    <!-- ========== 打卡記錄 ========== -->
+    <section id="page-clock" class="page">
+      <div class="card" id="today-clock-status-card">
+        <div class="mini-row"><h3>今日打卡狀態</h3><span class="badge ok">即時</span></div>
+        <div id="today-clock-card"><div class="item-meta" style="text-align:center;padding:8px">載入中...</div></div>
+      </div>
+      <div class="card">
+        <div class="calendar-title"><div><div class="t">打卡月曆</div><div class="item-meta">下方月曆固定顯示</div></div><div class="s">異常紅字</div></div>
+        <div id="cal-clock"></div>
+      </div>
+      <div class="card">
+        <div class="record-top-tabs">
+          <button id="clock-tab-record" class="active" onclick="switchClockTab('record')">打卡記錄</button>
+          <button id="clock-tab-apply" onclick="switchClockTab('apply')">補打卡申請</button>
+        </div>
+        <div id="clock-record-view">
+          <div class="mini-row"><h3>實際打卡紀錄</h3><span class="badge danger" id="clock-anomaly-count" style="display:none"></span><span class="badge ok">月曆同步</span></div>
+          <div class="record-list" id="clock-record-list"></div>
+        </div>
+        <div id="clock-apply-view" style="display:none">
+          <div class="mini-row"><h3>補打卡申請</h3><button class="btn-soft" type="button" onclick="pickUploadType('補卡證明','例如：補卡日期、上下班別、補卡原因')">補卡證明</button></div>
+          <label class="label">打卡類型</label>
+          <select id="clock-type"><option>上班</option><option>下班</option><option>加班</option></select>
+          <label class="label">補打卡時間</label>
+          <div class="time-grid"><input type="date" id="clock-fix-date"><select id="clock-fix-hour"></select><select id="clock-fix-minute"></select></div>
+          <label class="label">補打卡原因</label>
+          <textarea id="clock-note" placeholder="例如：漏刷、機器異常"></textarea>
+          <button class="btn-main" onclick="saveClockRecord()">確認補登</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 薪資明細 ========== -->
+    <section id="page-salary" class="page">
+      <div class="card">
+        <div class="mini-row"><h3>薪資預估</h3><span class="badge ok">管理端設定</span></div>
+        <div class="salary-estimate-card"><small id="salary-estimate-label">一週預估</small><div class="big" id="salary-estimate-value">$0</div><div class="sub" id="salary-estimate-note">依目前已完成打卡資料統計。</div></div>
+      </div>
+      <div class="desktop-grid-2">
+        <div class="card"><div class="calendar-title"><div class="t">月曆檢視</div><div class="s">班別/休假/薪資</div></div><div id="cal-salary-month"></div></div>
+        <div class="card"><div class="mini-row"><h3>每日薪資紀錄</h3><span class="badge ok">已出勤日</span></div><div class="day-pay-list" id="salary-day-pay-list"></div></div>
+      </div>
+      <div class="field-row" style="margin-top:10px">
+        <div><label class="label">選擇月份</label><input type="month" id="slipMonth"></div>
+        <div style="display:flex;align-items:flex-end"><button class="btn-ghost" onclick="downloadSalarySlip()">📄 下載薪資單</button></div>
+      </div>
+    </section>
+
+    <!-- ========== 資料上傳 ========== -->
+    <section id="page-upload" class="page">
+      <div class="card">
+        <div class="calendar-title">
+          <div><div class="t">我的申請記錄</div><div class="item-meta">排班 / 請假 / 申請一覽</div></div>
+          <div class="s">月曆檢視</div>
+        </div>
+        <div id="cal-upload"></div>
+      </div>
+      <div class="card">
+        <h3 class="section-title">資料上傳中心</h3>
+        <div class="tool-grid" style="margin-bottom:10px">
+          <button class="btn-ghost" type="button" id="btn-get-location" onclick="toggleLocation()">傳送位置資訊</button>
+          <button class="btn-ghost" type="button" id="btn-reimbursement" onclick="toggleReimbursementBtn()">費用請款</button>
+        </div>
+        <div class="upload-type-list">
+          <button class="upload-type-btn" id="upload-type-補卡證明" onclick="pickUploadType('補卡證明','例如：補卡日期、上下班別、補卡原因')">補卡證明<small>用於漏刷、機器異常、補登上下班紀錄</small></button>
+          <button class="upload-type-btn" id="upload-type-公費請款（預先發）" onclick="pickUploadType('公費請款（預先發）','例如：用途、預估金額、使用日期')">公費請款（預先發）<small>先行申請公費用途與預估金額</small></button>
+          <button class="upload-type-btn" id="upload-type-醫生證明" onclick="pickUploadType('醫生證明','例如：就診日期、診所名稱')">醫生證明<small>看診、病假、診斷相關證明</small></button>
+          <button class="upload-type-btn" id="upload-type-代墊收據" onclick="pickUploadType('代墊收據','例如：代墊項目、金額、日期')">代墊收據<small>交通、購買、工作支出收據</small></button>
+          <button class="upload-type-btn" id="upload-type-作業紀錄" onclick="pickUploadType('作業紀錄','例如：工作內容、完成時間')">作業紀錄<small>現場照片、執行情況、補件說明</small></button>
+          <button class="upload-type-btn" id="upload-type-位置資訊（外勤回報用）" onclick="pickUploadType('位置資訊（外勤回報用）','例如：外勤地點、到達時間')">位置資訊（外勤回報用）<small>外勤地點、到點紀錄與位置資訊</small></button>
+        </div>
+        <label class="label">已選項目</label><input type="text" id="u-type" placeholder="請先點選上方項目">
+        <label class="label">補充說明</label><textarea id="u-note" placeholder="請輸入補充說明"></textarea>
+        <div id="reimbursement-box" class="reimbursement-box">
+          <label class="label">請款金額</label><input type="number" id="r-amount" placeholder="輸入金額">
+          <label class="label">請款項目</label><input type="text" id="r-item" placeholder="例如：車資、文具">
+        </div>
+        <label class="label">上傳檔案（照片/影片/PDF）</label>
+        <input type="file" id="u-file" accept="image/*,video/*,application/pdf" style="display:none" onchange="updateFileName(this)">
+        <div class="upload-drop"><i class="fa-solid fa-cloud-arrow-up"></i><div id="f-name" class="upload-file-name">尚未選擇檔案</div><button class="btn-ghost" type="button" onclick="document.getElementById('u-file').click()">選擇檔案</button></div>
+        <button class="btn-main" onclick="submitUpload()">確認並上傳雲端</button>
+      </div>
+
+      <!-- iOS 捷徑設定 -->
+      <div class="card">
+        <div class="mini-row"><h3>iOS 捷徑設定</h3><span class="badge ok">快速打卡</span></div>
+        <label class="label">選擇動作</label>
+        <select id="shortcut-action-select">
+          <option value="clock_in">上班打卡</option>
+          <option value="clock_out">下班打卡</option>
+          <option value="overtime">加班打卡</option>
+        </select>
+        <div class="tool-grid" style="margin-bottom:8px">
+          <button class="btn-ghost" type="button" onclick="generateShortcutJson()">產生 JSON 設定</button>
+          <button class="btn-ghost" type="button" onclick="copyShortcutJson()">複製 JSON</button>
+        </div>
+        <div class="tool-grid" style="margin-bottom:10px">
+          <button class="btn-ghost" type="button" onclick="rebindDevice()">重新綁定裝置</button>
+          <button class="btn-main" type="button" id="btn-send-clock" onclick="sendClockFromShortcut()">發送打卡</button>
+        </div>
+        <div class="check-row" style="margin-bottom:10px">
+          <input type="checkbox" id="shortcut-field-mode">
+          <label for="shortcut-field-mode">外勤模式（跳過位置驗證）</label>
+        </div>
+        <div id="shortcut-json-box" style="display:none;margin-bottom:10px">
+          <label class="label">JSON 設定</label>
+          <textarea id="shortcut-json-text" style="font-size:12px;font-family:monospace;min-height:120px" readonly></textarea>
+        </div>
+        <div class="notice-item" style="background:var(--soft);border-radius:14px;padding:10px;margin-top:4px">
+          <div class="item-title" style="margin-bottom:6px">📱 iPhone 安裝說明</div>
+          <div class="item-meta">1. 點擊「產生 JSON 設定」取得設定碼</div>
+          <div class="item-meta">2. 點擊「複製 JSON」後貼入 iPhone「捷徑」App</div>
+          <div class="item-meta">3. 在捷徑中新增「取得網頁內容」步驟，URL 填入 webAppUrl</div>
+          <div class="item-meta">4. 請求主體選 JSON，貼上複製的設定碼</div>
+          <div class="item-meta">5. 完成後即可透過 Siri 或主畫面捷徑一鍵打卡</div>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <!-- ========== 底部導航 ========== -->
+  <nav class="nav">
+    <button class="nav-btn" id="nav-schedule" onclick="nav('schedule')"><i class="fa-solid fa-calendar-check"></i><span>請假排班</span></button>
+    <button class="nav-btn" id="nav-clock" onclick="nav('clock')"><i class="fa-solid fa-clock-rotate-left"></i><span>打卡記錄</span></button>
+    <button class="nav-btn is-main active" id="nav-home" onclick="handleEmployeeHomeClick()"><i class="fa-solid fa-house"></i><span>員工主頁</span></button>
+    <button class="nav-btn" id="nav-salary" onclick="nav('salary')"><i class="fa-solid fa-money-check-dollar"></i><span>薪資明細</span></button>
+    <button class="nav-btn" id="nav-upload" onclick="nav('upload')"><i class="fa-solid fa-file-arrow-up"></i><span>資料上傳</span></button>
+  </nav>
+
+    <script>
     var APP_CTX={
       id:'<?= typeof id!=="undefined"?id:"" ?>',
       token:'<?= typeof token!=="undefined"?token:"" ?>',
@@ -653,26 +557,6 @@
       nickname:'<?= typeof nickname!=="undefined"?nickname:"" ?>',
       webAppUrl:'<?= typeof webAppUrl!=="undefined"?webAppUrl:"" ?>'
     };
-
-    var ANG_DEFAULT_GAS_URL='https://script.google.com/macros/s/AKfycbxmSMR9pqT1njaiANL5Ca8VmbWI4KbdUFnpSAJeE2WQGbITjwml2S4eGY4QNknlJA0FRw/exec';
-    function normalizeAuthMessage_(msg){
-      var s=String(msg||'').trim();
-      if(/帳號不存在|找不到帳號|查無帳號|無此帳號|公司.*錯|company/i.test(s)){
-        return '公司代碼或身份驗證錯誤：請確認公司代碼、管理員帳號 / 員工工號與驗證 token。';
-      }
-      return s;
-    }
-    function resolveApiUrl_(){
-      var list=[];
-      try{ if(window.ANG_HR_UTILS&&window.ANG_HR_UTILS.getApiUrl)list.push(window.ANG_HR_UTILS.getApiUrl()); }catch(e){}
-      try{ if(window.ANG_DATA_URLS&&window.ANG_DATA_URLS.gasApiUrl)list.push(window.ANG_DATA_URLS.gasApiUrl); }catch(e){}
-      try{ list.push(localStorage.getItem('ang_gas_api_url')); }catch(e){}
-      list.push(APP_CTX&&APP_CTX.webAppUrl);
-      if(/^https?:\/\/script\.google\.com\/macros\//i.test(String(location.href)))list.push(location.href.split('#')[0].split('?')[0]);
-      list.push(ANG_DEFAULT_GAS_URL);
-      for(var i=0;i<list.length;i++){var u=String(list[i]||'').trim();if(/^https?:\/\//i.test(u))return u;}
-      return String(window.location.origin+window.location.pathname).trim();
-    }
 
     var HOURLY_RATE=200;
     var defaultThemeColors=['#FF87E0','#CCA4FF','#8089FF','#59DDFF'];
@@ -697,10 +581,10 @@
 
     var state={
       employeeId:'',userToken:'',uploadType:'',salaryMode:'week',scheduleWeekOffset:0,clockTab:'record',
-      events:[],calendarData:{scheduleEvents:[],clockEvents:[],salaryEvents:[],uploadEvents:[]},preselectSettings:{mode:'week'},myPreselect:null,selectedWeekdays:[],scheduleConfirmMap:{0:'',1:''},messages:[],
+      events:[],selectedWeekdays:[],scheduleConfirmMap:{0:'',1:''},messages:[],
       themeColors:defaultThemeColors.slice(),activeThemeSlot:0,themeAngleIndex:3,
       selectedLeaveType:'事假',leaveDays:1,leaveHours:0,leaveV4Bound:false,
-      workRecords:[],salaryHistory:[],profileName:'',
+      workRecords:[],profileName:'',
       adminSalaryConfig:{mode:'week',weekStart:'週一',monthStart:'1號',lockWeekday:5,lockMonthDate:20},
       publishedScheduleEvents:[],monthlySalary:0,leaveRows:[],uploads:[],shiftTypes:[]
     };
@@ -770,7 +654,7 @@
       return out;
     }
 
-    function getDisplayName(){return String(APP_CTX.nickname||APP_CTX.name||state.profileName||localStorage.getItem('ang_employee_name')||state.employeeId||'').trim()}
+    function getDisplayName(){return String(APP_CTX.nickname||APP_CTX.name||state.profileName||localStorage.getItem('ang_employee_name')||state.employeeId||'員工').trim()||'員工'}
     function themeStorageKey(type){var id=String(state.employeeId||localStorage.getItem('ang_employee_id')||'ANG0000').trim()||'ANG0000';return'ang_theme_'+id+'_'+type}
     function getStoredThemeValue(type,fallbackKey){return localStorage.getItem(themeStorageKey(type))||(fallbackKey?localStorage.getItem(fallbackKey):'')||''}
     function normalizeHex(hex,fallback){var v=String(hex||'').trim();if(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(v))return v.toUpperCase();return fallback||'#FF87E0'}
@@ -833,121 +717,6 @@
     function setLogo(source){
       var el=qs('brandLogo');if(!el)return;var v=String(source||'').trim();
       if(/^https?:\/\/|^data:image/i.test(v))el.innerHTML='<img src="'+v+'" alt="logo">';else el.textContent=v||'ANG';
-    }
-
-
-    /* ==================== Header / 日夜模式修正 ==================== */
-    function isBadHeaderValue(v){
-      if(v===undefined||v===null)return true;
-      var raw=String(v).trim();
-      if(!raw)return true;
-      if(raw.indexOf('<?')>-1||raw.indexOf('?>')>-1||/typeof\s+[^?]+\?/.test(raw))return true;
-      var compact=raw.replace(/\s+/g,' ').trim();
-      if(/^(undefined|null|nan|false|true|USER|讀取中|公司名稱|員工模式|未設定|無資料)$/i.test(compact))return true;
-      if(/^ANG\.lo\s*Engine$/i.test(compact)||/^ANG\s*Engine$/i.test(compact))return true;
-      if(/^EMPLOYEE\s*ID/i.test(compact)&&/undefined|null|未設定|無資料/i.test(compact))return true;
-      return false;
-    }
-
-    function cleanDataValue(){
-      for(var i=0;i<arguments.length;i++){
-        var v=arguments[i];
-        if(isBadHeaderValue(v))continue;
-        return String(v).trim();
-      }
-      return '';
-    }
-
-    function cleanEmployeeId(){
-      for(var i=0;i<arguments.length;i++){
-        var v=arguments[i];
-        if(isBadHeaderValue(v))continue;
-        var raw=String(v).trim().toUpperCase();
-        var m=raw.match(/[A-Z]{2,}\d{2,}/);
-        if(m)return m[0];
-      }
-      return '';
-    }
-
-    function readObjValue(obj,keys){
-      obj=obj||{};
-      for(var i=0;i<keys.length;i++){
-        var k=keys[i];
-        if(Object.prototype.hasOwnProperty.call(obj,k)&&!isBadHeaderValue(obj[k]))return obj[k];
-      }
-      return '';
-    }
-
-    function getHeaderBranchLabel(p,s){
-      p=p||{};s=s||{};
-      var so=s.store||s.branchInfo||s.branchData||{};
-      var po=p.store||p.branchInfo||p.branchData||{};
-      var raw=cleanDataValue(
-        readObjValue(so,['name','branch_name','branchName','store_name','storeName','shop_name','shopName']),
-        readObjValue(po,['name','branch_name','branchName','store_name','storeName','shop_name','shopName']),
-        s.branch_name,s.branchName,s.branch,s.store_name,s.storeName,s.store,s.shop_name,s.shopName,s.shop,
-        p.branch_name,p.branchName,p.branch,p.store_name,p.storeName,p.store,p.shop_name,p.shopName,p.shop
-      );
-      var code=cleanDataValue(s.branch_id,s.branchId,s.store_id,s.storeId,p.branch_id,p.branchId,p.store_id,p.storeId);
-      var v=raw||code;
-      if(!v)return '';
-      if(/分店|總店|總公司|本店|門市$|店$/.test(v))return v;
-      return v+'分店';
-    }
-
-    function renderTopHeader(p,s){
-      p=p||{};s=s||{};
-      var companyObj=s.company||s.companyInfo||s.companyData||p.company||p.companyInfo||{};
-      var id=cleanEmployeeId(p.id,p.employee_id,p.employeeId,state.employeeId,APP_CTX.id,localStorage.getItem('ang_employee_id'));
-      var company=cleanDataValue(
-        readObjValue(companyObj,['display_name','displayName','name','company_name','companyName','title','main_title','mainTitle','brand_name','brandName']),
-        s.company_display_name,s.companyDisplayName,s.company_name,s.companyName,s.company,s.company_title,s.companyTitle,s.brand_name,s.brandName,s.main_title,s.mainTitle,
-        p.company_name,p.companyName,p.company
-      );
-      var subtitle=cleanDataValue(
-        readObjValue(companyObj,['subtitle','sub_title','subTitle','sub_name','subName','company_subtitle','companySubtitle','company_sub_name','companySubName','secondary_name','secondaryName']),
-        s.company_subtitle,s.companySubtitle,s.company_sub_name,s.companySubName,s.sub_company_name,s.subCompanyName,s.secondary_company_name,s.secondaryCompanyName,s.system_sub,s.systemSub,
-        p.company_subtitle,p.companySubtitle,p.company_sub_name,p.sub_company_name
-      );
-      var branch=getHeaderBranchLabel(p,s);
-      var parts=[];
-      if(branch)parts.push(branch);
-      parts.push('HR系統');
-      if(id)parts.push(id);
-      setText('brandTitleMain',company);
-      setText('brandTitleSub',subtitle);
-      setText('topBrandTitle','');
-      setText('topBrandSub',parts.join('｜'));
-      var logo=cleanDataValue(
-        readObjValue(companyObj,['logo_url','logoUrl','logo','company_logo','companyLogo','logo_text','logoText']),
-        s.logo_url,s.logoUrl,s.company_logo,s.companyLogo,s.logo,s.logoValue,s.logo_text,s.logoText,s.fallback_text,s.fallbackText
-      );
-      setLogo(logo||'ANG');
-    }
-
-    function setValueOrBlank(id,v,formatter){
-      if(v===undefined||v===null||v==='')return setText(id,'');
-      setText(id,formatter?formatter(v):v);
-    }
-
-    function setDayNightMode(mode,save){
-      mode=(mode==='night')?'night':'day';
-      document.body.dataset.daynight=mode;
-      var btn=qs('nav-daynight'),label=qs('daynightLabel');
-      if(btn){
-        var icon=btn.querySelector('i');
-        if(icon)icon.className=mode==='night'?'fa-solid fa-sun':'fa-solid fa-moon';
-      }
-      if(label)label.innerText=mode==='night'?'白天模式':'黑夜模式';
-      document.querySelectorAll('[data-daynight-choice]').forEach(function(el){
-        el.classList.toggle('active',el.getAttribute('data-daynight-choice')===mode);
-      });
-      if(save!==false)localStorage.setItem('ang_daynight_mode',mode);
-    }
-
-    function toggleDayNightMode(){
-      var current=document.body.dataset.daynight||localStorage.getItem('ang_daynight_mode')||'day';
-      setDayNightMode(current==='night'?'day':'night',true);
     }
 
     /* ==================== 導航 ==================== */
@@ -1026,12 +795,12 @@
     function apiPost(action,payload,callback){
       var fp=Object.assign({},payload||{},{action:action});
       if(!/^https?:/i.test(String(window.location.href||''))){showWarning('非正式環境');if(callback)callback({ok:false,message:'not_in_web'});return}
-      var apiUrl=resolveApiUrl_();
+      var apiUrl=String((APP_CTX&&APP_CTX.webAppUrl)||'').trim()||String(window.location.origin+window.location.pathname).trim();
       Swal.fire({title:'處理中...',allowOutsideClick:false,didOpen:function(){Swal.showLoading()}});
       var ctrl=new AbortController();var timer=setTimeout(function(){ctrl.abort()},20000);
       fetch(apiUrl,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(fp),signal:ctrl.signal})
       .then(function(r){if(!r.ok)throw new Error('HTTP_'+r.status);return r.text()})
-      .then(function(t){clearTimeout(timer);Swal.close();var d=null;try{d=t?JSON.parse(t):{}}catch(e){throw new Error('invalid_json')}if(d&&!d.ok&&d.message){d.message=normalizeAuthMessage_(d.message);showError(d.message);}if(callback)callback(d)})
+      .then(function(t){clearTimeout(timer);Swal.close();var d=null;try{d=t?JSON.parse(t):{}}catch(e){throw new Error('invalid_json')}if(d&&!d.ok&&d.message)showError(d.message);if(callback)callback(d)})
       .catch(function(e){clearTimeout(timer);Swal.close();if(e&&e.name==='AbortError'){showError('連線逾時');if(callback)callback({ok:false,message:'timeout'});return}showError('連線錯誤');if(callback)callback({ok:false,message:'network_error'})})
       .finally(function(){clearTimeout(timer)});
     }
@@ -1043,17 +812,13 @@
       var displayId=String(p.id||APP_CTX.id||localStorage.getItem('ang_employee_id')||'').trim().toUpperCase();
       var displayToken=String(p.token||APP_CTX.token||'').trim();
       state.employeeId=displayId;state.userToken=displayToken;currentUserId=displayId;currentUserToken=displayToken;
-      if(displayId)localStorage.setItem('ang_employee_id',displayId);
-      setText('heroEmployeeIdLine',displayId?'工號 '+displayId:'');
-      renderTopHeader({id:displayId,name:p.name||APP_CTX.name,nickname:p.nickname||APP_CTX.nickname},{});
-      var displayName=cleanDataValue(APP_CTX.nickname,p.nickname,APP_CTX.name,p.name);
-      setText('helloName',displayName?'哈囉，'+displayName:'');
-      setText('helloStatus','');
-      setText('heroChip','');
+      if(displayId){localStorage.setItem('ang_employee_id',displayId);setText('topBrandSub','HR 系統｜'+displayId)}else{setText('topBrandSub','HR 系統｜讀取中')}
+      setText('helloName','哈囉，'+(APP_CTX.nickname||p.nickname||p.name||'員工'));
+      setText('brandTitleMain','');setText('brandTitleSub','');setText('topBrandTitle','ANG.lo Engine');setLogo('ANG');
+      setText('heroChip','標準版');setText('helloStatus','');
       var savedColors=getStoredThemeValue('colors','ang_theme_colors');
       if(savedColors){try{var parsed=JSON.parse(savedColors);if(Array.isArray(parsed)&&parsed.length===4)state.themeColors=parsed.map(normalizeHex)}catch(e){}}
       setThemeAngle(getStoredThemeValue('angle','ang_theme_angle')||'135deg',false);applyThemeColors(state.themeColors,false);
-      setDayNightMode(localStorage.getItem('ang_daynight_mode')||'day',false);
     }
 
     function fillHourMinuteSelect_(hourId,minuteId){
@@ -1204,36 +969,8 @@
 
     /* ==================== 排班 ==================== */
 
-
-    function getPreselectMode(){
-      var ps=state.preselectSettings||{};
-      var ac=state.adminSalaryConfig||{};
-      var vals=[
-        ps.mode,ps.preselectMode,ps.selectMode,ps.selectionMode,ps.scheduleMode,ps.restMode,ps.rest_select_mode,ps.select_rest_mode,ps.offMode,ps.chooseMode,
-        ac.preselectMode,ac.selectMode,ac.selectionMode,ac.scheduleMode,ac.restMode,ac.rest_select_mode,ac.select_rest_mode,ac.offMode,ac.chooseMode,ac.mode,
-        state.preselectMode,state.scheduleSelectMode
-      ];
-      for(var i=0;i<vals.length;i++){
-        var v=String(vals[i]===undefined||vals[i]===null?'':vals[i]).toLowerCase().trim();
-        if(!v)continue;
-        if(v.indexOf('month')>-1||v.indexOf('monthly')>-1||v.indexOf('月')>-1)return 'month';
-        if(v.indexOf('week')>-1||v.indexOf('weekly')>-1||v.indexOf('週')>-1||v.indexOf('周')>-1)return 'week';
-      }
-      return 'week';
-    }
-
-    function syncPreselectModeFromData(res,sys){
-      res=res||{};sys=sys||{};
-      var direct=cleanDataValue(
-        res.preselect_mode,res.preselectMode,res.select_mode,res.selectMode,res.selection_mode,res.selectionMode,res.schedule_mode,res.scheduleMode,res.rest_select_mode,res.select_rest_mode,res.choose_rest_mode,
-        sys.preselect_mode,sys.preselectMode,sys.select_mode,sys.selectMode,sys.selection_mode,sys.selectionMode,sys.schedule_mode,sys.scheduleMode,sys.rest_select_mode,sys.select_rest_mode,sys.choose_rest_mode
-      );
-      if(direct){state.preselectSettings=Object.assign({},state.preselectSettings||{},{mode:direct});}
-      state.adminSalaryConfig=Object.assign({},state.adminSalaryConfig||{},{mode:getPreselectMode()});
-    }
-
     function getScheduleDatesForOffset(offset){
-      var mode=getPreselectMode();var now=new Date();now.setHours(0,0,0,0);
+      var mode=(state.adminSalaryConfig&&state.adminSalaryConfig.mode)||'week';var now=new Date();now.setHours(0,0,0,0);
       if(mode==='month'){
         var startDay=getMonthStartDayNumber();
         var base=new Date(now.getFullYear(),now.getMonth(),startDay);
@@ -1248,7 +985,7 @@
     }
 
     function updateScheduleTitle(){
-      var mode=getPreselectMode();var isMonth=mode==='month';
+      var mode=(state.adminSalaryConfig&&state.adminSalaryConfig.mode)||'week';var isMonth=mode==='month';
       var d0=getScheduleDatesForOffset(0),d1=getScheduleDatesForOffset(1);
       var curr=state.scheduleWeekOffset===0?d0:d1;
       function fR(l){return(l[0].getMonth()+1)+'/'+l[0].getDate()+'～'+(l[l.length-1].getMonth()+1)+'/'+l[l.length-1].getDate()}
@@ -1261,38 +998,52 @@
     function toggleWeek(offset){state.scheduleWeekOffset=offset;state.selectedWeekdays=[];syncWeekTabs();updateScheduleTitle();renderWeekdayStrip();updateScheduleConfirmNote();refreshCalendars()}
 
     function checkIsPeriodLocked(offset){
-      var mode=getPreselectMode();var now=new Date();
+      var mode=(state.adminSalaryConfig&&state.adminSalaryConfig.mode)||'week';var now=new Date();
       if(mode==='week'){var lockDay=Number((state.adminSalaryConfig&&state.adminSalaryConfig.lockWeekday)||5);var cd=now.getDay()===0?7:now.getDay();if(offset>1)return true;if(offset===1&&cd>lockDay)return true;return false}
       var lockDate=Number((state.adminSalaryConfig&&state.adminSalaryConfig.lockMonthDate)||20);if(offset>1)return true;if(offset===1&&now.getDate()>lockDate)return true;return false;
     }
 
     function renderWeekdayStrip(){
-      var mode=getPreselectMode();
-      var dates=getScheduleDatesForOffset(state.scheduleWeekOffset);
-      var names=['週日','週一','週二','週三','週四','週五','週六'];
-      var wrap=qs('weekday-strip');if(!wrap)return;
-      wrap.innerHTML='';
-      wrap.classList.toggle('month-mode',mode==='month');
-      var today=new Date();today.setHours(0,0,0,0);
-      var isLocked=checkIsPeriodLocked(state.scheduleWeekOffset);
-
+      var mode=(state.adminSalaryConfig&&state.adminSalaryConfig.mode)||'week';
+      var dates=getScheduleDatesForOffset(state.scheduleWeekOffset);var names=['週日','週一','週二','週三','週四','週五','週六'];
+      var wrap=qs('weekday-strip');if(!wrap)return;wrap.innerHTML='';
+      var today=new Date();today.setHours(0,0,0,0);var isLocked=checkIsPeriodLocked(state.scheduleWeekOffset);
       if(mode==='month'){
-        // 月模式：直接顯示整個月的每日按鈕；不再另外加一排「週一～週日」。
-        var firstDay=dates.length?dates[0].getDay():0;
-        for(var s=0;s<firstDay;s++){
-          var sp=document.createElement('div');
-          sp.className='calendar-spacer';
-          wrap.appendChild(sp);
-        }
+        var lockedArr=dates.map(function(dObj){return isLocked||dObj.getTime()<=today.getTime()});
+        for(var wd=0;wd<7;wd++){(function(weekday){
+          var wdIdxs=[];dates.forEach(function(dObj,idx){if(dObj.getDay()===weekday)wdIdxs.push(idx)});
+          var unlocked=wdIdxs.filter(function(idx){return!lockedArr[idx]});
+          var allSel=unlocked.length>0&&unlocked.every(function(idx){return state.selectedWeekdays.indexOf(idx)>-1});
+          var hdr=document.createElement('button');hdr.type='button';
+          hdr.className='weekday-chip weekday-col-header'+(allSel?' active':'');
+          hdr.innerHTML='<span class="weekday-main">'+names[weekday]+'</span>';
+          if(unlocked.length===0)hdr.disabled=true;
+          hdr.onclick=function(){if(!unlocked.length)return;if(allSel){state.selectedWeekdays=state.selectedWeekdays.filter(function(x){return unlocked.indexOf(x)<0})}else{unlocked.forEach(function(idx){if(state.selectedWeekdays.indexOf(idx)<0)state.selectedWeekdays.push(idx)})}renderWeekdayStrip();updateScheduleConfirmNote()};
+          wrap.appendChild(hdr);
+        })(wd)}
+        var firstDay=dates[0].getDay();
+        for(var s=0;s<firstDay;s++){var sp=document.createElement('div');sp.className='calendar-spacer';wrap.appendChild(sp)}
+        dates.forEach(function(dObj,idx){
+          var locked=lockedArr[idx];
+          var btn=document.createElement('button');btn.type='button';
+          btn.className='weekday-chip'+(!locked&&state.selectedWeekdays.indexOf(idx)>-1?' active':'');
+          if(locked)btn.disabled=true;
+          btn.innerHTML='<span class="weekday-date">'+(dObj.getMonth()+1)+'/'+dObj.getDate()+'</span>';
+          btn.onclick=function(){if(locked)return;if(state.selectedWeekdays.indexOf(idx)>-1)state.selectedWeekdays=state.selectedWeekdays.filter(function(x){return x!==idx});else state.selectedWeekdays.push(idx);renderWeekdayStrip();updateScheduleConfirmNote()};
+          wrap.appendChild(btn);
+        });
+      }else{
+        // 先加週星期標籤（第一行）
         dates.forEach(function(dObj,idx){
           var locked=isLocked||dObj.getTime()<=today.getTime();
           var isWeekend=(dObj.getDay()===0||dObj.getDay()===6);
-          var btn=document.createElement('button');btn.type='button';
-          btn.className='weekday-chip weekday-chip-month'+(isWeekend?' weekday-chip-weekend':'')+(!locked&&state.selectedWeekdays.indexOf(idx)>-1?' active':'');
-          if(locked)btn.disabled=true;
-          btn.innerHTML='<span class="weekday-main">'+names[dObj.getDay()]+'</span><span class="weekday-date">'+(dObj.getMonth()+1)+'/'+dObj.getDate()+'</span>';
+          var hdr=document.createElement('button');hdr.type='button';
+          var isSel=!locked&&state.selectedWeekdays.indexOf(idx)>-1;
+          hdr.className='weekday-chip weekday-col-header'+(isWeekend?' weekday-chip-weekend':'')+(isSel?' active':'');
+          hdr.innerHTML='<span class="weekday-main">'+names[dObj.getDay()]+'</span>';
+          if(locked)hdr.disabled=true;
           (function(i,lk){
-            btn.onclick=function(){
+            hdr.onclick=function(){
               if(lk)return;
               if(state.selectedWeekdays.indexOf(i)>-1){
                 state.selectedWeekdays=state.selectedWeekdays.filter(function(x){return x!==i});
@@ -1302,32 +1053,22 @@
               renderWeekdayStrip();updateScheduleConfirmNote();
             };
           })(idx,locked);
+          wrap.appendChild(hdr);
+        });
+        // 再加日期 chip（第二行）
+        dates.forEach(function(dObj,idx){
+          var locked=isLocked||dObj.getTime()<=today.getTime();
+          var isWeekend=(dObj.getDay()===0||dObj.getDay()===6);
+          var btn=document.createElement('button');btn.type='button';
+          btn.className='weekday-chip'+(isWeekend?' weekday-chip-weekend':'')+(!locked&&state.selectedWeekdays.indexOf(idx)>-1?' active':'');
+          if(locked)btn.disabled=true;
+          btn.innerHTML='<span class="weekday-main">'+names[dObj.getDay()]+'</span><span class="weekday-date">'+(dObj.getMonth()+1)+'/'+dObj.getDate()+'</span>';
+          (function(i,lk){
+            btn.onclick=function(){if(lk)return;if(state.selectedWeekdays.indexOf(i)>-1)state.selectedWeekdays=state.selectedWeekdays.filter(function(x){return x!==i});else state.selectedWeekdays.push(i);renderWeekdayStrip();updateScheduleConfirmNote()};
+          })(idx,locked);
           wrap.appendChild(btn);
         });
-        return;
       }
-
-      // 週模式：只保留一排「星期 + 日期」。
-      dates.forEach(function(dObj,idx){
-        var locked=isLocked||dObj.getTime()<=today.getTime();
-        var isWeekend=(dObj.getDay()===0||dObj.getDay()===6);
-        var btn=document.createElement('button');btn.type='button';
-        btn.className='weekday-chip'+(isWeekend?' weekday-chip-weekend':'')+(!locked&&state.selectedWeekdays.indexOf(idx)>-1?' active':'');
-        if(locked)btn.disabled=true;
-        btn.innerHTML='<span class="weekday-main">'+names[dObj.getDay()]+'</span><span class="weekday-date">'+(dObj.getMonth()+1)+'/'+dObj.getDate()+'</span>';
-        (function(i,lk){
-          btn.onclick=function(){
-            if(lk)return;
-            if(state.selectedWeekdays.indexOf(i)>-1){
-              state.selectedWeekdays=state.selectedWeekdays.filter(function(x){return x!==i});
-            }else{
-              state.selectedWeekdays.push(i);
-            }
-            renderWeekdayStrip();updateScheduleConfirmNote();
-          };
-        })(idx,locked);
-        wrap.appendChild(btn);
-      });
     }
 
     function getSelectedScheduleSummary(){
@@ -1344,7 +1085,7 @@
 
     function confirmScheduleSelection(){
       var summary=getSelectedScheduleSummary();if(!summary){showWarning('請先選擇日期');return}
-      var mode=getPreselectMode();
+      var mode=(state.adminSalaryConfig&&state.adminSalaryConfig.mode)||'week';
       apiPost('employeePreselect',{id:state.employeeId,token:state.userToken,weekOffset:state.scheduleWeekOffset,weekdays:(state.selectedWeekdays||[]).slice(),mode:mode},function(res){
         if(res&&res.ok){
           state.scheduleConfirmMap[state.scheduleWeekOffset]=summary;
@@ -1495,58 +1236,6 @@
       setText('salary-estimate-label',isM?'一個月預估':'一週預估');
       setText('salary-estimate-value',formatMoney(isM?mP:wP));
       setText('salary-estimate-note',isM?'依管理員設定的每月起算區間估算。':'依管理員設定的週起算區間估算。');
-    }
-
-
-    function fillSalaryHistorySelect(){
-      var sel=qs('salary-history-select');
-      if(!sel)return;
-      sel.innerHTML='';
-      var cfg=state.adminSalaryConfig||{mode:'week'};
-      var raw=Array.isArray(state.salaryHistory)?state.salaryHistory:[];
-      var filtered=raw.filter(function(item){
-        var key=String((item&&item.key)||'');
-        if(!key)return true;
-        return String(cfg.mode||'week').toLowerCase()==='month' ? key.indexOf('month-')===0 : key.indexOf('week-')===0;
-      });
-      if(!filtered.length&&raw.length)filtered=raw;
-      filtered.forEach(function(item,idx){
-        var op=document.createElement('option');
-        op.value=item.key||String(idx);
-        op.textContent=item.label||item.periodLabel||item.month||item.key||('薪資紀錄 '+(idx+1));
-        sel.appendChild(op);
-      });
-      showSalaryHistoryDetail();
-    }
-
-    function updateSalaryCycleDisplay(){
-      var el=qs('salary-cycle-display');
-      if(!el)return;
-      var cfg=state.adminSalaryConfig||{mode:'week',weekStart:'週一',monthStart:'1號'};
-      var mode=String(cfg.mode||'week').toLowerCase();
-      el.innerText=mode==='month'
-        ? '由管理員設定｜月結｜每月 '+(cfg.monthStart||'1號')+' 起算'
-        : '由管理員設定｜週結｜'+(cfg.weekStart||'週一')+' 起算';
-    }
-
-    function showSalaryHistoryDetail(){
-      var sel=qs('salary-history-select');
-      var detail=qs('salary-history-detail');
-      if(!sel||!detail)return;
-      if(!sel.value){
-        detail.innerText='選取一筆已發薪資後，這裡會顯示摘要。';
-        return;
-      }
-      var raw=Array.isArray(state.salaryHistory)?state.salaryHistory:[];
-      var item=raw.find(function(x,idx){return String(x.key||idx)===String(sel.value);});
-      if(!item){detail.innerText='查無資料';return;}
-      var amount=item.amount!==undefined?formatMoney(item.amount):(item.totalPay!==undefined?formatMoney(item.totalPay):'');
-      var issue=item.issueDate||item.paidDate||item.date||'';
-      var text=(item.label||item.periodLabel||item.month||item.key||'薪資紀錄');
-      if(amount)text+='｜'+amount;
-      if(issue)text+='｜發薪日 '+issue;
-      if(item.detail)text+='｜'+item.detail;
-      detail.innerText=text;
     }
 
     function downloadSalarySlip(){
@@ -1895,78 +1584,6 @@
 
     function normalizeCalendarEvent(ev){var copy=Object.assign({},ev);if(!copy.backgroundColor&&copy.extendedProps&&copy.extendedProps.type==='shift'){copy.backgroundColor=getEmployeeColor();copy.borderColor=getEmployeeColor()}return copy}
 
-
-
-    /* ==================== 空白月曆保底 ==================== */
-    function toDateOnly_(d){
-      var x=new Date(d||new Date());
-      if(isNaN(x.getTime()))x=new Date();
-      x.setHours(0,0,0,0);
-      return x;
-    }
-
-    function buildEmptyCalendarHtml_(label,baseDate){
-      var base=toDateOnly_(baseDate);
-      var year=base.getFullYear();
-      var month=base.getMonth();
-      var first=new Date(year,month,1);
-      var start=new Date(first);
-      start.setDate(first.getDate()-first.getDay());
-      var today=toDateOnly_(new Date());
-      var names=['日','一','二','三','四','五','六'];
-      var html='<div class="ang-empty-calendar">'
-        + '<div class="ang-empty-calendar-head"><span>'+esc(label||((month+1)+' 月'))+'</span><span class="ang-empty-calendar-note">尚無資料｜空白日曆</span></div>'
-        + '<div class="ang-empty-calendar-grid">';
-      names.forEach(function(n){html+='<div class="ang-empty-calendar-wd">週'+n+'</div>';});
-      for(var i=0;i<42;i++){
-        var d=new Date(start);d.setDate(start.getDate()+i);
-        var cls='ang-empty-calendar-day';
-        if(d.getMonth()!==month)cls+=' out';
-        if(d.getTime()===today.getTime())cls+=' today';
-        html+='<div class="'+cls+'"><span>'+(d.getDate())+'</span></div>';
-      }
-      html+='</div></div>';
-      return html;
-    }
-
-    function getMainCalendarBaseDate_(){
-      try{
-        var arr=getScheduleDatesForOffset(state.scheduleWeekOffset||0);
-        if(arr&&arr.length)return arr[0];
-      }catch(e){}
-      return new Date();
-    }
-
-    function renderEmptyCalendar(containerId,label,baseDate){
-      var el=qs(containerId);
-      if(!el)return;
-      // FullCalendar 已成功初始化時，不覆蓋它；只在沒讀到 / 沒載入 / 初始化失敗時補空白日曆。
-      if(el.classList.contains('fc')&&el.querySelector('.fc-view-harness'))return;
-      el.innerHTML=buildEmptyCalendarHtml_(label,baseDate);
-      el.setAttribute('data-empty-calendar','1');
-    }
-
-    function renderAllEmptyCalendars(){
-      renderEmptyCalendar('cal-main','排班月曆',getMainCalendarBaseDate_());
-      renderEmptyCalendar('cal-clock','打卡月曆',new Date());
-      renderEmptyCalendar('cal-salary-month','薪資月曆',new Date());
-      renderEmptyCalendar('cal-upload','申請記錄月曆',new Date());
-    }
-
-    function ensureCalendarsHaveBlankView(){
-      setTimeout(function(){
-        ['cal-main','cal-clock','cal-salary-month','cal-upload'].forEach(function(id){
-          var el=qs(id);
-          if(!el)return;
-          if(el.classList.contains('fc')&&el.querySelector('.fc-view-harness'))return;
-          if(id==='cal-main')renderEmptyCalendar(id,'排班月曆',getMainCalendarBaseDate_());
-          else if(id==='cal-clock')renderEmptyCalendar(id,'打卡月曆',new Date());
-          else if(id==='cal-salary-month')renderEmptyCalendar(id,'薪資月曆',new Date());
-          else renderEmptyCalendar(id,'申請記錄月曆',new Date());
-        });
-      },80);
-    }
-
     function renderShiftLegend(){
       var box=qs('shift-legend');if(!box)return;
       var shifts=state.shiftTypes||[];
@@ -1978,23 +1595,13 @@
     }
 
     function initCalendars(){
-      if(typeof FullCalendar==='undefined'){renderAllEmptyCalendars();return;}
-      try{
-        var ms={initialView:'dayGridMonth',locale:'zh-tw',height:'auto',contentHeight:'auto',handleWindowResize:true,events:[]};
-        var cMain=qs('cal-main'),cSalary=qs('cal-salary-month'),cClock=qs('cal-clock'),cUpload=qs('cal-upload');
-        if(cMain)cMain.innerHTML='';
-        if(cSalary)cSalary.innerHTML='';
-        if(cClock)cClock.innerHTML='';
-        if(cUpload)cUpload.innerHTML='';
-        if(cMain){calMain=new FullCalendar.Calendar(cMain,ms);calMain.render();}
-        if(cSalary){calSalaryMonth=new FullCalendar.Calendar(cSalary,ms);calSalaryMonth.render();}
-        if(cClock){calClock=new FullCalendar.Calendar(cClock,ms);calClock.render();}
-        if(cUpload){calUpload=new FullCalendar.Calendar(cUpload,ms);calUpload.render();}
-        ensureCalendarsHaveBlankView();
-      }catch(e){
-        try{console.warn('initCalendars fallback',e)}catch(_e){}
-        renderAllEmptyCalendars();
-      }
+      if(typeof FullCalendar==='undefined')return;
+      var ms={initialView:'dayGridMonth',locale:'zh-tw',height:'auto',contentHeight:'auto',handleWindowResize:true,events:[]};
+      calMain=new FullCalendar.Calendar(qs('cal-main'),ms);
+      calSalaryMonth=new FullCalendar.Calendar(qs('cal-salary-month'),ms);
+      calClock=new FullCalendar.Calendar(qs('cal-clock'),ms);
+      calMain.render();calSalaryMonth.render();calClock.render();
+      if(qs('cal-upload')){calUpload=new FullCalendar.Calendar(qs('cal-upload'),ms);calUpload.render();}
     }
 
     function refreshCalendars(){
@@ -2051,16 +1658,15 @@
           calUpload.addEvent({title:(row.type||row.title||'上傳')+' '+statusIcon(s),start:d,allDay:true,backgroundColor:statusColor(s),textColor:'#fff'});
         });
       }
-      ensureCalendarsHaveBlankView();
     }
 
     /* ==================== 後端載入 ==================== */
 
     function loadPublishedScheduleCalendar(){
       var id=state.employeeId,token=state.userToken;
-      if(!id||!token){ensureCalendarsHaveBlankView();return;}
+      if(!id||!token)return;
       var cb=function(res){
-        if(!res||!res.ok){ensureCalendarsHaveBlankView();return;}
+        if(!res||!res.ok)return;
         state.publishedScheduleEvents=Array.isArray(res.events)?res.events:[];
         if(calMain){
           calMain.removeAllEvents();
@@ -2069,40 +1675,36 @@
         }
       };
       if(gas()){
-        google.script.run.withSuccessHandler(cb).withFailureHandler(function(){ensureCalendarsHaveBlankView();}).getPublishedScheduleForCalendar({id:id,token:token});
+        google.script.run.withSuccessHandler(cb).withFailureHandler(function(){}).getPublishedScheduleForCalendar({id:id,token:token});
       }else{
         apiPost('getPublishedScheduleForCalendar',{id:id,token:token},cb);
       }
     }
 
     function loadHeaderData(){
-      apiPost('employeeHeaderData',{id:state.employeeId,token:state.userToken},function(res){
-        if(!res||!res.ok)return;
-        var s=Object.assign({},res.system||{},res);
-        var p=Object.assign({},res.profile||{},{id:state.employeeId});
-        renderTopHeader(p,s);
-      });
+      apiPost('employeeHeaderData',{},function(res){if(!res||!res.ok)return;if(res.brandTitleMain)setText('brandTitleMain',res.brandTitleMain);if(res.brandTitleSub)setText('brandTitleSub',res.brandTitleSub);setLogo(res.logoValue||'ANG');setText('topBrandTitle','ANG.lo Engine');setText('topBrandSub','HR 系統｜'+(state.employeeId||APP_CTX.id||'讀取中'))});
     }
 
     // ANG.lo HR System Deploy Version: 129 - Fix 8: bootstrap data with fallbacks
     function handleBootstrapData(res){
-      if(!res||!res.ok){ensureCalendarsHaveBlankView();return;}
-      var p=res.profile||{},s=Object.assign({},res.system||{},res);
-      try{renderTopHeader(p,s);}catch(e){}
+      if(!res||!res.ok)return;
+      var p=res.profile||{},s=res.system||{};
+      try{setText('helloName','哈囉，'+(p.nickname||p.name||'員工'));}catch(e){}
+      try{setText('helloStatus','');}catch(e){}
+      try{setText('brandTitleMain',s.company_name||s.main_title||'');}catch(e){}
+      try{setText('brandTitleSub',s.company_subtitle||s.system_sub||'');}catch(e){}
+      try{setText('topBrandTitle',s.system_title||'ANG.lo Engine');}catch(e){}
+      try{setText('topBrandSub','HR 系統｜'+(p.id||state.employeeId||'USER')+'｜'+(p.role||'員工')+'模式');}catch(e){}
+      try{setLogo(s.logo_url||s.fallback_text||'ANG');}catch(e){}
+      try{setText('heroChip',(p.chip&&!/manager|admin|creator|employee/i.test(String(p.chip)))?p.chip:'標準版');}catch(e){}
       try{
-        var displayName=cleanDataValue(p.nickname,p.name,state.profileName);
-        setText('helloName',displayName?'哈囉，'+displayName:'');
-      }catch(e){}
-      try{setText('helloStatus',cleanDataValue(res.todayStatus,(res.home&&res.home.todayStatus)));setText('heroEmployeeIdLine',cleanEmployeeId(p.id,p.employee_id,p.employeeId,state.employeeId)||state.employeeId||'');if(qs('heroEmployeeIdLine')&&qs('heroEmployeeIdLine').innerText&&!/^工號/.test(qs('heroEmployeeIdLine').innerText))qs('heroEmployeeIdLine').innerText='工號 '+qs('heroEmployeeIdLine').innerText;}catch(e){}
-      try{setText('heroChip',(p.chip&&!/manager|admin|creator|employee/i.test(String(p.chip)))?p.chip:'');}catch(e){}
-      try{
-        setValueOrBlank('home-week-salary',res.weekSalary,formatMoney);
-        setValueOrBlank('home-week-hours',res.weekHours,formatHours);
-        setValueOrBlank('home-month-salary',res.monthSalary,formatMoney);
-        setValueOrBlank('home-month-hours',res.monthHours,formatHours);
-        setText('home-tomorrow-status',cleanDataValue(res.tomorrowStatus));
-        setText('home-after-status',cleanDataValue(res.afterTomorrowStatus));
-        setValueOrBlank('home-pending-count',res.pendingCount,function(v){return Number(v||0)+'件'});
+        setText('home-week-salary',formatMoney(res.weekSalary));
+        setText('home-week-hours',formatHours(res.weekHours));
+        setText('home-month-salary',formatMoney(res.monthSalary));
+        setText('home-month-hours',formatHours(res.monthHours));
+        setText('home-tomorrow-status',res.tomorrowStatus||'—');
+        setText('home-after-status',res.afterTomorrowStatus||'—');
+        setText('home-pending-count',(res.pendingCount||0)+'件');
       }catch(e){}
       try{if(res.system&&res.system.hourly_rate){HOURLY_RATE=Number(res.system.hourly_rate)||200;}}catch(e){}
       state.workRecords=Array.isArray(res.workRecords)?res.workRecords:(state.workRecords||[]);
@@ -2110,33 +1712,27 @@
       state.clockFix=Array.isArray(res.clockFix)?res.clockFix:(state.clockFix||[]);
       state.leaveRows=Array.isArray(res.leaveRows)?res.leaveRows:(state.leaveRows||[]);
       state.uploads=Array.isArray(res.uploads)?res.uploads:(state.uploads||[]);
-      state.salaryHistory=Array.isArray(res.salaryHistory)?res.salaryHistory.map(function(item){return {key:item.key||item.label||'',label:item.label||item.periodLabel||item.key||'',amount:Number(item.amount||item.totalPay||0),issueDate:item.issueDate||item.paidDate||item.date||'',detail:item.detail||item.note||''};}):(state.salaryHistory||[]);
-      state.calendarData=res.calendarData||state.calendarData||{scheduleEvents:[],clockEvents:[],salaryEvents:[],uploadEvents:[]};
-      state.preselectSettings=res.preselectSettings||state.preselectSettings||{mode:'week'};
-      syncPreselectModeFromData(res,s);
-      state.myPreselect=res.myPreselect||state.myPreselect||null;
       state.monthlySalary=(res.profile&&Number(res.profile.monthlySalary||0))||0;
       state.shiftStartTime=(s&&s.shiftStartTime)||state.shiftStartTime||'';
       state.profileName=(p&&(p.nickname||p.name))||state.profileName||'';
-      if(res.adminSalaryConfig)state.adminSalaryConfig=Object.assign({},state.adminSalaryConfig||{},res.adminSalaryConfig);
-      syncPreselectModeFromData(res,s);
+      if(res.adminSalaryConfig)state.adminSalaryConfig=res.adminSalaryConfig;
       if(Array.isArray(res.shiftTypes))state.shiftTypes=res.shiftTypes;
       try{if(s.hide_salary_for_employee==='true'){var ns=qs('nav-salary');if(ns)ns.style.display='none'}}catch(e){}
       try{if(s.disable_clock_fix==='true'){var ca=qs('clock-tab-apply');if(ca)ca.style.display='none'}}catch(e){}
       try{if(s.disable_file_upload==='true'){var ud=document.querySelector('.upload-drop');if(ud)ud.style.display='none'}}catch(e){}
       try{initDefaults();}catch(e){console.warn('initDefaults error',e);}
       try{renderTodayClockCard();}catch(e){console.warn('renderTodayClockCard error',e);}
-      try{seedCalendarEvents(state.leaveRows);refreshCalendars();renderMessageBoard();renderClockRecordList();renderSalaryDayPayList();syncSalaryEstimate();updateSalaryCycleDisplay();fillSalaryHistorySelect();}catch(e){console.warn('render error',e);}
+      try{seedCalendarEvents(state.leaveRows);refreshCalendars();renderMessageBoard();renderClockRecordList();renderSalaryDayPayList();syncSalaryEstimate();}catch(e){console.warn('render error',e);}
       try{updateScheduleTitle();syncWeekTabs();renderWeekdayStrip();renderShiftLegend();}catch(e){console.warn('schedule render error',e);}
     }
 
     function loadBootstrapData(){
       var id=state.employeeId,token=state.userToken;
-      if(!id||!token){ensureCalendarsHaveBlankView();return}
+      if(!id||!token){return}
       if(gas()){
-        google.script.run.withSuccessHandler(function(res){if(res&&res.ok)handleBootstrapData(res);else ensureCalendarsHaveBlankView();}).withFailureHandler(function(){ensureCalendarsHaveBlankView();}).getEmployeeBootstrapData(id,token);
+        google.script.run.withSuccessHandler(function(res){if(res&&res.ok)handleBootstrapData(res)}).withFailureHandler(function(){}).getEmployeeBootstrapData(id,token);
       }else{
-        apiPost('employeeBootstrap',{id:id,token:token},function(res){if(res&&res.ok)handleBootstrapData(res);else ensureCalendarsHaveBlankView();});
+        apiPost('employeeBootstrap',{id:id,token:token},function(res){if(res&&res.ok)handleBootstrapData(res)});
       }
     }
 
@@ -2242,9 +1838,7 @@
       safeCall(typeof renderHomeSummary==='function'?renderHomeSummary:null,'renderHomeSummary');
       safeCall(renderMessageBoard,'renderMessageBoard');
       safeCall(initCalendars,'initCalendars');
-      safeCall(ensureCalendarsHaveBlankView,'ensureCalendarsHaveBlankView');
       safeCall(initThemePicker,'initThemePicker');
-      safeCall(function(){setDayNightMode(localStorage.getItem('ang_daynight_mode')||'day',false)},'restoreDayNightMode');
       safeCall(seedCalendarEvents,'seedCalendarEvents');
       safeCall(refreshCalendars,'refreshCalendars');
       safeCall(syncLeaveSummary,'syncLeaveSummary');
@@ -2274,56 +1868,54 @@
     };
   </script>
 
-<!-- ANG_V28_SHARED_UI：日夜完整更換、LOGO 公司切換、登出、首頁模式切換 -->
-<style>
-  /* 日光 / 暗夜鈕：位置與 index.html 一樣，固定在右上，不再撞到底部導航 */
-  :root{--ang-toggle-bg:rgba(255,255,255,.74);--ang-toggle-border:rgba(148,163,184,.34);--ang-toggle-shadow:0 10px 24px rgba(15,23,42,.12);--ang-toggle-icon-dim:rgba(71,85,105,.72);--ang-toggle-thumb-bg:#ffffff;--ang-toggle-thumb-shadow:0 6px 14px rgba(15,23,42,.16);--ang-toggle-thumb-x:0px;}
-  body[data-daynight="night"]{--ang-toggle-bg:rgba(15,23,42,.52);--ang-toggle-border:rgba(255,255,255,.12);--ang-toggle-shadow:0 10px 24px rgba(0,0,0,.28);--ang-toggle-icon-dim:rgba(226,232,240,.68);--ang-toggle-thumb-bg:rgba(255,255,255,.15);--ang-toggle-thumb-shadow:0 0 18px rgba(0,217,255,.16);--ang-toggle-thumb-x:28px;}
-  .topbar{padding-right:86px!important;}
-  .ang-v28-daynight-btn{position:fixed;top:14px;right:14px;z-index:1600;width:58px;height:30px;padding:3px;border:1px solid var(--ang-toggle-border);border-radius:999px;background:var(--ang-toggle-bg);box-shadow:var(--ang-toggle-shadow);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);display:grid;grid-template-columns:1fr 1fr;align-items:center;justify-items:center;appearance:none;-webkit-appearance:none;overflow:hidden;color:var(--ang-toggle-icon-dim);}
-  .ang-v28-daynight-btn::before{content:"";position:absolute;left:3px;top:3px;width:24px;height:24px;border-radius:50%;background:var(--ang-toggle-thumb-bg);box-shadow:var(--ang-toggle-thumb-shadow);transform:translateX(var(--ang-toggle-thumb-x));transition:transform .25s ease,background .25s ease,box-shadow .25s ease;}
-  .ang-v28-daynight-btn span{position:relative;z-index:1;width:24px;height:24px;display:flex;align-items:center;justify-content:center;color:var(--ang-toggle-icon-dim);pointer-events:none;}
-  .ang-v28-daynight-btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round;}
-  body:not([data-daynight="night"]) .ang-v28-daynight-btn .sun{color:#0f172a;}
-  body[data-daynight="night"] .ang-v28-daynight-btn .moon{color:#fff;filter:drop-shadow(0 0 5px rgba(255,255,255,.32));}
-  .ang-v28-company-menu{position:fixed;left:10px;top:66px;z-index:1500;display:none;min-width:210px;max-width:calc(100vw - 20px);padding:10px;border-radius:20px;background:rgba(255,255,255,.96);box-shadow:0 16px 40px rgba(15,23,42,.18);border:1px solid rgba(148,163,184,.24);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
-  .ang-v28-company-menu.active{display:block}.ang-v28-company-item{width:100%;display:flex;align-items:center;gap:10px;text-align:left;border:0;background:#f8fafc;color:#111827;border-radius:16px;padding:11px;margin:0 0 8px;font-weight:900}.ang-v28-company-item:last-child{margin-bottom:0}.ang-v28-company-avatar{width:34px;height:34px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:var(--emp-gradient);color:#fff;font-weight:900;flex:0 0 auto}.ang-v28-company-name{font-size:14px;line-height:1.2}.ang-v28-company-sub{font-size:11px;color:#6b7280;margin-top:2px}.ang-v28-company-logout{background:#fef2f2!important;color:#b91c1c!important}.ang-v28-company-current{outline:2px solid rgba(var(--emp-rgb,255,122,33),.32)}
-  body[data-daynight="night"]{--bg:#07111f;--card:#101b2d;--text:#e5eefb;--muted:#9fb0c6;--line:rgba(255,255,255,.10);--soft:#172238;color:var(--text);background:var(--bg)}
-  body[data-daynight="night"] .topbar{background:rgba(8,15,28,.92);box-shadow:0 2px 14px rgba(0,0,0,.26)}
-  body[data-daynight="night"] .card,body[data-daynight="night"] .notice-item,body[data-daynight="night"] .review-card,body[data-daynight="night"] .people-card{background:linear-gradient(180deg,#101b2d 0%,rgba(var(--emp-rgb,255,122,33),.075) 100%);border-color:rgba(255,255,255,.09);box-shadow:0 10px 24px rgba(0,0,0,.22)}
-  body[data-daynight="night"] input,body[data-daynight="night"] select,body[data-daynight="night"] textarea{background:#172238;color:#e5eefb}body[data-daynight="night"] .ang-v28-company-menu{background:rgba(8,15,28,.96);border-color:rgba(255,255,255,.12)}body[data-daynight="night"] .ang-v28-company-item{background:#172238;color:#e5eefb}body[data-daynight="night"] .ang-v28-company-sub{color:#9fb0c6}
-</style>
-<div id="angV28CompanyMenu" class="ang-v28-company-menu" aria-hidden="true"></div>
-<button id="angV28DayNightBtn" class="ang-v28-daynight-btn" type="button" title="日光 / 暗夜" aria-label="切換日光與暗夜模式" aria-pressed="false">
-  <span class="sun" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2.2M12 19.8V22M4.93 4.93l1.56 1.56M17.51 17.51l1.56 1.56M2 12h2.2M19.8 12H22M4.93 19.07l1.56-1.56M17.51 6.49l1.56-1.56"></path></svg></span>
-  <span class="moon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 14.2A8.6 8.6 0 0 1 9.8 3a7.5 7.5 0 1 0 11.2 11.2z"></path></svg></span>
-</button>
-<script>
-(function(){
-  function q(id){return document.getElementById(id)}
-  function esc(s){return String(s||'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
-  function getBridge(){return window.ANGHRApp||window.AndroidBridge||window.AndroidNative||window.WebAppInterface||null}
-  function currentDayNight(){return (document.body.getAttribute('data-daynight')||localStorage.getItem('ang_daynight_mode')||localStorage.getItem('ang-hr-theme')||'day').replace('dark','night').replace('light','day')}
-  function applyDayNight(mode,save){mode=(mode==='night'||mode==='dark')?'night':'day';document.body.setAttribute('data-daynight',mode);var btn=q('angV28DayNightBtn');if(btn){btn.setAttribute('aria-pressed',mode==='night'?'true':'false');btn.classList.toggle('is-night',mode==='night')}if(save){localStorage.setItem('ang_daynight_mode',mode);localStorage.setItem('ang-hr-theme',mode==='night'?'dark':'light')}}
-  function nativeThemeSwap(mode){var payload={theme:mode==='night'?'dark':'light',mode:mode,icon:mode,openingVideo:mode==='night'?'day_to_night':'night_to_day',closeApp:true,source:'v28_all_pages'};var b=getBridge();try{if(b){if(typeof b.setThemeAssets==='function'){b.setThemeAssets(JSON.stringify(payload));}else if(typeof b.setFullTheme==='function'){b.setFullTheme(mode, payload.openingVideo);}setTimeout(function(){try{if(typeof b.closeAppForThemeSwap==='function')b.closeAppForThemeSwap(JSON.stringify(payload));else if(typeof b.restartForThemeSwap==='function')b.restartForThemeSwap(JSON.stringify(payload));else if(typeof b.closeApp==='function')b.closeApp();else if(typeof b.finish==='function')b.finish();}catch(e){}},250);return true}}catch(e){}return false}
-  function askDayNight(){var now=currentDayNight();var next=now==='night'?'day':'night';var msg='要切換成「'+(next==='night'?'暗夜版':'日光版')+'」嗎？\n\n按「確定」＝同步更換 APP icon 與 opening video，並關閉/重開 APP。\n按「取消」＝只切換這次頁面，下次恢復原本設定。';if(confirm(msg)){applyDayNight(next,true);if(!nativeThemeSwap(next)){alert('已儲存設定。若 APP 未自動關閉，請手動關閉再開啟。')}}else{applyDayNight(next,false);sessionStorage.setItem('ang_daynight_session_only',next)}}
-  function parseCompanies(){var arr=[];try{arr=JSON.parse(localStorage.getItem('ang_employee_companies')||'[]')||[]}catch(e){}var company=localStorage.getItem('ang_company_id')||'';var name=(document.getElementById('brandTitleMain')||{}).innerText||company||'目前公司';if(company&&!arr.some(function(x){return String(x.company_id||x.id).toUpperCase()===String(company).toUpperCase()})){arr.unshift({company_id:company,company_name:name})}return arr.slice(0,3)}
-  function buildEmployeeUrl(company){var id=localStorage.getItem('ang_employee_id')||((window.state&&state.employeeId)||'');var token=localStorage.getItem('ang_employee_token')||localStorage.getItem('emp_login_token')||((window.state&&state.userToken)||'');return 'employee.html?company_id='+encodeURIComponent(company)+'&id='+encodeURIComponent(id)+'&token='+encodeURIComponent(token)+'&_ts='+Date.now()}
-  function toggleCompanyMenu(){var menu=q('angV28CompanyMenu');if(!menu)return;var active=menu.classList.contains('active');if(active){menu.classList.remove('active');menu.setAttribute('aria-hidden','true');return}var list=parseCompanies();var current=(localStorage.getItem('ang_company_id')||'').toUpperCase();var html=list.map(function(c){var id=String(c.company_id||c.id||'').toUpperCase();var nm=c.company_name||c.name||id;return '<button class="ang-v28-company-item '+(id===current?'ang-v28-company-current':'')+'" type="button" data-company="'+esc(id)+'"><span class="ang-v28-company-avatar">'+esc((nm||id).slice(0,1))+'</span><span><span class="ang-v28-company-name">'+esc(nm)+'</span><span class="ang-v28-company-sub">'+esc(id)+'</span></span></button>'}).join('');html+='<button class="ang-v28-company-item ang-v28-company-logout" type="button" data-logout="1"><span class="ang-v28-company-avatar">⎋</span><span><span class="ang-v28-company-name">登出</span><span class="ang-v28-company-sub">回到 Index 入口頁</span></span></button>';menu.innerHTML=html;menu.querySelectorAll('[data-company]').forEach(function(b){b.onclick=function(){var company=this.getAttribute('data-company');localStorage.setItem('ang_company_id',company);location.href=buildEmployeeUrl(company)}});var lo=menu.querySelector('[data-logout]');if(lo)lo.onclick=function(){localStorage.setItem('ang_employee_manual_logout','1');['ang_employee_token','emp_login_token','isLoggedIn'].forEach(function(k){localStorage.removeItem(k)});location.href='index.html?logout=1&_ts='+Date.now()};menu.classList.add('active');menu.setAttribute('aria-hidden','false')}
-  function loadCompanies(){try{var api=(window.ANG_HR_UTILS&&ANG_HR_UTILS.getApiUrl&&ANG_HR_UTILS.getApiUrl())||((window.CTX&&CTX.webAppUrl)||'');var id=localStorage.getItem('ang_employee_id')||((window.state&&state.employeeId)||'');var token=localStorage.getItem('ang_employee_token')||localStorage.getItem('emp_login_token')||((window.state&&state.userToken)||'');if(!api||!id||!token)return;fetch(api,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'getEmployeeCompanyMemberships',id:id,employee_id:id,token:token,session_token:token,device_id:localStorage.getItem('ang_device_id')||''})}).then(function(r){return r.text()}).then(function(t){var d={};try{d=JSON.parse(t||'{}')}catch(e){}if(d&&d.ok&&Array.isArray(d.companies))localStorage.setItem('ang_employee_companies',JSON.stringify(d.companies.slice(0,3)))})}catch(e){}}
-  function enhanceHomeModeSwitch(){var old=window.handleHomeClick;if(typeof old==='function'&&!old.__v28){var f=function(){try{var role=String(window.UROLE||localStorage.getItem('ang_user_role')||localStorage.getItem('ang_employee_role')||'').toLowerCase();if((window.currentPage||'home')==='home'){if(['creator','admin','manager'].indexOf(role)>=0){if(location.pathname.toLowerCase().indexOf('admin')>=0){location.href='employee.html?id='+encodeURIComponent(localStorage.getItem('ang_employee_id')||'')+'&token='+encodeURIComponent(localStorage.getItem('ang_employee_token')||localStorage.getItem('emp_login_token')||'')+'&company_id='+encodeURIComponent(localStorage.getItem('ang_company_id')||'')}else{location.href='admin.html?id='+encodeURIComponent(localStorage.getItem('ang_employee_id')||'')+'&token='+encodeURIComponent(localStorage.getItem('ang_employee_token')||localStorage.getItem('emp_login_token')||'')+'&role='+encodeURIComponent(localStorage.getItem('ang_employee_role')||'Admin')+'&company_id='+encodeURIComponent(localStorage.getItem('ang_company_id')||'')}return}else{window.scrollTo({top:0,behavior:'smooth'});return}}}catch(e){}return old.apply(this,arguments)};f.__v28=true;window.handleHomeClick=f}}
-  function init(){applyDayNight(sessionStorage.getItem('ang_daynight_session_only')||currentDayNight(),false);var btn=q('angV28DayNightBtn');if(btn)btn.onclick=askDayNight;var logo=q('brandLogo')||q('brandSlot');if(logo){logo.style.cursor='pointer';logo.onclick=function(e){e.stopPropagation();toggleCompanyMenu()}}document.addEventListener('click',function(e){var m=q('angV28CompanyMenu');if(m&&m.classList.contains('active')&&!m.contains(e.target)&&!(q('brandLogo')&&q('brandLogo').contains(e.target))){m.classList.remove('active')}});loadCompanies();enhanceHomeModeSwitch()}
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();setTimeout(init,1000);
-})();
-</script>
 
-<script>
-(function(){
-  function getApi(){try{return (window.ANG_HR_UTILS&&ANG_HR_UTILS.getApiUrl&&ANG_HR_UTILS.getApiUrl())||(window.CTX&&CTX.webAppUrl)||''}catch(e){return''}}
-  function verifySession(){try{var api=getApi();var id=localStorage.getItem('ang_employee_id')||((window.state&&state.employeeId)||'');var token=localStorage.getItem('ang_employee_token')||localStorage.getItem('emp_login_token')||((window.state&&state.userToken)||'');var company=localStorage.getItem('ang_company_id')||((window.CTX&&CTX.companyId)||'');var device=localStorage.getItem('ang_device_id')||((window.CTX&&CTX.deviceId)||'');if(!api||!id||!token||!company)return;fetch(api,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'verifyEmployeeSession',company_id:company,id:id,employee_id:id,token:token,session_token:token,device_id:device})}).then(function(r){return r.text()}).then(function(t){var d={};try{d=JSON.parse(t||'{}')}catch(e){}if(!d.ok){localStorage.setItem('ang_employee_manual_logout','1');location.href='index.html?session_expired=1&_ts='+Date.now()}else{localStorage.removeItem('ang_employee_manual_logout');if(Array.isArray(d.companies))localStorage.setItem('ang_employee_companies',JSON.stringify(d.companies.slice(0,3)))}})}catch(e){}}
-  var old=window.onload;window.onload=function(){if(typeof old==='function')old.apply(this,arguments);setTimeout(verifySession,1100)};
-})();
-</script>
+  <script>
+    /* ANG-99-HR 0603：日光 / 暗夜切換，右上角，不動 index */
+    (function(){
+      var KEY='ang_99_hr_daynight_mode';
+      var btnId='angDayNightToggle';
+      function isNight(){return String(localStorage.getItem(KEY)||'day')==='night'}
+      function nativeBridge(){return window.ANGNative||window.AngNative||window.AngHrApp||null}
+      function setMode(mode,fullReplace){
+        mode=mode==='night'?'night':'day';
+        localStorage.setItem(KEY,mode);
+        document.body.classList.toggle('ang-night',mode==='night');
+        document.documentElement.setAttribute('data-ang-mode',mode);
+        var b=document.getElementById(btnId);
+        if(b){b.innerHTML=mode==='night'?'☀️':'🌙';b.setAttribute('aria-label',mode==='night'?'切換日光':'切換暗夜')}
+        if(fullReplace){
+          var bridge=nativeBridge();
+          try{
+            if(bridge&&typeof bridge.applyAppearanceMode==='function'){
+              bridge.applyAppearanceMode(mode,'true');
+            }else if(bridge&&typeof bridge.toast==='function'){
+              bridge.toast('已切換'+(mode==='night'?'暗夜':'日光')+'模式');
+            }
+          }catch(e){}
+          window.dispatchEvent(new CustomEvent('ang-theme-full-replace',{detail:{mode:mode,video:mode==='day'?'night_to_day':'day_to_night'}}));
+        }
+      }
+      window.angApplyDayNight=function(mode,fullReplace){setMode(mode,!!fullReplace)};
+      window.angToggleDayNight=function(){
+        var next=isNight()?'day':'night';
+        var label=next==='night'?'暗夜':'日光';
+        var msg='要完整更換為「'+label+'」嗎？\n\n選「是」會同步通知 ANG-99-HR App 更換 App icon / 開場影片，並由 App 自動重開。\n選「否」只切換目前頁面顏色。';
+        if(window.Swal){
+          Swal.fire({title:'切換'+label+'模式',text:'是否完整更換 App icon 與開場影片？',icon:'question',showCancelButton:true,confirmButtonText:'是，完整更換',cancelButtonText:'只換畫面'}).then(function(r){setMode(next,!!r.isConfirmed)});
+        }else{
+          setMode(next,window.confirm(msg));
+        }
+      };
+      function boot(){
+        if(!document.getElementById(btnId)){
+          var b=document.createElement('button');
+          b.type='button';b.id=btnId;b.className='ang-daynight-toggle';b.onclick=window.angToggleDayNight;document.body.appendChild(b);
+        }
+        setMode(isNight()?'night':'day',false);
+      }
+      if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+    })();
+  </script>
 
 </body>
 </html>
