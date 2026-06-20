@@ -7,6 +7,7 @@
   <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+  <script src="config.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <style>
     :root{
@@ -2460,11 +2461,37 @@
         } catch(err2) {}
         return saved;
       }
+      function isScriptGoogleUrlLocal(url){
+        return /^https:\/\/script\.google\.com\/macros\/s\//i.test(String(url || '').trim());
+      }
+      function getPageBaseUrl(targetPage){
+        targetPage = safeText(targetPage || 'employee').toLowerCase();
+        var file = targetPage === 'admin' ? 'admin.html' : 'employee.html';
+        var cfg = window.ANG_HR_CONFIG || {};
+        var ctx = window.APP_CTX || {};
+        var explicit = targetPage === 'admin'
+          ? safeText(ctx.adminPageUrl || cfg.adminPageUrl || '')
+          : safeText(ctx.employeePageUrl || ctx.webAppUrl || cfg.employeePageUrl || cfg.webAppUrl || '');
+        if (explicit && !isScriptGoogleUrlLocal(explicit)) return explicit;
+        var frontendBase = safeText(
+          ctx.frontendBaseUrl ||
+          cfg.frontendBaseUrl ||
+          cfg.githubBaseUrl ||
+          ''
+        );
+        if (frontendBase && !isScriptGoogleUrlLocal(frontendBase)) {
+          return frontendBase.replace(/\/+$/, '') + '/' + file;
+        }
+        try {
+          var here = window.location.href.split('#')[0].split('?')[0];
+          if (here && !isScriptGoogleUrlLocal(here)) {
+            return here.replace(/\/[^\/]*$/, '/' + file);
+          }
+        } catch(err) {}
+        return './' + file;
+      }
       function getBaseWebAppUrl(){
-        var ctxUrl = safeText(window.APP_CTX && APP_CTX.webAppUrl);
-        if (/^https?:\/\//i.test(ctxUrl)) return ctxUrl;
-        try { return window.location.href.split('#')[0].split('?')[0]; }
-        catch(err){ return ''; }
+        return getPageBaseUrl('employee');
       }
       function companyInitial(name,id){
         var n = safeText(name || id || 'ANG');
@@ -2671,25 +2698,60 @@
         try { window.location.reload(); } catch(err3) {}
       }
       function userCanAdmin(){
-        var role = safeText((window.APP_CTX && APP_CTX.role) || window.UROLE || getParam('role') || localStorage.getItem('ang_user_role') || localStorage.getItem('ang_employee_role') || localStorage.getItem('ang_role') || '').toLowerCase();
+        if (typeof window.employeeCanEnterAdmin === 'function') {
+          try {
+            if (window.employeeCanEnterAdmin()) return true;
+          } catch(err) {}
+        }
+        var role = safeText(
+          (window.APP_CTX && APP_CTX.role) ||
+          window.UROLE ||
+          getParam('role') ||
+          localStorage.getItem('ang_user_role') ||
+          localStorage.getItem('ang_employee_role') ||
+          localStorage.getItem('ang_role') ||
+          ''
+        ).toLowerCase();
+        var empId = getCurrentEmployeeId();
+        if (!role && empId === 'ANG8963') role = 'creator';
+        if (role === 'administrator' || role === '管理員' || role === '系統管理員') role = 'admin';
+        if (role === '主管' || role === '店長' || role === '經理') role = 'manager';
+        if (role === '創辦者' || role === '創建者' || role === '建立者' || role === '最高權限' || role === 'platform_creator') role = 'creator';
         return ['creator','admin','manager'].indexOf(role) > -1;
       }
       function adminEmployeeToggleFromHome(){
-        var isAdminPage = safeText((window.APP_CTX && APP_CTX.page) || getParam('page')).toLowerCase() === 'admin';
-        var base = getBaseWebAppUrl();
+        var pageFromCtx = safeText((window.APP_CTX && APP_CTX.page) || getParam('page')).toLowerCase();
+        var isAdminPage = pageFromCtx === 'admin' || /\/admin\.html$/i.test(window.location.pathname || '');
+        var targetPage = isAdminPage ? 'employee' : 'admin';
+        // 優先走你前面已經寫好的 hardGo / buildPageUrl，這個目前是正確的。
+        if (typeof window.hardGo === 'function') {
+          window.hardGo(targetPage);
+          return;
+        }
+        var base = getPageBaseUrl(targetPage);
         var employeeId = encodeURIComponent(getCurrentEmployeeId());
         var token = encodeURIComponent(getCurrentToken());
         var companyId = encodeURIComponent(getCurrentCompanyId());
         var deviceId = encodeURIComponent(getDeviceId());
-        var targetPage = isAdminPage ? 'employee' : 'admin';
-        if (/^https?:\/\//i.test(base)) {
-          var role = encodeURIComponent((window.APP_CTX && APP_CTX.role) || localStorage.getItem('ang_user_role') || localStorage.getItem('ang_employee_role') || '');
-          var url = base + '?page=' + targetPage + '&company_id=' + companyId + '&id=' + employeeId + '&token=' + token + '&device_id=' + deviceId + '&role=' + role + '&_ts=' + Date.now();
-          try { window.location.replace(url); } catch(err){ window.location.href = url; }
-          return;
+        var role = encodeURIComponent(
+          (window.APP_CTX && APP_CTX.role) ||
+          localStorage.getItem('ang_user_role') ||
+          localStorage.getItem('ang_employee_role') ||
+          ''
+        );
+        var url = base
+          + '?page=' + encodeURIComponent(targetPage)
+          + '&company_id=' + companyId
+          + '&id=' + employeeId
+          + '&token=' + token
+          + '&device_id=' + deviceId
+          + '&role=' + role
+          + '&_ts=' + Date.now();
+        try {
+          window.location.replace(url);
+        } catch(err) {
+          window.location.href = url;
         }
-        if (targetPage === 'admin' && typeof window.hardGo === 'function') window.hardGo('admin');
-        else if (targetPage === 'employee' && typeof window.hardGo === 'function') window.hardGo('employee');
       }
 
       window.angSwitchCompany = switchCompany;
