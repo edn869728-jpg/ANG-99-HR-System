@@ -785,7 +785,7 @@
           <div class="item-title" style="margin-bottom:6px">📱 iPhone 安裝說明</div>
           <div class="item-meta">1. 點擊「產生 JSON 設定」取得設定碼</div>
           <div class="item-meta">2. 點擊「複製 JSON」後貼入 iPhone「捷徑」App</div>
-          <div class="item-meta">3. 在捷徑中新增「取得網頁內容」步驟，URL 填入 webAppUrl</div>
+          <div class="item-meta">3. 在捷徑中新增「取得網頁內容」步驟，URL 填入 apiUrl（GAS API）</div>
           <div class="item-meta">4. 請求主體選 JSON，貼上複製的設定碼</div>
           <div class="item-meta">5. 完成後即可透過 Siri 或主畫面捷徑一鍵打卡</div>
         </div>
@@ -822,6 +822,20 @@
       }
       var cfg=window.ANG_HR_CONFIG||{};
       var href=String(window.location.href||'').split('#')[0].split('?')[0];
+      function isScriptGoogleUrl_(url){return /^https:\/\/script\.google\.com\/macros\/s\//i.test(String(url||'').trim());}
+      function joinUrl_(base,file){base=String(base||'').replace(/\/+$/,'');file=String(file||'').replace(/^\/+/,'');return base+'/'+file;}
+      function frontendUrl_(file){
+        file=file||'employee.html';
+        var explicit=String(file==='admin.html'?(cfg.adminPageUrl||cfg.adminPage||''):(cfg.employeePageUrl||cfg.employeePage||'')).trim();
+        if(explicit && !isScriptGoogleUrl_(explicit))return explicit;
+        var fb=String(cfg.frontendBaseUrl||cfg.githubBaseUrl||cfg.frontendUrl||'').trim();
+        if(fb && !isScriptGoogleUrl_(fb))return joinUrl_(fb,file);
+        if(href && !isScriptGoogleUrl_(href))return href.replace(/\/[^\/]*$/, '/'+file);
+        return './'+file;
+      }
+      function apiUrl_(){
+        return String(qp('api')||qp('gas')||cfg.apiBaseUrl||cfg.workerApiUrl||cfg.gasApiUrl||clean('<?= typeof apiUrl!=="undefined"?apiUrl:"" ?>')||clean('<?= typeof gasApiUrl!=="undefined"?gasApiUrl:"" ?>')||'').trim();
+      }
       return {
         company_id:String(qp('company_id')||qp('companyId')||qp('company')||first(['ang_hr_active_company_id','ang_company_id','company_id'])||clean('<?= typeof company_id!=="undefined"?company_id:"" ?>')||'').trim().toUpperCase(),
         id:String(qp('employee_id')||qp('employeeId')||qp('id')||first(['ang_hr_active_employee_id','ang_employee_id','employee_id','loginId','emp_logged_in'])||clean('<?= typeof id!=="undefined"?id:"" ?>')||'').trim().toUpperCase(),
@@ -831,7 +845,10 @@
         name:String(qp('name')||clean('<?= typeof name!=="undefined"?name:"" ?>')||'').trim(),
         nickname:String(qp('nickname')||clean('<?= typeof nickname!=="undefined"?nickname:"" ?>')||'').trim(),
         device_id:String(qp('device_id')||qp('deviceId')||first(['ang_hr_device_id','ang_device_id','device_id'])||'').trim(),
-        webAppUrl:String((cfg.apiBaseUrl||cfg.workerApiUrl||cfg.gasApiUrl||'')||qp('api')||qp('gas')||clean('<?= typeof webAppUrl!=="undefined"?webAppUrl:"" ?>')||href).trim()
+        webAppUrl:String(frontendUrl_('employee.html')).trim(),
+        apiUrl:String(apiUrl_()).trim(),
+        employeePageUrl:String(frontendUrl_('employee.html')).trim(),
+        adminPageUrl:String(frontendUrl_('admin.html')).trim()
       };
     })();
 
@@ -1094,12 +1111,35 @@
       hardGo('admin');
     }
 
+    function getEmployeeEffectiveRoleForRoute(){
+      var role = '';
+      try{
+        role = String(
+          (APP_CTX && APP_CTX.role) ||
+          localStorage.getItem('ang_user_role') ||
+          localStorage.getItem('ang_employee_role') ||
+          localStorage.getItem('role') ||
+          ''
+        ).trim().toLowerCase();
+      }catch(e){ role = String((APP_CTX && APP_CTX.role) || '').trim().toLowerCase(); }
+      var empId = String(currentUserId || (APP_CTX && APP_CTX.id) || '').trim().toUpperCase();
+      if(!role && empId === 'ANG8963') role = 'creator';
+      if(role === 'administrator' || role === '管理員' || role === '系統管理員') role = 'admin';
+      if(role === '主管' || role === '店長' || role === '經理') role = 'manager';
+      if(role === '創辦者' || role === '創建者' || role === '建立者' || role === '最高權限' || role === 'platform_creator') role = 'creator';
+      return role;
+    }
+
+    function employeeCanEnterAdmin(){
+      var role = getEmployeeEffectiveRoleForRoute();
+      return ['creator','admin','manager'].indexOf(role) > -1;
+    }
+
     function handleEmployeeHomeClick(){
-      var role = String(APP_CTX.role || '').trim().toLowerCase();
-      var canEnterAdmin = ['creator','admin','manager'].indexOf(role) > -1;
+      var canEnterAdmin = employeeCanEnterAdmin();
 
       // 底部中間「員工主頁」規則：
-      // 1. 目前已在員工首頁，且有管理權限：只導向同一支 GAS 的 page=admin。
+      // 1. 目前已在員工首頁，且有管理權限：切到 GitHub admin.html / 或 GAS page=admin。
       // 2. 目前已在員工首頁，但沒有管理權限：只回到頁面最上方，不重整、不外跳。
       // 3. 目前在請假 / 打卡 / 薪資 / 上傳：只切回本頁內的員工首頁，不跳其他網站。
       if(currentPage === 'home'){
@@ -1120,7 +1160,8 @@
     function apiPost(action,payload,callback){
       var fp=Object.assign({},payload||{},{action:action});
       if(!/^https?:/i.test(String(window.location.href||''))){showWarning('非正式環境');if(callback)callback({ok:false,message:'not_in_web'});return}
-      var apiUrl=String((APP_CTX&&APP_CTX.webAppUrl)||'').trim()||String(window.location.origin+window.location.pathname).trim();
+      var apiUrl=String((window.ANG_HR_UTILS&&ANG_HR_UTILS.getApiUrl&&ANG_HR_UTILS.getApiUrl())||(APP_CTX&&APP_CTX.apiUrl)||'').trim();
+      if(!apiUrl){showError('尚未設定 GAS API URL，請檢查 config.js 的 gasApiUrl / apiBaseUrl');if(callback)callback({ok:false,message:'missing_api_url'});return;}
       Swal.fire({title:'處理中...',allowOutsideClick:false,didOpen:function(){Swal.showLoading()}});
       var ctrl=new AbortController();var timer=setTimeout(function(){ctrl.abort()},20000);
       fetch(apiUrl,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(fp),signal:ctrl.signal})

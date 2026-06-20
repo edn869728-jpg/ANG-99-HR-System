@@ -50,7 +50,7 @@
     return String(
       getParam('api') || getParam('gas') ||
       cfg.apiBaseUrl || cfg.workerApiUrl || cfg.gasApiUrl ||
-      ctx.webAppUrl || ctx.apiUrl || ''
+      ctx.apiUrl || ''
     ).trim();
   }
 
@@ -108,7 +108,7 @@
     var id = syncIdentity(payload);
     var apiUrl = String(options.url || getApiUrl() || '').trim();
     if (!apiUrl) {
-      await sysAlert('API 未設定', '找不到 GAS API URL，請確認 config.js 或 APP_CTX.webAppUrl。', 'error');
+      await sysAlert('API 未設定', '找不到 GAS API URL，請確認 config.js 的 gasApiUrl / apiBaseUrl。', 'error');
       return null;
     }
 
