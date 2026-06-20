@@ -1198,6 +1198,18 @@
       wrap.classList.toggle('is-collapsed',!expanded);
     }
 
+    var ANG_ADMIN_HOME_NAV_OPENED_ON_HOME = false;
+
+    function goEmployeeHomepageFromAdmin(){
+      // Admin 主頁的首頁鍵第二次點擊：固定回 GitHub employee.html 的員工主頁。
+      // hardGo('employee') 會保留 id / token / company_id / device_id / role，不會跳 Google Script。
+      try{ hardGo('employee'); }
+      catch(err){
+        try{ window.location.href = buildPageUrl('employee'); }
+        catch(err2){ window.location.href = './employee.html'; }
+      }
+    }
+
     function handleHomeClick(){
       var wrap=qs('fabWrap');
       var hb = qs('fab-home');
@@ -1206,23 +1218,24 @@
         setTimeout(function(){ hb.classList.remove('swap'); }, 400);
       }
 
+      // 第一次按：只展開 L 型導航鈕，不跳頁。
       if(wrap&&wrap.classList.contains('is-collapsed')){
+        ANG_ADMIN_HOME_NAV_OPENED_ON_HOME = (currentPage === 'home');
         setFabExpanded(true);
         return;
       }
 
-      // 管理頁首頁按首頁：有權限者切回員工模式；無權限者只滑到頂部，不跳其他網站。
+      // Admin 主頁第二次按首頁：直接切回 Employee homepage。
       if(currentPage === 'home'){
-        var userRole=String(UROLE||'').trim().toLowerCase();
-        if((typeof angHasManagerOrAbove==='function'&&angHasManagerOrAbove())||['creator','admin','manager'].indexOf(userRole)>-1){
-          hardGo('employee');
-          return;
-        }
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        ANG_ADMIN_HOME_NAV_OPENED_ON_HOME = false;
+        goEmployeeHomepageFromAdmin();
         return;
       }
+
+      // 其他管理分頁：先回 Admin 主頁；下一次再按首頁才切到 Employee homepage。
+      ANG_ADMIN_HOME_NAV_OPENED_ON_HOME = false;
       navTo('home');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      try{ window.scrollTo({ top: 0, behavior: 'smooth' }); }catch(err3){ window.scrollTo(0,0); }
     }
 
     function getRoleKey(){
