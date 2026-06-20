@@ -956,47 +956,57 @@
       return String(CTX.companyId||localStorage.getItem('ang_hr_active_company_id')||localStorage.getItem('ang_company_id')||localStorage.getItem('company_id')||'MAIN').trim().toUpperCase();
     }
 
-    function getCurrentCleanUrl_(){
-      try{return String(window.location.href||'').split('#')[0].split('?')[0];}catch(e){return'';}
-    }
-
-    function isScriptGoogleUrl_(url){
-      return /^https:\/\/script\.google\.com\/macros\/s\//i.test(String(url||'').trim());
-    }
-
-    function appendQuery_(base, q){
-      base=String(base||'').trim()||'./admin.html';
-      return base+(base.indexOf('?')>-1?'&':'?')+q.join('&');
-    }
-
     function getSameGasBaseUrl(){
-      // 只有「目前真的跑在 GAS WebApp 頁面」時，才用 GAS page=admin / page=employee 路由。
-      // GitHub Pages 版就算 config.js 裡有 gasApiUrl，也只拿來打 API，不拿來跳頁。
-      var here=getCurrentCleanUrl_();
-      if(isScriptGoogleUrl_(here))return here;
+      var cfg=window.ANG_HR_CONFIG||{};
+      var candidates=[CTX.webAppUrl,cfg.gasApiUrl,cfg.apiBaseUrl,cfg.workerApiUrl];
+      for(var i=0;i<candidates.length;i++){
+        var v=String(candidates[i]||'').trim();
+        if(/^https:\/\/script\.google\.com\/macros\/s\//i.test(v))return v.split('?')[0];
+      }
+      try{
+        var here=window.location.href.split('#')[0].split('?')[0];
+        if(/^https:\/\/script\.google\.com\/macros\/s\//i.test(here))return here;
+      }catch(e){}
       return '';
     }
 
-    function getGithubRouteBase_(pageName){
-      var cfg=window.ANG_HR_CONFIG||{};
-      var page=String(pageName||'admin').toLowerCase();
-      var file=(page==='employee')?'employee.html':'admin.html';
-      var explicit=(page==='employee')
-        ? String((cfg.employeePageUrl||CTX.employeePageUrl||'')).trim()
-        : String((cfg.adminPageUrl||CTX.adminPageUrl||'')).trim();
-      if(explicit && !isScriptGoogleUrl_(explicit))return explicit;
-      var frontendBase=String(cfg.frontendBaseUrl||cfg.githubBaseUrl||'').trim();
-      if(frontendBase && !isScriptGoogleUrl_(frontendBase))return frontendBase.replace(/\/+$/,'')+'/'+file;
-      var here=getCurrentCleanUrl_();
-      if(here && !isScriptGoogleUrl_(here))return here.replace(/\/[^\/]*$/,'/'+file);
-      return './'+file;
+    function persistRouteSession(){
+      try{
+        var companyId=getCurrentCompanyIdForRoute();
+        var deviceId=getDeviceIdForRoute();
+        if(UID){
+          localStorage.setItem('ang_hr_active_employee_id',UID);
+          localStorage.setItem('ang_employee_id',UID);
+          localStorage.setItem('employee_id',UID);
+          localStorage.setItem('loginId',UID);
+          localStorage.setItem('emp_logged_in',UID);
+        }
+        if(UTOKEN){
+          localStorage.setItem('ang_hr_active_login_token',UTOKEN);
+          localStorage.setItem('ang_employee_token',UTOKEN);
+          localStorage.setItem('session_token',UTOKEN);
+          localStorage.setItem('loginToken',UTOKEN);
+          localStorage.setItem('emp_login_token',UTOKEN);
+        }
+        if(companyId){
+          localStorage.setItem('ang_hr_active_company_id',companyId);
+          localStorage.setItem('ang_company_id',companyId);
+          localStorage.setItem('company_id',companyId);
+          CTX.companyId=companyId;
+        }
+        if(deviceId){CTX.deviceId=deviceId;}
+        if(UROLE){localStorage.setItem('ang_user_role',UROLE);localStorage.setItem('ang_employee_role',UROLE);}
+        localStorage.setItem('isLoggedIn','1');
+      }catch(e){}
     }
 
     function buildPageUrl(pageName){
       persistRouteSession();
+      var cfg=window.ANG_HR_CONFIG||{};
       var page=String(pageName||'employee').toLowerCase();
       if(page==='people')page='personnel';
       var routePage=(page==='employee')?'employee':'admin';
+      var gasBase=getSameGasBaseUrl();
       var id=encodeURIComponent(String(UID||CTX.id||'').trim());
       var token=encodeURIComponent(String(UTOKEN||CTX.token||'').trim());
       var role=encodeURIComponent(String(UROLE||CTX.role||'').trim());
@@ -1008,9 +1018,13 @@
       if(deviceId)q.push('device_id='+encodeURIComponent(deviceId));
       if(appMode)q.push('app='+encodeURIComponent(appMode));
       q.push('_ts='+Date.now());
-      var gasBase=getSameGasBaseUrl();
-      if(gasBase)return appendQuery_(gasBase,q);
-      return appendQuery_(getGithubRouteBase_(routePage),q);
+      if(gasBase)return gasBase+'?'+q.join('&');
+      var adminPages=['admin','creator','manager','data','personnel','salary','home'];
+      var base=adminPages.indexOf(page)>-1
+        ? String(CTX.adminPageUrl||cfg.adminPageUrl||'./admin.html')
+        : String(CTX.employeePageUrl||cfg.employeePageUrl||'./employee.html');
+      q.shift();
+      return base+'?'+q.join('&');
     }
 
     function hardGo(pageName){
