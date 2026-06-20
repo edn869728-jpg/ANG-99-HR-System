@@ -805,15 +805,35 @@
   </nav>
 
     <script>
-    var APP_CTX={
-      id:'ANG0603',
-      token:'0273d013afe64538aeb3f52d18d289ab1775139447000',
-      page:'employee',
-      role:'Creator',
-      name:'米馳浩',
-      nickname:'米米',
-      webAppUrl:'https:\/\/edn869728-jpg.github.io\/ANG-99-HR-System'
-    };
+    var APP_CTX=(function(){
+      function qp(name){
+        try{return new URLSearchParams(window.location.search).get(name)||'';}catch(e){return'';}
+      }
+      function clean(v){
+        var s=String(v==null?'':v).trim();
+        if(!s||s.indexOf('<?')>=0||s.indexOf('?>')>=0)return'';
+        return s;
+      }
+      function first(keys){
+        for(var i=0;i<keys.length;i++){
+          try{var v=localStorage.getItem(keys[i]);if(v)return String(v).trim();}catch(e){}
+        }
+        return'';
+      }
+      var cfg=window.ANG_HR_CONFIG||{};
+      var href=String(window.location.href||'').split('#')[0].split('?')[0];
+      return {
+        company_id:String(qp('company_id')||qp('companyId')||qp('company')||first(['ang_hr_active_company_id','ang_company_id','company_id'])||clean('<?= typeof company_id!=="undefined"?company_id:"" ?>')||'').trim().toUpperCase(),
+        id:String(qp('employee_id')||qp('employeeId')||qp('id')||first(['ang_hr_active_employee_id','ang_employee_id','employee_id','loginId','emp_logged_in'])||clean('<?= typeof id!=="undefined"?id:"" ?>')||'').trim().toUpperCase(),
+        token:String(qp('session_token')||qp('loginToken')||qp('token')||qp('key')||first(['ang_hr_active_login_token','session_token','loginToken','emp_login_token','ang_employee_token','ang_token'])||clean('<?= typeof token!=="undefined"?token:"" ?>')||'').trim(),
+        page:String(qp('page')||clean('<?= typeof page!=="undefined"?page:"employee" ?>')||'employee').trim().toLowerCase(),
+        role:String(qp('role')||first(['ang_user_role','ang_employee_role','ang_role'])||clean('<?= typeof role!=="undefined"?role:"" ?>')||'').trim(),
+        name:String(qp('name')||clean('<?= typeof name!=="undefined"?name:"" ?>')||'').trim(),
+        nickname:String(qp('nickname')||clean('<?= typeof nickname!=="undefined"?nickname:"" ?>')||'').trim(),
+        device_id:String(qp('device_id')||qp('deviceId')||first(['ang_hr_device_id','ang_device_id','device_id'])||'').trim(),
+        webAppUrl:String((cfg.apiBaseUrl||cfg.workerApiUrl||cfg.gasApiUrl||'')||qp('api')||qp('gas')||clean('<?= typeof webAppUrl!=="undefined"?webAppUrl:"" ?>')||href).trim()
+      };
+    })();
 
     var HOURLY_RATE=200;
     var defaultThemeColors=['#FF87E0','#CCA4FF','#8089FF','#59DDFF'];
@@ -993,16 +1013,59 @@
       if(id==='upload')safeCall(function(){if(calUpload)calUpload.render()},'nav.calUpload');
     }
 
+    function getCurrentCleanUrl_(){
+      try{return String(window.location.href||'').split('#')[0].split('?')[0];}catch(e){return'';}
+    }
+
+    function isScriptGoogleUrl_(url){
+      return /^https:\/\/script\.google\.com\/macros\/s\//i.test(String(url||'').trim());
+    }
+
+    function appendQuery_(base,q){
+      base=String(base||'').trim()||'./employee.html';
+      return base+(base.indexOf('?')>-1?'&':'?')+q.join('&');
+    }
+
+    function getRouteBase_(pageName){
+      var cfg=window.ANG_HR_CONFIG||{};
+      var page=String(pageName||'employee').toLowerCase();
+      var file=(page==='admin')?'admin.html':'employee.html';
+      var here=getCurrentCleanUrl_();
+      // 只有目前真的在 GAS WebApp 時，才沿用 GAS page 參數切 admin / employee。
+      if(isScriptGoogleUrl_(here))return here;
+      // GitHub 版：GAS URL 只當 API，不當頁面跳轉目標。
+      var explicit=(page==='admin')
+        ? String((cfg.adminPageUrl||'')).trim()
+        : String((cfg.employeePageUrl||'')).trim();
+      if(explicit && !isScriptGoogleUrl_(explicit))return explicit;
+      var frontendBase=String(cfg.frontendBaseUrl||cfg.githubBaseUrl||'').trim();
+      if(frontendBase && !isScriptGoogleUrl_(frontendBase))return frontendBase.replace(/\/+$/,'')+'/'+file;
+      if(here && !isScriptGoogleUrl_(here))return here.replace(/\/[^\/]*$/,'/'+file);
+      return './'+file;
+    }
+
     function buildPageUrl(pageName){
-      var base = String(APP_CTX.webAppUrl || window.location.href.split('#')[0].split('?')[0] || '').trim();
-      var id = encodeURIComponent(String(currentUserId || APP_CTX.id || '').trim());
-      var token = encodeURIComponent(String(currentUserToken || APP_CTX.token || '').trim());
-      var ts = Date.now();
-      return base
-        + '?page=' + encodeURIComponent(pageName || 'employee')
-        + '&id=' + id
-        + '&token=' + token
-        + '&_ts=' + ts;
+      var target=String(pageName||'employee').toLowerCase();
+      var id=encodeURIComponent(String(currentUserId||APP_CTX.id||'').trim());
+      var token=encodeURIComponent(String(currentUserToken||APP_CTX.token||'').trim());
+      var role=encodeURIComponent(String(APP_CTX.role||localStorage.getItem('ang_user_role')||localStorage.getItem('ang_employee_role')||'').trim());
+      var companyId=String(APP_CTX.company_id||localStorage.getItem('ang_hr_active_company_id')||localStorage.getItem('ang_company_id')||localStorage.getItem('company_id')||'').trim().toUpperCase();
+      var deviceId=String(APP_CTX.device_id||localStorage.getItem('ang_hr_device_id')||localStorage.getItem('ang_device_id')||localStorage.getItem('device_id')||'').trim();
+      if(!deviceId){
+        deviceId='DEV-'+Date.now().toString(36).toUpperCase()+'-'+Math.random().toString(36).slice(2,10).toUpperCase();
+        try{localStorage.setItem('ang_hr_device_id',deviceId);localStorage.setItem('ang_device_id',deviceId);localStorage.setItem('device_id',deviceId);}catch(e){}
+      }
+      try{
+        if(companyId){localStorage.setItem('ang_hr_active_company_id',companyId);localStorage.setItem('ang_company_id',companyId);localStorage.setItem('company_id',companyId);}
+        if(currentUserId){localStorage.setItem('ang_hr_active_employee_id',currentUserId);localStorage.setItem('ang_employee_id',currentUserId);localStorage.setItem('employee_id',currentUserId);localStorage.setItem('loginId',currentUserId);}
+        if(currentUserToken){localStorage.setItem('ang_hr_active_login_token',currentUserToken);localStorage.setItem('session_token',currentUserToken);localStorage.setItem('loginToken',currentUserToken);localStorage.setItem('emp_login_token',currentUserToken);localStorage.setItem('ang_employee_token',currentUserToken);}
+        localStorage.setItem('isLoggedIn','1');
+      }catch(e2){}
+      var q=['page='+encodeURIComponent(target==='admin'?'admin':'employee'),'id='+id,'token='+token,'role='+role];
+      if(companyId)q.push('company_id='+encodeURIComponent(companyId));
+      if(deviceId)q.push('device_id='+encodeURIComponent(deviceId));
+      q.push('_ts='+Date.now());
+      return appendQuery_(getRouteBase_(target),q);
     }
 
     function hardGo(pageName){
@@ -2090,9 +2153,32 @@
      
 
     
+
+
+    function refreshRuntimeRoleFromSession(){
+      try{
+        var companyId=(APP_CTX.company_id||localStorage.getItem('ang_hr_active_company_id')||localStorage.getItem('ang_company_id')||localStorage.getItem('company_id')||'').toUpperCase();
+        var empId=(APP_CTX.id||localStorage.getItem('ang_hr_active_employee_id')||localStorage.getItem('ang_employee_id')||localStorage.getItem('employee_id')||'').toUpperCase();
+        var token=APP_CTX.token||localStorage.getItem('ang_hr_active_login_token')||localStorage.getItem('session_token')||localStorage.getItem('loginToken')||'';
+        var deviceId=APP_CTX.device_id||localStorage.getItem('ang_hr_device_id')||localStorage.getItem('ang_device_id')||'';
+        if(!companyId||!empId||!token||!window.ANG_API||!ANG_API.request)return;
+        ANG_API.request('angGetPermissionSnapshot',{company_id:companyId,id:empId,token:token,device_id:deviceId,role:APP_CTX.role},{silent:true}).then(function(r){
+          if(!r)return;
+          var data=r.data||r;
+          if(data.role){
+            APP_CTX.role=String(data.role);
+            localStorage.setItem('ang_user_role',APP_CTX.role);
+            localStorage.setItem('ang_employee_role',APP_CTX.role);
+          }
+          if(data.companies){try{localStorage.setItem('ang_company_memberships',JSON.stringify(data.companies));}catch(e){}}
+        });
+      }catch(e){}
+    }
+
     window.onload=function(){
       safeCall(initDefaults,'initDefaults');
       safeCall(applyParamsFromUrl,'applyParamsFromUrl');
+      safeCall(refreshRuntimeRoleFromSession,'refreshRuntimeRoleFromSession');
       safeCall(restoreScheduleState,'restoreScheduleState');
       safeCall(renderWeekdayStrip,'renderWeekdayStrip');
       safeCall(renderClockRecordList,'renderClockRecordList');

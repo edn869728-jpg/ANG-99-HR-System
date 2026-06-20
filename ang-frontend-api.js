@@ -163,7 +163,7 @@
   }
 
   async function verifySession(options){
-    return request('verifyEmployeeSession', syncIdentity(), Object.assign({ silent:true, timeout:12000 }, options || {}));
+    return request('angGetPermissionSnapshot', syncIdentity(), Object.assign({ silent:true, timeout:12000 }, options || {}));
   }
 
   function buildSwitchUrl(pageName, companyId){
