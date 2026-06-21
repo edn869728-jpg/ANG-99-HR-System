@@ -1,53 +1,60 @@
 //=============================================================================
 // 檔案：config.js
-// 說明：ANG HR GitHub 前端設定檔
+// 說明：ANG HR GitHub 前端設定檔（已填好版）
 // 重點：GAS 只當 API；頁面切換一律走 GitHub 前端 admin.html / employee.html。
 //=============================================================================
 (function(window){
   'use strict';
 
-  var GAS_API_URL = 'https://script.google.com/macros/s/AKfycbyVD-_tx9wFkggsuSnrL2T6HoyGPYuBQgoClr4GyxISaAeNfLVY32auEZDw2ihrXqJj/exec';
-  var GOOGLE_CLIENT_ID = '466961332869-icjvb1i9b6q9ghiei0oslhffpcgp57v1.apps.googleusercontent.com';
+  var FRONTEND_BASE_URL = 'https://edn869728-jpg.github.io/ANG-99-HR-System';
+  var GAS_API_URL = 'https://script.google.com/macros/s/AKfycbzNycUTGQG0gqgb8B6F7tndEhRXU7GAiKFFWZr0e8sDwL2kXU5tBGLlJR_iBdX7SCnH/exec';
+  var GOOGLE_CLIENT_ID = '660707205594-74rvsq9s1h87v1s5pi9nvtms1e4qipat.apps.googleusercontent.com';
+  var LINE_CHANNEL_ID = '2010402308';
 
-  function getFrontendBase(){
-    try {
-      var href = String(window.location.href || '').split('#')[0].split('?')[0];
-      return href.replace(/\/[^\/]*$/, '');
-    } catch (err) {
-      return '.';
-    }
+  function cleanBase(url){
+    return String(url || '').trim().replace(/\/+$/, '');
   }
 
   function joinUrl(base, file){
-    base = String(base || '.').replace(/\/+$/, '');
+    base = cleanBase(base || FRONTEND_BASE_URL);
     file = String(file || '').replace(/^\/+/, '');
     return base + '/' + file;
   }
 
-  var frontendBaseUrl = getFrontendBase();
+  var frontendBaseUrl = cleanBase(FRONTEND_BASE_URL);
 
   window.ANG_HR_CONFIG = {
     appName: 'ANG HR System',
+    contactEmail: 'ang0603.system@gmail.com',
 
-    // API：只用來 fetch / google.script.run bridge 呼叫，不拿來跳頁。
+    // API：這兩個是 GAS 後端，僅供 fetch / google.script.run bridge 呼叫。
+    // 不可拿來當頁面跳轉網址。
     gasApiUrl: GAS_API_URL,
     apiBaseUrl: GAS_API_URL,
     workerApiUrl: '',
 
-    // GitHub 前端：員工 / 管理模式切換都走這裡。
+    // GitHub 前端：index / employee / admin 切換都走這裡。
     frontendBaseUrl: frontendBaseUrl,
     githubBaseUrl: frontendBaseUrl,
+    indexPage: 'index.html',
     employeePage: 'employee.html',
     adminPage: 'admin.html',
+    indexPageUrl: joinUrl(frontendBaseUrl, 'index.html'),
     employeePageUrl: joinUrl(frontendBaseUrl, 'employee.html'),
     adminPageUrl: joinUrl(frontendBaseUrl, 'admin.html'),
 
-    // 注意：webAppUrl 已改成 GitHub 前端，不再是 GAS。
+    // 保留 webAppUrl 這個舊名稱，但內容改為 GitHub 前端，不是 GAS。
     webAppUrl: joinUrl(frontendBaseUrl, 'employee.html'),
 
     googleClientId: GOOGLE_CLIENT_ID,
+    googleWebClientId: GOOGLE_CLIENT_ID,
+    lineChannelId: LINE_CHANNEL_ID,
+
     themeColors: ['#FF87E0', '#CCA4FF', '#8089FF', '#59DDFF'],
     defaultCompanyId: '',
-    defaultEmployeeId: ''
+    defaultEmployeeId: '',
+
+    platformCreatorEmployeeId: 'ANG8963',
+    freePrivilegeOwnerId: 'ANG8963'
   };
 })(window);
