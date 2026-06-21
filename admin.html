@@ -1198,6 +1198,16 @@
       wrap.classList.toggle('is-collapsed',!expanded);
     }
 
+    function isFabExpanded(){
+      var wrap=qs('fabWrap');
+      return !!(wrap&&!wrap.classList.contains('is-collapsed'));
+    }
+
+    function hasAdminHomeSwitchPermission_(){
+      var userRole=String(UROLE||'').trim().toLowerCase();
+      return (typeof angHasManagerOrAbove==='function'&&angHasManagerOrAbove())||['creator','admin','manager'].indexOf(userRole)>-1;
+    }
+
     function installFabAutoCollapse(){
       if(window.__angFabAutoCollapseBound)return;
       window.__angFabAutoCollapseBound=true;
@@ -1206,6 +1216,7 @@
         if(!wrap||wrap.classList.contains('is-collapsed'))return;
         var target=evt.target;
         if(wrap.contains(target))return;
+        if(target&&target.closest&&target.closest('.swal2-container,.ang-company-switcher,.ang-company-switcher-backdrop'))return;
         setFabExpanded(false);
       },true);
       document.addEventListener('keydown',function(evt){
@@ -1215,30 +1226,35 @@
 
     function handleHomeClick(){
       var wrap=qs('fabWrap');
-      var hb = qs('fab-home');
+      var wasCollapsed=!wrap||wrap.classList.contains('is-collapsed');
+      var hb=qs('fab-home');
       if(hb){
         hb.classList.add('swap');
-        setTimeout(function(){ hb.classList.remove('swap'); }, 400);
+        setTimeout(function(){ hb.classList.remove('swap'); },400);
       }
 
-      if(wrap&&wrap.classList.contains('is-collapsed')){
+      // Admin 頁 Home 鍵固定兩段式：
+      // 1. 不論目前在 Home 或其他管理分頁，第一次按 Home 只展開六顆導航。
+      // 2. 已展開時再按 Home：
+      //    - 如果目前在 Admin Home，切回 Employee Home。
+      //    - 如果目前在其他管理分頁，回 Admin Home。
+      if(wasCollapsed){
         setFabExpanded(true);
         return;
       }
 
-      // 管理頁首頁按首頁：有權限者切回員工模式；無權限者只滑到頂部，不跳其他網站。
-      if(currentPage === 'home'){
-        var userRole=String(UROLE||'').trim().toLowerCase();
-        setFabExpanded(false);
-        if((typeof angHasManagerOrAbove==='function'&&angHasManagerOrAbove())||['creator','admin','manager'].indexOf(userRole)>-1){
+      setFabExpanded(false);
+      if(currentPage==='home'){
+        if(hasAdminHomeSwitchPermission_()){
           hardGo('employee');
           return;
         }
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({top:0,behavior:'smooth'});
         return;
       }
+
       navTo('home');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({top:0,behavior:'smooth'});
     }
 
     function getRoleKey(){
