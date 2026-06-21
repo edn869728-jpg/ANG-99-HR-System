@@ -201,6 +201,133 @@
     .ang-company-logout .ang-company-mark{color:#b91c1c;background:rgba(254,242,242,.92);}
     @media(max-width:390px){.ang-company-switcher{top:calc(62px + env(safe-area-inset-top));left:8px;width:min(232px,calc(100vw - 16px));}.ang-company-item{min-height:50px;border-radius:15px;padding:6px 7px;}.ang-company-mark{width:32px;height:32px;border-radius:11px;}.ang-company-name{font-size:12px}.ang-company-meta{font-size:9px}}
     /* ANG_0603_ADMIN_COMPANY_SWITCHER_END */
+  
+    /* ANG_0603_ADMIN_DAY_NIGHT_TOGGLE_START */
+    :root{
+      --toggle-bg:rgba(255,255,255,.74);
+      --toggle-border:rgba(148,163,184,.34);
+      --toggle-shadow:0 10px 24px rgba(15,23,42,.12);
+      --toggle-icon-dim:rgba(71,85,105,.72);
+      --toggle-thumb-bg:#ffffff;
+      --toggle-thumb-shadow:0 6px 14px rgba(15,23,42,.16);
+      --toggle-thumb-x:0px;
+    }
+    body[data-theme="dark"]{
+      --bg:#050816;
+      --card:rgba(18,25,42,.96);
+      --text:#ffffff;
+      --muted:#cbd5e1;
+      --line:rgba(255,255,255,.10);
+      --soft:rgba(255,255,255,.07);
+      --toggle-bg:rgba(15,23,42,.52);
+      --toggle-border:rgba(255,255,255,.12);
+      --toggle-shadow:0 10px 24px rgba(0,0,0,.28);
+      --toggle-icon-dim:rgba(226,232,240,.68);
+      --toggle-thumb-bg:rgba(255,255,255,.15);
+      --toggle-thumb-shadow:0 0 18px rgba(0,217,255,.16);
+      --toggle-thumb-x:28px;
+      background:#050816;
+    }
+    .topbar{padding-right:84px;}
+    .ang-daynight-toggle{
+      position:fixed;
+      top:calc(14px + env(safe-area-inset-top));
+      right:14px;
+      width:58px;
+      height:30px;
+      padding:3px;
+      border:1px solid var(--toggle-border);
+      border-radius:999px;
+      background:var(--toggle-bg);
+      box-shadow:var(--toggle-shadow);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      z-index:2400;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      align-items:center;
+      justify-items:center;
+      appearance:none;
+      -webkit-appearance:none;
+      overflow:hidden;
+      cursor:pointer;
+    }
+    .ang-daynight-toggle::before{
+      content:"";
+      position:absolute;
+      left:3px;
+      top:3px;
+      width:24px;
+      height:24px;
+      border-radius:50%;
+      background:var(--toggle-thumb-bg);
+      box-shadow:var(--toggle-thumb-shadow);
+      transform:translateX(var(--toggle-thumb-x));
+      transition:transform .25s ease,background .25s ease,box-shadow .25s ease;
+    }
+    .ang-daynight-toggle span{
+      position:relative;
+      z-index:1;
+      width:24px;
+      height:24px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:var(--toggle-icon-dim);
+      pointer-events:none;
+    }
+    .ang-daynight-toggle svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round;}
+    body:not([data-theme="dark"]) .ang-daynight-toggle .sun{color:#0f172a;}
+    body[data-theme="dark"] .ang-daynight-toggle .moon{color:#fff;filter:drop-shadow(0 0 5px rgba(255,255,255,.32));}
+    body[data-theme="dark"] .topbar,
+    body[data-theme="dark"] .fab-sat,
+    body[data-theme="dark"] .ang-company-panel{
+      background:rgba(15,23,42,.94) !important;
+      color:#fff !important;
+      border-color:rgba(255,255,255,.10) !important;
+      box-shadow:0 10px 26px rgba(0,0,0,.22) !important;
+    }
+    body[data-theme="dark"] .card,
+    body[data-theme="dark"] .stat-mini,
+    body[data-theme="dark"] .notice-item,
+    body[data-theme="dark"] .review-card,
+    body[data-theme="dark"] .role-level-card,
+    body[data-theme="dark"] .people-card,
+    body[data-theme="dark"] .salary-line,
+    body[data-theme="dark"] .check-row,
+    body[data-theme="dark"] .extra-row,
+    body[data-theme="dark"] .bind-link-box{
+      background:linear-gradient(180deg,rgba(18,25,42,.96) 0%,rgba(15,23,42,.94) 100%) !important;
+      color:var(--text) !important;
+      border-color:rgba(255,255,255,.10) !important;
+      box-shadow:0 10px 26px rgba(0,0,0,.22) !important;
+    }
+    body[data-theme="dark"] input,
+    body[data-theme="dark"] select,
+    body[data-theme="dark"] textarea{
+      background:rgba(255,255,255,.07) !important;
+      color:#fff !important;
+      border:1px solid rgba(255,255,255,.10) !important;
+    }
+    body[data-theme="dark"] input::placeholder,
+    body[data-theme="dark"] textarea::placeholder{color:rgba(226,232,240,.62) !important;}
+    body[data-theme="dark"] .brand-title-sub,
+    body[data-theme="dark"] .sub-title,
+    body[data-theme="dark"] .item-meta,
+    body[data-theme="dark"] .role-desc,
+    body[data-theme="dark"] .perm-note,
+    body[data-theme="dark"] .ang-company-title,
+    body[data-theme="dark"] .ang-company-meta{color:var(--muted) !important;}
+    body[data-theme="dark"] .btn-ghost,
+    body[data-theme="dark"] .btn-soft,
+    body[data-theme="dark"] .btn-sm{
+      color:#ffffff;
+      border-color:rgba(255,255,255,.13);
+      box-shadow:0 10px 22px rgba(0,0,0,.20);
+    }
+    @media(max-width:430px){.topbar{padding-right:78px;}.ang-daynight-toggle{right:10px;top:calc(12px + env(safe-area-inset-top));}}
+    /* ANG_0603_ADMIN_DAY_NIGHT_TOGGLE_END */
+
   </style>
   <script src="config.js"></script>
 
@@ -246,6 +373,12 @@
 
 </head>
 <body>
+
+  <button class="ang-daynight-toggle" id="angDayNightToggle" type="button" aria-label="切換日光與暗夜模式" aria-pressed="false" onclick="angToggleDayNight()">
+    <span class="sun" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2.2M12 19.8V22M4.93 4.93l1.56 1.56M17.51 17.51l1.56 1.56M2 12h2.2M19.8 12H22M4.93 19.07l1.56-1.56M17.51 6.49l1.56-1.56"></path></svg></span>
+    <span class="moon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 14.2A8.6 8.6 0 0 1 9.8 3a7.5 7.5 0 1 0 11.2 11.2z"></path></svg></span>
+  </button>
+
 
   <!-- ===== 頂部 ===== -->
   <div class="topbar">
@@ -715,6 +848,24 @@
       var u=window.ANG_HR_UTILS||{};
       var q=u.getParam||function(){return''};
       var c=u.cleanTemplate||function(v){return String(v||'').indexOf('<?')>=0?'':String(v||'').trim()};
+      function isScriptGoogleUrl_(url){return /^https:\/\/script\.google\.com\/macros\/s\//i.test(String(url||'').trim());}
+      function cleanCurrentUrl_(){try{return String(window.location.href||'').split('#')[0].split('?')[0];}catch(e){return'';}}
+      function joinUrl_(base,file){base=String(base||'').replace(/\/+$/,'');file=String(file||'').replace(/^\/+/,'');return base+'/'+file;}
+      function frontendUrl_(file){
+        var cfg=window.ANG_HR_CONFIG||{};
+        file=file||'admin.html';
+        var explicit=String(file==='employee.html'?(cfg.employeePageUrl||cfg.employeePage||''):(cfg.adminPageUrl||cfg.adminPage||'')).trim();
+        if(explicit && !isScriptGoogleUrl_(explicit))return explicit;
+        var fb=String(cfg.frontendBaseUrl||cfg.githubBaseUrl||cfg.frontendUrl||'').trim();
+        if(fb && !isScriptGoogleUrl_(fb))return joinUrl_(fb,file);
+        var here=cleanCurrentUrl_();
+        if(here && !isScriptGoogleUrl_(here))return here.replace(/\/[^\/]*$/, '/'+file);
+        return './'+file;
+      }
+      function apiUrl_(){
+        var cfg=window.ANG_HR_CONFIG||{};
+        return String(q('api')||q('gas')||cfg.apiBaseUrl||cfg.workerApiUrl||cfg.gasApiUrl||c('<?= typeof apiUrl!=="undefined"?apiUrl:"" ?>')||c('<?= typeof gasApiUrl!=="undefined"?gasApiUrl:"" ?>')||'').trim();
+      }
       return {
         id:String(q('employee_id')||q('id')||localStorage.getItem('ang_hr_active_employee_id')||localStorage.getItem('ang_employee_id')||localStorage.getItem('employee_id')||localStorage.getItem('loginId')||c('<?= typeof id!=="undefined"?id:"" ?>')||'').trim().toUpperCase(),
         token:String(q('token')||q('key')||q('session_token')||q('loginToken')||localStorage.getItem('ang_hr_active_login_token')||localStorage.getItem('session_token')||localStorage.getItem('loginToken')||localStorage.getItem('emp_login_token')||localStorage.getItem('ang_employee_token')||c('<?= typeof token!=="undefined"?token:"" ?>')||'').trim(),
@@ -724,9 +875,10 @@
         companyId:String(q('company_id')||q('companyId')||q('company')||localStorage.getItem('ang_hr_active_company_id')||localStorage.getItem('ang_company_id')||localStorage.getItem('company_id')||'').trim().toUpperCase(),
         deviceId:String(q('device_id')||q('deviceId')||localStorage.getItem('ang_hr_device_id')||localStorage.getItem('ang_device_id')||localStorage.getItem('device_id')||'').trim(),
         appMode:String(q('app')||localStorage.getItem('ang_app_mode')||'').trim(),
-        webAppUrl:String((window.ANG_HR_CONFIG&&window.ANG_HR_CONFIG.apiBaseUrl)||q('api')||q('gas')||c('<?= typeof webAppUrl!=="undefined"?webAppUrl:"" ?>')||'').trim(),
-        employeePageUrl:String((window.ANG_HR_CONFIG&&window.ANG_HR_CONFIG.employeePageUrl)||'./employee.html'),
-        adminPageUrl:String((window.ANG_HR_CONFIG&&window.ANG_HR_CONFIG.adminPageUrl)||'./admin.html')
+        webAppUrl:String(frontendUrl_('admin.html')).trim(),
+        apiUrl:String(apiUrl_()).trim(),
+        employeePageUrl:String(frontendUrl_('employee.html')).trim(),
+        adminPageUrl:String(frontendUrl_('admin.html')).trim()
       };
     })();
     var UID=String(CTX.id||'').trim().toUpperCase();
@@ -764,7 +916,7 @@
     function statusLbl(s){return/已通過|approved/.test(s)?'已通過':/已退回|rejected/.test(s)?'已退回':'待審核'}
 
     function getApiUrl(){
-      return (window.ANG_HR_UTILS && window.ANG_HR_UTILS.getApiUrl ? window.ANG_HR_UTILS.getApiUrl() : (CTX.webAppUrl || '')).trim();
+      return (window.ANG_HR_UTILS && window.ANG_HR_UTILS.getApiUrl ? window.ANG_HR_UTILS.getApiUrl() : (CTX.apiUrl || '')).trim();
     }
 
     function normalizePayloadForApi(action,args){
@@ -1046,6 +1198,21 @@
       wrap.classList.toggle('is-collapsed',!expanded);
     }
 
+    function installFabAutoCollapse(){
+      if(window.__angFabAutoCollapseBound)return;
+      window.__angFabAutoCollapseBound=true;
+      document.addEventListener('pointerdown',function(evt){
+        var wrap=qs('fabWrap');
+        if(!wrap||wrap.classList.contains('is-collapsed'))return;
+        var target=evt.target;
+        if(wrap.contains(target))return;
+        setFabExpanded(false);
+      },true);
+      document.addEventListener('keydown',function(evt){
+        if(evt.key==='Escape')setFabExpanded(false);
+      },false);
+    }
+
     function handleHomeClick(){
       var wrap=qs('fabWrap');
       var hb = qs('fab-home');
@@ -1062,7 +1229,8 @@
       // 管理頁首頁按首頁：有權限者切回員工模式；無權限者只滑到頂部，不跳其他網站。
       if(currentPage === 'home'){
         var userRole=String(UROLE||'').trim().toLowerCase();
-        if(['creator','admin','manager'].indexOf(userRole)>-1){
+        setFabExpanded(false);
+        if((typeof angHasManagerOrAbove==='function'&&angHasManagerOrAbove())||['creator','admin','manager'].indexOf(userRole)>-1){
           hardGo('employee');
           return;
         }
@@ -1121,7 +1289,8 @@
       setText('topTitle',lbl[0]);
       setText('topSub',lbl[1]);
 
-      setFabExpanded(true);
+      // 點選導航項目完成後自動收回 FAB 選單。
+      setFabExpanded(false);
     }
 
     function applyVisibility(){
@@ -1947,13 +2116,13 @@
     function init(){
       persistRouteSession();
       initCompanySwitcher();
+      installFabAutoCollapse();
       applyTopBrand({company_name:'ANG.lo',company_subtitle:'Humanized system technology',system_title:'ANG.lo Engine',system_name:'HR 系統',fallback_text:'ANG'});
       applyEmployeeTheme();
       initMonthSelects();
       renderShiftRows();
       // 初始化時隱藏所有 autohide card，等資料回來後才顯示
       document.querySelectorAll('[data-autohide="1"]').forEach(function(c){c.style.display='none'});
-      applyVisibility();
       var now=new Date();var ym=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
       if(qs('salaryMonth'))qs('salaryMonth').value=ym;
       bootstrapPermission(function(){ setTimeout(loadAll,120); });
@@ -1962,5 +2131,131 @@
     init();
   </script>
   <script src="ang-frontend-api.js"></script>
+
+  <script>
+    /* ANG_0603_ADMIN_DAY_NIGHT_AND_PERMISSION_PATCH */
+    (function(){
+      var THEME_KEY='ang-hr-theme';
+      var LEGACY_KEY='ang_99_hr_daynight_mode';
+
+      function normalizeTheme(value){
+        value=String(value||'').trim().toLowerCase();
+        if(value==='dark'||value==='night'||value==='暗夜')return'dark';
+        if(value==='light'||value==='day'||value==='日光')return'light';
+        return'';
+      }
+
+      function nativeBridge(){
+        return window.ANGNative||window.ANGHRApp||window.AndroidBridge||window.AndroidNative||window.WebAppInterface||null;
+      }
+
+      function applyNativeAppearance(mode,fullReplace){
+        var dayNight=mode==='dark'?'night':'day';
+        var payload={
+          mode:dayNight,
+          theme:mode,
+          fullReplace:!!fullReplace,
+          replaceAppIcon:!!fullReplace,
+          replaceOpeningVideo:!!fullReplace,
+          restartApp:!!fullReplace,
+          transitionVideo:mode==='light'?'night_to_day':'day_to_night'
+        };
+        var bridge=nativeBridge();
+        try{
+          if(bridge&&typeof bridge.applyAppearanceMode==='function'){bridge.applyAppearanceMode(dayNight,!!fullReplace);return true;}
+          if(bridge&&typeof bridge.applyDayNightMode==='function'){bridge.applyDayNightMode(JSON.stringify(payload));return true;}
+          if(window.webkit&&window.webkit.messageHandlers&&window.webkit.messageHandlers.ANGAppearance){window.webkit.messageHandlers.ANGAppearance.postMessage(payload);return true;}
+        }catch(e){}
+        try{window.dispatchEvent(new CustomEvent('ang-theme-full-replace',{detail:payload}));}catch(e2){}
+        return false;
+      }
+
+      function applyTheme(mode,save){
+        mode=normalizeTheme(mode)||'dark';
+        if(document.body)document.body.dataset.theme=mode;
+        var btn=document.getElementById('angDayNightToggle');
+        if(btn)btn.setAttribute('aria-pressed',String(mode==='dark'));
+        if(save){
+          try{
+            localStorage.setItem(THEME_KEY,mode);
+            localStorage.setItem(LEGACY_KEY,mode==='dark'?'night':'day');
+          }catch(e){}
+        }
+      }
+
+      function askFullReplace(nextMode){
+        var label=nextMode==='dark'?'暗夜':'日光';
+        if(window.Swal&&typeof Swal.fire==='function'){
+          return Swal.fire({
+            title:'完整更換嗎？',
+            text:'要切換成'+label+'模式，是否同步更換 App icon 與開場影片？',
+            icon:'question',
+            showCancelButton:true,
+            showDenyButton:true,
+            confirmButtonText:'完整更換',
+            denyButtonText:'只切頁面',
+            cancelButtonText:'取消'
+          }).then(function(res){
+            if(res.isConfirmed)return'full';
+            if(res.isDenied)return'page';
+            return'cancel';
+          });
+        }
+        return Promise.resolve(window.confirm('要完整更換 App icon 與開場影片嗎？')?'full':'page');
+      }
+
+      window.angApplyDayNight=function(mode,save){applyTheme(mode,save!==false);};
+      window.angToggleDayNight=function(){
+        var current=normalizeTheme((document.body&&document.body.dataset&&document.body.dataset.theme)||'')||normalizeTheme(localStorage.getItem(THEME_KEY))||'dark';
+        var next=current==='dark'?'light':'dark';
+        askFullReplace(next).then(function(choice){
+          if(choice==='cancel')return;
+          applyTheme(next,true);
+          if(choice==='full')applyNativeAppearance(next,true);
+        });
+      };
+
+      function roleLower(){
+        try{
+          var role=String(window.UROLE||localStorage.getItem('ang_user_role')||localStorage.getItem('ang_employee_role')||'').trim().toLowerCase();
+          if(!role && String(window.UID||'').trim().toUpperCase()==='ANG8963')role='creator';
+          if(role==='administrator'||role==='管理員'||role==='系統管理員')role='admin';
+          if(role==='主管'||role==='店長'||role==='經理')role='manager';
+          if(role==='創辦者'||role==='創建者'||role==='建立者'||role==='最高權限'||role==='platform_creator')role='creator';
+          return role;
+        }catch(e){return'';}
+      }
+
+      window.angHasManagerOrAbove=function(){
+        var r=roleLower();
+        return ['creator','admin','manager'].indexOf(r)>-1;
+      };
+
+      // 修正：若 bootstrap 之前角色還沒回來，不要永久卡在無權限；後端快照回來後會再套用。
+      var oldApplyVisibility=window.applyVisibility;
+      if(typeof oldApplyVisibility==='function'){
+        window.applyVisibility=function(){
+          try{return oldApplyVisibility.apply(this,arguments);}
+          finally{
+            try{
+              var r=roleLower();
+              if(r&&r!=='employee'){
+                var page=document.getElementById('page-noperm');
+                if(page&&page.classList.contains('active')&&typeof window.navTo==='function')window.navTo('home');
+              }
+            }catch(e){}
+          }
+        };
+      }
+
+      function init(){
+        var saved=normalizeTheme((new URLSearchParams(location.search)).get('theme'))||normalizeTheme(localStorage.getItem(THEME_KEY))||normalizeTheme(localStorage.getItem(LEGACY_KEY))||'dark';
+        applyTheme(saved,false);
+      }
+      if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);
+      else init();
+    })();
+  </script>
+
 </body>
 </html>
