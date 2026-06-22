@@ -1126,13 +1126,14 @@
       if(!role && empId === 'ANG8963') role = 'creator';
       if(role === 'administrator' || role === '管理員' || role === '系統管理員') role = 'admin';
       if(role === '主管' || role === '店長' || role === '經理') role = 'manager';
-      if(role === '創辦者' || role === '創建者' || role === '建立者' || role === '最高權限' || role === 'platform_creator') role = 'creator';
+      if(role === 'creator' || role === '創建者' || role === '最高權限' || role === 'platform_creator' || role === 'platform_owner' || role === 'system_owner' || role === '平台擁有者' || role === '平台最高權限' || role === '平台總管理' || role === '平台方') role = 'creator';
+      if(role === 'owner' || role === '擁有者' || role === '公司擁有者' || role === 'company_owner' || role === '公司負責人' || role === '負責人' || role === '創辦者' || role === '建立者' || role === '總管理') role = 'owner';
       return role;
     }
 
     function employeeCanEnterAdmin(){
       var role = getEmployeeEffectiveRoleForRoute();
-      return ['creator','admin','manager'].indexOf(role) > -1;
+      return ['creator','owner','admin','manager'].indexOf(role) > -1;
     }
 
     function handleEmployeeHomeClick(){
@@ -2672,7 +2673,7 @@
       }
       function userCanAdmin(){
         var role = safeText((window.APP_CTX && APP_CTX.role) || window.UROLE || getParam('role') || localStorage.getItem('ang_user_role') || localStorage.getItem('ang_employee_role') || localStorage.getItem('ang_role') || '').toLowerCase();
-        return ['creator','admin','manager'].indexOf(role) > -1;
+        return ['creator','owner','admin','manager'].indexOf(role) > -1;
       }
       function adminEmployeeToggleFromHome(){
         var isAdminPage = safeText((window.APP_CTX && APP_CTX.page) || getParam('page')).toLowerCase() === 'admin';

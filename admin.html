@@ -91,6 +91,8 @@
     .role-level-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
     .role-level-left{display:flex;align-items:center;gap:10px;min-width:0}
     .role-icon{width:42px;height:42px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:var(--emp-gradient);color:#fff;box-shadow:0 8px 18px rgba(var(--emp-rgb),.18);font-size:18px;flex:0 0 auto}
+    .role-icon i{font-size:19px;line-height:1;display:block}
+    .role-symbol{display:inline-flex;align-items:center;justify-content:center;width:1em;height:1em;font-size:20px;line-height:1;color:#fff;font-weight:1000;text-shadow:0 1px 2px rgba(0,0,0,.16)}
     .role-name{font-size:15px;font-weight:900;line-height:1.2}
     .role-desc{font-size:11px;color:var(--muted);font-weight:800;line-height:1.35;margin-top:2px}
     .role-tag{display:inline-flex;align-items:center;border-radius:999px;padding:6px 10px;font-size:10px;font-weight:900;background:#fff7ed;color:var(--emp-deep);border:1px solid rgba(var(--emp-rgb),.15);white-space:nowrap}
@@ -123,8 +125,8 @@
 
     /* === L型圓形放射導航｜左三上三六顆版 === */
     .fab-wrap{
-      position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom));z-index:1200;
-      width:264px;height:266px;pointer-events:none;
+      position:fixed;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:1200;
+      width:222px;height:224px;pointer-events:none;
     }
     .fab-wrap *{pointer-events:auto}
     .fab-wrap.is-collapsed .fab-sat{
@@ -137,8 +139,8 @@
     }
     .fab-home{
       position:absolute;right:0;bottom:0;
-      width:68px;height:68px;border:none;border-radius:999px;
-      background:var(--emp-gradient);color:#fff;font-size:24px;
+      width:56px;height:56px;border:none;border-radius:999px;
+      background:var(--emp-gradient);color:#fff;font-size:20px;
       box-shadow:0 10px 28px rgba(var(--emp-rgb),.35);
       cursor:pointer;display:flex;align-items:center;justify-content:center;
       transition:transform .18s ease,box-shadow .18s ease;z-index:10;
@@ -159,20 +161,20 @@
     .fab-sat span{line-height:1;font-weight:900;white-space:nowrap}
     .fab-sat.active{background:var(--emp-gradient);color:#fff;box-shadow:0 8px 22px rgba(var(--emp-rgb),.28)}
     .fab-sat.locked{opacity:.48;filter:grayscale(.35)}
-    .fab-sat.sat-creator{right:82px!important;left:auto!important;bottom:8px!important;width:56px!important;height:56px!important}
-    .fab-sat.sat-admin{right:144px!important;left:auto!important;bottom:11px!important;width:50px!important;height:50px!important}
-    .fab-sat.sat-manager{right:198px!important;left:auto!important;bottom:14px!important;width:44px!important;height:44px!important}
-    .fab-sat.sat-personnel{right:8px!important;left:auto!important;bottom:82px!important;width:56px!important;height:56px!important}
-    .fab-sat.sat-salary{right:11px!important;left:auto!important;bottom:144px!important;width:50px!important;height:50px!important}
-    .fab-sat.sat-data{right:14px!important;left:auto!important;bottom:198px!important;width:44px!important;height:44px!important}
-    .fab-sat.sat-creator i,.fab-sat.sat-personnel i{font-size:16px!important}.fab-sat.sat-creator span,.fab-sat.sat-personnel span{font-size:8px!important}
-    .fab-sat.sat-admin i,.fab-sat.sat-salary i{font-size:15px!important}.fab-sat.sat-admin span,.fab-sat.sat-salary span{font-size:8px!important}
-    .fab-sat.sat-manager i,.fab-sat.sat-data i{font-size:13px!important}.fab-sat.sat-manager span,.fab-sat.sat-data span{font-size:7px!important}
+    .fab-sat.sat-creator{right:68px!important;left:auto!important;bottom:6px!important;width:48px!important;height:48px!important}
+    .fab-sat.sat-admin{right:120px!important;left:auto!important;bottom:8px!important;width:43px!important;height:43px!important}
+    .fab-sat.sat-manager{right:166px!important;left:auto!important;bottom:10px!important;width:38px!important;height:38px!important}
+    .fab-sat.sat-personnel{right:6px!important;left:auto!important;bottom:68px!important;width:48px!important;height:48px!important}
+    .fab-sat.sat-salary{right:8px!important;left:auto!important;bottom:120px!important;width:43px!important;height:43px!important}
+    .fab-sat.sat-data{right:10px!important;left:auto!important;bottom:166px!important;width:38px!important;height:38px!important}
+    .fab-sat.sat-creator i,.fab-sat.sat-personnel i{font-size:14px!important}.fab-sat.sat-creator span,.fab-sat.sat-personnel span{font-size:7px!important}
+    .fab-sat.sat-admin i,.fab-sat.sat-salary i{font-size:13px!important}.fab-sat.sat-admin span,.fab-sat.sat-salary span{font-size:7px!important}
+    .fab-sat.sat-manager i,.fab-sat.sat-data i{font-size:12px!important}.fab-sat.sat-manager span,.fab-sat.sat-data span{font-size:6px!important}
     .fab-badge{position:absolute;top:-2px;right:-2px;min-width:16px;height:16px;border-radius:999px;background:#ef4444;color:#fff;font-size:9px;font-weight:900;display:flex;align-items:center;justify-content:center;padding:0 4px}
     .fab-badge:empty{display:none}
     @media(max-width:360px){
-      .fab-wrap{right:8px!important;width:248px!important;height:250px!important}
-      .fab-sat.sat-creator{right:76px!important}.fab-sat.sat-admin{right:136px!important}.fab-sat.sat-manager{right:188px!important}
+      .fab-wrap{right:7px!important;width:214px!important;height:216px!important}
+      .fab-sat.sat-creator{right:64px!important}.fab-sat.sat-admin{right:113px!important}.fab-sat.sat-manager{right:156px!important}
     }
 
     @media(max-width:390px){.safe{padding:6px 6px 0}.card{padding:12px;border-radius:20px}.hello{font-size:20px}}
@@ -404,37 +406,45 @@
       </div>
 
       <div class="card">
-        <div class="mini-row"><h3>權限圖標</h3><span class="badge">階層</span></div>
-        <div class="perm-note">Creator ＞ Admin ＞ Manager ＞ Employee。首頁在員工頁再按一次會切到管理頁；管理頁再按首頁會回員工頁。</div>
+        <div class="mini-row"><h3>權限功能分類</h3><span class="badge">Permission</span></div>
+        <div class="perm-note">角色只當預設權限包；實際顯示與操作改看 permission。Home / Review / Settings / People / Salary / Data 依權限開放。</div>
         <div class="role-level-grid">
           <div class="role-level-card">
             <div class="role-level-head">
-              <div class="role-level-left"><div class="role-icon"><i class="fa-solid fa-crown"></i></div><div><div class="role-name">Creator</div><div class="role-desc">最高權限｜可使用全部功能</div></div></div>
-              <div class="role-tag">全部權限</div>
+              <div class="role-level-left"><div class="role-icon"><i class="fa-solid fa-crown" aria-hidden="true"></i></div><div><div class="role-name">Creator｜平台方</div><div class="role-desc">平台最高層級｜可建立 / 指派 Creator、Owner</div></div></div>
+              <div class="role-tag">平台最高</div>
             </div>
-            <div class="role-features"><span class="role-chip">Manager 全部</span><span class="role-chip">Admin 全部</span><span class="role-chip">權限管理</span><span class="role-chip">班別設定</span><span class="role-chip">審核流程</span><span class="role-chip">系統設定</span></div>
+            <div class="role-features"><span class="role-chip">Owner 全部</span><span class="role-chip">平台級管理</span><span class="role-chip">建立 Creator</span><span class="role-chip">指派 Owner</span><span class="role-chip">全部權限</span></div>
           </div>
           <div class="role-arrow">↓</div>
           <div class="role-level-card">
             <div class="role-level-head">
-              <div class="role-level-left"><div class="role-icon"><i class="fa-solid fa-shield-halved"></i></div><div><div class="role-name">Admin</div><div class="role-desc">系統管理層｜包含 Manager 權限</div></div></div>
-              <div class="role-tag">11 顆功能</div>
+              <div class="role-level-left"><div class="role-icon"><i class="fa-solid fa-user-tie" aria-hidden="true"></i></div><div><div class="role-name">Owner｜公司擁有者</div><div class="role-desc">公司內最高權限｜可管理公司全部功能</div></div></div>
+              <div class="role-tag">公司最高</div>
             </div>
-            <div class="role-features"><span class="role-chip">排班發布</span><span class="role-chip">請假審核</span><span class="role-chip">資料接收審核</span><span class="role-chip">通知發布</span><span class="role-chip">留言審核</span><span class="role-chip">打卡管理</span><span class="role-chip">補打卡審核</span><span class="role-chip">資料修改</span><span class="role-chip">薪資審核</span><span class="role-chip">提報期限設定</span><span class="role-chip">Logo / Title 設定</span></div>
+            <div class="role-features"><span class="role-chip">Admin 全部</span><span class="role-chip">設定 Owner</span><span class="role-chip">權限管理</span><span class="role-chip">系統設定</span><span class="role-chip">公司資料</span></div>
           </div>
           <div class="role-arrow">↓</div>
           <div class="role-level-card">
             <div class="role-level-head">
-              <div class="role-level-left"><div class="role-icon"><i class="fa-solid fa-users-gear"></i></div><div><div class="role-name">Manager</div><div class="role-desc">現場主管層｜包含一般員工功能</div></div></div>
-              <div class="role-tag">5 顆功能</div>
+              <div class="role-level-left"><div class="role-icon"><i class="fa-solid fa-user-shield" aria-hidden="true"></i></div><div><div class="role-name">Admin｜公司管理員</div><div class="role-desc">單一公司內管理員｜審核、人員、薪資、資料管理</div></div></div>
+              <div class="role-tag">公司管理</div>
             </div>
-            <div class="role-features"><span class="role-chip">排班發布</span><span class="role-chip">請假審核</span><span class="role-chip">資料接收審核</span><span class="role-chip">通知發布</span><span class="role-chip">留言審核</span></div>
+            <div class="role-features"><span class="role-chip">請假審核</span><span class="role-chip">補打卡審核</span><span class="role-chip">資料審核</span><span class="role-chip">留言審核</span><span class="role-chip">薪資審核</span><span class="role-chip">人員管理</span><span class="role-chip">薪資管理</span><span class="role-chip">資料歸檔</span><span class="role-chip">品牌設定</span><span class="role-chip">打卡位置</span><span class="role-chip">打卡寬限</span></div>
           </div>
           <div class="role-arrow">↓</div>
           <div class="role-level-card">
             <div class="role-level-head">
-              <div class="role-level-left"><div class="role-icon"><i class="fa-solid fa-user"></i></div><div><div class="role-name">Employee</div><div class="role-desc">一般員工｜日常使用功能</div></div></div>
-              <div class="role-tag">基礎功能</div>
+              <div class="role-level-left"><div class="role-icon"><i class="fa-solid fa-user-gear" aria-hidden="true"></i></div><div><div class="role-name">Manager｜主管</div><div class="role-desc">現場主管層｜審核與發布基礎管理</div></div></div>
+              <div class="role-tag">主管</div>
+            </div>
+            <div class="role-features"><span class="role-chip">請假審核</span><span class="role-chip">資料審核</span><span class="role-chip">留言審核</span><span class="role-chip">通知發布</span><span class="role-chip">排班發布</span></div>
+          </div>
+          <div class="role-arrow">↓</div>
+          <div class="role-level-card">
+            <div class="role-level-head">
+              <div class="role-level-left"><div class="role-icon"><i class="fa-solid fa-users" aria-hidden="true"></i></div><div><div class="role-name">Employee｜一般員工</div><div class="role-desc">一般員工｜不進 admin.html，只使用員工端</div></div></div>
+              <div class="role-tag">員工端</div>
             </div>
             <div class="role-features"><span class="role-chip">打卡</span><span class="role-chip">請假</span><span class="role-chip">排班查看</span><span class="role-chip">薪資查看</span><span class="role-chip">資料上傳</span></div>
           </div>
@@ -506,12 +516,12 @@
 
     </section>
 
-    <!-- ==================== Admin 管理頁 ==================== -->
+    <!-- ==================== Review 審核中心 ==================== -->
     <section id="page-admin" class="page">
       <div class="hero">
         <div class="hero-top">
-          <div><div class="hello" id="admHello">Admin 管理</div><div class="hello-sub">打卡、補卡審核、薪資審核、期限、品牌、歸檔</div></div>
-          <div style="display:flex;align-items:center;gap:8px"><div class="hero-chip" id="admChip">Admin</div><button class="btn-sm" onclick="loadAll()" style="background:rgba(255,255,255,.20);color:#fff;border:1px solid rgba(255,255,255,.25)">🔄 刷新</button></div>
+          <div><div class="hello" id="admHello">Review 審核中心</div><div class="hello-sub">請假、補打卡、上傳、留言、薪資審核</div></div>
+          <div style="display:flex;align-items:center;gap:8px"><div class="hero-chip" id="admChip">Review</div><button class="btn-sm" onclick="loadAll()" style="background:rgba(255,255,255,.20);color:#fff;border:1px solid rgba(255,255,255,.25)">🔄 刷新</button></div>
         </div>
       </div>
       <!-- ANG.lo HR System Deploy Version: 129 - Fix 3: stat-mini clickable scroll -->
@@ -570,6 +580,19 @@
       <!-- 通知 -->
       <div class="card"><div class="mini-row"><h3>通知發布</h3><span class="badge ok">管理</span></div><div id="admNoticeList"></div></div>
 
+
+
+    </section>
+
+    <!-- ==================== Settings 系統設定頁 ==================== -->
+    <section id="page-creator" class="page">
+      <div class="hero">
+        <div class="hero-top">
+          <div><div class="hello">Settings 系統設定</div><div class="hello-sub">選休規則、審核流程、班別、權限、品牌、打卡設定</div></div>
+          <div class="hero-chip">Settings</div>
+        </div>
+      </div>
+
       <!-- 選休規則 -->
       <div class="card">
         <div class="mini-row"><h3>選休規則</h3><span class="badge ok">永久套用</span></div>
@@ -598,20 +621,9 @@
         <button class="btn-main" style="margin-top:10px" onclick="savePreselectSettingsFromUI()">儲存選休規則</button>
       </div>
 
-    </section>
-
-    <!-- ==================== Creator 頁 ==================== -->
-    <section id="page-creator" class="page">
-      <div class="hero">
-        <div class="hero-top">
-          <div><div class="hello">Creator 管理</div><div class="hello-sub">審核流程、選休規則、班別、權限、系統</div></div>
-          <div class="hero-chip">Creator</div>
-        </div>
-      </div>
-
       <!-- 審核流程 -->
       <div class="card">
-        <div class="mini-row"><h3>審核流程設定</h3><span class="badge ok">Creator</span></div>
+        <div class="mini-row"><h3>審核流程設定</h3><span class="badge ok">settings.approver</span></div>
         <div class="check-row"><input type="checkbox" id="chkMultiLevel" checked><label for="chkMultiLevel">啟用多級審核</label></div>
         <label class="label">請假</label>
         <div class="check-row"><input type="checkbox" id="chkLeaveManager" checked><label>Manager</label></div>
@@ -633,7 +645,7 @@
 
       <!-- 班別設定 -->
       <div class="card">
-        <div class="mini-row"><h3>班別設定</h3><span class="badge ok">Creator</span></div>
+        <div class="mini-row"><h3>班別設定</h3><span class="badge ok">settings.shift</span></div>
         <div class="check-row"><input type="checkbox" id="chkMixedMode"><label for="chkMixedMode">啟用混合班（不固定班別）</label></div>
         <div id="shiftListBox"></div>
         <button class="btn-ghost" style="margin-bottom:10px" onclick="addShiftRow()">＋ 新增班別</button>
@@ -679,14 +691,15 @@
       <!-- 權限總覽 -->
       <div class="card">
         <div class="mini-row"><h3>權限管理</h3><span class="badge">總覽</span></div>
-        <div class="notice-item"><div class="item-title">Manager</div><div class="item-meta">排班、請假審核、資料審核、通知、留言</div></div>
-        <div class="notice-item"><div class="item-title">Admin</div><div class="item-meta">打卡、補卡審核、薪資審核、期限、品牌、歸檔</div></div>
-        <div class="notice-item"><div class="item-title">Creator</div><div class="item-meta">審核流程、選休規則、班別、權限、系統 + 全部功能</div></div>
+        <div class="notice-item"><div class="item-title">Creator｜平台方</div><div class="item-meta">平台最高層級；包含 Owner 全部權限，可建立或指派 Creator / Owner。</div></div>
+        <div class="notice-item"><div class="item-title">Owner｜公司擁有者</div><div class="item-meta">公司內最高權限；公司內全部功能，可指派 Owner，但不可指派 Creator。</div></div>
+        <div class="notice-item"><div class="item-title">Admin｜公司管理員</div><div class="item-meta">單一公司內管理員；審核、人員、薪資、資料、品牌、位置、寬限等公司管理功能。</div></div>
+        <div class="notice-item"><div class="item-title">Manager｜主管</div><div class="item-meta">現場主管層；請假審核、資料審核、留言審核、通知發布、排班發布。</div></div>
       </div>
 
       <!-- 分店打卡位置驗證設定 -->
       <div class="card">
-        <div class="mini-row"><h3>分店打卡位置驗證設定</h3><span class="badge ok">Creator</span></div>
+        <div class="mini-row"><h3>分店打卡位置驗證設定</h3><span class="badge ok">settings.location</span></div>
         <div class="notice-item" style="margin-bottom:10px">
           <div class="item-title">這裡儲存的是「分店位置」</div>
           <div class="item-meta">有分店ID就存該分店位置；沒有分店ID就存「總店」位置。員工打卡時會依自己的人員資料「分店ID」驗證。</div>
@@ -710,12 +723,12 @@
       </div>
     </section>
 
-    <!-- ==================== Manager 頁 ==================== -->
+    <!-- ==================== Publish 發布中心頁 ==================== -->
     <section id="page-manager" class="page">
       <div class="hero">
         <div class="hero-top">
-          <div><div class="hello">Manager 管理</div><div class="hello-sub">排班、請假審核、資料審核、通知、留言</div></div>
-          <div style="display:flex;align-items:center;gap:8px"><div class="hero-chip">Manager</div><button class="btn-sm" onclick="loadAll()" style="background:rgba(255,255,255,.20);color:#fff;border:1px solid rgba(255,255,255,.25)">🔄 刷新</button></div>
+          <div><div class="hello">Publish 發布中心</div><div class="hello-sub">通知發布、排班發布、主管審核備援</div></div>
+          <div style="display:flex;align-items:center;gap:8px"><div class="hero-chip">Publish</div><button class="btn-sm" onclick="loadAll()" style="background:rgba(255,255,255,.20);color:#fff;border:1px solid rgba(255,255,255,.25)">🔄 刷新</button></div>
         </div>
       </div>
       <div class="stat-grid">
@@ -763,7 +776,7 @@
 
         <div class="field-row">
           <div><label class="label">員編</label><input type="text" id="peopleEmpId" placeholder="空白會自動產生，例如 ANG0607"></div>
-          <div><label class="label">角色</label><select id="peopleRole"><option value="Employee">Employee</option><option value="Manager">Manager</option><option value="Admin">Admin</option><option value="Creator">Creator</option></select></div>
+          <div><label class="label">角色</label><select id="peopleRole"><option value="Employee">Employee</option><option value="Manager">Manager</option><option value="Admin">Admin</option><option value="Owner">Owner</option><option value="Creator">Creator</option></select></div>
         </div>
         <div class="field-row">
           <div><label class="label">姓名</label><input type="text" id="peopleName" placeholder="例如：米米"></div>
@@ -812,10 +825,10 @@
         </div>
       </div>
       <div class="card">
-        <div class="mini-row"><h3>薪資快捷入口</h3><span class="badge ok">Admin</span></div>
+        <div class="mini-row"><h3>薪資快捷入口</h3><span class="badge ok">salary.*</span></div>
         <div class="notice-item">
-          <div class="item-title">薪資管理目前集中在 Home 與 Admin 審核區</div>
-          <div class="item-meta">按下方按鈕可快速跳到原本的薪資設定或薪資審核，不會影響既有函式與欄位 ID。</div>
+          <div class="item-title">薪資管理目前集中在 Home 與 Review 審核區</div>
+          <div class="item-meta">按下方按鈕可快速跳到薪資設定或薪資審核，不會影響既有函式與欄位 ID。</div>
         </div>
         <div class="tool-grid">
           <button class="btn-main" onclick="navTo('home');setTimeout(function(){window.scrollTo({top:0,behavior:'smooth'})},50)">薪資設定</button>
@@ -834,9 +847,9 @@
 
   <!-- ===== L 型圓形導航｜左三上三六顆版 ===== -->
   <div class="fab-wrap is-collapsed" id="fabWrap">
-    <button class="fab-sat sat-creator" id="fab-creator" onclick="navTo('creator')" title="Creator"><i class="fa-solid fa-crown"></i><span>Creator</span></button>
-    <button class="fab-sat sat-admin" id="fab-admin" onclick="navTo('admin')" title="Admin"><i class="fa-solid fa-shield-halved"></i><span>Admin</span><div class="fab-badge" id="badgeAdm"></div></button>
-    <button class="fab-sat sat-manager" id="fab-manager" onclick="navTo('manager')" title="Manager"><i class="fa-solid fa-users-gear"></i><span>Manager</span><div class="fab-badge" id="badgeMgr"></div></button>
+    <button class="fab-sat sat-creator" id="fab-creator" onclick="navTo('creator')" title="Settings"><i class="fa-solid fa-gear"></i><span>Settings</span></button>
+    <button class="fab-sat sat-admin" id="fab-admin" onclick="navTo('admin')" title="Review"><i class="fa-solid fa-clipboard-check"></i><span>Review</span><div class="fab-badge" id="badgeAdm"></div></button>
+    <button class="fab-sat sat-manager" id="fab-manager" onclick="navTo('manager')" title="Publish"><i class="fa-solid fa-bullhorn"></i><span>Publish</span><div class="fab-badge" id="badgeMgr"></div></button>
     <button class="fab-sat sat-personnel" id="fab-personnel" onclick="navTo('personnel')" title="People"><i class="fa-solid fa-users"></i><span>People</span></button>
     <button class="fab-sat sat-salary" id="fab-salary" onclick="navTo('salary')" title="Salary"><i class="fa-solid fa-money-check-dollar"></i><span>Salary</span></button>
     <button class="fab-sat sat-data" id="fab-data" onclick="navTo('data')" title="Data"><i class="fa-solid fa-folder-open"></i><span>Data</span></button>
@@ -884,12 +897,15 @@
     var UID=String(CTX.id||'').trim().toUpperCase();
     var UTOKEN=String(CTX.token||'').trim();
     var UROLE=normalizeRole(CTX.role||'Employee', UID);
+    var USER_PERMISSIONS=[];
+    var USER_PERMISSION_MAP={};
     if(UID)localStorage.setItem('ang_employee_id',UID);
     if(UTOKEN)localStorage.setItem('ang_employee_token',UTOKEN);
     if(UROLE){localStorage.setItem('ang_user_role',UROLE);localStorage.setItem('ang_employee_role',UROLE);}
     if(CTX.companyId)localStorage.setItem('ang_company_id',CTX.companyId);
     if(CTX.deviceId)localStorage.setItem('ang_device_id',CTX.deviceId);
     if(CTX.appMode)localStorage.setItem('ang_app_mode',CTX.appMode);
+    try{var __storedPerms=JSON.parse(localStorage.getItem('ang_user_permissions')||'[]');if(Array.isArray(__storedPerms)&&__storedPerms.length){USER_PERMISSIONS=__storedPerms;USER_PERMISSION_MAP={};__storedPerms.forEach(function(p){USER_PERMISSION_MAP[normalizePermissionCode_?normalizePermissionCode_(p):String(p).toLowerCase()]=true;});}}catch(e){}
     var logoDataUrl='';
     var mgrData={},admData={},crtData={};
     var currentTopSystem={};
@@ -984,7 +1000,8 @@
       var empId=String(id||UID||'').trim().toUpperCase();
       var s=String(role||'').trim().toLowerCase();
       if(empId==='ANG8963' && !s) return 'Creator';
-      if(s==='creator'||s==='owner'||s==='superadmin'||s==='super_admin'||s==='platform_creator'||s==='最高權限'||s==='創辦者'||s==='創建者'||s==='建立者')return'Creator';
+      if(s==='creator'||s==='platform_creator'||s==='platform_owner'||s==='system_owner'||s==='superowner'||s==='super_owner'||s==='root'||s==='root_admin'||s==='superadmin'||s==='super_admin'||s==='最高權限'||s==='最高擁有者'||s==='平台擁有者'||s==='平台最高權限'||s==='平台總管理'||s==='平台方'||s==='創建者')return'Creator';
+      if(s==='owner'||s==='company_owner'||s==='companyowner'||s==='擁有者'||s==='公司擁有者'||s==='公司負責人'||s==='負責人'||s==='業主'||s==='創辦者'||s==='建立者'||s==='總管理')return'Owner';
       if(s==='admin'||s==='administrator'||s==='管理員'||s==='系統管理員')return'Admin';
       if(s==='manager'||s==='主管'||s==='店長'||s==='經理')return'Manager';
       if(s==='employee'||s==='staff'||s==='member'||s==='員工'||s==='一般員工')return'Employee';
@@ -993,7 +1010,8 @@
 
     function roleRank(role){
       var r=String(normalizeRole(role)||'Employee').toLowerCase();
-      if(r==='creator')return 4;
+      if(r==='creator')return 5;
+      if(r==='owner')return 4;
       if(r==='admin')return 3;
       if(r==='manager')return 2;
       if(r==='employee')return 1;
@@ -1016,6 +1034,7 @@
       if(r.company_id){CTX.companyId=String(r.company_id).trim().toUpperCase();try{localStorage.setItem('ang_company_id',CTX.companyId);localStorage.setItem('ang_hr_active_company_id',CTX.companyId);localStorage.setItem('company_id',CTX.companyId);}catch(e){}}
       if(r.device_id){CTX.deviceId=String(r.device_id).trim();try{localStorage.setItem('ang_device_id',CTX.deviceId);localStorage.setItem('ang_hr_device_id',CTX.deviceId);}catch(e){}}
       if(r.role)setRuntimeRole(r.role,true);
+      setRuntimePermissions(r.permissions||r.permission_codes||r.permissionList||r.permission_list||null);
       if(r.companies){try{localStorage.setItem('ang_company_memberships',JSON.stringify(r.companies));}catch(e){}}
       return true;
     }
@@ -1048,7 +1067,7 @@
     }
 
     function getPageLabel_(page){
-      var map={home:'主頁',admin:'管理中心',creator:'Creator',manager:'Manager',data:'資料夾',noperm:'無權限'};
+      var map={home:'主頁',admin:'Review 審核中心',creator:'Settings 系統設定',manager:'Publish 發布中心',personnel:'People 人員',salary:'Salary 薪資',data:'Data 資料夾',noperm:'無權限'};
       return map[page]||'管理中心';
     }
 
@@ -1196,6 +1215,7 @@
       var wrap=qs('fabWrap');
       if(!wrap)return;
       wrap.classList.toggle('is-collapsed',!expanded);
+      window.__angFabLastOpenAt = expanded ? Date.now() : 0;
     }
 
     function isFabExpanded(){
@@ -1204,29 +1224,51 @@
     }
 
     function hasAdminHomeSwitchPermission_(){
-      var userRole=String(UROLE||'').trim().toLowerCase();
-      return (typeof angHasManagerOrAbove==='function'&&angHasManagerOrAbove())||['creator','admin','manager'].indexOf(userRole)>-1;
+      return getAllowed().indexOf('home')>-1;
     }
 
     function installFabAutoCollapse(){
       if(window.__angFabAutoCollapseBound)return;
       window.__angFabAutoCollapseBound=true;
-      document.addEventListener('pointerdown',function(evt){
+
+      function shouldIgnoreFabAutoClose_(target){
+        if(!target)return false;
+        if(target.closest&&target.closest('#fabWrap'))return true;
+        return false;
+      }
+
+      function collapseFabByNextTap_(evt){
         var wrap=qs('fabWrap');
         if(!wrap||wrap.classList.contains('is-collapsed'))return;
-        var target=evt.target;
-        if(wrap.contains(target))return;
-        if(target&&target.closest&&target.closest('.swal2-container,.ang-company-switcher,.ang-company-switcher-backdrop'))return;
+        if(Date.now()-(window.__angFabLastOpenAt||0)<90)return;
+        var target=evt&&evt.target;
+        if(shouldIgnoreFabAutoClose_(target))return;
         setFabExpanded(false);
-      },true);
+      }
+
+      document.addEventListener('pointerdown',collapseFabByNextTap_,true);
+      document.addEventListener('touchstart',collapseFabByNextTap_,true);
+      document.addEventListener('click',collapseFabByNextTap_,true);
       document.addEventListener('keydown',function(evt){
         if(evt.key==='Escape')setFabExpanded(false);
       },false);
     }
 
+    function getActiveAdminPage_(){
+      try{
+        var active=document.querySelector('.page.active');
+        if(active&&active.id&&active.id.indexOf('page-')===0){
+          return String(active.id).replace(/^page-/,'')||'home';
+        }
+      }catch(e){}
+      return String(currentPage||'home').toLowerCase();
+    }
+
     function handleHomeClick(){
       var wrap=qs('fabWrap');
       var wasCollapsed=!wrap||wrap.classList.contains('is-collapsed');
+      var activePage=getActiveAdminPage_();
+      currentPage=activePage||currentPage||'home';
       var hb=qs('fab-home');
       if(hb){
         hb.classList.add('swap');
@@ -1234,22 +1276,22 @@
       }
 
       // Admin 頁 Home 鍵固定兩段式：
-      // 1. 不論目前在 Home 或其他管理分頁，第一次按 Home 只展開六顆導航。
+      // 1. 目前在任何管理分頁，第一次按 Home 只展開功能導航。
       // 2. 已展開時再按 Home：
-      //    - 如果目前在 Admin Home，切回 Employee Home。
-      //    - 如果目前在其他管理分頁，回 Admin Home。
+      //    - 如果目前畫面就是 Admin Home，立刻切回 Employee Home。
+      //    - 如果目前畫面是其他管理分頁，回 Admin Home。
+      // 注意：判斷 Home 不只看 currentPage，會同步讀取 .page.active，避免狀態不同步造成第二下不跳 Employee。
       if(wasCollapsed){
         setFabExpanded(true);
         return;
       }
 
       setFabExpanded(false);
-      if(currentPage==='home'){
-        if(hasAdminHomeSwitchPermission_()){
-          hardGo('employee');
-          return;
-        }
-        window.scrollTo({top:0,behavior:'smooth'});
+      activePage=getActiveAdminPage_();
+      currentPage=activePage||currentPage||'home';
+
+      if(activePage==='home'){
+        hardGo('employee');
         return;
       }
 
@@ -1261,20 +1303,111 @@
       return String(UROLE||'').trim().toLowerCase();
     }
 
-    function getAllowed(){
-      var r=getRoleKey();
-      if(r==='creator')return['home','admin','creator','manager','personnel','salary','data'];
-      if(r==='admin')return['home','admin','manager','personnel','salary','data'];
-      if(r==='manager')return['home','manager','data'];
+    function normalizePermissionCode_(v){
+      return String(v||'').trim().toLowerCase().replace(/\s+/g,'');
+    }
+
+    function splitPermissionInput_(input){
+      if(!input)return[];
+      if(Array.isArray(input))return input;
+      if(typeof input==='object'){
+        var out=[];
+        Object.keys(input).forEach(function(k){
+          var val=input[k];
+          if(val===true||val==='true'||val===1||val==='1'||val==='是'||val==='yes')out.push(k);
+          else if(Array.isArray(val))val.forEach(function(x){out.push(String(k)+'.'+String(x));});
+        });
+        return out;
+      }
+      return String(input||'').split(/[\n,;，；、|｜]+/);
+    }
+
+    function permissionDefaultsByRole_(role){
+      var r=String(normalizeRole(role)||'').trim().toLowerCase();
+      if(r==='creator')return['*'];
+      if(r==='owner')return['*'];
+      if(r==='admin')return[
+        'review.*','people.*','salary.*','data.*','publish.notice','publish.schedule'
+      ];
+      if(r==='manager')return[
+        'review.leave','review.upload','review.message','publish.notice','publish.schedule','data.drive'
+      ];
       return[];
+    }
+
+    function setRuntimePermissions(perms){
+      var list=splitPermissionInput_(perms).map(normalizePermissionCode_).filter(Boolean);
+      if(!list.length)list=permissionDefaultsByRole_(UROLE);
+      USER_PERMISSIONS=list;
+      USER_PERMISSION_MAP={};
+      list.forEach(function(p){USER_PERMISSION_MAP[p]=true;});
+      try{localStorage.setItem('ang_user_permissions',JSON.stringify(list));}catch(e){}
+    }
+
+    function getRuntimePermissions(){
+      if(!USER_PERMISSIONS||!USER_PERMISSIONS.length)setRuntimePermissions(null);
+      return USER_PERMISSIONS||[];
+    }
+
+    function hasPerm(code){
+      code=normalizePermissionCode_(code);
+      if(!code)return false;
+      var list=getRuntimePermissions();
+      if(USER_PERMISSION_MAP['*'])return true;
+      if(USER_PERMISSION_MAP[code])return true;
+      var head=code.split('.')[0];
+      if(head&&USER_PERMISSION_MAP[head+'.*'])return true;
+      return list.some(function(p){
+        p=normalizePermissionCode_(p);
+        if(p==='*'||p===code)return true;
+        if(p.slice(-2)==='.*')return code.indexOf(p.slice(0,-1))===0;
+        return false;
+      });
+    }
+
+    function hasAnyPerm(list){
+      return (list||[]).some(function(p){return hasPerm(p);});
+    }
+
+    function getAllowed(){
+      setRuntimePermissions(USER_PERMISSIONS&&USER_PERMISSIONS.length?USER_PERMISSIONS:null);
+      var allowed=[];
+      if(hasAnyPerm(['review.*','settings.*','people.*','salary.*','data.*','publish.*','review.leave','review.clockfix','review.upload','review.message','review.salary','settings.preselect','settings.approver','settings.shift','settings.clock_grace','settings.brand','settings.location','people.view','salary.setting','data.drive','publish.notice','publish.schedule']))allowed.push('home');
+      if(hasAnyPerm(['review.*','review.leave','review.clockfix','review.upload','review.message','review.salary']))allowed.push('admin');
+      if(hasAnyPerm(['settings.*','settings.preselect','settings.approver','settings.shift','settings.clock_grace','settings.brand','settings.location','settings.permission']))allowed.push('creator');
+      if(hasAnyPerm(['publish.*','publish.notice','publish.schedule']))allowed.push('manager');
+      if(hasAnyPerm(['people.*','people.view','people.create','people.edit','people.disable','people.role','people.permission','people.bind','people.reset_device']))allowed.push('personnel');
+      if(hasAnyPerm(['salary.*','salary.setting','salary.calculate','salary.adjust','salary.publish','salary.export','review.salary']))allowed.push('salary');
+      if(hasAnyPerm(['data.*','data.archive','data.export','data.drive']))allowed.push('data');
+      return allowed;
+    }
+
+    function getFabPageConfigs_(){
+      return [
+        {page:'admin',id:'fab-admin',label:'Review',perms:['review.*','review.leave','review.clockfix','review.upload','review.message','review.salary']},
+        {page:'creator',id:'fab-creator',label:'Settings',perms:['settings.*','settings.preselect','settings.approver','settings.shift','settings.clock_grace','settings.brand','settings.location','settings.permission']},
+        {page:'manager',id:'fab-manager',label:'Publish',perms:['publish.*','publish.notice','publish.schedule']},
+        {page:'personnel',id:'fab-personnel',label:'People',perms:['people.*','people.view','people.create','people.edit','people.disable','people.role','people.permission','people.bind','people.reset_device']},
+        {page:'salary',id:'fab-salary',label:'Salary',perms:['salary.*','salary.setting','salary.calculate','salary.adjust','salary.publish','salary.export','review.salary']},
+        {page:'data',id:'fab-data',label:'Data',perms:['data.*','data.archive','data.export','data.drive']}
+      ];
+    }
+
+    function getFabPositionClasses_(){
+      return ['sat-creator','sat-admin','sat-manager','sat-personnel','sat-salary','sat-data'];
+    }
+
+    function stripFabPositionClasses_(el){
+      if(!el)return;
+      getFabPositionClasses_().forEach(function(cls){el.classList.remove(cls);});
     }
 
     function getPageLabel(page){
       var map={
         home:['ANG.lo Engine','主頁'],
-        admin:['ANG.lo Engine','Admin 管理中心'],
-        creator:['ANG.lo Engine','Creator 管理'],
-        manager:['ANG.lo Engine','Manager 管理'],
+        admin:['ANG.lo Engine','Review 審核中心'],
+        creator:['ANG.lo Engine','Settings 系統設定'],
+        manager:['ANG.lo Engine','Publish 發布中心'],
         personnel:['ANG.lo Engine','People 人員'],
         salary:['ANG.lo Engine','Salary 薪資'],
         data:['ANG.lo Engine','Data 資料夾'],
@@ -1291,8 +1424,10 @@
       var allowHome=a.indexOf('home')>-1;
       if(page==='home'){
         if(!allowHome)page='noperm';
-      }else if(a.indexOf(page)===-1){
-        page='noperm';
+      }else if(page!=='noperm'&&a.indexOf(page)===-1){
+        setFabExpanded(false);
+        warn('你沒有此功能權限');
+        return false;
       }
 
       currentPage=page;
@@ -1307,22 +1442,36 @@
 
       // 點選導航項目完成後自動收回 FAB 選單。
       setFabExpanded(false);
+      return true;
     }
 
     function applyVisibility(){
       var a=getAllowed();
-      var ids=['creator','admin','manager','personnel','salary','data'];
+      var configs=getFabPageConfigs_();
+      var positionClasses=getFabPositionClasses_();
+      var visibleIndex=0;
 
-      // 六顆按鈕固定顯示；沒有權限的按鈕只淡化，點擊後仍會進無權限頁，不再變成只剩兩顆。
-      ids.forEach(function(id){
-        var e=qs('fab-'+id);
+      // 只顯示「目前使用者有權限進入」的功能按鈕，並依功能權限順序重新排列，不留空洞。
+      configs.forEach(function(cfg){
+        var e=qs(cfg.id);
         if(!e)return;
-        e.classList.remove('hidden');
-        e.classList.toggle('locked',a.indexOf(id)===-1);
+        e.classList.remove('active','locked');
+        stripFabPositionClasses_(e);
+        if(a.indexOf(cfg.page)>-1){
+          e.classList.remove('hidden');
+          e.classList.add(positionClasses[visibleIndex]||positionClasses[positionClasses.length-1]);
+          visibleIndex++;
+        }else{
+          e.classList.add('hidden');
+        }
       });
 
       if(a.indexOf('home')>-1){
-        navTo('home');
+        if(currentPage&&currentPage!=='noperm'&&currentPage!=='home'&&a.indexOf(currentPage)>-1){
+          navTo(currentPage);
+        }else{
+          navTo('home');
+        }
       }else{
         navTo('noperm');
       }
@@ -1860,7 +2009,8 @@
     function peopleSave(){
       var p=peoplePayload();
       if(!p.name && !p.nickname){warn('請填姓名或暱稱');return}
-      if(p.role==='Creator' && roleRank(UROLE)<4){warn('只有 Creator 可以建立或設定 Creator');return}
+      if(p.role==='Creator' && roleRank(UROLE)<5){warn('只有 Creator 平台方可以建立或設定 Creator');return}
+      if(p.role==='Owner' && roleRank(UROLE)<4){warn('只有 Owner 以上可以建立或設定 Owner');return}
       google.script.run
         .withSuccessHandler(function(r){
           if(!r||!r.ok){err(r?r.message:'儲存失敗');return}
@@ -2135,6 +2285,7 @@
       installFabAutoCollapse();
       applyTopBrand({company_name:'ANG.lo',company_subtitle:'Humanized system technology',system_title:'ANG.lo Engine',system_name:'HR 系統',fallback_text:'ANG'});
       applyEmployeeTheme();
+      setRuntimePermissions(USER_PERMISSIONS&&USER_PERMISSIONS.length?USER_PERMISSIONS:null);
       initMonthSelects();
       renderShiftRows();
       // 初始化時隱藏所有 autohide card，等資料回來後才顯示
