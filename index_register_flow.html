@@ -348,6 +348,12 @@
     .sheet-action .outline-action{margin-top:10px;background:var(--secondary-bg);color:var(--secondary-text);border:1px solid var(--secondary-border);box-shadow:none;font-size:16px!important;}
     .google-action{margin-top:10px;background:#ffffff!important;color:#111827!important;border:1px solid rgba(148,163,184,.42)!important;box-shadow:none!important;text-shadow:none!important;font-size:16px!important;}
     body[data-theme="dark"] .google-action{background:rgba(255,255,255,.92)!important;color:#111827!important;border:1px solid rgba(255,255,255,.35)!important;text-shadow:none!important;}
+    .line-action{margin-top:10px;background:#06C755!important;color:#ffffff!important;border:1px solid rgba(6,199,85,.92)!important;box-shadow:0 10px 22px rgba(6,199,85,.22)!important;text-shadow:none!important;font-size:16px!important;}
+    body[data-theme="dark"] .line-action{background:#06C755!important;color:#ffffff!important;border:1px solid rgba(6,199,85,.92)!important;box-shadow:0 10px 24px rgba(6,199,85,.20)!important;text-shadow:none!important;}
+    .auth-provider-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;width:100%;}
+    .auth-provider-row .google-action,.auth-provider-row .line-action{margin-top:0!important;width:100%;min-width:0;}
+    .auth-provider-row .btn-label{white-space:nowrap;}
+    .auth-provider-row .btn-icon{flex:0 0 auto;}
 
     .inline-form{display:grid;gap:10px;margin-top:14px;}
     .inline-label{color:var(--main-text);font-size:13px;line-height:1.35;font-weight:1000;}
@@ -751,6 +757,30 @@
       font-size:16px!important;
     }
 
+    .line-action{
+      margin-top:10px;
+      font-size:16px!important;
+    }
+
+    .auth-provider-row{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:10px;
+      width:100%;
+    }
+
+    .auth-provider-row .google-action,
+    .auth-provider-row .line-action{
+      margin-top:0!important;
+      width:100%;
+      min-width:0;
+    }
+
+    .auth-provider-row .btn-label{
+      white-space:nowrap;
+    }
+
     .note{
       margin-top:18px;
       padding-top:16px;
@@ -962,7 +992,7 @@
           <button class="btn btn-primary" type="button" onclick="submitActivationCode()">啟用此設備</button>
           <div class="btn-row">
             <button class="btn btn-secondary" type="button" onclick="scanQrCode()">掃描 QR</button>
-            <button class="btn btn-secondary" type="button" onclick="contactHr()">聯絡 HR</button>
+            <button class="btn btn-secondary" type="button" onclick="contactHr()">聯絡 ANG</button>
           </div>
           <div class="hint">換手機或無法登入，請聯絡管理員重發開通碼。</div>
           <div id="codeStatus" class="status"></div>
@@ -993,7 +1023,7 @@
           <button class="btn btn-primary" type="button" onclick="showEmployeeEntry('code')">輸入開通碼</button>
           <div class="btn-row">
             <button class="btn btn-secondary" type="button" onclick="scanQrCode()">掃描 QR</button>
-            <button class="btn btn-secondary" type="button" onclick="contactHr()">聯絡 HR</button>
+            <button class="btn btn-secondary" type="button" onclick="contactHr()">聯絡 ANG</button>
           </div>
           <div class="hint">請向管理員索取新的開通碼。</div>
         </div>
@@ -1027,8 +1057,10 @@
               </div>
               <div class="sheet-action">
                 <button type="button" data-action-key="admin-email-login">驗證 Email 並登入後台</button>
-                <button class="google-action" type="button" data-action-key="admin-google-login">Google 快速驗證</button>
-                <button class="line-action" type="button" data-action-key="admin-line-login">LINE 快速驗證</button>
+                <div class="auth-provider-row">
+                  <button class="google-action" type="button" data-action-key="admin-google-login">Google 驗證</button>
+                  <button class="line-action" type="button" data-action-key="admin-line-login">LINE 驗證</button>
+                </div>
                 <div id="adminLoginStatus" class="status"></div>
               </div>
             </div>
@@ -1045,7 +1077,7 @@
               </div>
               <div class="note">適合單店或小型團隊先建立基本出勤流程。</div>
               <div class="inline-form"><div><div class="inline-label">註冊 Email</div><input class="inline-input" id="basicSignupEmail" type="email" inputmode="email" autocomplete="email" placeholder="name@company.com" /></div></div>
-              <div class="sheet-action"><button type="button" data-action-key="plan-email" data-plan="basic">選擇 Basic 並驗證 Email</button><button class="google-action" type="button" data-action-key="plan-google" data-plan="basic">選擇 Basic 並使用 Google 驗證</button><button class="line-action" type="button" data-action-key="plan-line" data-plan="basic">選擇 Basic 並使用 LINE 驗證</button><div id="basicPlanStatus" class="status"></div></div>
+              <div class="sheet-action"><button type="button" data-action-key="plan-email" data-plan="basic">選擇 Basic 並驗證 Email</button><div class="auth-provider-row"><button class="google-action" type="button" data-action-key="plan-google" data-plan="basic">Google 驗證</button><button class="line-action" type="button" data-action-key="plan-line" data-plan="basic">LINE 驗證</button></div><div id="basicPlanStatus" class="status"></div></div>
             </div>
           </article>
 
@@ -1060,7 +1092,7 @@
               </div>
               <div class="note">適合已經開始正式管理班表與審核流程的公司。</div>
               <div class="inline-form"><div><div class="inline-label">註冊 Email</div><input class="inline-input" id="plusSignupEmail" type="email" inputmode="email" autocomplete="email" placeholder="name@company.com" /></div></div>
-              <div class="sheet-action"><button type="button" data-action-key="plan-email" data-plan="plus">選擇 Plus 並驗證 Email</button><button class="google-action" type="button" data-action-key="plan-google" data-plan="plus">選擇 Plus 並使用 Google 驗證</button><button class="line-action" type="button" data-action-key="plan-line" data-plan="plus">選擇 Plus 並使用 LINE 驗證</button><div id="plusPlanStatus" class="status"></div></div>
+              <div class="sheet-action"><button type="button" data-action-key="plan-email" data-plan="plus">選擇 Plus 並驗證 Email</button><div class="auth-provider-row"><button class="google-action" type="button" data-action-key="plan-google" data-plan="plus">Google 驗證</button><button class="line-action" type="button" data-action-key="plan-line" data-plan="plus">LINE 驗證</button></div><div id="plusPlanStatus" class="status"></div></div>
             </div>
           </article>
 
@@ -1075,7 +1107,7 @@
               </div>
               <div class="note">適合已經正式營運，需要完整人資、排班、出勤與薪資流程的公司。</div>
               <div class="inline-form"><div><div class="inline-label">註冊 Email</div><input class="inline-input" id="premiumSignupEmail" type="email" inputmode="email" autocomplete="email" placeholder="name@company.com" /></div></div>
-              <div class="sheet-action"><button type="button" data-action-key="plan-email" data-plan="premium">選擇 Premium 並驗證 Email</button><button class="google-action" type="button" data-action-key="plan-google" data-plan="premium">選擇 Premium 並使用 Google 驗證</button><button class="line-action" type="button" data-action-key="plan-line" data-plan="premium">選擇 Premium 並使用 LINE 驗證</button><div id="premiumPlanStatus" class="status"></div></div>
+              <div class="sheet-action"><button type="button" data-action-key="plan-email" data-plan="premium">選擇 Premium 並驗證 Email</button><div class="auth-provider-row"><button class="google-action" type="button" data-action-key="plan-google" data-plan="premium">Google 驗證</button><button class="line-action" type="button" data-action-key="plan-line" data-plan="premium">LINE 驗證</button></div><div id="premiumPlanStatus" class="status"></div></div>
             </div>
           </article>
         </div>
@@ -1085,25 +1117,13 @@
 
   <script>
     const ANG_DATA_URLS = {
-      entry: 'https://edn869728-jpg.github.io/ANG-99-HR-System/',
-      adminLogin: 'https://edn869728-jpg.github.io/ANG-99-HR-System/login.html',
-      companyRegister: 'https://edn869728-jpg.github.io/ANG-99-HR-System/login.html',
-      employeeHome: 'https://edn869728-jpg.github.io/ang-hr-basic/employee_home.htm',
-      employeeQr: 'https://edn869728-jpg.github.io/ang-hr-basic/employee_home.htm',
-      supportEmail: 'endenmi@ang-system.com',
-      planHome: {
-        basic: 'https://edn869728-jpg.github.io/ang-hr-basic/employee_home.htm',
-        plus: 'https://edn869728-jpg.github.io/ang-hr-plus/employee_home.htm',
-        premium: 'https://edn869728-jpg.github.io/ang-hr-premium/employee_home.htm'
-      },
-      planRegister: {
-        basic: 'https://edn869728-jpg.github.io/ANG-99-HR-System/login.html',
-        plus: 'https://edn869728-jpg.github.io/ANG-99-HR-System/login.html',
-        premium: 'https://edn869728-jpg.github.io/ANG-99-HR-System/login.html'
-      }
+      entry: 'https://edn869728-jpg.github.io/ANG-99-HR-System/index.html',
+      gasApiUrl: 'https://script.google.com/macros/s/AKfycbzNycUTGQG0gqgb8B6F7tndEhRXU7GAiKFFWZr0e8sDwL2kXU5tBGLlJR_iBdX7SCnH/exec',
+      googleClientId: '660707205594-74rvsq9s1h87v1s5pi9nvtms1e4qipat.apps.googleusercontent.com',
+      lineChannelId: '2010402308',
+      supportEmail: 'ang0603.system@gmail.com'
     };
-
-    const APP_STATE = { baseUrl:'', token:'', id:'', name:'', company:'', deviceId:'', routes:null, params:{} };
+    const APP_STATE = { baseUrl:'', token:'', id:'', name:'', company:'', deviceId:'' };
     const phone = document.getElementById('phone');
     const carousel = document.getElementById('sheetCarousel');
     const sheets = Array.from(document.querySelectorAll('.plan-sheet'));
@@ -1141,17 +1161,17 @@
       const key = button.dataset.actionKey || '';
       const text = String(button.textContent || '').trim();
       if (key === 'admin-email-login') return { icon:'✉️', label:'驗證 Email 並登入後台' };
-      if (key === 'admin-google-login') return { icon:'G', label:'Google 快速驗證', google:true };
-      if (key === 'admin-line-login') return { icon:'LINE', label:'LINE 快速驗證', line:true };
+      if (key === 'admin-google-login') return { icon:'G', label:'Google 驗證', google:true };
+      if (key === 'admin-line-login') return { icon:'LINE', label:'LINE 驗證', line:true };
       if (key === 'plan-email') return { icon:'✉️', label:'選擇 ' + formatPlanName(button.dataset.plan) + ' 並驗證 Email' };
-      if (key === 'plan-google') return { icon:'G', label:'選擇 ' + formatPlanName(button.dataset.plan) + ' 並使用 Google 驗證', google:true };
-      if (key === 'plan-line') return { icon:'LINE', label:'選擇 ' + formatPlanName(button.dataset.plan) + ' 並使用 LINE 驗證', line:true };
+      if (key === 'plan-google') return { icon:'G', label:'Google 驗證', google:true };
+      if (key === 'plan-line') return { icon:'LINE', label:'LINE 驗證', line:true };
       if (text.includes('員工專區')) return { icon:'👥', label:'員工專區' };
       if (text.includes('企業管理與註冊')) return { icon:'🏢', label:'企業管理與註冊' };
       if (text.includes('返回')) return { icon:'←', label:'返回' };
       if (text.includes('啟用此設備')) return { icon:'📲', label:'啟用此設備' };
       if (text.includes('掃描 QR')) return { icon:'📷', label:'掃描 QR' };
-      if (text.includes('聯絡 HR')) return { icon:'💬', label:'聯絡 HR' };
+      if (text.includes('聯絡 ANG')) return { icon:'💬', label:'聯絡 ANG' };
       if (text.includes('輸入開通碼')) return { icon:'🔑', label:'輸入開通碼' };
       if (text.includes('綁定此設備')) return { icon:'🔐', label:'綁定此設備' };
       return null;
@@ -1205,10 +1225,6 @@
       preloadEntryBackgrounds();
       APP_STATE.baseUrl = getBaseUrl();
       const params = getParams();
-      APP_STATE.params = params;
-      forceCorrectGasApiUrl();
-      saveRouteOverrides(params);
-      APP_STATE.routes = getRouteConfig(params);
       APP_STATE.token = params.token || params.key || '';
       APP_STATE.id = String(params.id || '').trim().toUpperCase();
       APP_STATE.name = String(params.name || '').trim();
@@ -1268,555 +1284,6 @@
     function clearCode(){ const input = document.getElementById('activationCode'); if (input) { input.value = ''; input.focus(); } setStatus('codeStatus','',''); }
     function normalizeCode(value){ return String(value || '').trim().replace(/\s+/g,'').replace(/-/g,'').toUpperCase(); }
 
-    function getFirstParam(params,names){
-      for (let i = 0; i < names.length; i++) {
-        const key = names[i];
-        if (params && params[key]) return String(params[key]).trim();
-      }
-      return '';
-    }
-
-    function getStoredUrl(key){
-      try { return String(localStorage.getItem(key) || '').trim(); }
-      catch (err) { return ''; }
-    }
-
-    function normalizeUrl(url){
-      const value = String(url || '').trim();
-      if (!value) return '';
-      try { return new URL(value, window.location.href).toString(); }
-      catch (err) { return value; }
-    }
-
-    function forceCorrectGasApiUrl(){
-      try {
-        localStorage.setItem('ang_gas_api_url', ANG_DATA_URLS.gasApiUrl);
-        localStorage.setItem('ang_gas_url', ANG_DATA_URLS.gasApiUrl);
-      } catch (err) {}
-    }
-
-    function getRouteConfig(params){
-      const route = {
-        entry: normalizeUrl(getFirstParam(params,['entry_url','entryUrl']) || getStoredUrl('ang_entry_url') || ANG_DATA_URLS.entry),
-<<<<<<< HEAD
-        gasApiUrl: normalizeUrl(ANG_DATA_URLS.gasApiUrl),
-=======
->>>>>>> 963afab45774e7c1639b63cee23c8a0ac597dcac
-        employeeHome: normalizeUrl(getFirstParam(params,['employee_url','employeeUrl','employee_home_url','employeeHomeUrl','frontend_url','frontendUrl']) || getStoredUrl('ang_employee_home_url') || ANG_DATA_URLS.employeeHome),
-        employeeQr: normalizeUrl(getFirstParam(params,['employee_qr_url','employeeQrUrl','qr_url','qrUrl']) || getStoredUrl('ang_employee_qr_url') || ANG_DATA_URLS.employeeQr),
-        adminLogin: normalizeUrl(getFirstParam(params,['admin_url','adminUrl','admin_login_url','adminLoginUrl','login_url','loginUrl']) || getStoredUrl('ang_admin_login_url') || ANG_DATA_URLS.adminLogin),
-        companyRegister: normalizeUrl(getFirstParam(params,['register_url','registerUrl','company_register_url','companyRegisterUrl','signup_url','signupUrl']) || getStoredUrl('ang_company_register_url') || ANG_DATA_URLS.companyRegister),
-        supportEmail: getFirstParam(params,['support_email','supportEmail','hr_email','hrEmail']) || getStoredUrl('ang_support_email') || ANG_DATA_URLS.supportEmail,
-        planHome: {
-          basic: normalizeUrl(getFirstParam(params,['basic_url','basicUrl','basic_home_url','basicHomeUrl']) || getStoredUrl('ang_basic_home_url') || ANG_DATA_URLS.planHome.basic),
-          plus: normalizeUrl(getFirstParam(params,['plus_url','plusUrl','plus_home_url','plusHomeUrl']) || getStoredUrl('ang_plus_home_url') || ANG_DATA_URLS.planHome.plus),
-          premium: normalizeUrl(getFirstParam(params,['premium_url','premiumUrl','premium_home_url','premiumHomeUrl']) || getStoredUrl('ang_premium_home_url') || ANG_DATA_URLS.planHome.premium)
-        },
-        planRegister: {
-          basic: normalizeUrl(getFirstParam(params,['basic_register_url','basicRegisterUrl']) || getStoredUrl('ang_basic_register_url') || ANG_DATA_URLS.planRegister.basic),
-          plus: normalizeUrl(getFirstParam(params,['plus_register_url','plusRegisterUrl']) || getStoredUrl('ang_plus_register_url') || ANG_DATA_URLS.planRegister.plus),
-          premium: normalizeUrl(getFirstParam(params,['premium_register_url','premiumRegisterUrl']) || getStoredUrl('ang_premium_register_url') || ANG_DATA_URLS.planRegister.premium)
-        }
-      };
-      return route;
-    }
-
-    function saveRouteOverrides(params){
-      const map = [
-        [['entry_url','entryUrl'],'ang_entry_url'],
-        [['employee_url','employeeUrl','employee_home_url','employeeHomeUrl','frontend_url','frontendUrl'],'ang_employee_home_url'],
-        [['employee_qr_url','employeeQrUrl','qr_url','qrUrl'],'ang_employee_qr_url'],
-        [['admin_url','adminUrl','admin_login_url','adminLoginUrl','login_url','loginUrl'],'ang_admin_login_url'],
-        [['register_url','registerUrl','company_register_url','companyRegisterUrl','signup_url','signupUrl'],'ang_company_register_url'],
-        [['support_email','supportEmail','hr_email','hrEmail'],'ang_support_email'],
-        [['basic_url','basicUrl','basic_home_url','basicHomeUrl'],'ang_basic_home_url'],
-        [['plus_url','plusUrl','plus_home_url','plusHomeUrl'],'ang_plus_home_url'],
-        [['premium_url','premiumUrl','premium_home_url','premiumHomeUrl'],'ang_premium_home_url'],
-        [['basic_register_url','basicRegisterUrl'],'ang_basic_register_url'],
-        [['plus_register_url','plusRegisterUrl'],'ang_plus_register_url'],
-        [['premium_register_url','premiumRegisterUrl'],'ang_premium_register_url']
-      ];
-      map.forEach(function(item){
-        const value = getFirstParam(params,item[0]);
-        if (!value) return;
-        try { localStorage.setItem(item[1],value); } catch (err) {}
-      });
-    }
-
-    function normalizePlan(plan){
-      const value = String(plan || '').trim().toLowerCase();
-      if (value === 'basic' || value === 'plus' || value === 'premium') return value;
-      return '';
-    }
-
-    function currentPlan(){
-      return normalizePlan(APP_STATE.params.plan || APP_STATE.params.edition || APP_STATE.params.package || '');
-    }
-
-    function appendUrlParams(base,params){
-      const url = new URL(normalizeUrl(base) || APP_STATE.baseUrl, window.location.href);
-      Object.keys(params || {}).forEach(function(key){
-        const value = params[key];
-        if (value === undefined || value === null || value === '') return;
-        url.searchParams.set(key,String(value));
-      });
-      return url.toString();
-    }
-
-    function commonCarryParams(extra){
-      const params = Object.assign({}, extra || {});
-      if (APP_STATE.company && !params.company && !params.company_id) params.company_id = APP_STATE.company;
-      if (APP_STATE.deviceId && !params.device_id && !params.deviceId) params.device_id = APP_STATE.deviceId;
-      if (document.body && document.body.dataset && document.body.dataset.theme) params.theme = document.body.dataset.theme;
-      return params;
-    }
-
-    function routeUrl(name,plan,extra){
-      const routes = APP_STATE.routes || ANG_DATA_URLS;
-      const safePlan = normalizePlan(plan) || currentPlan();
-      let target = '';
-      if (name === 'employee') target = (safePlan && routes.planHome && routes.planHome[safePlan]) || routes.employeeHome;
-      else if (name === 'employeeQr') target = routes.employeeQr || routes.employeeHome;
-      else if (name === 'adminLogin') target = routes.adminLogin;
-      else if (name === 'companyRegister') target = (safePlan && routes.planRegister && routes.planRegister[safePlan]) || routes.companyRegister;
-      else target = routes.entry || APP_STATE.baseUrl;
-      return appendUrlParams(target,commonCarryParams(extra));
-    }
-
-    function gotoUrl(url){
-      window.location.href = normalizeUrl(url);
-    }
-
-<<<<<<< HEAD
-    function getGasApiUrl(){
-      forceCorrectGasApiUrl();
-      return normalizeUrl(ANG_DATA_URLS.gasApiUrl || '');
-    }
-
-    function readApiResponseUrl(res){
-      return String((res && (res.auth_url || res.authUrl || res.next_url || res.nextUrl || res.url)) || '').trim();
-    }
-
-
-    function isAndroidNativeBridgeReady(){
-      return !!(window.ANGHRApp || window.AndroidBridge || window.AndroidNative || window.WebAppInterface);
-    }
-
-    function callAndroidNativeAuth(provider,statusId){
-      const p = String(provider || '').trim().toLowerCase();
-      const bridge = window.ANGHRApp || window.AndroidBridge || window.AndroidNative || window.WebAppInterface;
-      if (!bridge) return false;
-      try {
-        if (p === 'google') {
-          if (typeof bridge.startGoogleLogin === 'function') { bridge.startGoogleLogin(); return true; }
-          if (typeof bridge.startGoogleSignIn === 'function') { bridge.startGoogleSignIn(); return true; }
-          if (typeof bridge.googleLogin === 'function') { bridge.googleLogin(); return true; }
-          if (typeof bridge.loginWithGoogle === 'function') { bridge.loginWithGoogle(); return true; }
-        }
-        if (p === 'line') {
-          if (typeof bridge.startLineLogin === 'function') { bridge.startLineLogin(); return true; }
-          if (typeof bridge.startLineSignIn === 'function') { bridge.startLineSignIn(); return true; }
-          if (typeof bridge.lineLogin === 'function') { bridge.lineLogin(); return true; }
-          if (typeof bridge.loginWithLine === 'function') { bridge.loginWithLine(); return true; }
-        }
-      } catch (err) {
-        setStatus(statusId,'error',(err && err.message) ? err.message : 'App 原生驗證啟動失敗');
-        return true;
-      }
-      return false;
-    }
-
-    function getPendingAuthStatusId(pending){
-      pending = pending || {};
-      const flow = String(pending.flow || '').trim().toLowerCase();
-      const plan = normalizePlan(pending.plan || '');
-      if (flow === 'admin_login') return 'adminLoginStatus';
-      if (flow === 'company_signup' && plan) return plan + 'PlanStatus';
-      return 'adminLoginStatus';
-    }
-
-    function handleNativeAuthToken(provider,idToken,extra){
-      const token = String(idToken || '').trim();
-      const safeProvider = String(provider || '').trim().toLowerCase();
-      const nativeKey = safeProvider + ':' + token;
-      const nowTs = Date.now();
-      if (token && window.__ANG_LAST_NATIVE_AUTH_KEY === nativeKey && (nowTs - (window.__ANG_LAST_NATIVE_AUTH_AT || 0)) < 5000) return;
-      window.__ANG_LAST_NATIVE_AUTH_KEY = nativeKey;
-      window.__ANG_LAST_NATIVE_AUTH_AT = nowTs;
-      const pending = loadPendingAuth() || {};
-      const flow = String(pending.flow || 'company_signup').trim().toLowerCase();
-      const plan = normalizePlan(pending.plan || currentPlan() || '');
-      const statusId = getPendingAuthStatusId(pending);
-      const action = safeProvider === 'line' ? 'verifyNativeLineIdToken' : 'verifyNativeGoogleIdToken';
-      const label = safeProvider === 'line' ? 'LINE' : 'Google';
-
-      if (!token) {
-        setStatus(statusId,'error',label + ' 原生驗證沒有回傳 Token');
-        return;
-      }
-
-      setStatus(statusId,'info','正在送出 ' + label + ' 原生驗證結果...');
-
-      const payload = Object.assign({},pending || {},extra || {},{
-        provider:safeProvider,
-        flow:flow,
-        plan:plan,
-        id_token:token,
-        credential:token,
-        device_id:APP_STATE.deviceId,
-        user_agent:navigator.userAgent || '',
-        source:'android_native_bridge'
-      });
-
-      callGasApi(action,payload,25000).then(function(res){
-        if (!res || !res.ok) {
-          setStatus(statusId,'error',(res && (res.message || res.msg)) || (label + ' 原生驗證失敗'));
-          return;
-        }
-
-        if (res.verify_token) {
-          try {
-            sessionStorage.setItem('ang_verify_token',String(res.verify_token));
-            localStorage.setItem('ang_last_verify_token',String(res.verify_token));
-          } catch (err) {}
-        }
-        if (res.email) {
-          try { sessionStorage.setItem('ang_verified_email',String(res.email)); } catch (err2) {}
-        }
-
-        clearPendingAuth();
-        showManagerEntry();
-        phone.classList.add('expanded');
-
-        if (flow === 'company_signup' && plan) {
-          setActiveManagerSheet(plan,true);
-          setStatus(plan + 'PlanStatus','success',label + ' 原生驗證成功，請繼續完成資料送出。');
-          return;
-        }
-
-        if (flow === 'admin_login') {
-          setActiveManagerSheet('login',true);
-          setStatus('adminLoginStatus','success',label + ' 原生驗證成功，正在進入管理中心。');
-          return;
-        }
-
-        setStatus(statusId,'success',label + ' 原生驗證成功');
-      }).catch(function(err){
-        setStatus(statusId,'error',err && err.message ? err.message : (label + ' 原生驗證通訊失敗'));
-      });
-    }
-
-    function normalizeNativeAuthResultPayload(payload){
-      if (typeof payload === 'string') {
-        try { payload = JSON.parse(payload); } catch (err) { payload = { id_token:payload }; }
-      }
-      payload = payload || {};
-      const provider = String(payload.provider || payload.type || '').trim().toLowerCase();
-      const token = String(payload.id_token || payload.credential || payload.loginToken || payload.token || '').trim();
-      return {
-        ok: payload.ok !== false,
-        provider: provider,
-        token: token,
-        email: String(payload.email || ''),
-        line_user_id: String(payload.line_user_id || payload.user_id || payload.sub || ''),
-        profile_name: String(payload.profile_name || payload.displayName || payload.name || ''),
-        message: String(payload.message || payload.error || '')
-      };
-    }
-
-    window.handleNativeAuthResult = function(payload){
-      const r = normalizeNativeAuthResultPayload(payload);
-      const pending = loadPendingAuth() || {};
-      const fallbackProvider = String((pending && pending.provider) || '').trim().toLowerCase();
-      const provider = r.provider || fallbackProvider;
-      if (!r.ok) {
-        setStatus(getPendingAuthStatusId(pending),'error',r.message || 'App 原生驗證失敗');
-        return;
-      }
-      if (!provider || !r.token) {
-        setStatus(getPendingAuthStatusId(pending),'error','App 已登入成功，但前端沒有收到 provider 或 token');
-        return;
-      }
-      handleNativeAuthToken(provider,r.token,{ email:r.email, line_user_id:r.line_user_id, profile_name:r.profile_name });
-    };
-
-    window.handleNativeGoogleResult = function(payload){
-      const r = normalizeNativeAuthResultPayload(payload);
-      r.provider = 'google';
-      window.handleNativeAuthResult(r);
-    };
-
-    window.handleNativeLineResult = function(payload){
-      const r = normalizeNativeAuthResultPayload(payload);
-      r.provider = 'line';
-      window.handleNativeAuthResult(r);
-    };
-
-    window.addEventListener('ANG_NATIVE_AUTH_RESULT',function(event){
-      if (event && event.detail) window.handleNativeAuthResult(event.detail);
-    });
-
-    window.onNativeGoogleLoginSuccess = function(idToken,email){
-      handleNativeAuthToken('google',idToken,{ email:email || '' });
-    };
-    window.onGoogleSignInSuccess = function(idToken,email){
-      handleNativeAuthToken('google',idToken,{ email:email || '' });
-    };
-    window.handleAppNativeGoogleLogin = function(idToken,email){
-      handleNativeAuthToken('google',idToken,{ email:email || '' });
-    };
-    window.onNativeGoogleLoginFailure = function(message){
-      const pending = loadPendingAuth() || {};
-      setStatus(getPendingAuthStatusId(pending),'error',message || 'Google 原生驗證失敗');
-    };
-    window.onGoogleSignInError = window.onNativeGoogleLoginFailure;
-
-    window.onNativeLineLoginSuccess = function(idToken,userId,displayName){
-      handleNativeAuthToken('line',idToken,{ line_user_id:userId || '', profile_name:displayName || '' });
-    };
-    window.handleAppNativeLineLogin = function(idToken,userId,displayName){
-      handleNativeAuthToken('line',idToken,{ line_user_id:userId || '', profile_name:displayName || '' });
-    };
-    window.onNativeLineLoginFailure = function(message){
-      const pending = loadPendingAuth() || {};
-      setStatus(getPendingAuthStatusId(pending),'error',message || 'LINE 原生驗證失敗');
-    };
-
-
-
-    function processStoredNativeAuthResult(){
-      try {
-        const pending = loadPendingAuth();
-        if (!pending) return false;
-        const raw = localStorage.getItem('ang_last_native_auth_result');
-        if (!raw) return false;
-        const savedAt = Number(localStorage.getItem('ang_last_native_auth_at') || '0');
-        if (savedAt && Date.now() - savedAt > 30 * 60 * 1000) return false;
-        const result = JSON.parse(raw);
-        const normalized = normalizeNativeAuthResultPayload(result);
-        const provider = normalized.provider || String(pending.provider || '').trim().toLowerCase();
-        const token = normalized.token || '';
-        const key = provider + ':' + token;
-        if (!provider || !token) return false;
-        if (window.__ANG_NATIVE_STORAGE_KEY === key && Date.now() - (window.__ANG_NATIVE_STORAGE_AT || 0) < 4500) return false;
-        window.__ANG_NATIVE_STORAGE_KEY = key;
-        window.__ANG_NATIVE_STORAGE_AT = Date.now();
-        handleNativeAuthToken(provider,token,{ email:normalized.email, line_user_id:normalized.line_user_id, profile_name:normalized.profile_name });
-        return true;
-      } catch (err) {
-        return false;
-      }
-    }
-
-    function startNativeAuthReceiveWatch(){
-      window.__ANG_NATIVE_AUTH_READY = '1';
-      [120,420,900,1600,2600,4200,6500,9000].forEach(function(delay){
-        setTimeout(processStoredNativeAuthResult,delay);
-      });
-    }
-
-    window.addEventListener('focus',function(){ setTimeout(processStoredNativeAuthResult,120); });
-    document.addEventListener('visibilitychange',function(){ if (!document.hidden) setTimeout(processStoredNativeAuthResult,120); });
-
-    function callGasApi(action,payload,timeoutMs){
-      const gasUrl = getGasApiUrl();
-      if (!gasUrl) return Promise.reject(new Error('尚未設定 GAS API URL'));
-      return new Promise(function(resolve,reject){
-        const callbackName = 'angGasJsonp_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,8);
-        const script = document.createElement('script');
-        let done = false;
-        function cleanup(){
-          try { delete window[callbackName]; } catch (err) { window[callbackName] = undefined; }
-          if (script && script.parentNode) script.parentNode.removeChild(script);
-        }
-        const timer = setTimeout(function(){
-          if (done) return;
-          done = true;
-          cleanup();
-          reject(new Error('GAS 連線逾時'));
-        },timeoutMs || 20000);
-        window[callbackName] = function(res){
-          if (done) return;
-          done = true;
-          clearTimeout(timer);
-          cleanup();
-          resolve(res || {});
-        };
-        script.onerror = function(){
-          if (done) return;
-          done = true;
-          clearTimeout(timer);
-          cleanup();
-          reject(new Error('無法連線 GAS API'));
-        };
-        const url = new URL(gasUrl, window.location.href);
-        const body = Object.assign({},payload || {},{ action:action });
-        url.searchParams.set('action',action);
-        url.searchParams.set('callback',callbackName);
-        url.searchParams.set('payload',JSON.stringify(body));
-        script.src = url.toString();
-        document.head.appendChild(script);
-      });
-    }
-
-    function startOauthViaGas(provider,flow,plan,payload,statusId){
-      const safeProvider = String(provider || '').trim().toLowerCase();
-      const safeFlow = String(flow || '').trim().toLowerCase();
-      const safePlan = normalizePlan(plan);
-      const action = safeProvider === 'line' ? 'requestLineAuth' : 'requestGoogleAuth';
-      const gasUrl = getGasApiUrl();
-      const body = Object.assign({},getAuthReturnParams(safeProvider,safeFlow,safePlan,payload || {}),payload || {},{
-        action:action,
-        provider:safeProvider,
-        flow:safeFlow,
-        plan:safePlan,
-        company_id:(payload && (payload.company_id || payload.company)) || '',
-        device_id:APP_STATE.deviceId,
-        user_agent:navigator.userAgent || '',
-        direct:'1'
-      });
-
-      if (!gasUrl) {
-        setStatus(statusId,'error','尚未設定 GAS API URL');
-        return Promise.resolve();
-      }
-
-      savePendingAuth(safeProvider,safeFlow,safePlan,payload || {});
-
-      if (isAndroidNativeBridgeReady() && callAndroidNativeAuth(safeProvider,statusId)) {
-        setStatus(statusId,'info','正在開啟 App 原生 ' + (safeProvider === 'line' ? 'LINE' : 'Google') + ' 驗證...');
-        return Promise.resolve();
-      }
-
-      setStatus(statusId,'info','正在開啟 ' + (safeProvider === 'line' ? 'LINE' : 'Google') + ' 安全驗證...');
-
-      const url = new URL(gasUrl,window.location.href);
-      Object.keys(body).forEach(function(key){
-        const value = body[key];
-        if (value === undefined || value === null || value === '') return;
-        url.searchParams.set(key,String(value));
-      });
-
-      // OAuth 按鈕改成「直接導向 GAS」，由 GAS 產生 auth_url 後再轉到 Google / LINE。
-      // 這樣不會被 GitHub Pages / WebView / JSONP script.onerror 擋住，也不會只顯示 test({...})。
-      window.location.href = url.toString();
-      return Promise.resolve();
-    }
-
-    function buildIndexAuthUrl(provider,flow,plan,extra){
-      const safeProvider = String(provider || '').trim().toLowerCase();
-      const safeFlow = String(flow || '').trim().toLowerCase();
-      const safePlan = normalizePlan(plan);
-      const params = Object.assign({
-        auth:safeProvider,
-        provider:safeProvider,
-        flow:safeFlow,
-        plan:safePlan,
-        source:'entry_auth_direct'
-      },extra || {});
-      return routeUrl('entry',safePlan,params);
-    }
-
-    function buildIndexAuthDoneUrl(provider,flow,plan,extra){
-      const safeProvider = String(provider || '').trim().toLowerCase();
-      const safeFlow = String(flow || '').trim().toLowerCase();
-      const safePlan = normalizePlan(plan);
-      const params = Object.assign({
-        auth_done:'1',
-        provider:safeProvider,
-        flow:safeFlow,
-        plan:safePlan,
-        source:'entry_auth_callback'
-      },extra || {});
-      return routeUrl('entry',safePlan,params);
-    }
-
-    function savePendingAuth(provider,flow,plan,extra){
-      const payload = Object.assign({
-        provider:String(provider || '').trim().toLowerCase(),
-        flow:String(flow || '').trim().toLowerCase(),
-        plan:normalizePlan(plan),
-        savedAt:Date.now()
-      },extra || {});
-      try { localStorage.setItem('ang_pending_auth',JSON.stringify(payload)); } catch (err) {}
-      return payload;
-    }
-
-    function loadPendingAuth(){
-      try {
-        const raw = localStorage.getItem('ang_pending_auth');
-        if (!raw) return null;
-        const payload = JSON.parse(raw);
-        if (!payload || !payload.savedAt) return null;
-        if (Date.now() - Number(payload.savedAt) > 30 * 60 * 1000) {
-          localStorage.removeItem('ang_pending_auth');
-          return null;
-        }
-        return payload;
-      } catch (err) {
-        return null;
-      }
-    }
-
-    function clearPendingAuth(){
-      try { localStorage.removeItem('ang_pending_auth'); } catch (err) {}
-    }
-
-    function getAuthReturnParams(provider,flow,plan,extra){
-      const safeProvider = String(provider || '').trim().toLowerCase();
-      const safeFlow = String(flow || '').trim().toLowerCase();
-      const safePlan = normalizePlan(plan);
-      const returnUrl = buildIndexAuthDoneUrl(safeProvider,safeFlow,safePlan,extra || {});
-      return {
-        provider:safeProvider,
-        flow:safeFlow,
-        plan:safePlan,
-        deviceId:APP_STATE.deviceId,
-        device_id:APP_STATE.deviceId,
-        returnUrl:returnUrl,
-        return_url:returnUrl,
-        redirectUri:returnUrl,
-        redirect_uri:returnUrl,
-        callbackUrl:returnUrl,
-        callback_url:returnUrl
-      };
-    }
-
-    function handleAuthDone(params){
-      const pending = loadPendingAuth() || {};
-      const provider = String(params.provider || params.auth || pending.provider || '').trim().toLowerCase();
-      const flow = String(params.flow || pending.flow || '').trim().toLowerCase();
-      const plan = normalizePlan(params.plan || pending.plan || '');
-      const providerText = provider === 'line' ? 'LINE' : (provider === 'google' ? 'Google' : '驗證');
-
-      if (params.verify_token) { try { sessionStorage.setItem('ang_verify_token',String(params.verify_token)); localStorage.setItem('ang_last_verify_token',String(params.verify_token)); } catch (err) {} }
-      if (params.email) { try { sessionStorage.setItem('ang_verified_email',String(params.email)); } catch (err2) {} }
-      clearPendingAuth();
-      showManagerEntry();
-      phone.classList.add('expanded');
-
-      if (flow === 'company_signup' && plan) {
-        setTimeout(function(){
-          setActiveManagerSheet(plan,true);
-          setStatus(plan + 'PlanStatus','success',providerText + ' 驗證成功，請繼續完成資料送出。');
-        },80);
-        return true;
-      }
-
-      if (flow === 'admin_login') {
-        setTimeout(function(){
-          setActiveManagerSheet('login',true);
-          setStatus('adminLoginStatus','success',providerText + ' 驗證成功，正在進入管理中心。');
-        },80);
-        return true;
-      }
-
-      return false;
-    }
-
-
-=======
->>>>>>> 963afab45774e7c1639b63cee23c8a0ac597dcac
     function submitActivationCode(){
       const input = document.getElementById('activationCode');
       const code = normalizeCode(input ? input.value : '');
@@ -1853,27 +1320,11 @@
       if (name) localStorage.setItem('emp_name',name);
       if (loginToken) localStorage.setItem('emp_login_token',loginToken);
       localStorage.setItem('isLoggedIn','1');
-      if (res.nextUrl || res.employeeUrl || res.frontendUrl) {
-        window.location.href = appendUrlParams(res.nextUrl || res.employeeUrl || res.frontendUrl,{ id:id, token:loginToken, source:'entry_bind' });
-        return;
-      }
       window.location.href = buildPageUrl('employee',id,loginToken);
     }
-    function buildPageUrl(page,id,token){
-      return routeUrl(page || 'employee',currentPlan(),{
-        page:page || 'employee',
-        id:id || '',
-        token:token || '',
-        source:'entry_bind'
-      });
-    }
-    function scanQrCode(){
-      setStatus('codeStatus','info','正在開啟 QR 掃描入口...');
-      setTimeout(function(){
-        gotoUrl(routeUrl('employeeQr',currentPlan(),{ action:'scan_qr', source:'entry_qr' }));
-      },260);
-    }
-    function contactHr(){ const subject = encodeURIComponent('ANG HR 開通碼'); const body = encodeURIComponent('您好，我需要重新取得 ANG HR 開通碼。'); window.location.href = 'mailto:' + encodeURIComponent((APP_STATE.routes && APP_STATE.routes.supportEmail) || ANG_DATA_URLS.supportEmail) + '?subject=' + subject + '&body=' + body; }
+    function buildPageUrl(page,id,token){ let url = APP_STATE.baseUrl + '?page=' + encodeURIComponent(page || 'employee'); if (id) url += '&id=' + encodeURIComponent(id); if (token) url += '&token=' + encodeURIComponent(token); return url; }
+    function scanQrCode(){ setStatus('codeStatus','info','請使用 APP 掃描 QR'); }
+    function contactHr(){ const subject = encodeURIComponent('ANG 開通碼'); const body = encodeURIComponent('您好，我需要重新取得 ANG 開通碼。'); const mail = (window.ANG_DATA_URLS && window.ANG_DATA_URLS.supportEmail) ? window.ANG_DATA_URLS.supportEmail : 'ang0603.system@gmail.com'; window.location.href = 'mailto:' + encodeURIComponent(mail) + '?subject=' + subject + '&body=' + body; }
     function isInteractiveTarget(target){ return !!(target && target.closest && target.closest('button,input,textarea,select,a,[data-action-key],.sheet-action,.inline-form,.input-wrap')); }
 
     function initManagerCarousel(){
@@ -1956,7 +1407,7 @@
 
     function isValidEmail(email){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email || '').trim()); }
     function normalizeCompanyCode(value){ return String(value || '').trim().replace(/\s+/g,'').toUpperCase(); }
-    function contactService(){ const subject = encodeURIComponent('ANG HR 企業客服'); const body = encodeURIComponent('您好，我想詢問 ANG HR SYSTEMS 企業管理登入或方案註冊。'); window.location.href = 'mailto:' + encodeURIComponent((APP_STATE.routes && APP_STATE.routes.supportEmail) || ANG_DATA_URLS.supportEmail) + '?subject=' + subject + '&body=' + body; }
+    function contactService(){ const subject = encodeURIComponent('ANG 企業客服'); const body = encodeURIComponent('您好，我想詢問 ANG SYSTEMS 企業管理登入或方案註冊。'); const mail = (window.ANG_DATA_URLS && window.ANG_DATA_URLS.supportEmail) ? window.ANG_DATA_URLS.supportEmail : 'ang0603.system@gmail.com'; window.location.href = 'mailto:' + encodeURIComponent(mail) + '?subject=' + subject + '&body=' + body; }
     function getCapacitorBrowser(){ const cap = window.Capacitor; return cap && cap.Plugins && cap.Plugins.Browser && typeof cap.Plugins.Browser.open === 'function' ? cap.Plugins.Browser : null; }
     function isLikelyWebView(){ const ua = navigator.userAgent || ''; const isAndroidWebView = /\bwv\b/i.test(ua) || /Version\/[\d.]+.*Chrome\/[\d.]+ Mobile Safari/i.test(ua); const isIos = /iPhone|iPad|iPod/i.test(ua); const isIosWebView = isIos && /AppleWebKit/i.test(ua) && !/Safari/i.test(ua); return !!window.Capacitor || isAndroidWebView || isIosWebView; }
     function openGoogleAuthUrl(url,statusId){ const authUrl = String(url || '').trim(); const browser = getCapacitorBrowser(); if (!authUrl) { setStatus(statusId,'error','Google 驗證網址無效'); return; } if (browser) { setStatus(statusId,'info','正在開啟安全驗證視窗...'); browser.open({ url:authUrl, windowName:'_blank' }).catch(function(err){ setStatus(statusId,'error',err && err.message ? err.message : '無法開啟驗證視窗，請改用 Email 驗證'); }); return; } if (isLikelyWebView()) { setStatus(statusId,'error','App 內不支援 Google 驗證，請改用上方的「Email 驗證」'); return; } window.location.href = authUrl; }
@@ -2339,6 +1790,141 @@
     }
 
 
+
+
+    function clearVerificationStateForNewMethod(){
+      try { localStorage.removeItem('ang_pending_auth'); } catch(err) {}
+      try { localStorage.removeItem('ang_last_native_auth_result'); } catch(err2) {}
+      try { localStorage.removeItem('ang_last_native_gas_result'); } catch(err3) {}
+      try { localStorage.removeItem('ang_last_gas_response'); } catch(err4) {}
+      try { localStorage.removeItem('ang_verify_token'); } catch(err5) {}
+      try { localStorage.removeItem('ang_last_verify_token'); } catch(err6) {}
+      try { sessionStorage.removeItem('ang_verify_token'); } catch(err7) {}
+    }
+
+    function injectEmailVerifyStyle(){
+      if (document.getElementById('angEmailVerifyStyle')) return;
+      const style = document.createElement('style');
+      style.id = 'angEmailVerifyStyle';
+      style.textContent = [
+        '.ang-email-overlay{position:fixed;inset:0;z-index:999990;background:rgba(0,0,0,.56);display:flex;align-items:center;justify-content:center;padding:18px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}',
+        '.ang-email-card{width:min(360px,100%);border-radius:24px;background:var(--panel-bg,rgba(18,25,42,.96));border:1px solid var(--panel-border,rgba(255,255,255,.12));box-shadow:0 22px 60px rgba(0,0,0,.35);padding:20px;color:var(--main-text,#fff)}',
+        '.ang-email-title{margin:0 0 8px;font-size:22px;line-height:1.2;font-weight:1000}',
+        '.ang-email-sub{margin:0 0 16px;color:var(--muted-text,#cbd5e1);font-size:14px;line-height:1.55;font-weight:850}',
+        '.ang-email-input{width:100%;height:54px;border-radius:16px;border:1px solid var(--input-border,rgba(255,255,255,.16));background:var(--input-bg,rgba(255,255,255,.08));color:var(--main-text,#fff);font-size:24px;font-weight:1000;text-align:center;letter-spacing:.22em;outline:none;text-transform:none}',
+        '.ang-email-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}',
+        '.ang-email-btn{min-height:50px;border-radius:16px;border:none;font-size:15px;font-weight:1000;cursor:pointer}',
+        '.ang-email-btn.primary{grid-column:1/-1;background:var(--primary-bg,linear-gradient(90deg,#00d9ff,#7c3cff));color:#fff}',
+        '.ang-email-btn.secondary{background:var(--secondary-bg,rgba(255,255,255,.08));color:var(--secondary-text,#fff);border:1px solid var(--secondary-border,rgba(255,255,255,.18))}',
+        '.ang-email-status{display:none;margin-top:12px;padding:10px 12px;border-radius:14px;font-size:13px;line-height:1.45;font-weight:900;text-align:center}',
+        '.ang-email-status.show{display:block}',
+        '.ang-email-status.info{background:rgba(59,130,246,.16);color:#bfdbfe}',
+        '.ang-email-status.success{background:rgba(16,185,129,.16);color:#a7f3d0}',
+        '.ang-email-status.error{background:rgba(239,68,68,.16);color:#fecaca}',
+        '@media (max-width:430px){.ang-email-overlay{align-items:flex-end;padding:10px}.ang-email-card{border-radius:26px 26px 0 0}}'
+      ].join('\n');
+      document.head.appendChild(style);
+    }
+
+    function setEmailVerifyStatus(type,message){
+      const box = document.getElementById('angEmailVerifyStatus');
+      if (!box) return;
+      box.className = 'ang-email-status show ' + (type || 'info');
+      box.innerText = message || '';
+    }
+
+    function closeEmailVerifyOverlay(){
+      const overlay = document.getElementById('angEmailVerifyOverlay');
+      if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
+    }
+
+    function showEmailCodeOverlay(plan,email,statusId){
+      injectEmailVerifyStyle();
+      closeEmailVerifyOverlay();
+      const safePlan = String(plan || '').trim().toLowerCase();
+      const overlay = document.createElement('div');
+      overlay.id = 'angEmailVerifyOverlay';
+      overlay.className = 'ang-email-overlay';
+      overlay.innerHTML =
+        '<div class="ang-email-card">' +
+          '<h2 class="ang-email-title">Email 驗證碼</h2>' +
+          '<p class="ang-email-sub">驗證碼已寄到：<b>' + escapeButtonHtml(email) + '</b><br>請輸入 6 位數驗證碼，完成後會留在 App 內進入公司資料填寫。</p>' +
+          '<input id="angEmailCodeInput" class="ang-email-input" type="text" inputmode="numeric" maxlength="6" placeholder="000000" autocomplete="one-time-code" />' +
+          '<div class="ang-email-actions">' +
+            '<button id="angEmailVerifyBtn" type="button" class="ang-email-btn primary">驗證並繼續</button>' +
+            '<button id="angEmailResendBtn" type="button" class="ang-email-btn secondary">重寄驗證碼</button>' +
+            '<button id="angEmailCancelBtn" type="button" class="ang-email-btn secondary">換其他方式</button>' +
+          '</div>' +
+          '<div id="angEmailVerifyStatus" class="ang-email-status"></div>' +
+        '</div>';
+      document.body.appendChild(overlay);
+      const input = document.getElementById('angEmailCodeInput');
+      const verifyBtn = document.getElementById('angEmailVerifyBtn');
+      const resendBtn = document.getElementById('angEmailResendBtn');
+      const cancelBtn = document.getElementById('angEmailCancelBtn');
+      if (verifyBtn) verifyBtn.addEventListener('click',function(){ verifyPlanEmailCode(safePlan,email,statusId); });
+      if (resendBtn) resendBtn.addEventListener('click',function(){ requestPlanEmailVerification(safePlan); });
+      if (cancelBtn) cancelBtn.addEventListener('click',function(){ clearVerificationStateForNewMethod(); closeEmailVerifyOverlay(); setStatus(statusId,'info','已取消 Email 驗證，可以改用 Google / LINE。'); });
+      if (input) {
+        input.addEventListener('keydown',function(e){ if (e.key === 'Enter') verifyPlanEmailCode(safePlan,email,statusId); });
+        setTimeout(function(){ input.focus(); },120);
+      }
+      setEmailVerifyStatus('info','請查看信箱並輸入驗證碼。');
+    }
+
+    function verifyPlanEmailCode(plan,email,statusId){
+      const safePlan = String(plan || '').trim().toLowerCase();
+      const input = document.getElementById('angEmailCodeInput');
+      const code = String(input ? input.value : '').replace(/\D/g,'').trim();
+      if (!code || code.length < 6) { setEmailVerifyStatus('error','請輸入 6 位數驗證碼'); return; }
+      setEmailVerifyStatus('info','正在驗證 Email...');
+      callGasApi('verifyEmailCode',{
+        email:email,
+        code:code,
+        plan:safePlan,
+        flow:'company_signup',
+        device_id:APP_STATE.deviceId,
+        source:'entry_plan_email_in_app'
+      },25000).then(function(res){
+        if (!res || !res.ok) {
+          setEmailVerifyStatus('error',(res && (res.message || res.msg)) || 'Email 驗證失敗');
+          return;
+        }
+        const profile = res.profile || res.data || {};
+        const gas = Object.assign({},profile,{
+          ok:true,
+          message:res.message || 'Email 驗證完成',
+          provider:'email',
+          method:'email',
+          email:profile.email || email,
+          profile_name:profile.name || '',
+          name:profile.name || '',
+          flow:'company_signup',
+          plan:safePlan,
+          verify_token:profile.verify_token || res.verify_token || ''
+        });
+        try { localStorage.setItem('ang_last_gas_response',JSON.stringify(gas)); } catch(err) {}
+        try { localStorage.setItem('ang_verify_token',String(gas.verify_token || '')); } catch(err2) {}
+        try { localStorage.setItem('ang_verified_email',String(gas.email || email)); } catch(err3) {}
+        try { localStorage.setItem('ang_verified_provider','email'); } catch(err4) {}
+        try { localStorage.setItem('ang_verified_plan',safePlan); } catch(err5) {}
+        setEmailVerifyStatus('success','Email 驗證成功，正在開啟公司資料表...');
+        setStatus(statusId,'success','Email 驗證成功。');
+        setTimeout(function(){
+          closeEmailVerifyOverlay();
+          if (window.ANG_SHOW_COMPANY_REGISTER_FORM) {
+            window.ANG_SHOW_COMPANY_REGISTER_FORM(gas);
+          } else if (window.ANG_NATIVE_GAS_RESULT_RECEIVER) {
+            window.ANG_NATIVE_GAS_RESULT_RECEIVER({ ok:true, provider:'email', gas_response:gas });
+          } else {
+            setStatus(statusId,'success','Email 驗證成功，請重新整理後繼續填寫公司資料。');
+          }
+        },350);
+      }).catch(function(err){
+        setEmailVerifyStatus('error',err && err.message ? err.message : 'Email 驗證連線失敗');
+      });
+    }
+
     function requestAdminEmailLogin(){
       const companyCode = normalizeCompanyCode(document.getElementById('adminCompanyCode') ? document.getElementById('adminCompanyCode').value : '');
       const adminEmail = String(document.getElementById('adminEmail') ? document.getElementById('adminEmail').value : '').trim();
@@ -2349,7 +1935,7 @@
         google.script.run.withSuccessHandler(function(res){ if (!res || !res.ok) { setStatus('adminLoginStatus','error',(res && (res.message || res.msg)) || '驗證送出失敗'); return; } setStatus('adminLoginStatus','success',(res.message || res.msg) || '已送出驗證，請查看 Email'); if (res.nextUrl) { setTimeout(function(){ window.location.href = res.nextUrl; },650); } }).withFailureHandler(function(err){ setStatus('adminLoginStatus','error',err && err.message ? err.message : '連線失敗'); }).requestAdminLoginEmailVerification({ companyCode:companyCode, adminEmail:adminEmail, deviceId:APP_STATE.deviceId });
         return;
       }
-      window.location.href = routeUrl('adminLogin','',{ page:'login', role:'admin', verify:'email', company:companyCode, email:adminEmail, source:'entry_admin_email' });
+      window.location.href = APP_STATE.baseUrl + '?page=login&role=admin&verify=email&company=' + encodeURIComponent(companyCode) + '&email=' + encodeURIComponent(adminEmail);
     }
 
     function requestAdminGoogleLogin(){
@@ -2361,7 +1947,7 @@
         google.script.run.withSuccessHandler(function(res){ if (!res || !res.ok) { setStatus('adminLoginStatus','error',(res && (res.message || res.msg)) || 'Google 驗證啟動失敗'); return; } if (res.authUrl || res.nextUrl) { openGoogleAuthUrl(res.authUrl || res.nextUrl,'adminLoginStatus'); return; } setStatus('adminLoginStatus','success','Google 驗證已啟動'); }).withFailureHandler(function(err){ setStatus('adminLoginStatus','error',err && err.message ? err.message : '連線失敗'); }).requestAdminGoogleVerification({ companyCode:companyCode, deviceId:APP_STATE.deviceId });
         return;
       }
-      openGoogleAuthUrl(routeUrl('adminLogin','',{ page:'login', role:'admin', verify:'google', company:companyCode, source:'entry_admin_google' }),'adminLoginStatus');
+      openGoogleAuthUrl(APP_STATE.baseUrl + '?page=login&role=admin&verify=google&company=' + encodeURIComponent(companyCode),'adminLoginStatus');
     }
 
     function requestPlanEmailVerification(plan){
@@ -2371,12 +1957,25 @@
       const statusId = safePlan + 'PlanStatus';
       if (!safePlan) return;
       if (!isValidEmail(email)) { setStatus(statusId,'error','請輸入正確的 Email'); return; }
-      setStatus(statusId,'info','正在送出註冊驗證...');
-      if (window.google && google.script && google.script.run) {
-        google.script.run.withSuccessHandler(function(res){ if (!res || !res.ok) { setStatus(statusId,'error',(res && (res.message || res.msg)) || '驗證送出失敗'); return; } setStatus(statusId,'success',(res.message || res.msg) || '已送出驗證，請查看 Email'); if (res.nextUrl) { setTimeout(function(){ window.location.href = res.nextUrl; },650); } }).withFailureHandler(function(err){ setStatus(statusId,'error',err && err.message ? err.message : '連線失敗'); }).requestCompanySignupEmailVerification({ plan:safePlan, email:email, deviceId:APP_STATE.deviceId });
-        return;
-      }
-      window.location.href = routeUrl('companyRegister',safePlan,{ page:'register', verify:'email', plan:safePlan, email:email, source:'entry_plan_email' });
+      clearVerificationStateForNewMethod();
+      try { localStorage.setItem('ang_email_signup_pending',JSON.stringify({ plan:safePlan, email:email, statusId:statusId, savedAt:Date.now() })); } catch(err) {}
+      setStatus(statusId,'info','正在寄出 Email 驗證碼...');
+      callGasApi('requestEmailCode',{
+        email:email,
+        plan:safePlan,
+        flow:'company_signup',
+        device_id:APP_STATE.deviceId,
+        source:'entry_plan_email_in_app'
+      },25000).then(function(res){
+        if (!res || !res.ok) {
+          setStatus(statusId,'error',(res && (res.message || res.msg)) || '驗證碼寄送失敗');
+          return;
+        }
+        setStatus(statusId,'success',(res.message || res.msg) || '驗證碼已寄出，請查看 Email');
+        showEmailCodeOverlay(safePlan,email,statusId);
+      }).catch(function(err){
+        setStatus(statusId,'error',err && err.message ? err.message : 'Email 驗證連線失敗');
+      });
     }
 
     function requestPlanGoogleVerification(plan){
@@ -2389,7 +1988,7 @@
         google.script.run.withSuccessHandler(function(res){ if (!res || !res.ok) { setStatus(statusId,'error',(res && (res.message || res.msg)) || 'Google 驗證啟動失敗'); return; } if (res.authUrl || res.nextUrl) { openGoogleAuthUrl(res.authUrl || res.nextUrl,statusId); return; } setStatus(statusId,'success','Google 驗證已啟動'); }).withFailureHandler(function(err){ setStatus(statusId,'error',err && err.message ? err.message : '連線失敗'); }).requestCompanySignupGoogleVerification({ plan:safePlan, deviceId:APP_STATE.deviceId });
         return;
       }
-      openGoogleAuthUrl(routeUrl('companyRegister',safePlan,{ page:'register', verify:'google', plan:safePlan, source:'entry_plan_google' }),statusId);
+      openGoogleAuthUrl(APP_STATE.baseUrl + '?page=register&verify=google&plan=' + encodeURIComponent(safePlan),statusId);
     }
 
 
@@ -2408,7 +2007,8 @@
       openLineAuthUrl(routeUrl('companyRegister',safePlan,{ page:'register', verify:'line', plan:safePlan, source:'entry_plan_line' }),statusId);
     }
 
-    window.addEventListener('load',function(){ init(); startNativeAuthReceiveWatch(); });
+    window.addEventListener('load',init);
   </script>
+  <script src="./native-google-bridge.js?v=20260618_2"></script>
 </body>
 </html>
