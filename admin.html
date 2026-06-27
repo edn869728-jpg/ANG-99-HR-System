@@ -910,7 +910,15 @@
     var mgrData={},admData={},crtData={};
     var currentTopSystem={};
     var currentTopProfile={};
-    var currentPage='home';
+    // ✅ 動態讀取網址的 page 參數，若沒有才預設為 'home'
+    var currentPage = (function(){
+      try {
+        var p = new URLSearchParams(window.location.search).get('page');
+        return p ? String(p).toLowerCase() : 'home';
+      } catch(e) {
+        return 'home';
+      }
+    })();
     var salaryDraft=null;
     var REVIEW_BUSY=false;
     var salaryExtras=[];
@@ -1890,7 +1898,7 @@
       }
     }
 
-    // ANG.lo HR System Deploy Version: 129 - Fix 1: proper refresh clears UI first
+    // ANG.lo HR Deploy Version: 129 - Fix 1: proper refresh clears UI first
     function loadAll(){
       if(!gas()){applyVisibility();return}
       // 重置審核清單顯示，等資料回來再 render
