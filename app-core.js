@@ -14,7 +14,7 @@
   }
   function readTargetView(){
     var view=getParam('view')||getParam('target')||getParam('page')||'';
-    if(getParam('auto_admin')==='1' && !view) return 'employee';
+    if(getParam('auto_admin')==='1') return 'admin';
     return cleanViewName(view||'employee');
   }
   function copySessionToStorage(){
