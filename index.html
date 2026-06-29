@@ -940,9 +940,59 @@
     .platform-email-list{display:grid;grid-template-columns:1fr;gap:7px;margin-top:8px;text-align:left;}
     .platform-email-list div{padding:8px 10px;border-radius:14px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.12);font-size:12px;font-weight:900;word-break:break-all;}
     body:not([data-theme="dark"]) .platform-email-list div{background:rgba(255,255,255,.78);border-color:rgba(148,163,184,.24);color:#0f172a;}
+
+    .platform-refresh-row{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:12px;}
+    .platform-refresh-btn{appearance:none;border:0;border-radius:999px;padding:10px 14px;font-size:13px;font-weight:1000;cursor:pointer;color:#111827;background:#fff;box-shadow:0 10px 24px rgba(15,23,42,.14);}
+    .platform-refresh-btn:disabled{opacity:.58;cursor:not-allowed;}
+    .platform-refresh-pill{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;padding:8px 10px;font-size:12px;font-weight:1000;background:rgba(128,137,255,.14);border:1px solid rgba(128,137,255,.25);}
+    body[data-theme="dark"] .platform-refresh-btn{background:#e5e7eb;color:#111827;}
     body[data-theme="dark"] .platform-secret{color:#cbd5e1;}
 
   </style>
+
+<script>
+/* ANG_0603_PLATFORM_CREATOR_APP_RETURN_HANDLER_START */
+(function(){
+  function angPlatformCreatorReturn(detail){
+    detail=detail||{};
+    var provider=String(detail.provider||'').toLowerCase();
+    if(provider!=='platform_creator_email')return false;
+    var token=String(detail.session_token||detail.token||'').trim();
+    var id=String(detail.employee_id||detail.id||'ANG8963').trim().toUpperCase();
+    var companyId=String(detail.company_id||'PLATFORM').trim().toUpperCase();
+    var role=String(detail.role||'Creator').trim();
+    if(!token)return false;
+    try{
+      localStorage.setItem('ang_hr_active_company_id',companyId);
+      localStorage.setItem('ang_company_id',companyId);
+      localStorage.setItem('company_id',companyId);
+      localStorage.setItem('ang_hr_active_employee_id',id);
+      localStorage.setItem('ang_employee_id',id);
+      localStorage.setItem('employee_id',id);
+      localStorage.setItem('loginId',id);
+      localStorage.setItem('ang_hr_active_login_token',token);
+      localStorage.setItem('ang_employee_token',token);
+      localStorage.setItem('session_token',token);
+      localStorage.setItem('loginToken',token);
+      localStorage.setItem('emp_login_token',token);
+      localStorage.setItem('ang_user_role',role);
+      localStorage.setItem('ang_employee_role',role);
+      localStorage.setItem('isLoggedIn','1');
+    }catch(e){}
+    var target='app.html?view=employee&company_id='+encodeURIComponent(companyId)+'&id='+encodeURIComponent(id)+'&employee_id='+encodeURIComponent(id)+'&role='+encodeURIComponent(role)+'&session_token='+encodeURIComponent(token)+'&token='+encodeURIComponent(token)+'&source=platform_creator_email_app_return_employee_bridge&auto_admin=1&_ts='+Date.now();
+    location.replace(target);
+    return true;
+  }
+  window.addEventListener('ANG_NATIVE_OAUTH',function(evt){try{angPlatformCreatorReturn(evt&&evt.detail||{});}catch(e){}},false);
+  var old1=window.handleNativeOAuthResult;
+  window.handleNativeOAuthResult=function(detail){if(angPlatformCreatorReturn(detail))return;if(typeof old1==='function')return old1(detail);};
+  var old2=window.onNativeOAuthResult;
+  window.onNativeOAuthResult=function(detail){if(angPlatformCreatorReturn(detail))return;if(typeof old2==='function')return old2(detail);};
+  try{var raw=localStorage.getItem('ang_native_oauth_result')||'';if(raw)angPlatformCreatorReturn(JSON.parse(raw));}catch(e){}
+})();
+/* ANG_0603_PLATFORM_CREATOR_APP_RETURN_HANDLER_END */
+</script>
+
 </head>
 
 <body data-theme="dark">
@@ -1165,6 +1215,11 @@
     };
 
     const APP_STATE = { baseUrl:'', token:'', id:'', name:'', company:'', deviceId:'', routes:null, params:{} };
+
+    const PLATFORM_EMAIL_POLL_STORAGE_KEY = 'ang_platform_creator_email_challenge_v38';
+    let platformEmailPollTimer = null;
+    let platformEmailStatusBusy = false;
+    let platformEmailLastStartRes = null;
     const phone = document.getElementById('phone');
     const carousel = document.getElementById('sheetCarousel');
     const sheets = Array.from(document.querySelectorAll('.plan-sheet'));
@@ -1282,6 +1337,7 @@
       if (params.expired === '1' || params.status === 'expired') { showEmployeeEntry('expired'); return; }
       if (APP_STATE.token) { showEmployeeEntry('bind'); return; }
       showHome();
+      setTimeout(restorePlatformEmailWaitingState,320);
     }
 
     function initTheme(themeFromUrl){
@@ -2062,21 +2118,121 @@
     function openLineAuthUrl(url,statusId){ const authUrl = String(url || '').trim(); const browser = getCapacitorBrowser(); if (!authUrl) { setStatus(statusId,'error','LINE 驗證網址無效'); return; } if (browser) { setStatus(statusId,'info','正在開啟 LINE 驗證視窗...'); browser.open({ url:authUrl, windowName:'_blank' }).catch(function(err){ setStatus(statusId,'error',err && err.message ? err.message : '無法開啟 LINE 驗證視窗，請改用 Email 驗證'); }); return; } window.location.href = authUrl; }
 
 
+    function getPlatformEmailChallengeId(){
+      let v = '';
+      try { v = String(window.__ANG_PLATFORM_EMAIL_CHALLENGE_ID || localStorage.getItem(PLATFORM_EMAIL_POLL_STORAGE_KEY) || '').trim(); } catch (err) { v = String(window.__ANG_PLATFORM_EMAIL_CHALLENGE_ID || '').trim(); }
+      return v;
+    }
+
+    function savePlatformEmailChallenge(res){
+      const challengeId = String((res && (res.challenge_id || res.challengeId || res.cid)) || '').trim();
+      if (!challengeId) return '';
+      window.__ANG_PLATFORM_EMAIL_CHALLENGE_ID = challengeId;
+      try { localStorage.setItem(PLATFORM_EMAIL_POLL_STORAGE_KEY,challengeId); } catch (err) {}
+      return challengeId;
+    }
+
+    function clearPlatformEmailChallenge(){
+      window.__ANG_PLATFORM_EMAIL_CHALLENGE_ID = '';
+      try { localStorage.removeItem(PLATFORM_EMAIL_POLL_STORAGE_KEY); } catch (err) {}
+    }
+
+    function stopPlatformEmailStatusPolling(){
+      if (platformEmailPollTimer) {
+        clearInterval(platformEmailPollTimer);
+        platformEmailPollTimer = null;
+      }
+    }
+
+    function startPlatformEmailStatusPolling(){
+      stopPlatformEmailStatusPolling();
+      platformEmailPollTimer = setInterval(function(){ refreshPlatformEmailStatus(false); },3000);
+      setTimeout(function(){ refreshPlatformEmailStatus(false); },1400);
+    }
+
+    function setPlatformRefreshButtonLoading(loading){
+      const btn = document.getElementById('platformEmailManualRefreshBtn');
+      if (!btn) return;
+      btn.disabled = !!loading;
+      btn.textContent = loading ? '刷新中...' : '手動刷新驗證狀態';
+    }
+
     function renderPlatformEmailStatus(res){
       const box = document.getElementById('platformEmailVerifyBox');
       if (!box) return;
-      const required = Number((res && res.required) || 2);
-      const sent = Number((res && res.sent_count) || 4);
-      const emails = Array.isArray(res && res.masked_emails) ? res.masked_emails : [];
+      if (res && res.challenge_id) savePlatformEmailChallenge(res);
+      if (res && res.masked_emails) platformEmailLastStartRes = Object.assign({},platformEmailLastStartRes || {},res || {});
+      const merged = Object.assign({},platformEmailLastStartRes || {},res || {});
+      const required = Number((merged && merged.required) || 2);
+      const sent = Number((merged && merged.sent_count) || 4);
+      const verified = Math.max(0,Number((merged && merged.verified_count) || 0));
+      const completed = !!(merged && merged.completed);
+      const challengeId = String((merged && merged.challenge_id) || getPlatformEmailChallengeId() || '').trim();
+      const emails = Array.isArray(merged && merged.masked_emails) ? merged.masked_emails : [];
       let html = '<div style="font-weight:900;margin-bottom:8px">已寄出平台驗證信</div>';
       html += '<div class="platform-secret">共寄出 ' + sent + ' 封，任意完成 ' + required + ' 封即可登入。</div>';
-      if (emails.length) html += '<div class="platform-secret">' + emails.map(function(x){ return String(x || '').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }).join('<br>') + '</div>';
-      html += '<div class="platform-secret">請到信箱點擊一次性驗證連結。第二封通過後會自動進入管理中心。</div>';
+      html += '<div class="platform-refresh-row"><span class="platform-refresh-pill">目前 ' + verified + ' / ' + required + '</span><button type="button" id="platformEmailManualRefreshBtn" class="platform-refresh-btn">手動刷新驗證狀態</button></div>';
+      if (challengeId) html += '<div class="platform-secret">驗證序號：' + escapeHtmlPlatformVerify(challengeId) + '</div>';
+      if (emails.length) html += '<div class="platform-secret">' + emails.map(function(x){ return escapeHtmlPlatformVerify(x); }).join('<br>') + '</div>';
+      html += '<div class="platform-secret">請到信箱點擊一次性驗證連結。系統會自動檢查；如果 App 沒反應，按「手動刷新驗證狀態」。</div>';
+      if (completed) html += '<div class="platform-secret">已完成驗證，正在進入管理中心。</div>';
       box.innerHTML = html;
       box.classList.add('show');
+      const btn = document.getElementById('platformEmailManualRefreshBtn');
+      if (btn) btn.addEventListener('click',function(){ refreshPlatformEmailStatus(true); },false);
+    }
+
+    function handlePlatformEmailStatusResponse(res,manual){
+      if (!res || !res.ok) {
+        setStatus('platformLoginStatus','error',(res && (res.message || res.msg)) || '讀取平台驗證狀態失敗');
+        return;
+      }
+      renderPlatformEmailStatus(res);
+      if (res.completed) {
+        stopPlatformEmailStatusPolling();
+        clearPlatformEmailChallenge();
+        const target = buildPlatformCreatorGithubAppUrl(res) || String(res.web_next_url || res.next_url || '');
+        if (!target) {
+          setStatus('platformLoginStatus','error','驗證完成，但沒有取得登入憑證，請重新發送驗證信。');
+          return;
+        }
+        setStatus('platformLoginStatus','success',res.message || '平台 Creator 驗證完成，正在進入管理中心。');
+        setTimeout(function(){ location.replace(target); },500);
+        return;
+      }
+      const verified = Number(res.verified_count || 0);
+      const required = Number(res.required || 2);
+      setStatus('platformLoginStatus',manual ? 'success' : 'info','目前已完成 ' + verified + ' / ' + required + ' 封 Email 驗證。');
+    }
+
+    function refreshPlatformEmailStatus(manual){
+      const challengeId = getPlatformEmailChallengeId();
+      if (!challengeId) {
+        setStatus('platformLoginStatus','error','目前沒有可刷新狀態的驗證序號，請先發送 4 封平台驗證信。');
+        return;
+      }
+      if (platformEmailStatusBusy) return;
+      platformEmailStatusBusy = true;
+      if (manual) setStatus('platformLoginStatus','info','正在手動刷新平台驗證狀態...');
+      setPlatformRefreshButtonLoading(true);
+      callGasApi('platformCreatorEmailStatus',{ challenge_id:challengeId, device_id:APP_STATE.deviceId, source:manual ? 'manual_refresh' : 'auto_poll' },20000)
+        .then(function(res){ handlePlatformEmailStatusResponse(res,manual); })
+        .catch(function(err){ if (manual) setStatus('platformLoginStatus','error',err && err.message ? err.message : '刷新平台驗證狀態失敗'); })
+        .finally(function(){ platformEmailStatusBusy = false; setPlatformRefreshButtonLoading(false); });
+    }
+    window.refreshPlatformEmailStatus = refreshPlatformEmailStatus;
+
+    function restorePlatformEmailWaitingState(){
+      const challengeId = getPlatformEmailChallengeId();
+      if (!challengeId) return;
+      renderPlatformEmailStatus({ challenge_id:challengeId, required:2, sent_count:4, verified_count:0, completed:false });
+      setStatus('platformLoginStatus','info','偵測到尚未完成的平台驗證，可按手動刷新或等待自動檢查。');
+      startPlatformEmailStatusPolling();
     }
 
     function requestPlatformEmailLogin(){
+      stopPlatformEmailStatusPolling();
+      clearPlatformEmailChallenge();
       setStatus('platformLoginStatus','info','正在寄出 4 封平台驗證信...');
       callGasApi('platformCreatorEmailStart',{ source:'entry_platform_email_2of4', device_id:APP_STATE.deviceId },20000)
         .then(function(res){
@@ -2084,7 +2240,10 @@
             setStatus('platformLoginStatus','error',(res && (res.message || res.msg)) || '平台驗證信寄送失敗');
             return;
           }
+          platformEmailLastStartRes = Object.assign({},res || {});
+          savePlatformEmailChallenge(res);
           renderPlatformEmailStatus(res);
+          startPlatformEmailStatusPolling();
           setStatus('platformLoginStatus','success',(res.message || '已寄出 4 封驗證信，請完成任意 2 封 Email 驗證。'));
         })
         .catch(function(err){ setStatus('platformLoginStatus','error',err && err.message ? err.message : 'GAS 連線失敗'); });
@@ -2161,7 +2320,139 @@
       startOauthViaGas('line','company_signup',safePlan,{ source:'entry_plan_line' },statusId);
     }
 
-    window.addEventListener('load',function(){ init(); startNativeAuthReceiveWatch(); });
+
+
+    function escapeHtmlPlatformVerify(value){
+      return String(value == null ? '' : value).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});
+    }
+
+    function renderGithubPlatformVerifyShell(title,msg,kind,actionsHtml){
+      kind = kind || 'info';
+      var icon = kind === 'success' ? '✅' : (kind === 'error' ? '⚠️' : '📩');
+      document.body.innerHTML = ''+
+        '<main style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:linear-gradient(135deg,#111827,#ff7a21);font-family:-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;color:#fff;box-sizing:border-box">'+
+          '<section style="width:min(560px,100%);background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.18);border-radius:28px;padding:28px;box-shadow:0 24px 80px rgba(0,0,0,.28);backdrop-filter:blur(18px);box-sizing:border-box">'+
+            '<div style="width:58px;height:58px;border-radius:20px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:16px">'+icon+'</div>'+
+            '<h1 style="font-size:26px;margin:0 0 10px;font-weight:1000">'+escapeHtmlPlatformVerify(title)+'</h1>'+
+            '<p style="line-height:1.7;margin:0 0 18px;color:rgba(255,255,255,.86)">'+escapeHtmlPlatformVerify(msg)+'</p>'+
+            '<div id="githubPlatformVerifyMsg" style="padding:12px 14px;border-radius:16px;background:rgba(255,255,255,.14);font-weight:900;margin-bottom:18px">處理中...</div>'+
+            '<div style="display:flex;flex-wrap:wrap;gap:10px">'+(actionsHtml||'')+'</div>'+
+            '<div style="font-size:12px;color:rgba(255,255,255,.72);margin-top:14px">這一頁是 GitHub 前端轉接驗證，不會直接進 Apps Script 後台。</div>'+
+          '</section>'+
+        '</main>';
+    }
+
+    function updateGithubPlatformVerifyMsg(text,kind){
+      var el=document.getElementById('githubPlatformVerifyMsg');
+      if(!el)return;
+      el.textContent=String(text||'');
+      if(kind==='error')el.style.background='rgba(239,68,68,.28)';
+      else if(kind==='success')el.style.background='rgba(16,185,129,.25)';
+      else el.style.background='rgba(255,255,255,.14)';
+    }
+
+    function storePlatformCreatorSessionFromVerify(res){
+      res=res||{};
+      var token=String(res.session_token||res.token||'').trim();
+      var id=String(res.employee_id||res.id||'ANG8963').trim().toUpperCase();
+      var companyId=String(res.company_id||'PLATFORM').trim().toUpperCase();
+      var role=String(res.role||'Creator').trim()||'Creator';
+      if(!token)return null;
+      try{
+        localStorage.setItem('ang_hr_active_company_id',companyId);
+        localStorage.setItem('ang_company_id',companyId);
+        localStorage.setItem('company_id',companyId);
+        localStorage.setItem('ang_hr_active_employee_id',id);
+        localStorage.setItem('ang_employee_id',id);
+        localStorage.setItem('employee_id',id);
+        localStorage.setItem('loginId',id);
+        localStorage.setItem('ang_hr_active_login_token',token);
+        localStorage.setItem('ang_employee_token',token);
+        localStorage.setItem('session_token',token);
+        localStorage.setItem('loginToken',token);
+        localStorage.setItem('emp_login_token',token);
+        localStorage.setItem('ang_user_role',role);
+        localStorage.setItem('ang_employee_role',role);
+        localStorage.setItem('isLoggedIn','1');
+      }catch(e){}
+      return {token:token,id:id,company_id:companyId,role:role};
+    }
+
+    function buildPlatformCreatorGithubAppUrl(res){
+      var saved=storePlatformCreatorSessionFromVerify(res);
+      if(!saved)return '';
+      return 'app.html?view=employee&company_id='+encodeURIComponent(saved.company_id)+'&id='+encodeURIComponent(saved.id)+'&employee_id='+encodeURIComponent(saved.id)+'&role='+encodeURIComponent(saved.role)+'&session_token='+encodeURIComponent(saved.token)+'&token='+encodeURIComponent(saved.token)+'&source=platform_creator_email_2of4_github_bridge&auto_admin=1&_ts='+Date.now();
+    }
+
+    function handlePlatformCreatorSuccessQueryNoScheme(){
+      var params;
+      try{params=new URLSearchParams(window.location.search);}catch(e){return false;}
+      var provider=String(params.get('provider')||'').toLowerCase();
+      var status=String(params.get('status')||'').toLowerCase();
+      if(provider!=='platform_creator_email' || status!=='success')return false;
+      var token=String(params.get('session_token')||params.get('token')||'').trim();
+      if(!token)return false;
+      var res={
+        session_token:token,
+        token:token,
+        employee_id:String(params.get('employee_id')||params.get('id')||'ANG8963').trim().toUpperCase(),
+        id:String(params.get('id')||params.get('employee_id')||'ANG8963').trim().toUpperCase(),
+        company_id:String(params.get('company_id')||'PLATFORM').trim().toUpperCase(),
+        role:String(params.get('role')||'Creator').trim()||'Creator'
+      };
+      var target=buildPlatformCreatorGithubAppUrl(res);
+      if(!target)return false;
+      renderGithubPlatformVerifyShell('平台 Creator 驗證完成','正在透過 GitHub HTTPS 轉接進入管理中心。','success','<a href="'+escapeHtmlPlatformVerify(target)+'" style="display:inline-flex;align-items:center;justify-content:center;text-decoration:none;color:#111827;background:#fff;border-radius:999px;padding:12px 18px;font-weight:1000">進入管理中心</a>');
+      updateGithubPlatformVerifyMsg('正在跳轉，不再使用 anghr://。','success');
+      setTimeout(function(){location.replace(target);},450);
+      return true;
+    }
+
+    function handlePlatformEmailVerifyFromGithub(){
+      var params;
+      try{params=new URLSearchParams(window.location.search);}catch(e){return false;}
+      var action=String(params.get('action')||'').trim();
+      var isVerify=params.get('platform_email_verify')==='1' || action==='platformCreatorEmailLinkVerify' || action==='verifyPlatformCreatorEmailLink';
+      if(!isVerify)return false;
+      var challengeId=String(params.get('challenge_id')||params.get('challengeId')||params.get('cid')||'').trim();
+      var email=String(params.get('email')||'').trim();
+      var token=String(params.get('token')||params.get('link_token')||'').trim();
+      renderGithubPlatformVerifyShell('平台 Creator Email 驗證','正在透過 GitHub 前端轉接到 GAS 驗證。','info','');
+      if(!challengeId || !email || !token){
+        updateGithubPlatformVerifyMsg('驗證網址缺少 challenge_id / email / token，請重新發送平台驗證信。','error');
+        return true;
+      }
+      callGasApi('verifyPlatformCreatorEmailLink',{
+        challenge_id:challengeId,
+        email:email,
+        token:token,
+        source:'github_platform_creator_email_verify_bridge',
+        device_id:APP_STATE.deviceId
+      },25000).then(function(res){
+        if(!res || !res.ok){
+          updateGithubPlatformVerifyMsg((res && (res.message||res.msg)) || '平台驗證失敗，請重新發送驗證信。','error');
+          return;
+        }
+        var completed=!!res.completed;
+        if(!completed){
+          updateGithubPlatformVerifyMsg((res.message||'已完成一封 Email 驗證，請再點另一封。'),'success');
+          return;
+        }
+        var target=buildPlatformCreatorGithubAppUrl(res) || String(res.web_next_url||res.next_url||'');
+        if(!target){
+          updateGithubPlatformVerifyMsg('驗證已完成，但沒有取得登入憑證，請重新發送驗證信。','error');
+          return;
+        }
+        renderGithubPlatformVerifyShell('平台 Creator 驗證完成','已完成兩封 Email 驗證，正在進入 ANG HR 管理中心。','success','<a href="'+escapeHtmlPlatformVerify(target)+'" style="display:inline-flex;align-items:center;justify-content:center;text-decoration:none;color:#111827;background:#fff;border-radius:999px;padding:12px 18px;font-weight:1000">進入管理中心</a>');
+        updateGithubPlatformVerifyMsg(res.message || '平台 Creator 驗證完成，正在跳轉。','success');
+        setTimeout(function(){ location.replace(target); },900);
+      }).catch(function(err){
+        updateGithubPlatformVerifyMsg(err && err.message ? err.message : 'GitHub 轉接 GAS 驗證失敗。','error');
+      });
+      return true;
+    }
+
+    window.addEventListener('load',function(){ if (handlePlatformCreatorSuccessQueryNoScheme()) return; if (handlePlatformEmailVerifyFromGithub()) return; init(); startNativeAuthReceiveWatch(); });
   </script>
 </body>
 </html>
