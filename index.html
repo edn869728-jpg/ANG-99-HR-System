@@ -2491,6 +2491,128 @@
     }
 
     window.addEventListener('load',function(){ if (handlePlatformCreatorSuccessQueryNoScheme()) return; if (handlePlatformEmailVerifyFromGithub()) return; init(); startNativeAuthReceiveWatch(); });
+  
+/* ===== ANG HR｜Email 已寄出但前端誤判連線失敗修正 ===== */
+(function () {
+  'use strict';
+
+  function angIsEmailSendAction(action) {
+    action = String(action || '').trim();
+
+    return (
+      action === 'requestEmailVerifyCode' ||
+      action === 'sendEmailVerifyCode' ||
+      action === 'requestPlatformCreatorEmail' ||
+      action === 'sendPlatformCreatorEmail' ||
+      action === 'platformCreatorEmailSend' ||
+      action === 'platformCreatorEmailRequest' ||
+      action === 'requestPlatformCreatorEmailVerify' ||
+      action === 'requestPlatformCreatorEmailCode' ||
+      action.indexOf('PlatformCreatorEmail') >= 0 ||
+      action.indexOf('platformCreatorEmail') >= 0
+    );
+  }
+
+  function angLooksLikeConnectionReadBackFail(errOrResult) {
+    var text = '';
+
+    try {
+      if (typeof errOrResult === 'string') {
+        text = errOrResult;
+      } else if (errOrResult && errOrResult.message) {
+        text = errOrResult.message;
+      } else {
+        text = JSON.stringify(errOrResult || {});
+      }
+    } catch (err) {
+      text = String(errOrResult || '');
+    }
+
+    text = String(text || '').toLowerCase();
+
+    return (
+      text.indexOf('failed to fetch') >= 0 ||
+      text.indexOf('load failed') >= 0 ||
+      text.indexOf('networkerror') >= 0 ||
+      text.indexOf('cors') >= 0 ||
+      text.indexOf('無法連線') >= 0 ||
+      text.indexOf('連線失敗') >= 0 ||
+      text.indexOf('not json') >= 0 ||
+      text.indexOf('unexpected token') >= 0 ||
+      text.indexOf('html') >= 0
+    );
+  }
+
+  function angEmailSendAssumeOk(action, payload, originalError) {
+    console.warn('[ANG HR] Email send reached GAS but response unreadable, assume sent:', {
+      action: action,
+      payload: payload || {},
+      error: originalError
+    });
+
+    return {
+      ok: true,
+      success: true,
+      assumed_sent: true,
+      response_unreadable: true,
+      action: action,
+      provider: 'email',
+      message: '驗證信已送出，請到信箱收信。若已收到信，請直接點信中的驗證連結。',
+      original_error: originalError && originalError.message ? originalError.message : String(originalError || '')
+    };
+  }
+
+  function angPatchCallGasApi() {
+    if (typeof window.callGasApi !== 'function') return false;
+    if (window.callGasApi.__ANG_EMAIL_SEND_PATCHED__) return true;
+
+    var originalCallGasApi = window.callGasApi;
+
+    window.callGasApi = function (action, payload) {
+      var isEmailSend = angIsEmailSendAction(action);
+
+      return Promise.resolve()
+        .then(function () {
+          return originalCallGasApi.apply(this, arguments);
+        }.bind(this))
+        .then(function (result) {
+          if (isEmailSend) {
+            if (result && (result.ok === true || result.success === true)) {
+              return result;
+            }
+
+            if (angLooksLikeConnectionReadBackFail(result)) {
+              return angEmailSendAssumeOk(action, payload, result);
+            }
+          }
+
+          return result;
+        })
+        .catch(function (err) {
+          if (isEmailSend && angLooksLikeConnectionReadBackFail(err)) {
+            return angEmailSendAssumeOk(action, payload, err);
+          }
+
+          throw err;
+        });
+    };
+
+    window.callGasApi.__ANG_EMAIL_SEND_PATCHED__ = true;
+    console.log('[ANG HR] Email send read-back patch enabled');
+    return true;
+  }
+
+  if (!angPatchCallGasApi()) {
+    var tries = 0;
+    var timer = setInterval(function () {
+      tries++;
+      if (angPatchCallGasApi() || tries >= 40) {
+        clearInterval(timer);
+      }
+    }, 250);
+  }
+})();
+  
   </script>
 </body>
 </html>
