@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover" />
   <title>ANG HR SYSTEMS｜ENTRY</title>
   <link rel="preload" as="image" href="https://pub-51476fa95e5148749c1b932e123dc797.r2.dev/ang-entry-bg-day.png?v=20260613-r2-html" referrerpolicy="no-referrer" />
   <link rel="preload" as="image" href="https://pub-51476fa95e5148749c1b932e123dc797.r2.dev/ang-entry-bg-night.png?v=20260613-r2-html" referrerpolicy="no-referrer" />
@@ -84,12 +84,17 @@
     .phone{
       width:100%;
       max-width:400px;
-      height:min(100vh,760px);
+      min-height:100vh;
+      height:100vh;
       position:relative;
       overflow:hidden;
       border-radius:24px;
       background:var(--screen-fallback,#05060b);
       box-shadow:0 18px 42px rgba(0,0,0,.28);
+    }
+    body{
+      padding-top:env(safe-area-inset-top);
+      padding-bottom:env(safe-area-inset-bottom);
     }
     .phone::before{
       content:"";
@@ -187,7 +192,7 @@
     }
     #managerEntryView.manager-slide-in .sheet-stage{animation:managerSlideFromLeft .58s var(--ease) both;}
     #managerEntryView.manager-slide-in .plan-sheet.active{animation:managerSheetSoftPop .42s var(--ease) both;}
-    .top-space{flex:1;min-height:360px;transition:opacity .42s var(--ease),transform .42s var(--ease);}
+    .top-space{flex:1;min-height:260px;transition:opacity .42s var(--ease),transform .42s var(--ease);}
     .phone.expanded .top-space{opacity:.38;transform:translateY(-24px) scale(.96);}
     .panel{
       position:relative;
@@ -302,7 +307,7 @@
     .profile-name{color:var(--main-text);font-size:18px;font-weight:1000;letter-spacing:.02em;}
     .profile-meta{margin-top:4px;color:var(--muted-text);font-size:13px;font-weight:850;letter-spacing:.03em;}
 
-    .sheet-stage{position:absolute;left:0;right:0;bottom:0;z-index:8;height:190px;max-height:88vh;overflow:visible;transition:height .58s var(--ease);}
+    .sheet-stage{position:absolute;left:0;right:0;bottom:0;z-index:8;height:230px;max-height:88vh;overflow:visible;transition:height .58s var(--ease);}
     .phone.expanded .sheet-stage{height:82vh;}
     .sheet-carousel{width:100%;height:100%;display:flex;gap:14px;overflow-x:auto;overflow-y:visible;scroll-snap-type:x mandatory;scroll-padding-left:calc((100% - 358px) / 2);scroll-padding-right:calc((100% - 358px) / 2);padding-left:calc((100% - 358px) / 2);padding-right:calc((100% - 358px) / 2);-webkit-overflow-scrolling:touch;touch-action:pan-x;overscroll-behavior-x:contain;overscroll-behavior-y:none;scroll-behavior:smooth;cursor:grab;scrollbar-width:none;}
     .sheet-carousel::-webkit-scrollbar{display:none;}
@@ -310,13 +315,56 @@
     .plan-sheet{flex:0 0 auto;height:100%;scroll-snap-align:center;border-radius:32px 32px 0 0;background:var(--card-bg);border:1px solid var(--card-border);border-bottom:0;box-shadow:0 -14px 34px rgba(15,23,42,.10);backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px);overflow:hidden;display:flex;flex-direction:column;opacity:.58;transform:scale(.94) translateY(14px);transition:opacity .28s var(--ease),transform .28s var(--ease),box-shadow .28s var(--ease),background .28s ease;position:relative;touch-action:pan-x;}
     .plan-sheet.active{opacity:1;transform:scale(1) translateY(0);box-shadow:0 -18px 46px rgba(15,23,42,.15);}
     body[data-theme="dark"] .plan-sheet.active{box-shadow:0 -18px 46px rgba(0,0,0,.24);}
-    .plan-sheet.login,.plan-sheet.basic,.plan-sheet.plus,.plan-sheet.premium{width:358px;}
+    .plan-sheet.employee,.plan-sheet.login,.plan-sheet.intro,.plan-sheet.basic,.plan-sheet.plus,.plan-sheet.premium{width:358px;}
     .plan-sheet::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 100% 0%,rgba(89,221,255,.18) 0%,rgba(89,221,255,0) 40%),radial-gradient(circle at 0% 100%,rgba(255,135,224,.13) 0%,rgba(255,135,224,0) 48%);pointer-events:none;z-index:0;}
     .sheet-handle-zone{width:100%;padding:12px 0 8px;display:flex;justify-content:center;flex:0 0 auto;cursor:default;position:relative;z-index:2;pointer-events:none;}
     .sheet-handle{width:44px;height:5px;border-radius:999px;background:rgba(100,116,139,.34);}
     body[data-theme="dark"] .sheet-handle{background:rgba(255,255,255,.20);}
     .sheet-summary{position:relative;z-index:2;padding:6px 32px 8px 16px;flex:0 0 auto;}
-    .phone:not(.expanded) .sheet-stage::after{content:"往上滑開啟";position:absolute;left:50%;top:-24px;transform:translateX(-50%);display:block;color:var(--muted-text);font-size:15px;line-height:1.2;font-weight:900;letter-spacing:.06em;text-align:center;opacity:.78;animation:hintBounce 1.5s ease-in-out infinite;z-index:10;white-space:nowrap;pointer-events:none;}
+    .intro-summary{padding:16px 16px 16px 16px;position:relative;overflow:visible;}
+    .entry-chooser{position:relative;z-index:1;padding:0;}
+    .entry-chooser-title{margin:0;text-align:center;color:#fff;font-size:24px;line-height:1.1;font-weight:1000;letter-spacing:.08em;}
+    .entry-chooser-subtitle{margin:6px 0 12px;text-align:center;color:rgba(236,242,255,.74);font-size:13px;line-height:1.35;font-weight:700;letter-spacing:.02em;}
+    .entry-chooser-list{display:grid;gap:10px;}
+    .entry-chooser-card{position:relative;min-height:90px;width:100%;display:grid;grid-template-columns:1fr auto;grid-template-areas:"guide guide" "info action";align-items:center;gap:8px 12px;padding:12px 14px;border-radius:20px;border:1px solid rgba(255,255,255,.14);background:linear-gradient(135deg,rgba(255,255,255,.07),rgba(255,255,255,.04));box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 8px 18px rgba(0,0,0,.20);overflow:hidden;appearance:none;cursor:pointer;color:inherit;text-align:left;}
+    .entry-chooser-card::before{content:"";position:absolute;inset:0;border-radius:inherit;z-index:0;}
+    .entry-chooser-card.login::before{background:radial-gradient(220px 100px at 12% 50%,rgba(255,79,195,.16),transparent 60%),linear-gradient(90deg,rgba(255,88,196,.13) 0%,rgba(149,98,255,.10) 58%,rgba(255,255,255,.03) 100%);}
+    .entry-chooser-card.plan::before{background:radial-gradient(220px 100px at 12% 50%,rgba(53,183,255,.16),transparent 60%),linear-gradient(90deg,rgba(63,164,255,.13) 0%,rgba(112,120,255,.10) 58%,rgba(255,255,255,.03) 100%);}
+    .entry-chooser-card>*{position:relative;z-index:1;}
+    .entry-chooser-guide{grid-area:guide;display:flex;align-items:center;gap:6px;color:#ff4fc3;}
+    .entry-chooser-guide-meta{display:flex;align-items:center;gap:6px;}
+    .entry-chooser-person{width:22px;height:22px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;border:1px solid currentColor;font-size:12px;line-height:1;}
+    .entry-chooser-card.login .entry-chooser-guide,.entry-chooser-card.login .entry-chooser-info{justify-content:flex-end;text-align:right;}
+    .entry-chooser-card.plan .entry-chooser-guide{color:#35b7ff;}
+    .entry-chooser-chevrons{display:flex;align-items:center;gap:4px;}
+    .entry-chooser-chevrons span{width:10px;height:10px;border-top:2px solid currentColor;border-left:2px solid currentColor;transform:rotate(-45deg);opacity:.95;}
+    .entry-chooser-card.plan .entry-chooser-chevrons span{border-left:none;border-right:2px solid currentColor;transform:rotate(45deg);}
+    .entry-chooser-chip{height:24px;min-width:72px;padding:0 10px;border:1px solid currentColor;border-radius:999px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;letter-spacing:.06em;white-space:nowrap;}
+    .entry-chooser-info{grid-area:info;min-width:0;}
+    .entry-chooser-card-title{margin:0 0 2px;color:#fff;font-size:24px;line-height:1.1;font-weight:1000;letter-spacing:.03em;}
+    .entry-chooser-card-sub{margin:0;color:rgba(234,241,255,.74);font-size:13px;line-height:1.35;font-weight:700;letter-spacing:.02em;}
+    .entry-chooser-action{grid-area:action;height:30px;min-width:92px;padding:0 10px;border-radius:999px;border:1px solid rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;letter-spacing:.05em;white-space:nowrap;background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.04));}
+    .entry-chooser-card.login .entry-chooser-action{color:#ff4fc3;border-color:rgba(255,79,195,.45);}
+    .entry-chooser-card.plan .entry-chooser-action{color:#59ddff;border-color:rgba(53,183,255,.45);}
+    @media (max-width:430px){
+      .intro-summary{padding:12px 10px 12px 10px;}
+      .entry-chooser{padding:0;}
+      .entry-chooser-title{font-size:20px;}
+      .entry-chooser-subtitle{font-size:12px;margin:5px 0 10px;}
+      .entry-chooser-card{padding:10px 10px;gap:6px 10px;border-radius:16px;}
+      .entry-chooser-card-title{font-size:20px;}
+      .entry-chooser-card-sub{font-size:12px;line-height:1.3;}
+      .entry-chooser-guide{gap:5px;}
+      .entry-chooser-person{width:20px;height:20px;font-size:11px;}
+      .entry-chooser-chip{min-width:66px;font-size:10px;height:22px;padding:0 8px;}
+      .entry-chooser-chevrons{gap:3px;}
+      .entry-chooser-chevrons span{width:8px;height:8px;}
+      .entry-chooser-action{display:none;}
+    }
+    .bg-swipe-guide{position:absolute;left:50%;top:-138px;transform:translateX(-50%);display:flex;align-items:center;justify-content:center;z-index:10;pointer-events:none;opacity:.70;}
+    .bg-swipe-guide-gif{width:74px;height:auto;display:block;filter:drop-shadow(0 6px 12px rgba(0,0,0,.34));}
+    .phone.expanded .bg-swipe-guide{display:none;}
+    .phone:not(.expanded) .sheet-stage::after{content:"往上滑看更多";position:absolute;left:50%;top:-24px;transform:translateX(-50%);display:block;color:var(--muted-text);font-size:15px;line-height:1.2;font-weight:900;letter-spacing:.06em;text-align:center;opacity:.78;animation:hintBounce 1.5s ease-in-out infinite;z-index:10;white-space:nowrap;pointer-events:none;}
     @keyframes hintBounce{0%,100%{transform:translateX(-50%) translateY(0);}50%{transform:translateX(-50%) translateY(-6px);}}
 
     .sheet-summary-grid{display:grid;grid-template-columns:1fr auto;grid-template-rows:auto auto;gap:16px 12px;align-items:end;justify-items:start;}
@@ -350,6 +398,11 @@
     .auth-split-row .google-action,.auth-split-row .line-action{margin-top:0!important;min-height:52px!important;padding:12px 10px!important;border-radius:16px!important;font-size:14px!important;line-height:1.22!important;letter-spacing:.01em!important;gap:7px!important;}
     .auth-split-row .btn-icon{width:1.45em;height:1.45em;font-size:.86em;transform:none;}
     .has-line-icon .btn-icon{min-width:34px;width:34px;height:22px;border-radius:7px;background:rgba(255,255,255,.96);color:#06c755;font-size:10px;font-family:Arial,sans-serif;font-weight:1000;letter-spacing:-.02em;box-shadow:0 3px 10px rgba(15,23,42,.12);}
+    .other-auth{margin-top:10px;border-radius:16px;border:1px solid rgba(148,163,184,.28);background:rgba(255,255,255,.04);overflow:hidden;}
+    .other-auth summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:center;min-height:46px;padding:10px 14px;color:var(--muted-text);font-size:14px;font-weight:900;letter-spacing:.03em;}
+    .other-auth summary::-webkit-details-marker{display:none;}
+    .other-auth[open] summary{border-bottom:1px solid rgba(148,163,184,.22);}
+    .other-auth .auth-split-row{margin:10px;padding:0;}
 
     .inline-form{display:grid;gap:10px;margin-top:14px;}
     .inline-label{color:var(--main-text);font-size:13px;line-height:1.35;font-weight:1000;}
@@ -360,9 +413,11 @@
     .swipe-hint{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;width:100%;margin-top:12px;column-gap:16px;color:var(--muted-text);}
     .swipe-hint-side{display:flex;align-items:flex-end;gap:4px;color:#8089ff;padding-top:4px;}
     .swipe-hint-side.left{justify-content:flex-end;animation:swipeHintLeft 1.2s ease-in-out infinite;}
-    .swipe-hint-side.right{justify-content:flex-start;animation:swipeHintLeft 1.2s ease-in-out infinite;}
+    .swipe-hint-side.right{justify-content:flex-start;animation:swipeHintRight 1.2s ease-in-out infinite;}
+    .swipe-hint-side.right svg{transform:rotate(180deg);}
     .swipe-hint-side svg{width:18px;height:18px;display:block;stroke:currentColor;fill:none;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round;}
     @keyframes swipeHintLeft{0%,100%{opacity:.40;transform:translateX(3px)}50%{opacity:1;transform:translateX(-2px)}}
+    @keyframes swipeHintRight{0%,100%{opacity:.40;transform:translateX(-3px)}50%{opacity:1;transform:translateX(2px)}}
     .swipe-hint-text{min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-align:center;}
     .swipe-hint-main{color:#8089ff;font-size:15px;line-height:1.5;font-weight:1000;white-space:nowrap;}
     .swipe-hint-plan{color:#8089ff;font-size:14px;line-height:1.3;font-weight:1000;letter-spacing:.02em;white-space:nowrap;}
@@ -392,14 +447,15 @@
     @media (max-width:430px){
       body{align-items:stretch;}
       .phone{max-width:none;max-height:none;height:100vh;border-radius:0;}
-      .top-space{min-height:380px;}
+      .top-space{min-height:240px;}
+      .sheet-stage{height:240px;}
       .sheet-carousel{scroll-padding-left:calc((100% - 342px) / 2);scroll-padding-right:calc((100% - 342px) / 2);padding-left:calc((100% - 342px) / 2);padding-right:calc((100% - 342px) / 2);}
-      .plan-sheet.login,.plan-sheet.register,.plan-sheet.basic,.plan-sheet.plus,.plan-sheet.premium{width:342px;}
+      .plan-sheet.employee,.plan-sheet.login,.plan-sheet.intro,.plan-sheet.register,.plan-sheet.basic,.plan-sheet.plus,.plan-sheet.premium{width:342px;}
       .sheet-title{font-size:32px;}
       .sheet-price{font-size:26px;}
     }
     @media (max-width:360px){.btn{font-size:17px;padding-left:14px;padding-right:14px;gap:8px;}.btn-row .btn{font-size:15px;padding-left:10px;padding-right:10px;}.sheet-action button{font-size:16px;}}
-    @media (max-height:700px){.phone{height:100vh;border-radius:0;}.top-space{min-height:320px;}.panel{min-height:258px;padding:24px 22px 22px;}.sheet-stage{height:188px;}}
+    @media (max-height:700px){.phone{height:100vh;border-radius:0;}.top-space{min-height:260px;}.panel{min-height:258px;padding:24px 22px 22px;}.sheet-stage{height:220px;}}
 
     /* ANG_UI_CLEAN_TYPOGRAPHY_V2
        目的：統一字級、按鈕間距、卡片排版與手機可讀性。 */
@@ -574,6 +630,10 @@
       height:196px;
     }
 
+    .phone:not(.expanded) .sheet-stage{
+      height:216px;
+    }
+
     .phone.expanded .sheet-stage{
       height:84vh;
     }
@@ -594,8 +654,9 @@
       padding:10px 22px 12px;
     }
 
-    .plan-sheet.login .sheet-summary{
-      padding:8px 22px 14px;
+    .plan-sheet.login .sheet-summary,
+    .plan-sheet.employee .sheet-summary{
+      padding:14px 22px 14px;
     }
 
     .summary-main{
@@ -610,11 +671,72 @@
       text-shadow:0 1px 2px rgba(0,0,0,.20);
     }
 
-    .plan-sheet.login .sheet-title{
-      font-size:26px;
+    .plan-sheet.login .sheet-title,
+    .plan-sheet.employee .sheet-title{
+      font-size:29px;
       line-height:1.12;
       letter-spacing:.01em;
       max-width:210px;
+    }
+
+    .employee-quick-note{
+      min-height:42px;
+      border-radius:14px;
+      padding:9px 12px;
+      display:flex;
+      align-items:center;
+      color:var(--muted-text);
+      font-size:13px;
+      font-weight:900;
+      letter-spacing:.01em;
+      background:rgba(255,255,255,.06);
+      border:1px solid var(--input-border);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .login-company-quick{
+      margin-top:12px;
+      padding-top:12px;
+      border-top:1px solid var(--line);
+    }
+
+    .login-company-quick .inline-label{
+      margin-bottom:6px;
+      font-size:16px;
+      line-height:1.25;
+      letter-spacing:.02em;
+      font-weight:1000;
+    }
+
+    .login-company-row{
+      display:grid;
+      grid-template-columns:minmax(0,1fr) auto;
+      gap:8px;
+      align-items:center;
+    }
+
+    .login-company-row .inline-input{
+      min-height:42px;
+      border-radius:14px;
+      padding:9px 12px;
+      font-size:14px;
+      letter-spacing:.01em;
+    }
+
+    .login-next-btn{
+      min-width:88px;
+      min-height:42px;
+      border-radius:14px;
+      padding:9px 14px;
+      background:var(--primary-bg);
+      color:#fff!important;
+      font-size:14px;
+      font-weight:1000;
+      letter-spacing:.03em;
+      box-shadow:var(--primary-shadow);
+      text-shadow:0 1px 2px rgba(0,0,0,.18);
     }
 
     .sheet-summary-grid{
@@ -836,12 +958,17 @@
         min-height:372px;
       }
 
+      .phone:not(.expanded) .sheet-stage{
+        height:226px;
+      }
+
       .sheet-title{
         font-size:32px;
       }
 
-      .plan-sheet.login .sheet-title{
-        font-size:25px;
+      .plan-sheet.login .sheet-title,
+      .plan-sheet.employee .sheet-title{
+        font-size:27px;
       }
 
       .sheet-price{
@@ -883,8 +1010,9 @@
         padding-right:10px;
       }
 
-      .plan-sheet.login .sheet-title{
-        font-size:23px;
+      .plan-sheet.login .sheet-title,
+      .plan-sheet.employee .sheet-title{
+        font-size:24px;
         max-width:190px;
       }
 
@@ -931,6 +1059,10 @@
 
       .sheet-stage{
         height:188px;
+      }
+
+      .phone:not(.expanded) .sheet-stage{
+        height:206px;
       }
 
       .phone.expanded .sheet-stage{
@@ -1016,17 +1148,6 @@
       <span class="moon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 14.2A8.6 8.6 0 0 1 9.8 3a7.5 7.5 0 1 0 11.2 11.2z"></path></svg></span>
     </button>
 
-    <section id="homeView" class="view active">
-      <div class="top-space"></div>
-      <div class="panel">
-        <h1 class="home-title">歡迎登入系統</h1>
-        <button class="btn btn-primary" type="button" onclick="showEmployeeEntry('code')">員工專區</button>
-        <div class="help-text">首次使用請點擊專屬開通連結</div>
-        <div class="spacer"></div>
-        <button class="btn btn-secondary" type="button" onclick="showManagerEntry()">企業管理與註冊</button>
-      </div>
-    </section>
-
     <section id="employeeEntryView" class="view">
       <div class="top-space"></div>
       <div class="panel">
@@ -1082,73 +1203,117 @@
       </div>
     </section>
 
-    <section id="managerEntryView" class="view">
+    <section id="managerEntryView" class="view active">
       <div class="top-space"></div>
       <section class="sheet-stage">
+        <div class="bg-swipe-guide" aria-hidden="true">
+          <img class="bg-swipe-guide-gif" src="slide_up.gif" alt="" loading="eager" decoding="async" />
+        </div>
         <div class="sheet-carousel" id="sheetCarousel">
 
-          <article class="plan-sheet login platform" data-key="platform">
-            <div class="sheet-handle-zone"><div class="sheet-handle"></div></div>
-            <div class="sheet-summary">
-              <div class="summary-main">
-                <div class="summary-left"><h2 class="sheet-title">平台管理員登入</h2></div>
-                <div class="summary-right"><button class="contact-mini-btn" type="button" onclick="showHome()">返回</button></div>
-              </div>
-              <div class="swipe-hint">
-                <span class="swipe-hint-side left" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"></path></svg><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"></path></svg><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"></path></svg></span>
-                <span class="swipe-hint-text"><span class="swipe-hint-main">四封 Email 驗證</span><span class="swipe-hint-plan">任意點兩封｜Creator 平台方｜ANG8963</span></span>
-                <span class="swipe-hint-side right" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"></path></svg><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"></path></svg><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"></path></svg></span>
-              </div>
-            </div>
-            <div class="sheet-detail">
-              <div class="detail-block">
-                <h3 class="detail-title">Creator 平台方</h3>
-                <p class="detail-desc">平台方登入不走公司 Admin。按下方按鈕後，系統會寄出 4 封一次性驗證連結；任意 2 個信箱點擊完成後，才會以 ANG8963 / Creator / PLATFORM 進入管理中心。</p>
-                <div class="platform-auth-box">
-                  <div class="platform-email-list">
-                    <div>edn869728@gmail.com</div>
-                    <div>endenmi@yahoo.com</div>
-                    <div>chihhao128@gmail.com</div>
-                    <div>endenmi@icloud.com</div>
-                  </div>
-                  <div class="sheet-action" style="padding:0;margin-top:10px">
-                    <button type="button" data-action-key="platform-email-login">發送 4 封驗證信</button>
-                  </div>
-                  <div id="platformLoginStatus" class="status"></div>
-                  <div id="platformEmailVerifyBox" class="platform-qr-box"></div>
-                </div>
-              </div>
-            </div>
-          </article>
-
-          <article class="plan-sheet login active" data-key="login">
+          <article class="plan-sheet login" data-key="login">
             <div class="sheet-handle-zone"><div class="sheet-handle"></div></div>
             <div class="sheet-summary">
               <div class="summary-main">
                 <div class="summary-left"><h2 class="sheet-title">企業管理登入</h2></div>
-                <div class="summary-right"><button class="contact-mini-btn" type="button" onclick="showHome()">返回</button></div>
               </div>
-              <div class="swipe-hint">
-                <span class="swipe-hint-side left" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"></path></svg><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"></path></svg><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"></path></svg></span>
-                <span class="swipe-hint-text"><span class="swipe-hint-main">左右滑動 查看登入與方案</span><span class="swipe-hint-plan">平台管理 / Basic / Plus / Premium</span></span>
-                <span class="swipe-hint-side right" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"></path></svg><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"></path></svg><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"></path></svg></span>
+              <div class="login-company-quick">
+                <div class="inline-label">公司代碼</div>
+                <div class="login-company-row">
+                  <input class="inline-input" id="adminCompanyCode" type="text" inputmode="text" autocomplete="organization" placeholder="例如 ANG0603" />
+                  <button class="login-next-btn" type="button" data-action-key="expand-login">下一步</button>
+                </div>
               </div>
             </div>
             <div class="sheet-detail">
               <div class="detail-block">
                 <h3 class="detail-title">登入驗證</h3>
                 <div class="inline-form">
-                  <div><div class="inline-label">公司代碼</div><input class="inline-input" id="adminCompanyCode" type="text" inputmode="text" autocomplete="organization" placeholder="例如 ANG0603" /></div>
                   <div><div class="inline-label">管理員 Email</div><input class="inline-input" id="adminEmail" type="email" inputmode="email" autocomplete="email" placeholder="name@company.com" /></div>
                 </div>
               </div>
               <div class="sheet-action">
                 <button type="button" data-action-key="admin-email-login">驗證 Email 並登入後台</button>
-                <div class="auth-split-row">
-                  <button class="google-action" type="button" data-action-key="admin-google-login">使用 Google 帳戶登入</button>
-                  <button class="line-action" type="button" data-action-key="admin-line-login">使用 LINE 登入</button>
-                </div>
+                <details class="other-auth">
+                  <summary>其他登入方式</summary>
+                  <div class="auth-split-row">
+                    <button class="google-action" type="button" data-action-key="admin-google-login">使用 Google 帳戶登入</button>
+                    <button class="line-action" type="button" data-action-key="admin-line-login">使用 LINE 登入</button>
+                  </div>
+                </details>
                 <div id="adminLoginStatus" class="status"></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="plan-sheet employee" data-key="employee">
+            <div class="sheet-handle-zone"><div class="sheet-handle"></div></div>
+            <div class="sheet-summary">
+              <div class="summary-main">
+                <div class="summary-left"><h2 class="sheet-title">員工登入</h2></div>
+              </div>
+              <div class="login-company-quick">
+                <div class="inline-label">員工入口</div>
+                <div class="login-company-row">
+                  <div class="employee-quick-note">使用開通碼或綁定裝置登入</div>
+                  <button class="login-next-btn" type="button" data-action-key="employee-entry">下一步</button>
+                </div>
+              </div>
+            </div>
+            <div class="sheet-detail">
+              <div class="detail-block">
+                <h3 class="detail-title">員工登入</h3>
+                <p class="detail-desc">輸入開通碼、掃描 QR 或使用已綁定裝置快速進入。</p>
+              </div>
+              <div class="sheet-action">
+                <button type="button" data-action-key="employee-entry">進入員工登入</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="plan-sheet intro active" data-key="intro">
+            <div class="sheet-handle-zone"><div class="sheet-handle"></div></div>
+            <div class="sheet-summary intro-summary">
+              <div class="entry-chooser">
+                <h2 class="entry-chooser-title">選擇入口</h2>
+                <p class="entry-chooser-subtitle">登入已有帳號，或查看企業方案</p>
+                <div class="entry-chooser-list">
+                  <button class="entry-chooser-card login" type="button" onclick="setActiveManagerSheet('employee',true)">
+                    <div class="entry-chooser-guide" aria-hidden="true">
+                      <div class="entry-chooser-guide-meta">
+                        <div class="entry-chooser-person">👤</div>
+                        <div class="entry-chooser-chevrons"><span></span><span></span><span></span><span style="opacity:.5"></span></div>
+                      </div>
+                      <div class="entry-chooser-chip">左滑登入</div>
+                    </div>
+                    <div class="entry-chooser-info">
+                      <h3 class="entry-chooser-card-title">登入系統</h3>
+                      <p class="entry-chooser-card-sub">員工、管理員、Creator 進入</p>
+                    </div>
+                    <div class="entry-chooser-action">左滑登入</div>
+                  </button>
+                  <button class="entry-chooser-card plan" type="button" onclick="setActiveManagerSheet('basic',true)">
+                    <div class="entry-chooser-guide" aria-hidden="true">
+                      <div class="entry-chooser-chip">右滑看方案</div>
+                      <div class="entry-chooser-chevrons"><span></span><span></span><span></span></div>
+                    </div>
+                    <div class="entry-chooser-info">
+                      <h3 class="entry-chooser-card-title">查看方案</h3>
+                      <p class="entry-chooser-card-sub">Basic / Plus / Premium / 自管方案</p>
+                    </div>
+                    <div class="entry-chooser-action">右滑方案</div>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="sheet-detail">
+              <div class="detail-block">
+                <h3 class="detail-title">APP 介紹</h3>
+                <p class="detail-desc">往上滑可查看系統功能與體驗介紹，這是管理入口的第一張導引卡。</p>
+                <div class="feature-stack">
+                  <div class="feature-card green"><div class="feature-icon-box">📱</div><div class="feature-copy"><h3 class="feature-title">快速登入</h3><p class="feature-desc">向右滑可進入企業管理登入。</p></div></div>
+                  <div class="feature-card purple"><div class="feature-icon-box">🧾</div><div class="feature-copy"><h3 class="feature-title">方案總览</h3><p class="feature-desc">向左滑可查看 Basic / Plus / Premium 方案。</p></div></div>
+                </div>
               </div>
             </div>
           </article>
@@ -1347,7 +1512,7 @@
       if (params.auth_done === '1' || params.verified === '1') { if (handleAuthDone(params)) return; }
       if (params.expired === '1' || params.status === 'expired') { showEmployeeEntry('expired'); return; }
       if (APP_STATE.token) { showEmployeeEntry('bind'); return; }
-      showHome();
+      showManagerEntry();
       setTimeout(restorePlatformEmailWaitingState,320);
     }
 
@@ -1374,7 +1539,7 @@
     function getOrCreateDeviceId(){ const key = 'ang_hr_device_id'; let id = localStorage.getItem(key); if (!id) { id = 'DEV-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).slice(2,10).toUpperCase(); localStorage.setItem(key,id); } return id; }
     function setView(viewId){ ['homeView','employeeEntryView','managerEntryView'].forEach(function(id){ const el = document.getElementById(id); if (el) el.classList.remove('active'); }); const target = document.getElementById(viewId); if (target) target.classList.add('active'); if (viewId !== 'managerEntryView') phone.classList.remove('expanded'); }
     function setEntryMode(modeId){ ['codeMode','bindMode','expiredMode'].forEach(function(id){ const el = document.getElementById(id); if (el) el.classList.remove('active'); }); const target = document.getElementById(modeId); if (target) target.classList.add('active'); }
-    function showHome(){ setView('homeView'); }
+    function showHome(){ showManagerEntry(); }
     function showEmployeeEntry(mode){
       setView('employeeEntryView');
       if (mode === 'bind') {
@@ -1400,9 +1565,7 @@
         setTimeout(function(){ view.classList.remove('manager-slide-in'); },760);
       }
       setTimeout(function(){
-        /* 先停在左側的平台卡，再滑回企業管理登入，讓入口有「左邊往右邊」的移動感。 */
-        setActiveManagerSheet('platform',false);
-        setTimeout(function(){ setActiveManagerSheet('login',true); },130);
+        setActiveManagerSheet('intro',true);
       },40);
     }
     function setText(id,text){ const el = document.getElementById(id); if (el) el.innerText = text; }
@@ -2043,6 +2206,7 @@
         if (e) { e.preventDefault(); e.stopPropagation(); }
         const key = button.dataset.actionKey || '';
         const plan = button.dataset.plan || '';
+        if (key === 'employee-entry') { showEmployeeEntry('code'); return; }
         if (key === 'expand-login') { phone.classList.add('expanded'); setActiveManagerSheet('login',true); setTimeout(function(){ const input = document.getElementById('adminCompanyCode'); if (input) input.focus(); },260); return; }
         if (key === 'contact-service') { contactService(); return; }
         if (key === 'go-back') { showHome(); return; }
