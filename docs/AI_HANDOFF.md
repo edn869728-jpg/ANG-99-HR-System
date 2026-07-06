@@ -161,6 +161,9 @@ P0-3A 不處理 employeeBootstrap、admin bootstrap、employeeLeave、employeeUp
   - 手機（<=390）：`12px`
   - 一般手機（391~767）：`16px`
   - 平板以上（>=768）：`20px`
+- 建議值來源（供人工審核）：
+  - 取目前已存在值的中位區間（admin/employee 6~14、register 18、index 22~24），先收斂成 12/16/20 三段，避免一次跳到極窄或極寬。
+  - 16px 作為跨頁基準，手機小螢幕下保留 12px 避免內容擠壓；平板以上用 20px 提升可讀性並接近現有 index/register 視覺密度。
 - 對應套用目標：
   - index：`.panel`
   - admin/employee：`.safe`
