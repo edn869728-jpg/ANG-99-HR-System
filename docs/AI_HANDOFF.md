@@ -52,3 +52,124 @@ P0-3A｜只強化 angGetPermissionSnapshot / apiPermissionSnapshotV30_ 的正式
 P0-3A 不處理 employeeBootstrap、admin bootstrap、employeeLeave、employeeUpload、審核寫入或方案設定，避免一次大改。
 
 完成後停止，等待 Enden 確認是否進 P0-3B。
+
+## 補充盤點（不改程式）：左右留白 / 頁面邊界
+
+依 @copilot 最新指示，已盤點：
+
+- index.html
+- admin.html
+- employee.html
+- register.html
+- 共用 CSS（app-admin.css、app-employee.css）
+- 會動態改 class / style 的 JS（index/admin/employee inline script、app-core.js）
+
+### 1) 各頁最外層主要內容容器 selector
+
+- index：`main.phone#phone`（內容主體另由 `.panel` 承載）
+- admin：`div.safe`
+- employee：`div.safe`
+- register：`main.screen > div.wrap`
+
+### 2) 桌機 / 手機 width、max-width、margin、padding（主容器）
+
+#### index.html
+
+- `main.phone#phone`（index.html:84-94, 1142）
+  - 桌機：`width:100%`, `max-width:400px`, `height:100vh`, `min-height:100vh`, `margin:0`（未設 margin）
+  - 手機（<=430）：`max-width:none`, `height:100vh`, `border-radius:0`（index.html:447-449）
+  - padding：未設（0）
+- `.panel`（index.html:197-212, 488-491, 952-955, 1051-1054）
+  - 桌機：`padding:26px 24px calc(24px + env(safe-area-inset-bottom))`
+  - 手機（<=430）：`padding:26px 22px calc(24px + env(safe-area-inset-bottom))`
+  - 矮螢幕（<=700 高）：`padding:22px 22px calc(20px + env(safe-area-inset-bottom))`
+  - width / max-width / margin：未設（依父層）
+
+#### admin.html
+
+- `div.safe`（admin.html:34, 399）
+  - 桌機：`width:auto`, `max-width:none`, `margin:0`, `padding:8px 8px 0`
+  - 手機（<=390）：`padding:6px 6px 0`（admin.html:180）
+
+#### employee.html
+
+- `div.safe`（employee.html:36, 549）
+  - 基準：`width:100%`, `max-width:none`, `margin:0`, `padding:8px 8px 0`
+  - 手機（<=390）：`padding:6px 6px 0`（employee.html:196）
+  - 桌機（>=768）：`padding:12px 14px 0`（employee.html:197）
+
+#### register.html
+
+- `main.screen`（register.html:42-49, 81）
+  - 桌機 / 手機共用：`width:100%`, `max-width:430px`, `min-height:100vh`, `margin:0`, `padding:0`
+- `div.wrap`（register.html:54, 82）
+  - 桌機 / 手機共用：`padding:calc(22px + env(safe-area-inset-top)) 18px calc(22px + env(safe-area-inset-bottom))`
+  - width / max-width / margin：未設（依父層）
+
+### 3) 左右留白不一致頁面
+
+- index：主內容 `.panel` 左右 22~24px
+- register：主內容 `.wrap` 左右 18px
+- employee：主內容 `.safe` 左右 6/8/14px（依斷點）
+- admin：主內容 `.safe` 左右 6/8px（缺少 >=768 放大）
+
+結論：四頁左右留白明顯不一致，且 admin / employee 在桌機寬度下不對齊。
+
+### 4) 指定風險檢查結果
+
+- `width:100vw`
+  - 主容器未使用。
+  - 但有 `calc(100vw - 20px/16px)` 用於公司切換浮層（admin.html:190,206；employee.html:380,516）。
+- `padding:0`
+  - 主容器未看到直接把左右 padding 設為 0（register 的 `.screen` 本身為 0，但實際內容在 `.wrap` 有左右 18px）。
+- `margin-left / margin-right` 負值
+  - 未發現。
+- `position: fixed / absolute` 撐滿畫面
+  - 有：`index .view{position:absolute;inset:0}`（index.html:182），
+    `admin/employee` 的 `nav`、toggle、company-switcher/backdrop 為 fixed（admin.html:188,190,237；employee.html:176,369,377）。
+  - 這些多為浮層/導覽，非主內容容器，但會影響視覺邊界感。
+- `calc()` 超出容器
+  - 風險點：`index .sheet-carousel` 使用 `calc((100% - 358px)/2)`、手機版 `calc((100% - 342px)/2)`（index.html:312,452）。
+  - 當 viewport 小於卡片寬時會出現負值，易造成水平偏移/視覺不對齊。
+- safe-area 設定不一致
+  - index/register 主要只吃 top/bottom safe-area（index.html:95-98；register.html:54）。
+  - admin/employee 額外在固定導覽/切換器吃 safe-area（admin.html:128,190,238；employee.html:176,244,378）。
+  - 左右 safe-area（left/right）未統一處理。
+- media query 覆蓋桌機設定
+  - index 在 `@media (max-width:430px)` 直接改成 `body{align-items:stretch}`、`.phone{max-width:none;border-radius:0}`（index.html:447-449）。
+  - employee 有 `@media(min-width:768px)` 放大左右 padding（employee.html:197），admin 無對應桌機放大。
+- body / 主容器 overflow 造成水平位移
+  - index：`html,body{overflow:hidden}`（index.html:69），會隱藏溢出且把問題視覺化為「貼邊」。
+  - admin/employee：`overflow-x:hidden`（admin.html:18；employee.html:23），可能掩蓋橫向位移來源。
+
+### 5) 「上下貼邊」與「左右貼邊」分別由誰控制
+
+- 上下貼邊（index 最明顯）
+  - `html,body{height:100%;overflow:hidden}`（index.html:69）
+  - `.phone{height:100vh;min-height:100vh}`（index.html:84-89）
+  - 手機斷點 `.phone{border-radius:0}` + `body{align-items:stretch}`（index.html:448-449）
+  - `.view{position:absolute;inset:0}`（index.html:182）
+- 左右貼邊（各頁實際由內容容器 padding 決定）
+  - index：`.panel`（index.html:488-491, 953-955）
+  - admin：`.safe`（admin.html:34,180）
+  - employee：`.safe`（employee.html:36,196,197）
+  - register：`.wrap`（register.html:54）
+
+### 6) 統一左右留白建議值（先提案，不修改）
+
+- 建議統一主內容水平留白 token：
+  - 手機（<=390）：`12px`
+  - 一般手機（391~767）：`16px`
+  - 平板以上（>=768）：`20px`
+- 對應套用目標：
+  - index：`.panel`
+  - admin/employee：`.safe`
+  - register：`.wrap`
+
+### 7) 實際修改前需人工確認
+
+- 是否接受 index 在手機仍維持全高（`100vh`）但只統一左右留白，不動目前上下全版框架。
+- 是否要把 admin 補上與 employee 相同的桌機斷點（>=768）左右留白放大規則。
+- 是否要把 index 的 carousel `calc((100% - 固定卡寬)/2)` 改為 `max(0px, calc(...))` 或改成不依賴固定卡寬，避免窄機負值。
+- 是否要納入 left/right safe-area（例如橫向瀏海）統一策略。
+- 本輪依規則只盤點；正式修法需待 Enden 確認後再進入下一階段。
