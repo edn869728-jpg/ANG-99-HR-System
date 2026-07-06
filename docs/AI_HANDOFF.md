@@ -176,3 +176,33 @@ P0-3A 不處理 employeeBootstrap、admin bootstrap、employeeLeave、employeeUp
 - 是否要把 index 的 carousel `calc((100% - 固定卡寬)/2)` 改為 `max(0px, calc(...))` 或改成不依賴固定卡寬，避免窄機負值。
 - 是否要納入 left/right safe-area（例如橫向瀏海）統一策略。
 - 本輪依規則只盤點；正式修法需待 Enden 確認後再進入下一階段。
+
+## P0-4 實作（獨立分支）：admin / employee 左右留白統一
+
+- 本輪僅修改：
+  - admin.html
+  - employee.html
+  - docs/AI_HANDOFF.md
+- 未修改：
+  - index.html
+  - register.html
+  - GAS/、API router、頁面文案、功能邏輯、主題與導覽流程
+
+### 實作內容（`.safe`）
+
+- 統一斷點值：
+  - `<=390px`：`padding: 6px 12px 0`
+  - `391px~767px`：`padding: 8px 16px 0`
+  - `>=768px`：`padding: 12px 20px 0`
+- admin：補上 `@media(min-width:768px)` 的 `.safe` 規則。
+- employee：保留既有 `@media(min-width:768px)` 的 `.desktop-grid`、`.desktop-grid-2`、`.nav` 規則，只調整 `.safe` 左右留白值。
+
+### 驗證紀錄（已實測）
+
+- 驗證寬度：`360`、`390`、`430`、`768`
+- 檢查項目：
+  - 無水平捲動（`document.documentElement.scrollWidth <= window.innerWidth`）
+  - `.card` 未超出 viewport
+- 實測結果：
+  - admin.html：360 / 390 / 430 / 768 皆無水平捲動，`.card` 最大右界分別為 348 / 378 / 414 / 748（均 <= viewport）
+  - employee.html：360 / 390 / 430 / 768 皆無水平捲動，`.card` 最大右界分別為 348 / 378 / 414 / 748（均 <= viewport）
