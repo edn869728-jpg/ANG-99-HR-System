@@ -2,56 +2,46 @@
 
 ## 目前任務
 
-P0-2｜建立前後端 API action 對照表｜依 PR review 修正 V28 router 判定
+P1｜修正 Android 日光／暗夜開場影片方向與 App icon 同步
 
 ## 本次是否修改檔案
 
-只新增 / 更新文件，不修改正式程式檔案。
+有。修改 Android 原生 MainActivity，新增 SplashActivity，更新交接文件；AndroidManifest.xml 結構已符合需求，未改正式內容。
 
 ## 修改檔案清單
 
+- app/src/main/java/com/anglo/hr/MainActivity.java
+- app/src/main/java/com/anglo/hr/SplashActivity.java
 - docs/AI_HANDOFF.md
-- docs/API_ACTION_MATRIX.md
 
 ## 完成內容
 
-- 依 Copilot review 重新檢查 GAS/程式碼.js 後段。
-- 確認 GAS/程式碼.js 後段存在「ANG HR System｜V28 相容補強層」，且最後有效 handleApi_ 已支援多數 admin / employee action。
-- 修正 docs/API_ACTION_MATRIX.md：不再把 getAdminBootstrapData、getManagerBootstrapData、getCreatorBootstrapData、adminSetReviewStatus、employeeBootstrap、employeeClock、employeeLeave、employeeClockFix、employeeUpload、angGetPermissionSnapshot 等誤列為未接 router。
-- 將問題分類改為：已接 router 但需補正式資料寫入 / 權限檢查 / 真實資料來源，以及仍未接 router 的 action。
-- 更新 google.script.run 轉 fetch 風險段落，只把真正未接 router 的方法列為未知 action 風險。
-- 本次未修改 index.html、admin.html、employee.html、register.html、app-core.js、config.js、ang-frontend-api.js 或 GAS/ 內正式程式檔。
+- 新增 Android 原生 `applyAppearanceMode(mode, fullReplace)` 與 `applyDayNightMode(payloadJson)` bridge，接上前端既有日夜切換呼叫。
+- 日光模式固定對應 `night_to_day`，也就是晚上變白天。
+- 暗夜模式固定對應 `day_to_night`，也就是白天變晚上。
+- 完整更換時同步切換 `ANGLauncherDay` / `ANGLauncherNight` activity-alias，讓 App icon 與模式一致。
+- 完整更換時重新進入 SplashActivity，並透過 Intent extra 明確傳入目標模式與轉場方向，避免兩邊都落到同一支預設影片。
+- 新增 SplashActivity 程式化播放開場影片，不依賴 XML layout。
+- SplashActivity 支援多個舊檔名候選；推薦正式檔名為 `ang_opening_night_to_day.mp4` 與 `ang_opening_day_to_night.mp4`。
+- OAuth 與 HTTPS deep link 進入 SplashActivity 時直接轉交 MainActivity，不重播開場影片，避免驗證完成後額外等待。
+- AndroidManifest.xml 已確認：Launcher alias 都指向 SplashActivity，日／夜 icon 分別為 `ang_entry_logo_day` 與 `ang_entry_logo_night`，不需修改。
 
 ## 發現問題
 
-- P0：angGetPermissionSnapshot 已接 router，但 apiPermissionSnapshotV30_ 仍需檢查 session gate、device gate、平台 Creator 與公司 Owner 分離、companies / plan / billing_status 回傳完整性。
-- P0：employeeLeave、employeeClockFix、employeeUpload、employeeMessage、employeePreselect 已接 router，但目前疑似多為 generic ok，相容但尚未正式寫入請假、補打卡、上傳、留言、預選休資料。
-- P0：getAdminBootstrapData、getManagerBootstrapData、getCreatorBootstrapData 已接 router，但目前多為最小空資料，需要補正式審核、發布、設定資料來源。
-- P0：adminSetReviewStatus 已接 router，但目前疑似 generic ok，需要補真正審核狀態寫入。
-- P0：register.html 使用 startFreeUseCompany / startFreeTrial，但最後有效 handleApi_ 尚未支援；正式註冊應統一到 registerCompany 或建立 alias。
-- P0：activateEmployee 已存在，但目前沒有建立 session；驗證成功後必須建立 session。
-- P1：saveClockLocationSettings、saveBrandSettings、savePreselectSettings、saveShiftTypes 被 admin.html 呼叫，但最後有效 handleApi_ 尚未支援。
-- P1：Auth.js 的 requestEmailVerifyCode / confirmEmailVerifyCode / verifyAuthToken 與主 router 命名不一致。
+- 原本 MainActivity 的 `ANGNativeBridge` 沒有 `applyAppearanceMode` 或 `applyDayNightMode`，所以前端雖送出 `night_to_day` / `day_to_night`，Android 原生端實際沒有接到。
+- 真正播放影片的是 SplashActivity，不是 MainActivity；原上傳內容未包含 SplashActivity，因此本次新增一份完整可覆蓋版本。
+- 若 res/raw 內兩支影片實際檔名不在候選清單中，SplashActivity 會略過影片直接進入主頁，不會卡死。
 
 ## 需要 Enden 確認
 
-- 是否確認 P0-3A 改為「強化 angGetPermissionSnapshot / apiPermissionSnapshotV30_」，不是新增 router case。
-- 是否確認 employeeClock 作前端主名，後端保留 clockByButton / nfcClock 作相容入口。
-- 是否確認 register.html 的 startFreeUseCompany / startFreeTrial 只作 alias，不新增第二套註冊流程。
-- 是否要將 AGENTS.md 正式加入 repo，讓後續代理直接從 repo 讀規則。
+- 將兩支影片放到 `app/src/main/res/raw/`，推薦名稱：
+  - `ang_opening_night_to_day.mp4`
+  - `ang_opening_day_to_night.mp4`
+- 若目前檔名不同，可改成上述名稱，最不容易再對錯。
 
 ## 下一步建議
 
-P0-3A｜只強化 angGetPermissionSnapshot / apiPermissionSnapshotV30_ 的正式權限快照。
-
-建議 P0-3A 影響檔案只列為：
-
-- GAS/程式碼.js
-- docs/AI_HANDOFF.md
-
-P0-3A 不處理 employeeBootstrap、admin bootstrap、employeeLeave、employeeUpload、審核寫入或方案設定，避免一次大改。
-
-完成後停止，等待 Enden 確認是否進 P0-3B。
+覆蓋 MainActivity.java 與 SplashActivity.java 後重新 build APK，依序測試：暗夜切日光、日光切暗夜、關閉 App 後重新啟動，以及 Google／LINE／Email 驗證 deep link 返回。完成後停止，不自行進入下一個 P0 / P1 任務。
 
 ## 補充盤點（不改程式）：左右留白 / 頁面邊界
 
