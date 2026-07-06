@@ -176,3 +176,48 @@ P0-3A 不處理 employeeBootstrap、admin bootstrap、employeeLeave、employeeUp
 - 是否要把 index 的 carousel `calc((100% - 固定卡寬)/2)` 改為 `max(0px, calc(...))` 或改成不依賴固定卡寬，避免窄機負值。
 - 是否要納入 left/right safe-area（例如橫向瀏海）統一策略。
 - 本輪依規則只盤點；正式修法需待 Enden 確認後再進入下一階段。
+
+## P0-3B 實作（獨立 PR）：admin / employee 左右留白統一
+
+### 本次實作範圍
+
+- 只修改：
+  - `admin.html`
+  - `employee.html`
+  - `docs/AI_HANDOFF.md`
+- 未修改：
+  - `index.html`
+  - `register.html`
+  - `GAS/`
+  - API router / 功能邏輯 / 頁面文案 / 主題與導覽規則
+
+### 目標與對應 selector
+
+- 目標 selector：`admin .safe`、`employee .safe`
+- 套用規則：
+  - `<=390px`：`padding: 6px 12px 0`
+  - `391px~767px`：`padding: 8px 16px 0`
+  - `>=768px`：`padding: 12px 20px 0`
+- 保留項目：
+  - `employee.html` 既有 `@media (min-width:768px)` 的 desktop grid / nav 規則維持不變（僅調整同段 `.safe` 左右值）。
+  - `admin.html` 補上 `@media (min-width:768px)` 的 `.safe` 規則。
+
+### 驗證結果（360 / 390 / 430 / 768）
+
+驗證方式：Playwright 以 `http://127.0.0.1:8000` 載入頁面，逐一調整 viewport，檢查：
+
+- `document.documentElement.scrollWidth > window.innerWidth`（水平捲動）
+- `.card` 邊界是否超出 viewport
+- `.safe` 計算後 padding 是否符合規格
+
+結果：
+
+- `admin.html`：360 / 390 / 430 / 768 全部無水平捲動、無卡片超出，`.safe` padding 分別符合 12 / 16 / 20（top 6 / 8 / 12）。
+- `employee.html`：360 / 390 / 430 / 768 全部無水平捲動、無卡片超出，`.safe` padding 分別符合 12 / 16 / 20（top 6 / 8 / 12）。
+
+### 目前不處理（依指示保留）
+
+- carousel
+- safe-area left/right
+- company switcher
+- 其他盤點項目
