@@ -1468,6 +1468,31 @@
     }
     /* ANG_20260707_FEATURE_ADS_END */
     /* ANG_20260707_SIMPLE_ENTRY_END */
+
+
+    /* ANG_20260707_COMPACT_EMAIL_ENTRY_START */
+    .phone:not(.expanded) .sheet-stage{height:178px!important;}
+    @media(max-width:370px){.phone:not(.expanded) .sheet-stage{height:172px!important;}}
+    .phone:not(.expanded) .plan-sheet{overflow:hidden;}
+    .phone:not(.expanded) .plan-sheet .sheet-summary{height:calc(100% - 25px);margin:0 12px 10px;padding:8px 14px 10px;display:flex;flex-direction:column;justify-content:center;}
+    .phone:not(.expanded) .plan-sheet.login .sheet-summary,.phone:not(.expanded) .plan-sheet.employee .sheet-summary{margin:0 10px 8px;padding:5px 12px 8px;}
+    .phone:not(.expanded) .plan-sheet.login .sheet-title,.phone:not(.expanded) .plan-sheet.employee .sheet-title{font-size:22px;line-height:1.05;}
+    .phone:not(.expanded) .plan-sheet:not(.login):not(.employee):not(.intro) .sheet-summary-grid{gap:8px 10px;}
+    .phone:not(.expanded) .plan-sheet:not(.login):not(.employee):not(.intro) .sheet-title{font-size:29px;}
+    .phone:not(.expanded) .plan-sheet:not(.login):not(.employee):not(.intro) .sheet-price{font-size:24px;}
+    .phone:not(.expanded) .plan-sheet:not(.login):not(.employee):not(.intro) .mini-pill{padding:4px 8px;font-size:10px;}
+    .phone:not(.expanded) .sheet-detail{display:none!important;}
+    .sheet-floating-hint{position:absolute;left:50%;top:-48px;transform:translateX(-50%);z-index:30;min-height:36px;max-width:calc(100% - 32px);padding:8px 16px;border:1px solid rgba(255,255,255,.24);border-radius:999px;background:rgba(8,15,38,.54);color:#fff;box-shadow:0 10px 26px rgba(0,0,0,.20);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);display:flex;align-items:center;justify-content:center;gap:8px;font-size:13px;line-height:1.2;font-weight:1000;letter-spacing:.02em;white-space:nowrap;cursor:pointer;animation:angFloatingHint 1.55s ease-in-out infinite;}
+    body:not([data-theme="dark"]) .sheet-floating-hint{color:#1e293b;background:rgba(255,255,255,.78);border-color:rgba(148,163,184,.30);box-shadow:0 10px 24px rgba(15,23,42,.13);}
+    .sheet-floating-hint .arrow{font-size:18px;line-height:1}.phone.expanded .sheet-floating-hint{display:none}
+    @keyframes angFloatingHint{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-7px)}}
+    .entry-simple-upbar{display:none!important}
+    .compact-login-fields{display:grid;gap:6px;margin-top:6px}.compact-login-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:6px;align-items:center}.compact-login-row.two{grid-template-columns:minmax(0,1fr) auto}
+    .compact-login-row .inline-input{min-height:38px;height:38px;padding:7px 9px;border-radius:12px;font-size:12px;margin:0;letter-spacing:.01em}.compact-login-row .login-next-btn{min-width:66px;min-height:38px;height:38px;padding:7px 10px;border-radius:12px;font-size:12px}
+    .compact-login-note{font-size:10px;color:var(--muted-text);font-weight:850;line-height:1.3;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .email-verify-box{display:grid;gap:10px}.email-code-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center}.email-code-row .inline-input{margin:0}.email-code-row .btn-mini-send{min-height:50px;border-radius:16px;padding:10px 13px;border:1px solid var(--secondary-border);background:var(--secondary-bg);color:var(--secondary-text);font-size:13px;font-weight:1000;white-space:nowrap}
+    .auth-direct-title{margin:14px 0 8px;color:var(--muted-text);font-size:12px;font-weight:900;text-align:center}.employee-lookup-card{display:none;flex:1;min-width:0;padding:12px;border-radius:16px;background:rgba(128,137,255,.10);border:1px solid rgba(128,137,255,.20);font-size:13px;line-height:1.55;font-weight:850;color:var(--main-text)}.employee-lookup-card.show{display:block}.employee-lookup-card strong{display:block;font-size:15px;margin-bottom:3px}.employee-first-note{margin-top:8px;color:var(--muted-text);font-size:11px;line-height:1.45;font-weight:850}.employee-lock-head{display:flex;align-items:stretch;gap:8px}.employee-unlock-btn{display:none;flex:0 0 auto;min-width:72px;border:1px solid var(--secondary-border);border-radius:16px;padding:9px 10px;background:var(--secondary-bg);color:var(--secondary-text);font-size:12px;font-weight:1000}.employee-unlock-btn.show{display:block}.employee-compact-status{margin-top:6px!important;padding:7px 9px!important;border-radius:11px!important;font-size:10px!important;line-height:1.35!important}.plan-sheet.employee.is-locked #employeeCompanyOrCode{opacity:.72}.plan-sheet.employee.is-locked #employeeLockButton{background:rgba(16,185,129,.16);color:#047857;border:1px solid rgba(16,185,129,.24);box-shadow:none}.email-code-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center}.email-code-row .inline-input{margin:0}.btn-mini-send{min-width:86px;min-height:46px;border-radius:15px;padding:10px 12px;background:var(--primary-bg);color:#fff;font-size:12px;font-weight:1000;box-shadow:var(--primary-shadow)}
+    /* ANG_20260707_COMPACT_EMAIL_ENTRY_END */
 </style>
 
 <script>
@@ -1583,66 +1608,42 @@
     <section id="managerEntryView" class="view active">
       <div class="top-space"></div>
       <section class="sheet-stage">
+        <button class="sheet-floating-hint" id="sheetFloatingHint" type="button" aria-label="往上滑看內容"><span class="arrow" aria-hidden="true">↑</span><span id="sheetFloatingHintText">上滑看 APP 主要特色與廣告</span></button>
         <div class="sheet-carousel" id="sheetCarousel">
 
           <article class="plan-sheet login" data-key="login">
             <div class="sheet-handle-zone"><div class="sheet-handle"></div></div>
             <div class="sheet-summary">
-              <div class="summary-main">
-                <div class="summary-left"><h2 class="sheet-title">企業管理登入</h2></div>
-              </div>
-              <div class="login-company-quick">
-                <div class="inline-label">公司代碼</div>
-                <div class="login-company-row">
-                  <input class="inline-input" id="adminCompanyCode" type="text" inputmode="text" autocomplete="organization" placeholder="例如 ANG0603" />
-                  <button class="login-next-btn" type="button" data-action-key="expand-login">下一步</button>
-                </div>
-              </div>
+              <div class="summary-main"><div class="summary-left"><h2 class="sheet-title">企業管理登入</h2></div></div>
+              <div class="compact-login-fields"><div class="compact-login-row two"><input class="inline-input" id="adminCompanyCode" type="text" inputmode="text" autocomplete="organization" placeholder="公司代碼" /><button class="login-next-btn" type="button" data-action-key="expand-login">下一步</button></div></div>
             </div>
             <div class="sheet-detail">
-              <div class="detail-block">
-                <h3 class="detail-title">登入驗證</h3>
-                <div class="inline-form">
-                  <div><div class="inline-label">管理員 Email</div><input class="inline-input" id="adminEmail" type="email" inputmode="email" autocomplete="email" placeholder="name@company.com" /></div>
-                </div>
-              </div>
-              <div class="sheet-action">
-                <button type="button" data-action-key="admin-email-login">驗證 Email 並登入後台</button>
-                <details class="other-auth">
-                  <summary>其他登入方式</summary>
-                  <div class="auth-split-row">
-                    <button class="google-action" type="button" data-action-key="admin-google-login">使用 Google 帳戶登入</button>
-                    <button class="line-action" type="button" data-action-key="admin-line-login">使用 LINE 登入</button>
-                  </div>
-                </details>
-                <div id="adminLoginStatus" class="status"></div>
-              </div>
+              <div class="detail-block"><h3 class="detail-title">Email 驗證登入</h3><div class="email-verify-box"><div class="email-code-row"><input class="inline-input" id="adminEmail" type="email" inputmode="email" autocomplete="email" placeholder="管理員 Email" /><button class="btn-mini-send" type="button" data-action-key="admin-send-email">寄驗證碼</button></div><input class="inline-input" id="adminEmailCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="輸入 6 位數 Email 驗證碼" /></div></div>
+              <div class="sheet-action"><button type="button" data-action-key="admin-verify-email">驗證 Email 並登入後台</button><div class="auth-direct-title">或使用快速驗證</div><div class="auth-split-row"><button class="google-action" type="button" data-action-key="admin-google-login">Google</button><button class="line-action" type="button" data-action-key="admin-line-login">LINE</button></div><div id="adminLoginStatus" class="status"></div></div>
             </div>
           </article>
 
           <article class="plan-sheet employee" data-key="employee">
             <div class="sheet-handle-zone"><div class="sheet-handle"></div></div>
             <div class="sheet-summary">
-              <div class="summary-main">
-                <div class="summary-left"><h2 class="sheet-title">登入系統</h2></div>
-              </div>
-              <div class="login-company-quick">
-                <div class="inline-label">選擇登入身分</div>
-                <div class="login-company-row">
-                  <div class="employee-quick-note">員工、管理員、Owner、Creator</div>
-                  <button class="login-next-btn" type="button" data-action-key="employee-entry">員工登入</button>
-                </div>
+              <div class="summary-main"><div class="summary-left"><h2 class="sheet-title">員工登入</h2></div></div>
+              <div class="compact-login-fields">
+                <div class="compact-login-row two"><input class="inline-input" id="employeeCompanyOrCode" type="text" inputmode="text" autocomplete="organization" placeholder="公司代碼 / 開通碼" /><button class="login-next-btn" id="employeeLockButton" type="button" data-action-key="employee-prepare">確認</button></div>
+                <div class="compact-login-note">填好後按確認或往上拉，先鎖定公司資料；首次登入可直接輸入開通碼。</div>
+                <div id="employeeLockStatus" class="status employee-compact-status"></div>
               </div>
             </div>
             <div class="sheet-detail">
               <div class="detail-block">
-                <h3 class="detail-title">選擇登入入口</h3>
-                <p class="detail-desc">員工使用開通碼、QR 或已綁定裝置；企業管理者使用公司代碼與驗證方式登入。</p>
+                <h3 class="detail-title">公司已鎖定｜Email 驗證</h3>
+                <div class="employee-lock-head"><div id="employeeLookupCard" class="employee-lookup-card"></div><button id="employeeUnlockButton" class="employee-unlock-btn" type="button" data-action-key="employee-unlock">重新輸入</button></div>
+                <div class="email-verify-box" style="margin-top:10px">
+                  <div class="email-code-row"><input class="inline-input" id="employeeEmail" type="email" inputmode="email" autocomplete="email" placeholder="人員資料 Email" /><button class="btn-mini-send" type="button" data-action-key="employee-send-email">寄驗證碼</button></div>
+                  <input class="inline-input" id="employeeEmailCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="輸入 6 位數 Email 驗證碼" style="margin-top:8px" />
+                </div>
+                <div class="employee-first-note">公司代碼會用「公司 + Email」找出人員；開通碼會先鎖定對應人員。驗證完成後才建立 session，首次開通才綁定此裝置。</div>
               </div>
-              <div class="sheet-action">
-                <button type="button" data-action-key="employee-entry">員工登入</button>
-                <button class="outline-action" type="button" data-action-key="manager-login">企業管理登入</button>
-              </div>
+              <div class="sheet-action"><button type="button" data-action-key="employee-verify-email">驗證 Email 並登入</button><button class="outline-action" type="button" data-action-key="employee-resend-email">重新寄送驗證碼</button><div id="employeeLoginStatus" class="status"></div></div>
             </div>
           </article>
 
@@ -1660,10 +1661,6 @@
                   <span class="entry-simple-copy"><small>右滑</small><strong>登入系統</strong></span>
                   <span class="entry-simple-arrow" aria-hidden="true">→</span>
                 </button>
-              </div>
-              <div class="entry-simple-upbar" role="button" tabindex="0" onclick="window.openIntroDetails&&window.openIntroDetails()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.openIntroDetails&&window.openIntroDetails();}">
-                <span class="entry-simple-upbar-icon" aria-hidden="true">↑</span>
-                <span>上滑看 APP 主要特色與廣告</span>
               </div>
               <p class="entry-simple-note">左邊看 Basic / Plus / Premium　｜　右邊進入員工或企業管理登入</p>
             </div>
@@ -1796,6 +1793,7 @@
     };
 
     const APP_STATE = { baseUrl:'', token:'', id:'', name:'', company:'', deviceId:'', routes:null, params:{} };
+    const EMPLOYEE_LOGIN_STATE = { locked:false, preparing:false, contextId:'', pendingId:'', mode:'', companyId:'', companyName:'', employeeId:'', employeeName:'', emailMasked:'' };
 
     const PLATFORM_EMAIL_POLL_STORAGE_KEY = 'ang_platform_creator_email_challenge_v38';
     let platformEmailPollTimer = null;
@@ -1836,7 +1834,11 @@
       const key = button.dataset.actionKey || '';
       const text = String(button.textContent || '').trim();
       if (key === 'platform-email-login') return { icon:'✉️', label:'發送 4 封平台驗證信' };
-      if (key === 'admin-email-login') return { icon:'✉️', label:'驗證 Email 並登入後台' };
+      if (key === 'admin-send-email') return { icon:'✉️', label:'寄驗證碼' };
+      if (key === 'admin-verify-email') return { icon:'✅', label:'驗證 Email 並登入後台' };
+      if (key === 'employee-prepare') return { icon:'✉️', label:'下一步' };
+      if (key === 'employee-verify-email') return { icon:'✅', label:'驗證 Email 並登入' };
+      if (key === 'employee-resend-email') return { icon:'↻', label:'重新寄送驗證碼' };
       if (key === 'admin-google-login') return { icon:'G', label:'Google 登入', google:true };
       if (key === 'admin-line-login') return { icon:'LINE', label:'LINE 登入', line:true };
       if (key === 'plan-email') return { icon:'✉️', label:'選擇 ' + formatPlanName(button.dataset.plan) + ' 並驗證 Email' };
@@ -1916,8 +1918,22 @@
       initAppButtonTouchFix();
       if (params.auth_done === '1' || params.verified === '1') { if (handleAuthDone(params)) return; }
       if (params.expired === '1' || params.status === 'expired') { showEmployeeEntry('expired'); return; }
-      if (APP_STATE.token) { showEmployeeEntry('bind'); return; }
       showManagerEntry();
+      if (APP_STATE.token && (params.bind === '1' || params.activation === '1' || params.one_time === '1')) {
+        setTimeout(function(){
+          const codeInput = document.getElementById('employeeCompanyOrCode');
+          const emailInput = document.getElementById('employeeEmail');
+          if (codeInput) codeInput.value = APP_STATE.token;
+          if (emailInput && params.email) emailInput.value = String(params.email || '').trim();
+          setActiveManagerSheet('employee',true);
+          prepareEmployeeLogin(true);
+        },160);
+        return;
+      }
+      if (params.email) {
+        const employeeEmailInput = document.getElementById('employeeEmail');
+        if (employeeEmailInput) employeeEmailInput.value = String(params.email || '').trim();
+      }
       setTimeout(restorePlatformEmailWaitingState,320);
     }
 
@@ -2203,7 +2219,7 @@
 
         if (flow === 'admin_login') {
           setActiveManagerSheet('login',true);
-          setStatus('adminLoginStatus','success',label + ' 原生驗證成功，正在進入管理中心。');
+          completeAdminVerifiedAuthLogin(res.verify_token || '',pending.company_id || pending.company || '','adminLoginStatus');
           return;
         }
 
@@ -2513,7 +2529,7 @@
       if (flow === 'admin_login') {
         setTimeout(function(){
           setActiveManagerSheet('login',true);
-          setStatus('adminLoginStatus','success',providerText + ' 驗證成功，正在進入管理中心。');
+          completeAdminVerifiedAuthLogin(params.verify_token || pending.verify_token || '',params.company_id || params.company || pending.company_id || pending.company || '','adminLoginStatus');
         },80);
         return true;
       }
@@ -2602,6 +2618,7 @@
       let gestureStartScrollLeft = 0;
       let gesturePointerId = null;
       let gestureScrollable = null;
+      let gestureStartScrollTop = 0;
       let verticalStartedOpen = false;
       let verticalClosedHeight = 0;
       let verticalOpenHeight = 0;
@@ -2636,11 +2653,7 @@
       }
 
       function getCollapsedHeight(sheet){
-        const key = sheet && sheet.dataset ? sheet.dataset.key : '';
-        if (key === 'intro') return window.innerWidth <= 370 ? 172 : 178;
-        if (window.innerHeight <= 700) return 206;
-        if (window.innerWidth <= 430) return 226;
-        return 216;
+        return window.innerWidth <= 370 ? 172 : 178;
       }
 
       function getOpenHeight(sheet){
@@ -2668,6 +2681,10 @@
       function openCurrentSheet(sheet){
         if (!sheet) return false;
         const key = sheet.dataset.key || '';
+        if (key === 'employee' && !EMPLOYEE_LOGIN_STATE.locked) {
+          prepareEmployeeLogin(true);
+          return false;
+        }
         if (key === 'intro') {
           phone.classList.remove('sheet-detail-open');
           phone.classList.add('intro-detail-open','expanded');
@@ -2689,6 +2706,29 @@
         const key = sheet.dataset.key || '';
         phone.classList.remove('intro-detail-open','sheet-detail-open','expanded');
         setActiveManagerSheet(key,true,true);
+        return true;
+      }
+
+      function detailScrollerForSheet(sheet){
+        if (!sheet) return null;
+        return sheet.querySelector(sheet.dataset.key === 'intro' ? '.entry-discovery-detail' : '.sheet-detail');
+      }
+
+      function keepCurrentSheetOpen(sheet){
+        if (!sheet) return false;
+        const key = sheet.dataset.key || '';
+        if (key === 'intro') {
+          phone.classList.remove('sheet-detail-open');
+          phone.classList.add('intro-detail-open','expanded');
+        } else {
+          phone.classList.remove('intro-detail-open');
+          phone.classList.add('sheet-detail-open','expanded');
+        }
+        setActiveManagerSheet(key,false,true);
+        carousel.classList.remove('gesture-dragging');
+        carousel.style.scrollBehavior = 'auto';
+        carousel.scrollLeft = sheetLeft(sheets.indexOf(sheet));
+        window.setTimeout(function(){ carousel.style.scrollBehavior = ''; },0);
         return true;
       }
 
@@ -2719,6 +2759,10 @@
         gesturePointerId = pointerId == null ? null : pointerId;
         gestureScrollable = target && target.closest ? target.closest('.sheet-detail,.entry-discovery-detail') : null;
         verticalStartedOpen = phone.classList.contains('expanded');
+        if (verticalStartedOpen && !gestureScrollable) {
+          gestureScrollable = detailScrollerForSheet(sheets[gestureStartIndex]);
+        }
+        gestureStartScrollTop = gestureScrollable ? Number(gestureScrollable.scrollTop || 0) : 0;
         verticalCurrentHeight = stage.getBoundingClientRect().height;
         verticalDetail = null;
         return true;
@@ -2767,24 +2811,42 @@
 
         const activeSheet = sheets[gestureStartIndex];
         if (!activeSheet) {
-          gestureAxis = 'native-scroll';
+          gestureAxis = 'keep-open';
           return;
         }
 
-        if (gestureScrollable) {
-          const atTop = gestureScrollable.scrollTop <= 6;
-          const wantsClose = verticalStartedOpen && dy > 0 && atTop;
-          if (!wantsClose) {
-            gestureAxis = 'native-scroll';
-            return;
+        const activeScroller = gestureScrollable || (verticalStartedOpen ? detailScrollerForSheet(activeSheet) : null);
+
+        if (axis === 'content-scroll') {
+          if (event && event.cancelable) event.preventDefault();
+          if (activeScroller) activeScroller.scrollTop = Math.max(0,gestureStartScrollTop - dy);
+          return;
+        }
+        if (axis === 'native-scroll' || axis === 'keep-open') return;
+
+        // 已展開時，繼續往上就是往下看內容，不得把卡片關掉。
+        if (verticalStartedOpen && dy < 0) {
+          if (activeScroller) {
+            gestureScrollable = activeScroller;
+            gestureAxis = 'content-scroll';
+            if (event && event.cancelable) event.preventDefault();
+            activeScroller.scrollTop = Math.max(0,gestureStartScrollTop - dy);
+          } else {
+            gestureAxis = 'keep-open';
           }
+          return;
+        }
+
+        // 已展開且內容不在最上方時，往下只先把內容捲回頂端；下一次再往下才收回卡片。
+        if (verticalStartedOpen && dy > 0 && activeScroller && gestureStartScrollTop > 6) {
+          gestureScrollable = activeScroller;
+          gestureAxis = 'content-scroll';
+          if (event && event.cancelable) event.preventDefault();
+          activeScroller.scrollTop = Math.max(0,gestureStartScrollTop - dy);
+          return;
         }
 
         if (!verticalStartedOpen && dy >= 0) {
-          gestureAxis = 'vertical-idle';
-          return;
-        }
-        if (verticalStartedOpen && dy <= 0) {
           gestureAxis = 'vertical-idle';
           return;
         }
@@ -2842,6 +2904,8 @@
           exactSnap(targetIndex,'smooth');
         } else if (axis === 'vertical' && verticalClosedHeight && verticalOpenHeight) {
           finishVertical(activeSheet);
+        } else if (verticalStartedOpen && (axis === 'content-scroll' || axis === 'native-scroll' || axis === 'keep-open' || axis === 'vertical-idle')) {
+          keepCurrentSheetOpen(activeSheet);
         } else {
           exactSnap(gestureStartIndex,'smooth');
         }
@@ -2849,6 +2913,7 @@
         gestureAxis = '';
         gesturePointerId = null;
         gestureScrollable = null;
+        gestureStartScrollTop = 0;
         verticalClosedHeight = 0;
         verticalOpenHeight = 0;
         window.setTimeout(function(){ didSwipe = false; },260);
@@ -2857,19 +2922,22 @@
       function cancelGesture(){
         if (!gestureActive) return;
         gestureActive = false;
+        const activeSheet = sheets[gestureStartIndex];
         if (gestureAxis === 'vertical' && verticalClosedHeight && verticalOpenHeight) {
-          const activeSheet = sheets[gestureStartIndex];
           stage.style.transition = 'height .3s var(--ease)';
-          if (verticalStartedOpen) openCurrentSheet(activeSheet);
+          if (verticalStartedOpen) keepCurrentSheetOpen(activeSheet);
           else closeCurrentSheet(activeSheet);
           requestAnimationFrame(function(){ stage.style.height = ''; });
           resetTimer = window.setTimeout(clearVerticalPreview,380);
+        } else if (verticalStartedOpen) {
+          keepCurrentSheetOpen(activeSheet);
         } else {
           exactSnap(gestureStartIndex,'smooth');
         }
         gestureAxis = '';
         gesturePointerId = null;
         gestureScrollable = null;
+        gestureStartScrollTop = 0;
         window.setTimeout(function(){ didSwipe = false; },260);
       }
 
@@ -2896,7 +2964,12 @@
         if (e) { e.preventDefault(); e.stopPropagation(); }
         const key = button.dataset.actionKey || '';
         const plan = button.dataset.plan || '';
-        if (key === 'employee-entry') { showEmployeeEntry('code'); return; }
+        if (key === 'employee-entry') { setActiveManagerSheet('employee',true); return; }
+        if (key === 'employee-prepare') { prepareEmployeeLogin(true); return; }
+        if (key === 'employee-unlock') { resetEmployeeLoginLock(); return; }
+        if (key === 'employee-send-email') { requestEmployeeEmailLogin(false); return; }
+        if (key === 'employee-resend-email') { requestEmployeeEmailLogin(true); return; }
+        if (key === 'employee-verify-email') { verifyEmployeeEmailLogin(); return; }
         if (key === 'manager-login') { setActiveManagerSheet('login',true); setTimeout(function(){ const input = document.getElementById('adminCompanyCode'); if (input) input.focus(); },260); return; }
         if (key === 'expand-login') {
           setActiveManagerSheet('login',true);
@@ -2910,7 +2983,8 @@
         }
         if (key === 'contact-service') { contactService(); return; }
         if (key === 'go-back') { showHome(); return; }
-        if (key === 'admin-email-login') { requestAdminEmailLogin(); return; }
+        if (key === 'admin-send-email') { requestAdminEmailLogin(); return; }
+        if (key === 'admin-verify-email') { verifyAdminEmailLogin(); return; }
         if (key === 'admin-google-login') { requestAdminGoogleLogin(); return; }
         if (key === 'admin-line-login') { requestAdminLineLogin(); return; }
         if (key === 'platform-email-login') { requestPlatformEmailLogin(); return; }
@@ -2927,6 +3001,9 @@
           runSheetAction(button,e);
         });
       });
+
+      const floatingHint=document.getElementById('sheetFloatingHint');
+      if(floatingHint){floatingHint.addEventListener('click',function(){openCurrentSheet(sheets[activeSheetIndex()]);});}
 
       if (window.PointerEvent) {
         carousel.addEventListener('pointerdown',function(e){
@@ -2962,7 +3039,22 @@
       }
 
       window.addEventListener('resize',function(){ exactSnap(activeSheetIndex(),'auto'); },{passive:true});
-      requestAnimationFrame(function(){ exactSnap(activeSheetIndex(),'auto'); });
+      requestAnimationFrame(function(){ exactSnap(activeSheetIndex(),'auto'); updateFloatingHint((sheets[activeSheetIndex()]&&sheets[activeSheetIndex()].dataset.key)||'intro'); });
+    }
+
+    function floatingHintTextForKey(key){
+      if (key === 'intro') return '上滑看 APP 主要特色與廣告';
+      if (key === 'basic' || key === 'plus' || key === 'premium') return '上滑看方案細節';
+      if (key === 'employee') return EMPLOYEE_LOGIN_STATE.locked ? '上滑進行 Email 驗證' : '上滑鎖定公司／開通資料';
+      if (key === 'login') return '上滑進行企業管理登入';
+      return '上滑看更多';
+    }
+    function updateFloatingHint(key){
+      const textEl=document.getElementById('sheetFloatingHintText');
+      const button=document.getElementById('sheetFloatingHint');
+      const label=floatingHintTextForKey(key);
+      if(textEl) textEl.textContent=label;
+      if(button) button.setAttribute('aria-label',label);
     }
 
     function setActiveManagerSheet(key,shouldCenter,preserveExpanded){
@@ -2970,6 +3062,7 @@
       const currentKey = currentSheet && currentSheet.dataset ? currentSheet.dataset.key : '';
       const keyChanged = currentKey !== key;
       const isIntro = key === 'intro';
+      updateFloatingHint(key);
 
       if (keyChanged && preserveExpanded !== true) {
         phone.classList.remove('intro-detail-open','sheet-detail-open','expanded');
@@ -3159,24 +3252,206 @@
         .catch(function(err){ setStatus('platformLoginStatus','error',err && err.message ? err.message : 'GAS 連線失敗'); });
     }
 
+    function persistVerifiedLogin(res,view){
+      res=res||{};const companyId=String(res.company_id||res.companyId||'').trim().toUpperCase();const employeeId=String(res.employee_id||res.id||'').trim().toUpperCase();const token=String(res.session_token||res.token||'').trim();const role=String(res.role||(view==='admin'?'Admin':'Employee')).trim();const name=String(res.name||employeeId||'').trim();
+      try{if(companyId)['ang_hr_active_company_id','ang_company_id','company_id'].forEach(k=>localStorage.setItem(k,companyId));if(employeeId)['ang_hr_active_employee_id','ang_employee_id','employee_id','loginId','emp_logged_in'].forEach(k=>localStorage.setItem(k,employeeId));if(token)['ang_hr_active_login_token','ang_employee_token','session_token','loginToken','emp_login_token'].forEach(k=>localStorage.setItem(k,token));if(role){localStorage.setItem('ang_user_role',role);localStorage.setItem('ang_employee_role',role)}if(name)localStorage.setItem('emp_name',name);localStorage.setItem('isLoggedIn','1')}catch(err){}
+      const target=String(res.next_url||res.nextUrl||'').trim()||('app.html?view='+encodeURIComponent(view)+'&company_id='+encodeURIComponent(companyId)+'&id='+encodeURIComponent(employeeId)+'&employee_id='+encodeURIComponent(employeeId)+'&role='+encodeURIComponent(role)+'&session_token='+encodeURIComponent(token)+'&token='+encodeURIComponent(token)+'&_ts='+Date.now());window.location.href=target;
+    }
+    function completeAdminVerifiedAuthLogin(verifyToken,companyCode,statusId){
+      const token=String(verifyToken||'').trim();
+      const company=normalizeCompanyCode(companyCode||'');
+      const targetStatus=statusId||'adminLoginStatus';
+      if(!token){setStatus(targetStatus,'error','第三方驗證沒有回傳 verify_token');return;}
+      if(!company){setStatus(targetStatus,'error','請先輸入公司代碼');return;}
+      setStatus(targetStatus,'info','第三方驗證完成，正在建立管理 session...');
+      callGasApi('adminLoginByVerifiedAuth',{verify_token:token,company_id:company,company:company,device_id:APP_STATE.deviceId,source:'entry_admin_verified_auth'},20000).then(function(res){
+        if(!res||!res.ok){setStatus(targetStatus,'error',(res&&(res.message||res.msg))||'找不到此公司的管理員資料');return;}
+        setStatus(targetStatus,'success','驗證成功，正在進入管理中心...');
+        persistVerifiedLogin(res,'admin');
+      }).catch(function(err){setStatus(targetStatus,'error',err&&err.message?err.message:'GAS 連線失敗');});
+    }
+
+    function employeeSheetElement(){
+      return sheets.find(function(sheet){ return sheet.dataset.key === 'employee'; }) || null;
+    }
+
+    function renderEmployeeLockCard(extra){
+      extra = extra || {};
+      const card = document.getElementById('employeeLookupCard');
+      const unlock = document.getElementById('employeeUnlockButton');
+      if (card) {
+        card.classList.add('show');
+        const title = EMPLOYEE_LOGIN_STATE.mode === 'activation'
+          ? (EMPLOYEE_LOGIN_STATE.employeeName || '首次開通資料')
+          : (EMPLOYEE_LOGIN_STATE.companyName || EMPLOYEE_LOGIN_STATE.companyId || '公司資料');
+        const lines = [];
+        lines.push('<strong>' + escapeButtonHtml(title) + '</strong>');
+        lines.push(escapeButtonHtml((EMPLOYEE_LOGIN_STATE.companyName || EMPLOYEE_LOGIN_STATE.companyId || '') + '｜' + (EMPLOYEE_LOGIN_STATE.companyId || '')));
+        if (extra.emailMasked || EMPLOYEE_LOGIN_STATE.emailMasked) lines.push('<br>' + escapeButtonHtml('驗證信箱：' + (extra.emailMasked || EMPLOYEE_LOGIN_STATE.emailMasked)));
+        else lines.push('<br>' + escapeButtonHtml(EMPLOYEE_LOGIN_STATE.mode === 'activation' ? '開通資料已鎖定，請輸入人員資料 Email' : '公司已鎖定，請輸入人員資料 Email'));
+        card.innerHTML = lines.join('');
+      }
+      if (unlock) unlock.classList.add('show');
+    }
+
+    function applyEmployeeLockedUi(){
+      const sheet = employeeSheetElement();
+      const input = document.getElementById('employeeCompanyOrCode');
+      const button = document.getElementById('employeeLockButton');
+      if (sheet) sheet.classList.toggle('is-locked',EMPLOYEE_LOGIN_STATE.locked);
+      if (input) input.readOnly = EMPLOYEE_LOGIN_STATE.locked;
+      if (button) {
+        button.disabled = EMPLOYEE_LOGIN_STATE.preparing;
+        button.textContent = EMPLOYEE_LOGIN_STATE.preparing ? '查詢中' : (EMPLOYEE_LOGIN_STATE.locked ? '已鎖定' : '確認');
+      }
+      updateFloatingHint('employee');
+    }
+
+    function resetEmployeeLoginLock(){
+      EMPLOYEE_LOGIN_STATE.locked = false;
+      EMPLOYEE_LOGIN_STATE.preparing = false;
+      EMPLOYEE_LOGIN_STATE.contextId = '';
+      EMPLOYEE_LOGIN_STATE.pendingId = '';
+      EMPLOYEE_LOGIN_STATE.mode = '';
+      EMPLOYEE_LOGIN_STATE.companyId = '';
+      EMPLOYEE_LOGIN_STATE.companyName = '';
+      EMPLOYEE_LOGIN_STATE.employeeId = '';
+      EMPLOYEE_LOGIN_STATE.employeeName = '';
+      EMPLOYEE_LOGIN_STATE.emailMasked = '';
+      const card = document.getElementById('employeeLookupCard');
+      const unlock = document.getElementById('employeeUnlockButton');
+      const code = document.getElementById('employeeEmailCode');
+      if (card) { card.classList.remove('show'); card.innerHTML = ''; }
+      if (unlock) unlock.classList.remove('show');
+      if (code) code.value = '';
+      applyEmployeeLockedUi();
+      setStatus('employeeLockStatus','','');
+      setStatus('employeeLoginStatus','','');
+      const sheet = employeeSheetElement();
+      if (sheet) closeCurrentSheet(sheet);
+      setTimeout(function(){ document.getElementById('employeeCompanyOrCode')?.focus(); },120);
+    }
+
+    function prepareEmployeeLogin(openAfter){
+      if (EMPLOYEE_LOGIN_STATE.locked) {
+        if (openAfter) openCurrentSheet(employeeSheetElement());
+        return Promise.resolve(true);
+      }
+      if (EMPLOYEE_LOGIN_STATE.preparing) return Promise.resolve(false);
+      const companyOrCode = String(document.getElementById('employeeCompanyOrCode')?.value || '').trim();
+      if (!companyOrCode) {
+        setStatus('employeeLockStatus','error','請輸入公司代碼或開通碼');
+        return Promise.resolve(false);
+      }
+
+      EMPLOYEE_LOGIN_STATE.preparing = true;
+      applyEmployeeLockedUi();
+      setStatus('employeeLockStatus','info','正在鎖定公司資料...');
+      return callGasApi('prepareEmployeeEmailLogin',{
+        company_or_code:companyOrCode,
+        company_id:companyOrCode,
+        activation_code:companyOrCode,
+        device_id:APP_STATE.deviceId,
+        source:'entry_employee_prepare_v35'
+      },12000).then(function(res){
+        if (!res || !res.ok) {
+          EMPLOYEE_LOGIN_STATE.preparing = false;
+          applyEmployeeLockedUi();
+          setStatus('employeeLockStatus','error',(res && (res.message || res.msg)) || '找不到公司或開通資料');
+          return false;
+        }
+        EMPLOYEE_LOGIN_STATE.locked = true;
+        EMPLOYEE_LOGIN_STATE.preparing = false;
+        EMPLOYEE_LOGIN_STATE.contextId = String(res.login_context_id || '').trim();
+        EMPLOYEE_LOGIN_STATE.mode = String(res.mode || 'login');
+        EMPLOYEE_LOGIN_STATE.companyId = String(res.company_id || '').trim().toUpperCase();
+        EMPLOYEE_LOGIN_STATE.companyName = String(res.company_name || res.company_id || '').trim();
+        EMPLOYEE_LOGIN_STATE.employeeId = String(res.employee_id || '').trim().toUpperCase();
+        EMPLOYEE_LOGIN_STATE.employeeName = String(res.name || '').trim();
+        EMPLOYEE_LOGIN_STATE.emailMasked = String(res.email_masked || '').trim();
+        applyEmployeeLockedUi();
+        renderEmployeeLockCard();
+        setStatus('employeeLockStatus','success',res.message || '公司資料已鎖定');
+        if (openAfter) {
+          openCurrentSheet(employeeSheetElement());
+          setTimeout(function(){ document.getElementById('employeeEmail')?.focus(); },160);
+        }
+        return true;
+      }).catch(function(err){
+        EMPLOYEE_LOGIN_STATE.preparing = false;
+        applyEmployeeLockedUi();
+        setStatus('employeeLockStatus','error',err && err.message ? err.message : 'GAS 連線失敗');
+        return false;
+      });
+    }
+
+    function requestEmployeeEmailLogin(isResend){
+      if (!EMPLOYEE_LOGIN_STATE.locked || !EMPLOYEE_LOGIN_STATE.contextId) {
+        prepareEmployeeLogin(true).then(function(ok){ if (ok) requestEmployeeEmailLogin(isResend); });
+        return;
+      }
+      const email = String(document.getElementById('employeeEmail')?.value || '').trim();
+      if (!isValidEmail(email)) {
+        setStatus('employeeLoginStatus','error','請輸入正確的人員資料 Email');
+        return;
+      }
+      setStatus('employeeLoginStatus','info',isResend ? '正在重新寄送 Email 驗證碼...' : '正在比對人員資料並寄出驗證碼...');
+      callGasApi('requestEmployeeEmailLoginCode',{
+        login_context_id:EMPLOYEE_LOGIN_STATE.contextId,
+        email:email,
+        device_id:APP_STATE.deviceId,
+        source:isResend ? 'entry_employee_email_resend_v35' : 'entry_employee_email_request_v35'
+      },12000).then(function(res){
+        if (!res || !res.ok) {
+          setStatus('employeeLoginStatus','error',(res && (res.message || res.msg)) || '驗證碼寄送失敗');
+          return;
+        }
+        EMPLOYEE_LOGIN_STATE.pendingId = String(res.pending_login_id || '').trim();
+        EMPLOYEE_LOGIN_STATE.employeeId = String(res.employee_id || '').trim().toUpperCase();
+        EMPLOYEE_LOGIN_STATE.employeeName = String(res.name || '').trim();
+        EMPLOYEE_LOGIN_STATE.emailMasked = String(res.email_masked || '').trim();
+        renderEmployeeLockCard({emailMasked:EMPLOYEE_LOGIN_STATE.emailMasked});
+        const codeInput = document.getElementById('employeeEmailCode');
+        if (codeInput) { codeInput.value = ''; setTimeout(function(){ codeInput.focus(); },120); }
+        setStatus('employeeLoginStatus','success',res.message || '驗證碼已寄出');
+      }).catch(function(err){
+        setStatus('employeeLoginStatus','error',err && err.message ? err.message : 'GAS 連線失敗');
+      });
+    }
+
+    function verifyEmployeeEmailLogin(){
+      const code = String(document.getElementById('employeeEmailCode')?.value || '').trim();
+      if (!EMPLOYEE_LOGIN_STATE.pendingId) {
+        setStatus('employeeLoginStatus','error','請先寄送 Email 驗證碼');
+        return;
+      }
+      if (!/^\d{6}$/.test(code)) {
+        setStatus('employeeLoginStatus','error','請輸入 6 位數 Email 驗證碼');
+        return;
+      }
+      setStatus('employeeLoginStatus','info','正在驗證 Email 並建立登入 session...');
+      callGasApi('verifyEmployeeEmailCodeAndLogin',{
+        pending_login_id:EMPLOYEE_LOGIN_STATE.pendingId,
+        code:code,
+        device_id:APP_STATE.deviceId,
+        source:'entry_employee_email_verify_v35'
+      },12000).then(function(res){
+        if (!res || !res.ok) {
+          setStatus('employeeLoginStatus','error',(res && (res.message || res.msg)) || 'Email 驗證失敗');
+          return;
+        }
+        setStatus('employeeLoginStatus','success','驗證成功，正在進入員工端...');
+        persistVerifiedLogin(res,'employee');
+      }).catch(function(err){
+        setStatus('employeeLoginStatus','error',err && err.message ? err.message : 'GAS 連線失敗');
+      });
+    }
+
     function requestAdminEmailLogin(){
-      const companyCode = normalizeCompanyCode(document.getElementById('adminCompanyCode') ? document.getElementById('adminCompanyCode').value : '');
-      const adminEmail = String(document.getElementById('adminEmail') ? document.getElementById('adminEmail').value : '').trim();
-      if (!companyCode) { setStatus('adminLoginStatus','error','請輸入公司代碼'); return; }
-      if (!isValidEmail(adminEmail)) { setStatus('adminLoginStatus','error','請輸入正確的管理員 Email'); return; }
-      setStatus('adminLoginStatus','info','正在送出 Email 驗證...');
-      callGasApi('requestEmailVerifyCode',Object.assign({},getAuthReturnParams('email','admin_login','',{ company:companyCode, company_id:companyCode, email:adminEmail, source:'entry_admin_email' }),{
-        provider:'email',
-        flow:'admin_login',
-        company:companyCode,
-        company_id:companyCode,
-        email:adminEmail,
-        device_id:APP_STATE.deviceId
-      })).then(function(res){
-        if (!res || !res.ok) { setStatus('adminLoginStatus','error',(res && (res.message || res.msg)) || '驗證送出失敗'); return; }
-        if (res.state) { try { sessionStorage.setItem('ang_email_verify_state',String(res.state)); } catch (err) {} }
-        setStatus('adminLoginStatus','success',(res.message || res.msg) || '驗證碼已寄出，請查看 Email');
-      }).catch(function(err){ setStatus('adminLoginStatus','error',err && err.message ? err.message : 'GAS 連線失敗'); });
+      const companyCode=normalizeCompanyCode(document.getElementById('adminCompanyCode')?.value||'');const adminEmail=String(document.getElementById('adminEmail')?.value||'').trim();if(!companyCode){setStatus('adminLoginStatus','error','請輸入公司代碼');return}if(!isValidEmail(adminEmail)){setStatus('adminLoginStatus','error','請輸入正確的管理員 Email');return}setStatus('adminLoginStatus','info','正在確認管理員資料並寄出驗證碼...');callGasApi('requestAdminLoginEmailVerification',{flow:'admin_login',company_id:companyCode,company:companyCode,email:adminEmail,device_id:APP_STATE.deviceId,source:'entry_admin_email'},20000).then(function(res){if(!res||!res.ok){setStatus('adminLoginStatus','error',(res&&(res.message||res.msg))||'驗證碼寄送失敗');return}setStatus('adminLoginStatus','success',res.message||'驗證碼已寄出，請查看 Email');setTimeout(()=>document.getElementById('adminEmailCode')?.focus(),100)}).catch(err=>setStatus('adminLoginStatus','error',err&&err.message?err.message:'GAS 連線失敗'));
+    }
+    function verifyAdminEmailLogin(){
+      const companyCode=normalizeCompanyCode(document.getElementById('adminCompanyCode')?.value||'');const adminEmail=String(document.getElementById('adminEmail')?.value||'').trim();const code=String(document.getElementById('adminEmailCode')?.value||'').trim();if(!companyCode){setStatus('adminLoginStatus','error','請輸入公司代碼');return}if(!isValidEmail(adminEmail)){setStatus('adminLoginStatus','error','請輸入正確的管理員 Email');return}if(!/^\d{6}$/.test(code)){setStatus('adminLoginStatus','error','請輸入 6 位數 Email 驗證碼');return}setStatus('adminLoginStatus','info','正在驗證 Email 並建立管理 session...');callGasApi('verifyAdminEmailCodeAndLogin',{company_id:companyCode,company:companyCode,email:adminEmail,code:code,device_id:APP_STATE.deviceId,source:'entry_admin_email_verify'},20000).then(function(res){if(!res||!res.ok){setStatus('adminLoginStatus','error',(res&&(res.message||res.msg))||'Email 驗證失敗');return}setStatus('adminLoginStatus','success','驗證成功，正在進入管理中心...');persistVerifiedLogin(res,'admin')}).catch(err=>setStatus('adminLoginStatus','error',err&&err.message?err.message:'GAS 連線失敗'));
     }
 
     function requestAdminGoogleLogin(){
@@ -3201,7 +3476,7 @@
       if (!safePlan) return;
       if (!isValidEmail(email)) { setStatus(statusId,'error','請輸入正確的 Email'); return; }
       setStatus(statusId,'info','正在送出註冊驗證...');
-      callGasApi('requestEmailVerifyCode',Object.assign({},getAuthReturnParams('email','company_signup',safePlan,{ email:email, source:'entry_plan_email' }),{
+      callGasApi('requestCompanySignupEmailVerification',Object.assign({},getAuthReturnParams('email','company_signup',safePlan,{ email:email, source:'entry_plan_email' }),{
         provider:'email',
         flow:'company_signup',
         plan:safePlan,
