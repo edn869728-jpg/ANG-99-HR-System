@@ -2,14 +2,14 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
   <title>ANG HR SYSTEMS｜ENTRY</title>
-  <link rel="preload" as="image" href="ang-entry-bg-day.png?v=20260707-controlled-gestures" referrerpolicy="no-referrer" />
-  <link rel="preload" as="image" href="ang-entry-bg-night.png?v=20260707-controlled-gestures" referrerpolicy="no-referrer" />
+  <link rel="preload" as="image" href="https://pub-51476fa95e5148749c1b932e123dc797.r2.dev/ang-entry-bg-day.png?v=20260613-r2-html" referrerpolicy="no-referrer" />
+  <link rel="preload" as="image" href="https://pub-51476fa95e5148749c1b932e123dc797.r2.dev/ang-entry-bg-night.png?v=20260613-r2-html" referrerpolicy="no-referrer" />
   <style>
     :root{
       --body-bg:#000000;
-      --screen-bg:url("ang-entry-bg-day.png?v=20260707-controlled-gestures");
+      --screen-bg:url("https://pub-51476fa95e5148749c1b932e123dc797.r2.dev/ang-entry-bg-day.png?v=20260613-r2-html");
       --screen-fallback:linear-gradient(180deg,#eef7ff 0%,#dff3ff 45%,#f3e7ff 100%);
       --panel-bg:rgba(255,255,255,.94);
       --panel-border:rgba(226,232,240,.92);
@@ -40,7 +40,7 @@
 
     body[data-theme="dark"]{
       --body-bg:#000000;
-      --screen-bg:url("ang-entry-bg-night.png?v=20260707-controlled-gestures");
+      --screen-bg:url("https://pub-51476fa95e5148749c1b932e123dc797.r2.dev/ang-entry-bg-night.png?v=20260613-r2-html");
       --screen-fallback:radial-gradient(circle at 50% 0%,#203b74 0%,#111a3b 42%,#050816 100%);
       --panel-bg:rgba(18,25,42,.88);
       --panel-border:rgba(255,255,255,.08);
@@ -84,17 +84,12 @@
     .phone{
       width:100%;
       max-width:400px;
-      min-height:100vh;
-      height:100vh;
+      height:min(100vh,760px);
       position:relative;
       overflow:hidden;
       border-radius:24px;
       background:var(--screen-fallback,#05060b);
       box-shadow:0 18px 42px rgba(0,0,0,.28);
-    }
-    body{
-      padding-top:env(safe-area-inset-top);
-      padding-bottom:env(safe-area-inset-bottom);
     }
     .phone::before{
       content:"";
@@ -181,18 +176,7 @@
 
     .view{position:absolute;inset:0;z-index:5;display:none;flex-direction:column;}
     .view.active{display:flex;}
-    @keyframes managerSlideFromLeft{
-      0%{opacity:.12;transform:translateX(-72px) scale(.985);filter:blur(3px);}
-      62%{opacity:1;transform:translateX(8px) scale(1);filter:blur(0);}
-      100%{opacity:1;transform:translateX(0) scale(1);filter:blur(0);}
-    }
-    @keyframes managerSheetSoftPop{
-      0%{transform:scale(.96) translateY(18px);}
-      100%{transform:scale(1) translateY(0);}
-    }
-    #managerEntryView.manager-slide-in .sheet-stage{animation:managerSlideFromLeft .58s var(--ease) both;}
-    #managerEntryView.manager-slide-in .plan-sheet.active{animation:managerSheetSoftPop .42s var(--ease) both;}
-    .top-space{flex:1;min-height:260px;transition:opacity .42s var(--ease),transform .42s var(--ease);}
+    .top-space{flex:1;min-height:360px;transition:opacity .42s var(--ease),transform .42s var(--ease);}
     .phone.expanded .top-space{opacity:.38;transform:translateY(-24px) scale(.96);}
     .panel{
       position:relative;
@@ -307,7 +291,7 @@
     .profile-name{color:var(--main-text);font-size:18px;font-weight:1000;letter-spacing:.02em;}
     .profile-meta{margin-top:4px;color:var(--muted-text);font-size:13px;font-weight:850;letter-spacing:.03em;}
 
-    .sheet-stage{position:absolute;left:0;right:0;bottom:0;z-index:8;height:230px;max-height:88vh;overflow:visible;transition:height .58s var(--ease);}
+    .sheet-stage{position:absolute;left:0;right:0;bottom:0;z-index:8;height:190px;max-height:88vh;overflow:visible;transition:height .58s var(--ease);}
     .phone.expanded .sheet-stage{height:82vh;}
     .sheet-carousel{width:100%;height:100%;display:flex;gap:14px;overflow-x:auto;overflow-y:visible;scroll-snap-type:x mandatory;scroll-padding-left:calc((100% - 358px) / 2);scroll-padding-right:calc((100% - 358px) / 2);padding-left:calc((100% - 358px) / 2);padding-right:calc((100% - 358px) / 2);-webkit-overflow-scrolling:touch;touch-action:pan-x;overscroll-behavior-x:contain;overscroll-behavior-y:none;scroll-behavior:smooth;cursor:grab;scrollbar-width:none;}
     .sheet-carousel::-webkit-scrollbar{display:none;}
@@ -315,56 +299,13 @@
     .plan-sheet{flex:0 0 auto;height:100%;scroll-snap-align:center;border-radius:32px 32px 0 0;background:var(--card-bg);border:1px solid var(--card-border);border-bottom:0;box-shadow:0 -14px 34px rgba(15,23,42,.10);backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px);overflow:hidden;display:flex;flex-direction:column;opacity:.58;transform:scale(.94) translateY(14px);transition:opacity .28s var(--ease),transform .28s var(--ease),box-shadow .28s var(--ease),background .28s ease;position:relative;touch-action:pan-x;}
     .plan-sheet.active{opacity:1;transform:scale(1) translateY(0);box-shadow:0 -18px 46px rgba(15,23,42,.15);}
     body[data-theme="dark"] .plan-sheet.active{box-shadow:0 -18px 46px rgba(0,0,0,.24);}
-    .plan-sheet.employee,.plan-sheet.login,.plan-sheet.intro,.plan-sheet.basic,.plan-sheet.plus,.plan-sheet.premium{width:358px;}
+    .plan-sheet.login,.plan-sheet.basic,.plan-sheet.plus,.plan-sheet.premium{width:358px;}
     .plan-sheet::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 100% 0%,rgba(89,221,255,.18) 0%,rgba(89,221,255,0) 40%),radial-gradient(circle at 0% 100%,rgba(255,135,224,.13) 0%,rgba(255,135,224,0) 48%);pointer-events:none;z-index:0;}
     .sheet-handle-zone{width:100%;padding:12px 0 8px;display:flex;justify-content:center;flex:0 0 auto;cursor:default;position:relative;z-index:2;pointer-events:none;}
     .sheet-handle{width:44px;height:5px;border-radius:999px;background:rgba(100,116,139,.34);}
     body[data-theme="dark"] .sheet-handle{background:rgba(255,255,255,.20);}
     .sheet-summary{position:relative;z-index:2;padding:6px 32px 8px 16px;flex:0 0 auto;}
-    .intro-summary{padding:16px 16px 16px 16px;position:relative;overflow:visible;}
-    .entry-chooser{position:relative;z-index:1;padding:0;}
-    .entry-chooser-title{margin:0;text-align:center;color:#fff;font-size:24px;line-height:1.1;font-weight:1000;letter-spacing:.08em;}
-    .entry-chooser-subtitle{margin:6px 0 12px;text-align:center;color:rgba(236,242,255,.74);font-size:13px;line-height:1.35;font-weight:700;letter-spacing:.02em;}
-    .entry-chooser-list{display:grid;gap:10px;}
-    .entry-chooser-card{position:relative;min-height:90px;width:100%;display:grid;grid-template-columns:1fr auto;grid-template-areas:"guide guide" "info action";align-items:center;gap:8px 12px;padding:12px 14px;border-radius:20px;border:1px solid rgba(255,255,255,.14);background:linear-gradient(135deg,rgba(255,255,255,.07),rgba(255,255,255,.04));box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 8px 18px rgba(0,0,0,.20);overflow:hidden;appearance:none;cursor:pointer;color:inherit;text-align:left;}
-    .entry-chooser-card::before{content:"";position:absolute;inset:0;border-radius:inherit;z-index:0;}
-    .entry-chooser-card.login::before{background:radial-gradient(220px 100px at 12% 50%,rgba(255,79,195,.16),transparent 60%),linear-gradient(90deg,rgba(255,88,196,.13) 0%,rgba(149,98,255,.10) 58%,rgba(255,255,255,.03) 100%);}
-    .entry-chooser-card.plan::before{background:radial-gradient(220px 100px at 12% 50%,rgba(53,183,255,.16),transparent 60%),linear-gradient(90deg,rgba(63,164,255,.13) 0%,rgba(112,120,255,.10) 58%,rgba(255,255,255,.03) 100%);}
-    .entry-chooser-card>*{position:relative;z-index:1;}
-    .entry-chooser-guide{grid-area:guide;display:flex;align-items:center;gap:6px;color:#ff4fc3;}
-    .entry-chooser-guide-meta{display:flex;align-items:center;gap:6px;}
-    .entry-chooser-person{width:22px;height:22px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;border:1px solid currentColor;font-size:12px;line-height:1;}
-    .entry-chooser-card.login .entry-chooser-guide,.entry-chooser-card.login .entry-chooser-info{justify-content:flex-end;text-align:right;}
-    .entry-chooser-card.plan .entry-chooser-guide{color:#35b7ff;}
-    .entry-chooser-chevrons{display:flex;align-items:center;gap:4px;}
-    .entry-chooser-chevrons span{width:10px;height:10px;border-top:2px solid currentColor;border-left:2px solid currentColor;transform:rotate(-45deg);opacity:.95;}
-    .entry-chooser-card.plan .entry-chooser-chevrons span{border-left:none;border-right:2px solid currentColor;transform:rotate(45deg);}
-    .entry-chooser-chip{height:24px;min-width:72px;padding:0 10px;border:1px solid currentColor;border-radius:999px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;letter-spacing:.06em;white-space:nowrap;}
-    .entry-chooser-info{grid-area:info;min-width:0;}
-    .entry-chooser-card-title{margin:0 0 2px;color:#fff;font-size:24px;line-height:1.1;font-weight:1000;letter-spacing:.03em;}
-    .entry-chooser-card-sub{margin:0;color:rgba(234,241,255,.74);font-size:13px;line-height:1.35;font-weight:700;letter-spacing:.02em;}
-    .entry-chooser-action{grid-area:action;height:30px;min-width:92px;padding:0 10px;border-radius:999px;border:1px solid rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;letter-spacing:.05em;white-space:nowrap;background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.04));}
-    .entry-chooser-card.login .entry-chooser-action{color:#ff4fc3;border-color:rgba(255,79,195,.45);}
-    .entry-chooser-card.plan .entry-chooser-action{color:#59ddff;border-color:rgba(53,183,255,.45);}
-    @media (max-width:430px){
-      .intro-summary{padding:12px 10px 12px 10px;}
-      .entry-chooser{padding:0;}
-      .entry-chooser-title{font-size:20px;}
-      .entry-chooser-subtitle{font-size:12px;margin:5px 0 10px;}
-      .entry-chooser-card{padding:10px 10px;gap:6px 10px;border-radius:16px;}
-      .entry-chooser-card-title{font-size:20px;}
-      .entry-chooser-card-sub{font-size:12px;line-height:1.3;}
-      .entry-chooser-guide{gap:5px;}
-      .entry-chooser-person{width:20px;height:20px;font-size:11px;}
-      .entry-chooser-chip{min-width:66px;font-size:10px;height:22px;padding:0 8px;}
-      .entry-chooser-chevrons{gap:3px;}
-      .entry-chooser-chevrons span{width:8px;height:8px;}
-      .entry-chooser-action{display:none;}
-    }
-    .bg-swipe-guide{position:absolute;left:50%;top:-138px;transform:translateX(-50%);display:flex;align-items:center;justify-content:center;z-index:10;pointer-events:none;opacity:.70;}
-    .bg-swipe-guide-gif{width:74px;height:auto;display:block;filter:drop-shadow(0 6px 12px rgba(0,0,0,.34));}
-    .phone.expanded .bg-swipe-guide{display:none;}
-    .phone:not(.expanded) .sheet-stage::after{content:"往上滑看更多";position:absolute;left:50%;top:-24px;transform:translateX(-50%);display:block;color:var(--muted-text);font-size:15px;line-height:1.2;font-weight:900;letter-spacing:.06em;text-align:center;opacity:.78;animation:hintBounce 1.5s ease-in-out infinite;z-index:10;white-space:nowrap;pointer-events:none;}
+    .phone:not(.expanded) .sheet-stage::after{content:"往上滑開啟";position:absolute;left:50%;top:-24px;transform:translateX(-50%);display:block;color:var(--muted-text);font-size:15px;line-height:1.2;font-weight:900;letter-spacing:.06em;text-align:center;opacity:.78;animation:hintBounce 1.5s ease-in-out infinite;z-index:10;white-space:nowrap;pointer-events:none;}
     @keyframes hintBounce{0%,100%{transform:translateX(-50%) translateY(0);}50%{transform:translateX(-50%) translateY(-6px);}}
 
     .sheet-summary-grid{display:grid;grid-template-columns:1fr auto;grid-template-rows:auto auto;gap:16px 12px;align-items:end;justify-items:start;}
@@ -398,11 +339,6 @@
     .auth-split-row .google-action,.auth-split-row .line-action{margin-top:0!important;min-height:52px!important;padding:12px 10px!important;border-radius:16px!important;font-size:14px!important;line-height:1.22!important;letter-spacing:.01em!important;gap:7px!important;}
     .auth-split-row .btn-icon{width:1.45em;height:1.45em;font-size:.86em;transform:none;}
     .has-line-icon .btn-icon{min-width:34px;width:34px;height:22px;border-radius:7px;background:rgba(255,255,255,.96);color:#06c755;font-size:10px;font-family:Arial,sans-serif;font-weight:1000;letter-spacing:-.02em;box-shadow:0 3px 10px rgba(15,23,42,.12);}
-    .other-auth{margin-top:10px;border-radius:16px;border:1px solid rgba(148,163,184,.28);background:rgba(255,255,255,.04);overflow:hidden;}
-    .other-auth summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:center;min-height:46px;padding:10px 14px;color:var(--muted-text);font-size:14px;font-weight:900;letter-spacing:.03em;}
-    .other-auth summary::-webkit-details-marker{display:none;}
-    .other-auth[open] summary{border-bottom:1px solid rgba(148,163,184,.22);}
-    .other-auth .auth-split-row{margin:10px;padding:0;}
 
     .inline-form{display:grid;gap:10px;margin-top:14px;}
     .inline-label{color:var(--main-text);font-size:13px;line-height:1.35;font-weight:1000;}
@@ -413,11 +349,9 @@
     .swipe-hint{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;width:100%;margin-top:12px;column-gap:16px;color:var(--muted-text);}
     .swipe-hint-side{display:flex;align-items:flex-end;gap:4px;color:#8089ff;padding-top:4px;}
     .swipe-hint-side.left{justify-content:flex-end;animation:swipeHintLeft 1.2s ease-in-out infinite;}
-    .swipe-hint-side.right{justify-content:flex-start;animation:swipeHintRight 1.2s ease-in-out infinite;}
-    .swipe-hint-side.right svg{transform:rotate(180deg);}
+    .swipe-hint-side.right{justify-content:flex-start;animation:swipeHintLeft 1.2s ease-in-out infinite;}
     .swipe-hint-side svg{width:18px;height:18px;display:block;stroke:currentColor;fill:none;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round;}
     @keyframes swipeHintLeft{0%,100%{opacity:.40;transform:translateX(3px)}50%{opacity:1;transform:translateX(-2px)}}
-    @keyframes swipeHintRight{0%,100%{opacity:.40;transform:translateX(-3px)}50%{opacity:1;transform:translateX(2px)}}
     .swipe-hint-text{min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-align:center;}
     .swipe-hint-main{color:#8089ff;font-size:15px;line-height:1.5;font-weight:1000;white-space:nowrap;}
     .swipe-hint-plan{color:#8089ff;font-size:14px;line-height:1.3;font-weight:1000;letter-spacing:.02em;white-space:nowrap;}
@@ -447,15 +381,14 @@
     @media (max-width:430px){
       body{align-items:stretch;}
       .phone{max-width:none;max-height:none;height:100vh;border-radius:0;}
-      .top-space{min-height:240px;}
-      .sheet-stage{height:240px;}
+      .top-space{min-height:380px;}
       .sheet-carousel{scroll-padding-left:calc((100% - 342px) / 2);scroll-padding-right:calc((100% - 342px) / 2);padding-left:calc((100% - 342px) / 2);padding-right:calc((100% - 342px) / 2);}
-      .plan-sheet.employee,.plan-sheet.login,.plan-sheet.intro,.plan-sheet.register,.plan-sheet.basic,.plan-sheet.plus,.plan-sheet.premium{width:342px;}
+      .plan-sheet.login,.plan-sheet.register,.plan-sheet.basic,.plan-sheet.plus,.plan-sheet.premium{width:342px;}
       .sheet-title{font-size:32px;}
       .sheet-price{font-size:26px;}
     }
     @media (max-width:360px){.btn{font-size:17px;padding-left:14px;padding-right:14px;gap:8px;}.btn-row .btn{font-size:15px;padding-left:10px;padding-right:10px;}.sheet-action button{font-size:16px;}}
-    @media (max-height:700px){.phone{height:100vh;border-radius:0;}.top-space{min-height:260px;}.panel{min-height:258px;padding:24px 22px 22px;}.sheet-stage{height:220px;}}
+    @media (max-height:700px){.phone{height:100vh;border-radius:0;}.top-space{min-height:320px;}.panel{min-height:258px;padding:24px 22px 22px;}.sheet-stage{height:188px;}}
 
     /* ANG_UI_CLEAN_TYPOGRAPHY_V2
        目的：統一字級、按鈕間距、卡片排版與手機可讀性。 */
@@ -630,10 +563,6 @@
       height:196px;
     }
 
-    .phone:not(.expanded) .sheet-stage{
-      height:216px;
-    }
-
     .phone.expanded .sheet-stage{
       height:84vh;
     }
@@ -654,9 +583,8 @@
       padding:10px 22px 12px;
     }
 
-    .plan-sheet.login .sheet-summary,
-    .plan-sheet.employee .sheet-summary{
-      padding:14px 22px 14px;
+    .plan-sheet.login .sheet-summary{
+      padding:8px 22px 14px;
     }
 
     .summary-main{
@@ -671,72 +599,11 @@
       text-shadow:0 1px 2px rgba(0,0,0,.20);
     }
 
-    .plan-sheet.login .sheet-title,
-    .plan-sheet.employee .sheet-title{
-      font-size:29px;
+    .plan-sheet.login .sheet-title{
+      font-size:26px;
       line-height:1.12;
       letter-spacing:.01em;
       max-width:210px;
-    }
-
-    .employee-quick-note{
-      min-height:42px;
-      border-radius:14px;
-      padding:9px 12px;
-      display:flex;
-      align-items:center;
-      color:var(--muted-text);
-      font-size:13px;
-      font-weight:900;
-      letter-spacing:.01em;
-      background:rgba(255,255,255,.06);
-      border:1px solid var(--input-border);
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-
-    .login-company-quick{
-      margin-top:12px;
-      padding-top:12px;
-      border-top:1px solid var(--line);
-    }
-
-    .login-company-quick .inline-label{
-      margin-bottom:6px;
-      font-size:16px;
-      line-height:1.25;
-      letter-spacing:.02em;
-      font-weight:1000;
-    }
-
-    .login-company-row{
-      display:grid;
-      grid-template-columns:minmax(0,1fr) auto;
-      gap:8px;
-      align-items:center;
-    }
-
-    .login-company-row .inline-input{
-      min-height:42px;
-      border-radius:14px;
-      padding:9px 12px;
-      font-size:14px;
-      letter-spacing:.01em;
-    }
-
-    .login-next-btn{
-      min-width:88px;
-      min-height:42px;
-      border-radius:14px;
-      padding:9px 14px;
-      background:var(--primary-bg);
-      color:#fff!important;
-      font-size:14px;
-      font-weight:1000;
-      letter-spacing:.03em;
-      box-shadow:var(--primary-shadow);
-      text-shadow:0 1px 2px rgba(0,0,0,.18);
     }
 
     .sheet-summary-grid{
@@ -958,17 +825,12 @@
         min-height:372px;
       }
 
-      .phone:not(.expanded) .sheet-stage{
-        height:226px;
-      }
-
       .sheet-title{
         font-size:32px;
       }
 
-      .plan-sheet.login .sheet-title,
-      .plan-sheet.employee .sheet-title{
-        font-size:27px;
+      .plan-sheet.login .sheet-title{
+        font-size:25px;
       }
 
       .sheet-price{
@@ -1010,9 +872,8 @@
         padding-right:10px;
       }
 
-      .plan-sheet.login .sheet-title,
-      .plan-sheet.employee .sheet-title{
-        font-size:24px;
+      .plan-sheet.login .sheet-title{
+        font-size:23px;
         max-width:190px;
       }
 
@@ -1061,10 +922,6 @@
         height:188px;
       }
 
-      .phone:not(.expanded) .sheet-stage{
-        height:206px;
-      }
-
       .phone.expanded .sheet-stage{
         height:86vh;
       }
@@ -1083,392 +940,9 @@
     .platform-email-list{display:grid;grid-template-columns:1fr;gap:7px;margin-top:8px;text-align:left;}
     .platform-email-list div{padding:8px 10px;border-radius:14px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.12);font-size:12px;font-weight:900;word-break:break-all;}
     body:not([data-theme="dark"]) .platform-email-list div{background:rgba(255,255,255,.78);border-color:rgba(148,163,184,.24);color:#0f172a;}
-
-    .platform-refresh-row{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:12px;}
-    .platform-refresh-btn{appearance:none;border:0;border-radius:999px;padding:10px 14px;font-size:13px;font-weight:1000;cursor:pointer;color:#111827;background:#fff;box-shadow:0 10px 24px rgba(15,23,42,.14);}
-    .platform-refresh-btn:disabled{opacity:.58;cursor:not-allowed;}
-    .platform-refresh-pill{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;padding:8px 10px;font-size:12px;font-weight:1000;background:rgba(128,137,255,.14);border:1px solid rgba(128,137,255,.25);}
-    body[data-theme="dark"] .platform-refresh-btn{background:#e5e7eb;color:#111827;}
     body[data-theme="dark"] .platform-secret{color:#cbd5e1;}
 
-  
-
-    /* ANG_20260707_CONTROLLED_GESTURES_START
-       手勢規則：上下由拖曳距離決定開關；左右每次只移動一張，禁止慣性跳多張與停半格。 */
-    .sheet-carousel{
-      overflow-x:hidden!important;
-      scroll-snap-type:none!important;
-      scroll-behavior:auto!important;
-      overscroll-behavior:none!important;
-      touch-action:pan-y!important;
-    }
-    .sheet-carousel.gesture-dragging{scroll-behavior:auto!important;}
-    .sheet-stage.gesture-dragging{transition:none!important;}
-    .plan-sheet{scroll-snap-stop:always;}
-    .plan-sheet.intro{touch-action:none!important;}
-    .sheet-detail,.entry-discovery-detail{touch-action:pan-y!important;}
-    .discovery-top{touch-action:none!important;}
-    .discovery-ad-rail,.mini-pills{touch-action:pan-x!important;}
-    /* ANG_20260707_CONTROLLED_GESTURES_END */
-
-    /* ANG_20260707_SIMPLE_ENTRY_START
-       首頁只保留水平選擇：左滑方案、右滑登入。 */
-    .phone:not(.expanded) .sheet-stage::after{display:none!important;}
-    .phone.intro-active .sheet-stage,
-    .phone.intro-active:not(.expanded) .sheet-stage{height:178px!important;}
-    .phone.intro-active .sheet-carousel{overflow-y:hidden;}
-    .phone.intro-active .plan-sheet.intro{
-      opacity:1;
-      transform:none;
-      border-radius:30px 30px 0 0;
-      background:linear-gradient(145deg,rgba(10,18,47,.88),rgba(20,24,60,.78));
-      border-color:rgba(255,255,255,.14);
-      box-shadow:0 -18px 46px rgba(5,8,22,.26);
-    }
-    body:not([data-theme="dark"]) .phone.intro-active .plan-sheet.intro{
-      background:linear-gradient(145deg,rgba(255,255,255,.94),rgba(246,248,255,.90));
-      border-color:rgba(148,163,184,.22);
-      box-shadow:0 -16px 38px rgba(79,70,229,.12);
-    }
-    .entry-simple{
-      height:100%;
-      padding:17px 18px calc(16px + env(safe-area-inset-bottom));
-      display:flex;
-      flex-direction:column;
-      justify-content:center;
-      position:relative;
-      z-index:2;
-    }
-    .entry-simple-eyebrow{
-      margin-bottom:3px;
-      color:rgba(203,213,225,.72);
-      text-align:center;
-      font-size:10px;
-      line-height:1;
-      font-weight:900;
-      letter-spacing:.24em;
-    }
-    body:not([data-theme="dark"]) .entry-simple-eyebrow{color:#64748b;}
-    .entry-simple-title{
-      margin:0 0 12px;
-      color:#fff;
-      text-align:center;
-      font-size:22px;
-      line-height:1.1;
-      font-weight:1000;
-      letter-spacing:.05em;
-    }
-    body:not([data-theme="dark"]) .entry-simple-title{color:#0f172a;}
-    .entry-simple-directions{
-      display:grid;
-      grid-template-columns:minmax(0,1fr) 1px minmax(0,1fr);
-      align-items:stretch;
-      gap:8px;
-    }
-    .entry-simple-divider{
-      width:1px;
-      min-height:52px;
-      background:linear-gradient(180deg,transparent,rgba(148,163,184,.45),transparent);
-    }
-    .entry-simple-side{
-      min-width:0;
-      min-height:56px;
-      padding:8px 10px;
-      border-radius:17px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      color:#fff;
-      background:rgba(255,255,255,.055);
-      border:1px solid rgba(255,255,255,.10);
-      box-shadow:inset 0 1px 0 rgba(255,255,255,.06);
-      appearance:none;
-    }
-    body:not([data-theme="dark"]) .entry-simple-side{
-      color:#0f172a;
-      background:rgba(255,255,255,.78);
-      border-color:rgba(148,163,184,.18);
-      box-shadow:0 8px 18px rgba(15,23,42,.06);
-    }
-    .entry-simple-side.plan{color:#59ddff;}
-    .entry-simple-side.login{color:#ff87e0;}
-    body:not([data-theme="dark"]) .entry-simple-side.plan{color:#087fa0;}
-    body:not([data-theme="dark"]) .entry-simple-side.login{color:#a83289;}
-    .entry-simple-side:active{transform:scale(.98);}
-    .entry-simple-arrow{
-      flex:0 0 auto;
-      font-size:25px;
-      line-height:1;
-      font-weight:500;
-      filter:drop-shadow(0 2px 8px currentColor);
-    }
-    .entry-simple-copy{min-width:0;display:flex;flex-direction:column;line-height:1.05;}
-    .entry-simple-copy small{font-size:10px;font-weight:900;letter-spacing:.08em;opacity:.72;}
-    .entry-simple-copy strong{margin-top:4px;font-size:15px;font-weight:1000;letter-spacing:.02em;white-space:nowrap;}
-    .entry-simple-note{
-      margin:9px 0 0;
-      color:rgba(203,213,225,.72);
-      text-align:center;
-      font-size:10px;
-      line-height:1.3;
-      font-weight:800;
-      letter-spacing:.01em;
-    }
-    body:not([data-theme="dark"]) .entry-simple-note{color:#64748b;}
-    @media(max-width:370px){
-      .phone.intro-active .sheet-stage,
-      .phone.intro-active:not(.expanded) .sheet-stage{height:172px!important;}
-      .entry-simple{padding-left:12px;padding-right:12px;}
-      .entry-simple-title{font-size:20px;margin-bottom:10px;}
-      .entry-simple-side{padding-left:7px;padding-right:7px;gap:6px;}
-      .entry-simple-copy strong{font-size:14px;}
-      .entry-simple-note{font-size:9px;}
-    }
-    /* ANG_20260707_FEATURE_ADS_START
-       首頁中央卡上滑後，顯示 APP 主要特色與精選廣告。 */
-    .phone.intro-active.expanded .sheet-stage{
-      height:86vh!important;
-    }
-    .phone.intro-active.expanded .plan-sheet.intro{
-      transform:none;
-      opacity:1;
-    }
-    .phone.intro-active.expanded .entry-simple{
-      height:auto;
-      flex:0 0 auto;
-      justify-content:flex-start;
-      padding:14px 18px 10px;
-      border-bottom:1px solid rgba(148,163,184,.18);
-    }
-    .phone.intro-active.expanded .entry-simple-directions,
-    .phone.intro-active.expanded .entry-simple-note,
-    .phone.intro-active.expanded .entry-simple-upbar{
-      display:none;
-    }
-    .phone.intro-active.expanded .entry-simple-eyebrow{
-      margin-bottom:5px;
-    }
-    .phone.intro-active.expanded .entry-simple-title{
-      margin:0;
-      font-size:20px;
-    }
-    .entry-simple-upbar{
-      margin:8px auto 0;
-      width:max-content;
-      max-width:100%;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:6px;
-      padding:6px 12px;
-      border-radius:999px;
-      color:#cbd5e1;
-      background:rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.10);
-      font-size:10px;
-      line-height:1;
-      font-weight:900;
-      letter-spacing:.04em;
-      cursor:pointer;
-      animation:introUpHint 1.5s ease-in-out infinite;
-    }
-    body:not([data-theme="dark"]) .entry-simple-upbar{
-      color:#475569;
-      background:rgba(255,255,255,.76);
-      border-color:rgba(148,163,184,.20);
-    }
-    .entry-simple-upbar-icon{
-      font-size:15px;
-      line-height:1;
-      color:#8089ff;
-    }
-    @keyframes introUpHint{
-      0%,100%{transform:translateY(0);opacity:.72;}
-      50%{transform:translateY(-4px);opacity:1;}
-    }
-    .entry-discovery-detail{
-      padding:0 16px calc(22px + env(safe-area-inset-bottom));
-      overscroll-behavior:contain;
-    }
-    .discovery-top{
-      position:sticky;
-      top:0;
-      z-index:4;
-      margin:0 -2px 12px;
-      padding:12px 2px 8px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      background:linear-gradient(180deg,rgba(18,25,42,.98) 0%,rgba(18,25,42,.90) 78%,rgba(18,25,42,0) 100%);
-    }
-    body:not([data-theme="dark"]) .discovery-top{
-      background:linear-gradient(180deg,rgba(248,250,255,.98) 0%,rgba(248,250,255,.90) 78%,rgba(248,250,255,0) 100%);
-    }
-    .discovery-kicker{
-      color:var(--muted-text);
-      font-size:10px;
-      font-weight:900;
-      letter-spacing:.14em;
-    }
-    .discovery-title{
-      margin:3px 0 0;
-      color:var(--main-text);
-      font-size:21px;
-      line-height:1.15;
-      font-weight:1000;
-    }
-    .discovery-collapse{
-      flex:0 0 auto;
-      min-width:66px;
-      height:34px;
-      padding:0 12px;
-      border-radius:999px;
-      color:var(--main-text);
-      background:var(--secondary-bg);
-      border:1px solid var(--secondary-border);
-      font-size:12px;
-      font-weight:1000;
-    }
-    .discovery-section-title{
-      margin:0 0 9px;
-      color:var(--main-text);
-      font-size:15px;
-      font-weight:1000;
-      letter-spacing:.02em;
-    }
-    .discovery-feature-grid{
-      display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:9px;
-      margin-bottom:18px;
-    }
-    .discovery-feature{
-      min-width:0;
-      padding:12px;
-      border-radius:18px;
-      background:linear-gradient(145deg,rgba(255,255,255,.10),rgba(255,255,255,.045));
-      border:1px solid rgba(255,255,255,.10);
-      box-shadow:inset 0 1px 0 rgba(255,255,255,.06);
-    }
-    body:not([data-theme="dark"]) .discovery-feature{
-      background:linear-gradient(145deg,#ffffff,#f5f7ff);
-      border-color:rgba(148,163,184,.18);
-      box-shadow:0 8px 20px rgba(15,23,42,.055);
-    }
-    .discovery-feature-icon{
-      width:34px;
-      height:34px;
-      margin-bottom:9px;
-      border-radius:12px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:18px;
-      background:linear-gradient(135deg,rgba(89,221,255,.22),rgba(204,164,255,.24));
-      border:1px solid rgba(128,137,255,.24);
-    }
-    .discovery-feature strong{
-      display:block;
-      color:var(--main-text);
-      font-size:13px;
-      line-height:1.25;
-      font-weight:1000;
-    }
-    .discovery-feature p{
-      margin:5px 0 0;
-      color:var(--muted-text);
-      font-size:10px;
-      line-height:1.45;
-      font-weight:800;
-    }
-    .discovery-ad-rail{
-      display:flex;
-      gap:10px;
-      overflow-x:auto;
-      scroll-snap-type:x mandatory;
-      scrollbar-width:none;
-      -webkit-overflow-scrolling:touch;
-      padding:1px 1px 8px;
-      margin:0 -1px 14px;
-    }
-    .discovery-ad-rail::-webkit-scrollbar{display:none;}
-    .discovery-ad{
-      position:relative;
-      flex:0 0 84%;
-      min-height:132px;
-      padding:16px;
-      border-radius:22px;
-      overflow:hidden;
-      scroll-snap-align:center;
-      color:#fff;
-      box-shadow:0 14px 28px rgba(15,23,42,.18);
-    }
-    .discovery-ad::after{
-      content:"";
-      position:absolute;
-      width:130px;
-      height:130px;
-      right:-38px;
-      bottom:-52px;
-      border-radius:50%;
-      background:rgba(255,255,255,.14);
-    }
-    .discovery-ad.ad-free{background:linear-gradient(135deg,#00bfdc 0%,#6575ff 56%,#b02cff 100%);}
-    .discovery-ad.ad-clock{background:linear-gradient(135deg,#ff87e0 0%,#a77cff 52%,#5564e8 100%);}
-    .discovery-ad.ad-plan{background:linear-gradient(135deg,#15214b 0%,#203e88 54%,#00a9ce 100%);}
-    .discovery-ad-label{
-      position:relative;
-      z-index:1;
-      display:inline-flex;
-      padding:5px 9px;
-      border-radius:999px;
-      background:rgba(255,255,255,.18);
-      border:1px solid rgba(255,255,255,.20);
-      font-size:9px;
-      font-weight:1000;
-      letter-spacing:.08em;
-    }
-    .discovery-ad h4{
-      position:relative;
-      z-index:1;
-      margin:11px 0 5px;
-      font-size:21px;
-      line-height:1.12;
-      font-weight:1000;
-    }
-    .discovery-ad p{
-      position:relative;
-      z-index:1;
-      margin:0;
-      max-width:84%;
-      color:rgba(255,255,255,.88);
-      font-size:11px;
-      line-height:1.45;
-      font-weight:800;
-    }
-    .discovery-bottom-note{
-      margin:0;
-      padding:11px 12px;
-      border-radius:16px;
-      color:var(--muted-text);
-      background:rgba(128,137,255,.10);
-      border:1px solid rgba(128,137,255,.16);
-      text-align:center;
-      font-size:10px;
-      line-height:1.5;
-      font-weight:800;
-    }
-    @media(max-width:370px){
-      .entry-discovery-detail{padding-left:12px;padding-right:12px;}
-      .discovery-feature-grid{gap:7px;}
-      .discovery-feature{padding:10px;}
-      .discovery-ad{flex-basis:88%;}
-    }
-    /* ANG_20260707_FEATURE_ADS_END */
-    /* ANG_20260707_SIMPLE_ENTRY_END */
-</style>
+  </style>
 
 <script>
 /* ANG_0603_PLATFORM_CREATOR_APP_RETURN_HANDLER_START */
@@ -1516,14 +990,25 @@
 </head>
 
 <body data-theme="dark">
-  <main class="phone intro-active" id="phone">
-    <img class="screen-bg-img bg-day" src="ang-entry-bg-day.png?v=20260707-controlled-gestures" alt="" aria-hidden="true" loading="eager" decoding="async" referrerpolicy="no-referrer" />
-    <img class="screen-bg-img bg-night" src="ang-entry-bg-night.png?v=20260707-controlled-gestures" alt="" aria-hidden="true" loading="eager" decoding="async" referrerpolicy="no-referrer" />
+  <main class="phone" id="phone">
+    <img class="screen-bg-img bg-day" src="https://pub-51476fa95e5148749c1b932e123dc797.r2.dev/ang-entry-bg-day.png?v=20260613-r2-html" alt="" aria-hidden="true" loading="eager" decoding="async" referrerpolicy="no-referrer" />
+    <img class="screen-bg-img bg-night" src="https://pub-51476fa95e5148749c1b932e123dc797.r2.dev/ang-entry-bg-night.png?v=20260613-r2-html" alt="" aria-hidden="true" loading="eager" decoding="async" referrerpolicy="no-referrer" />
 
     <button class="theme-toggle" type="button" aria-label="切換日光與暗夜模式" aria-pressed="true">
       <span class="sun" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2.2M12 19.8V22M4.93 4.93l1.56 1.56M17.51 17.51l1.56 1.56M2 12h2.2M19.8 12H22M4.93 19.07l1.56-1.56M17.51 6.49l1.56-1.56"></path></svg></span>
       <span class="moon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 14.2A8.6 8.6 0 0 1 9.8 3a7.5 7.5 0 1 0 11.2 11.2z"></path></svg></span>
     </button>
+
+    <section id="homeView" class="view active">
+      <div class="top-space"></div>
+      <div class="panel">
+        <h1 class="home-title">歡迎登入系統</h1>
+        <button class="btn btn-primary" type="button" onclick="showEmployeeEntry('code')">員工專區</button>
+        <div class="help-text">首次使用請點擊專屬開通連結</div>
+        <div class="spacer"></div>
+        <button class="btn btn-secondary" type="button" onclick="showManagerEntry()">企業管理與註冊</button>
+      </div>
+    </section>
 
     <section id="employeeEntryView" class="view">
       <div class="top-space"></div>
@@ -1580,146 +1065,74 @@
       </div>
     </section>
 
-    <section id="managerEntryView" class="view active">
+    <section id="managerEntryView" class="view">
       <div class="top-space"></div>
       <section class="sheet-stage">
         <div class="sheet-carousel" id="sheetCarousel">
 
-          <article class="plan-sheet login" data-key="login">
+          <article class="plan-sheet login platform" data-key="platform">
+            <div class="sheet-handle-zone"><div class="sheet-handle"></div></div>
+            <div class="sheet-summary">
+              <div class="summary-main">
+                <div class="summary-left"><h2 class="sheet-title">平台管理員登入</h2></div>
+                <div class="summary-right"><button class="contact-mini-btn" type="button" onclick="showHome()">返回</button></div>
+              </div>
+              <div class="swipe-hint">
+                <span class="swipe-hint-side left" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"></path></svg><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"></path></svg><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"></path></svg></span>
+                <span class="swipe-hint-text"><span class="swipe-hint-main">四封 Email 驗證</span><span class="swipe-hint-plan">任意點兩封｜Creator 平台方｜ANG8963</span></span>
+                <span class="swipe-hint-side right" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"></path></svg><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"></path></svg><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"></path></svg></span>
+              </div>
+            </div>
+            <div class="sheet-detail">
+              <div class="detail-block">
+                <h3 class="detail-title">Creator 平台方</h3>
+                <p class="detail-desc">平台方登入不走公司 Admin。按下方按鈕後，系統會寄出 4 封一次性驗證連結；任意 2 個信箱點擊完成後，才會以 ANG8963 / Creator / PLATFORM 進入管理中心。</p>
+                <div class="platform-auth-box">
+                  <div class="platform-email-list">
+                    <div>edn869728@gmail.com</div>
+                    <div>endenmi@yahoo.com</div>
+                    <div>chihhao128@gmail.com</div>
+                    <div>endenmi@icloud.com</div>
+                  </div>
+                  <div class="sheet-action" style="padding:0;margin-top:10px">
+                    <button type="button" data-action-key="platform-email-login">發送 4 封驗證信</button>
+                  </div>
+                  <div id="platformLoginStatus" class="status"></div>
+                  <div id="platformEmailVerifyBox" class="platform-qr-box"></div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="plan-sheet login active" data-key="login">
             <div class="sheet-handle-zone"><div class="sheet-handle"></div></div>
             <div class="sheet-summary">
               <div class="summary-main">
                 <div class="summary-left"><h2 class="sheet-title">企業管理登入</h2></div>
+                <div class="summary-right"><button class="contact-mini-btn" type="button" onclick="showHome()">返回</button></div>
               </div>
-              <div class="login-company-quick">
-                <div class="inline-label">公司代碼</div>
-                <div class="login-company-row">
-                  <input class="inline-input" id="adminCompanyCode" type="text" inputmode="text" autocomplete="organization" placeholder="例如 ANG0603" />
-                  <button class="login-next-btn" type="button" data-action-key="expand-login">下一步</button>
-                </div>
+              <div class="swipe-hint">
+                <span class="swipe-hint-side left" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"></path></svg><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"></path></svg><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"></path></svg></span>
+                <span class="swipe-hint-text"><span class="swipe-hint-main">左右滑動 查看登入與方案</span><span class="swipe-hint-plan">平台管理 / Basic / Plus / Premium</span></span>
+                <span class="swipe-hint-side right" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"></path></svg><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"></path></svg><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"></path></svg></span>
               </div>
             </div>
             <div class="sheet-detail">
               <div class="detail-block">
                 <h3 class="detail-title">登入驗證</h3>
                 <div class="inline-form">
+                  <div><div class="inline-label">公司代碼</div><input class="inline-input" id="adminCompanyCode" type="text" inputmode="text" autocomplete="organization" placeholder="例如 ANG0603" /></div>
                   <div><div class="inline-label">管理員 Email</div><input class="inline-input" id="adminEmail" type="email" inputmode="email" autocomplete="email" placeholder="name@company.com" /></div>
                 </div>
               </div>
               <div class="sheet-action">
                 <button type="button" data-action-key="admin-email-login">驗證 Email 並登入後台</button>
-                <details class="other-auth">
-                  <summary>其他登入方式</summary>
-                  <div class="auth-split-row">
-                    <button class="google-action" type="button" data-action-key="admin-google-login">使用 Google 帳戶登入</button>
-                    <button class="line-action" type="button" data-action-key="admin-line-login">使用 LINE 登入</button>
-                  </div>
-                </details>
+                <div class="auth-split-row">
+                  <button class="google-action" type="button" data-action-key="admin-google-login">使用 Google 帳戶登入</button>
+                  <button class="line-action" type="button" data-action-key="admin-line-login">使用 LINE 登入</button>
+                </div>
                 <div id="adminLoginStatus" class="status"></div>
               </div>
-            </div>
-          </article>
-
-          <article class="plan-sheet employee" data-key="employee">
-            <div class="sheet-handle-zone"><div class="sheet-handle"></div></div>
-            <div class="sheet-summary">
-              <div class="summary-main">
-                <div class="summary-left"><h2 class="sheet-title">登入系統</h2></div>
-              </div>
-              <div class="login-company-quick">
-                <div class="inline-label">選擇登入身分</div>
-                <div class="login-company-row">
-                  <div class="employee-quick-note">員工、管理員、Owner、Creator</div>
-                  <button class="login-next-btn" type="button" data-action-key="employee-entry">員工登入</button>
-                </div>
-              </div>
-            </div>
-            <div class="sheet-detail">
-              <div class="detail-block">
-                <h3 class="detail-title">選擇登入入口</h3>
-                <p class="detail-desc">員工使用開通碼、QR 或已綁定裝置；企業管理者使用公司代碼與驗證方式登入。</p>
-              </div>
-              <div class="sheet-action">
-                <button type="button" data-action-key="employee-entry">員工登入</button>
-                <button class="outline-action" type="button" data-action-key="manager-login">企業管理登入</button>
-              </div>
-            </div>
-          </article>
-
-          <article class="plan-sheet intro active" data-key="intro">
-            <div class="entry-simple">
-              <div class="entry-simple-eyebrow">ANG HR SYSTEMS</div>
-              <h2 class="entry-simple-title">選擇入口</h2>
-              <div class="entry-simple-directions">
-                <button class="entry-simple-side plan" type="button" onclick="setActiveManagerSheet('basic',true)">
-                  <span class="entry-simple-arrow" aria-hidden="true">←</span>
-                  <span class="entry-simple-copy"><small>左滑</small><strong>查看方案</strong></span>
-                </button>
-                <span class="entry-simple-divider" aria-hidden="true"></span>
-                <button class="entry-simple-side login" type="button" onclick="setActiveManagerSheet('employee',true)">
-                  <span class="entry-simple-copy"><small>右滑</small><strong>登入系統</strong></span>
-                  <span class="entry-simple-arrow" aria-hidden="true">→</span>
-                </button>
-              </div>
-              <div class="entry-simple-upbar" role="button" tabindex="0" onclick="window.openIntroDetails&&window.openIntroDetails()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.openIntroDetails&&window.openIntroDetails();}">
-                <span class="entry-simple-upbar-icon" aria-hidden="true">↑</span>
-                <span>上滑看 APP 主要特色與廣告</span>
-              </div>
-              <p class="entry-simple-note">左邊看 Basic / Plus / Premium　｜　右邊進入員工或企業管理登入</p>
-            </div>
-
-            <div class="sheet-detail entry-discovery-detail">
-              <div class="discovery-top">
-                <div>
-                  <div class="discovery-kicker">DISCOVER ANG HR</div>
-                  <h3 class="discovery-title">APP 主要特色</h3>
-                </div>
-                <button class="discovery-collapse" type="button" onclick="window.closeIntroDetails&&window.closeIntroDetails()">收起 ↓</button>
-              </div>
-
-              <div class="discovery-feature-grid">
-                <article class="discovery-feature">
-                  <div class="discovery-feature-icon">🗓️</div>
-                  <strong>排班與出勤</strong>
-                  <p>正式班表優先，搭配實際打卡計算工時。</p>
-                </article>
-                <article class="discovery-feature">
-                  <div class="discovery-feature-icon">📝</div>
-                  <strong>請假與補卡</strong>
-                  <p>申請、審核與紀錄集中，不再分散處理。</p>
-                </article>
-                <article class="discovery-feature">
-                  <div class="discovery-feature-icon">💰</div>
-                  <strong>薪資與審核</strong>
-                  <p>依班表、打卡、請假資料整理薪資流程。</p>
-                </article>
-                <article class="discovery-feature">
-                  <div class="discovery-feature-icon">🏢</div>
-                  <strong>多公司與權限</strong>
-                  <p>公司、分店、角色與功能權限分層管理。</p>
-                </article>
-              </div>
-
-              <h3 class="discovery-section-title">精選廣告</h3>
-              <div class="discovery-ad-rail" aria-label="ANG HR 精選廣告">
-                <article class="discovery-ad ad-free">
-                  <span class="discovery-ad-label">新企業限定</span>
-                  <h4>首月免費開始使用</h4>
-                  <p>先建立公司與員工資料，再依實際需求選擇方案。</p>
-                </article>
-                <article class="discovery-ad ad-clock">
-                  <span class="discovery-ad-label">熱門功能</span>
-                  <h4>NFC・QR・按鈕打卡</h4>
-                  <p>多種現場打卡方式互相備援，降低漏刷與設備限制。</p>
-                </article>
-                <article class="discovery-ad ad-plan">
-                  <span class="discovery-ad-label">方案推薦</span>
-                  <h4>Basic・Plus・Premium</h4>
-                  <p>依團隊規模開啟排班、審核、薪資與進階管理功能。</p>
-                </article>
-              </div>
-
-              <p class="discovery-bottom-note">左右滑動廣告卡查看更多；向下滑回入口，或按右上角「收起」。</p>
             </div>
           </article>
 
@@ -1796,11 +1209,6 @@
     };
 
     const APP_STATE = { baseUrl:'', token:'', id:'', name:'', company:'', deviceId:'', routes:null, params:{} };
-
-    const PLATFORM_EMAIL_POLL_STORAGE_KEY = 'ang_platform_creator_email_challenge_v38';
-    let platformEmailPollTimer = null;
-    let platformEmailStatusBusy = false;
-    let platformEmailLastStartRes = null;
     const phone = document.getElementById('phone');
     const carousel = document.getElementById('sheetCarousel');
     const sheets = Array.from(document.querySelectorAll('.plan-sheet'));
@@ -1808,7 +1216,7 @@
     const sheetActionButtons = Array.from(document.querySelectorAll('[data-action-key]'));
 
     function preloadEntryBackgrounds(){
-      ['ang-entry-bg-day.png?v=20260707-controlled-gestures','ang-entry-bg-night.png?v=20260707-controlled-gestures'].forEach(function(src){
+      ['https://pub-51476fa95e5148749c1b932e123dc797.r2.dev/ang-entry-bg-day.png?v=20260613-r2-html','https://pub-51476fa95e5148749c1b932e123dc797.r2.dev/ang-entry-bg-night.png?v=20260613-r2-html'].forEach(function(src){
         const img = new Image();
         img.referrerPolicy = 'no-referrer';
         img.src = src;
@@ -1917,34 +1325,116 @@
       if (params.auth_done === '1' || params.verified === '1') { if (handleAuthDone(params)) return; }
       if (params.expired === '1' || params.status === 'expired') { showEmployeeEntry('expired'); return; }
       if (APP_STATE.token) { showEmployeeEntry('bind'); return; }
-      showManagerEntry();
-      setTimeout(restorePlatformEmailWaitingState,320);
+      showHome();
     }
 
     function initTheme(themeFromUrl){
       const body = document.body;
       const toggle = document.querySelector('.theme-toggle');
       const storageKey = 'ang-hr-theme';
-      function applyTheme(theme){
-        const isDark = theme === 'dark' || theme === 'night';
-        body.dataset.theme = isDark ? 'dark' : 'light';
-        toggle.setAttribute('aria-pressed',String(isDark));
+      const legacyKey = 'ang_99_hr_daynight_mode';
+
+      function normalizeTheme(value){
+        value = String(value || '').trim().toLowerCase();
+        if (value === 'dark' || value === 'night' || value === '暗夜') return 'dark';
+        if (value === 'light' || value === 'day' || value === '日光') return 'light';
+        return '';
       }
-      const savedTheme = localStorage.getItem(storageKey);
-      applyTheme(themeFromUrl || savedTheme || 'dark');
-      toggle.addEventListener('click',function(){
-        const nextTheme = body.dataset.theme === 'dark' ? 'light' : 'dark';
-        applyTheme(nextTheme);
-        localStorage.setItem(storageKey,nextTheme);
+
+      function nativeBridge(){
+        return window.ANGNative || window.ANGHRApp || window.AndroidBridge || window.AndroidNative || window.WebAppInterface || null;
+      }
+
+      function applyTheme(theme,save){
+        const mode = normalizeTheme(theme) || 'dark';
+        const isDark = mode === 'dark';
+        body.dataset.theme = mode;
+        if (toggle) toggle.setAttribute('aria-pressed',String(isDark));
+        if (save) {
+          try {
+            localStorage.setItem(storageKey,mode);
+            localStorage.setItem(legacyKey,isDark ? 'night' : 'day');
+          } catch (err) {}
+        }
+      }
+
+      function applyNativeAppearance(mode,fullReplace){
+        const dayNight = mode === 'dark' ? 'night' : 'day';
+        const transitionVideo = mode === 'light' ? 'night_to_day' : 'day_to_night';
+        const payload = {
+          mode:dayNight,
+          theme:mode,
+          fullReplace:!!fullReplace,
+          replaceAppIcon:!!fullReplace,
+          replaceOpeningVideo:!!fullReplace,
+          restartApp:!!fullReplace,
+          transitionVideo:transitionVideo
+        };
+        const bridge = nativeBridge();
+        try {
+          if (bridge && typeof bridge.applyDayNightMode === 'function') {
+            bridge.applyDayNightMode(JSON.stringify(payload));
+            return true;
+          }
+          if (bridge && typeof bridge.applyAppearanceMode === 'function') {
+            bridge.applyAppearanceMode(dayNight,!!fullReplace);
+            return true;
+          }
+          if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.ANGAppearance) {
+            window.webkit.messageHandlers.ANGAppearance.postMessage(payload);
+            return true;
+          }
+        } catch (err) {}
+        try { window.dispatchEvent(new CustomEvent('ang-theme-full-replace',{detail:payload})); } catch (err2) {}
+        return false;
+      }
+
+      function askFullReplace(nextMode){
+        const label = nextMode === 'dark' ? '暗夜' : '日光';
+        if (window.Swal && typeof Swal.fire === 'function') {
+          return Swal.fire({
+            title:'完整更換嗎？',
+            text:'要切換成' + label + '模式，是否同步更換 App icon 與開場影片？',
+            icon:'question',
+            showCancelButton:true,
+            showDenyButton:true,
+            confirmButtonText:'完整更換',
+            denyButtonText:'只切頁面',
+            cancelButtonText:'取消'
+          }).then(function(res){
+            if (res.isConfirmed) return 'full';
+            if (res.isDenied) return 'page';
+            return 'cancel';
+          });
+        }
+        return Promise.resolve(window.confirm('要切換成' + label + '模式，並同步更換 App icon 與開場影片嗎？') ? 'full' : 'page');
+      }
+
+      let nativeTheme = '';
+      try {
+        const bridge = nativeBridge();
+        if (bridge && typeof bridge.getAppearanceMode === 'function') nativeTheme = normalizeTheme(bridge.getAppearanceMode());
+      } catch (err) {}
+      const savedTheme = normalizeTheme(localStorage.getItem(storageKey));
+      applyTheme(normalizeTheme(themeFromUrl) || savedTheme || nativeTheme || 'dark',false);
+
+      if (toggle) toggle.addEventListener('click',function(){
+        const currentTheme = normalizeTheme(body.dataset.theme) || 'dark';
+        const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        askFullReplace(nextTheme).then(function(choice){
+          if (choice === 'cancel') return;
+          applyTheme(nextTheme,true);
+          if (choice === 'full') applyNativeAppearance(nextTheme,true);
+        });
       });
     }
 
     function getParams(){ const sp = new URLSearchParams(window.location.search); const data = {}; sp.forEach(function(value,key){ data[key] = String(value || '').trim(); }); return data; }
     function getBaseUrl(){ return window.location.origin + window.location.pathname; }
     function getOrCreateDeviceId(){ const key = 'ang_hr_device_id'; let id = localStorage.getItem(key); if (!id) { id = 'DEV-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).slice(2,10).toUpperCase(); localStorage.setItem(key,id); } return id; }
-    function setView(viewId){ ['homeView','employeeEntryView','managerEntryView'].forEach(function(id){ const el = document.getElementById(id); if (el) el.classList.remove('active'); }); const target = document.getElementById(viewId); if (target) target.classList.add('active'); if (viewId !== 'managerEntryView') phone.classList.remove('expanded','intro-detail-open'); }
+    function setView(viewId){ ['homeView','employeeEntryView','managerEntryView'].forEach(function(id){ const el = document.getElementById(id); if (el) el.classList.remove('active'); }); const target = document.getElementById(viewId); if (target) target.classList.add('active'); if (viewId !== 'managerEntryView') phone.classList.remove('expanded'); }
     function setEntryMode(modeId){ ['codeMode','bindMode','expiredMode'].forEach(function(id){ const el = document.getElementById(id); if (el) el.classList.remove('active'); }); const target = document.getElementById(modeId); if (target) target.classList.add('active'); }
-    function showHome(){ showManagerEntry(); }
+    function showHome(){ setView('homeView'); }
     function showEmployeeEntry(mode){
       setView('employeeEntryView');
       if (mode === 'bind') {
@@ -1960,19 +1450,7 @@
       setStatus('codeStatus','','');
       setTimeout(function(){ const input = document.getElementById('activationCode'); if (input) input.focus(); },160);
     }
-    function showManagerEntry(){
-      setView('managerEntryView');
-      const view = document.getElementById('managerEntryView');
-      if (view) {
-        view.classList.remove('manager-slide-in');
-        void view.offsetWidth;
-        view.classList.add('manager-slide-in');
-        setTimeout(function(){ view.classList.remove('manager-slide-in'); },760);
-      }
-      setTimeout(function(){
-        setActiveManagerSheet('intro',true);
-      },40);
-    }
+    function showManagerEntry(){ setView('managerEntryView'); setTimeout(function(){ setActiveManagerSheet('login',true); },40); }
     function setText(id,text){ const el = document.getElementById(id); if (el) el.innerText = text; }
     function setStatus(id,type,message){ const box = document.getElementById(id); if (!box) return; box.className = 'status'; if (!message) { box.innerText = ''; box.classList.remove('show'); return; } box.classList.add('show',type || 'info'); box.innerText = message; }
     function clearCode(){ const input = document.getElementById('activationCode'); if (input) { input.value = ''; input.focus(); } setStatus('codeStatus','',''); }
@@ -2106,12 +1584,12 @@
 
 
     function isAndroidNativeBridgeReady(){
-      return !!(window.ANGHRApp || window.AndroidBridge || window.AndroidNative || window.WebAppInterface);
+      return !!(window.ANGNative || window.ANGHRApp || window.AndroidBridge || window.AndroidNative || window.WebAppInterface);
     }
 
     function callAndroidNativeAuth(provider,statusId){
       const p = String(provider || '').trim().toLowerCase();
-      const bridge = window.ANGHRApp || window.AndroidBridge || window.AndroidNative || window.WebAppInterface;
+      const bridge = window.ANGNative || window.ANGHRApp || window.AndroidBridge || window.AndroidNative || window.WebAppInterface;
       if (!bridge) return false;
       try {
         if (p === 'google') {
@@ -2583,302 +2061,20 @@
 
     function initManagerCarousel(){
       if (!carousel) return;
-
-      const stage = carousel.closest('.sheet-stage');
-      const HORIZONTAL_THRESHOLD = 72;
-      const AXIS_LOCK_DISTANCE = 12;
-      const AXIS_RATIO = 1.14;
-      const OPEN_PROGRESS_REQUIRED = 0.38;
-      const CLOSE_PROGRESS_REQUIRED = 0.30;
-
       let didSwipe = false;
       let gestureActive = false;
-      let gestureAxis = '';
       let gestureStartX = 0;
       let gestureStartY = 0;
-      let gestureLastX = 0;
-      let gestureLastY = 0;
-      let gestureStartIndex = 0;
-      let gestureStartScrollLeft = 0;
-      let gesturePointerId = null;
-      let gestureScrollable = null;
-      let verticalStartedOpen = false;
-      let verticalClosedHeight = 0;
-      let verticalOpenHeight = 0;
-      let verticalCurrentHeight = 0;
-      let verticalDetail = null;
-      let resetTimer = null;
-
-      function activeSheetIndex(){
-        const index = sheets.findIndex(function(sheet){ return sheet.classList.contains('active'); });
-        return index >= 0 ? index : Math.max(0,sheets.findIndex(function(sheet){ return sheet.dataset.key === 'intro'; }));
-      }
-
-      function sheetLeft(index){
-        const sheet = sheets[index];
-        if (!sheet) return 0;
-        return Math.max(0,sheet.offsetLeft - (carousel.clientWidth - sheet.offsetWidth) / 2);
-      }
-
-      function exactSnap(index,behavior){
-        index = Math.max(0,Math.min(sheets.length - 1,index));
-        const sheet = sheets[index];
-        if (!sheet) return;
-        const key = sheet.dataset.key || 'login';
-
-        phone.classList.remove('intro-detail-open','sheet-detail-open','expanded');
-        setActiveManagerSheet(key,false,true);
-
-        carousel.classList.remove('gesture-dragging');
-        carousel.style.scrollBehavior = behavior === 'smooth' ? 'smooth' : 'auto';
-        carousel.scrollTo({left:sheetLeft(index),behavior:behavior === 'smooth' ? 'smooth' : 'auto'});
-        window.setTimeout(function(){ carousel.style.scrollBehavior = ''; },behavior === 'smooth' ? 420 : 0);
-      }
-
-      function getCollapsedHeight(sheet){
-        const key = sheet && sheet.dataset ? sheet.dataset.key : '';
-        if (key === 'intro') return window.innerWidth <= 370 ? 172 : 178;
-        if (window.innerHeight <= 700) return 206;
-        if (window.innerWidth <= 430) return 226;
-        return 216;
-      }
-
-      function getOpenHeight(sheet){
-        const key = sheet && sheet.dataset ? sheet.dataset.key : '';
-        const ratio = key === 'intro' || window.innerHeight <= 700 ? 0.86 : 0.84;
-        return Math.round(phone.clientHeight * ratio);
-      }
-
-      function clearVerticalPreview(){
-        if (resetTimer) {
-          clearTimeout(resetTimer);
-          resetTimer = null;
-        }
-        stage.classList.remove('gesture-dragging');
-        stage.style.transition = '';
-        stage.style.height = '';
-        if (verticalDetail) {
-          verticalDetail.style.opacity = '';
-          verticalDetail.style.transform = '';
-          verticalDetail.style.pointerEvents = '';
-        }
-        verticalDetail = null;
-      }
-
-      function openCurrentSheet(sheet){
-        if (!sheet) return false;
-        const key = sheet.dataset.key || '';
-        if (key === 'intro') {
-          phone.classList.remove('sheet-detail-open');
-          phone.classList.add('intro-detail-open','expanded');
-          setActiveManagerSheet('intro',true,true);
-          const detail = sheet.querySelector('.entry-discovery-detail');
-          if (detail) detail.scrollTop = 0;
-          return true;
-        }
-        phone.classList.remove('intro-detail-open');
-        phone.classList.add('sheet-detail-open','expanded');
-        setActiveManagerSheet(key,true,true);
-        const detail = sheet.querySelector('.sheet-detail');
-        if (detail) detail.scrollTop = 0;
+      function openManagerSheet(){ phone.classList.add('expanded'); }
+      function closeManagerSheet(){ phone.classList.remove('expanded'); }
+      function handleVerticalSwipe(deltaY,deltaX){
+        const absY = Math.abs(deltaY);
+        const absX = Math.abs(deltaX);
+        if (absY < 42) return false;
+        if (absY < absX * 1.25) return false;
+        if (deltaY < 0) openManagerSheet(); else closeManagerSheet();
         return true;
       }
-
-      function closeCurrentSheet(sheet){
-        if (!sheet) return false;
-        const key = sheet.dataset.key || '';
-        phone.classList.remove('intro-detail-open','sheet-detail-open','expanded');
-        setActiveManagerSheet(key,true,true);
-        return true;
-      }
-
-      window.openIntroDetails = function(){
-        const introSheet = sheets.find(function(sheet){ return sheet.dataset.key === 'intro'; });
-        return openCurrentSheet(introSheet);
-      };
-      window.closeIntroDetails = function(){
-        const introSheet = sheets.find(function(sheet){ return sheet.dataset.key === 'intro'; });
-        return closeCurrentSheet(introSheet);
-      };
-
-      function blockedTarget(target){
-        return !!(target && target.closest && target.closest(
-          'input,textarea,select,a,[data-action-key],.sheet-action,.inline-form,.input-wrap,.discovery-ad-rail,.mini-pills,.discovery-collapse'
-        ));
-      }
-
-      function beginGesture(x,y,target,pointerId){
-        if (blockedTarget(target)) return false;
-        gestureActive = true;
-        didSwipe = false;
-        gestureAxis = '';
-        gestureStartX = gestureLastX = Number(x || 0);
-        gestureStartY = gestureLastY = Number(y || 0);
-        gestureStartIndex = activeSheetIndex();
-        gestureStartScrollLeft = sheetLeft(gestureStartIndex);
-        gesturePointerId = pointerId == null ? null : pointerId;
-        gestureScrollable = target && target.closest ? target.closest('.sheet-detail,.entry-discovery-detail') : null;
-        verticalStartedOpen = phone.classList.contains('expanded');
-        verticalCurrentHeight = stage.getBoundingClientRect().height;
-        verticalDetail = null;
-        return true;
-      }
-
-      function lockAxis(dx,dy){
-        if (gestureAxis) return gestureAxis;
-        const ax = Math.abs(dx);
-        const ay = Math.abs(dy);
-        if (Math.max(ax,ay) < AXIS_LOCK_DISTANCE) return '';
-        if (ax > ay * AXIS_RATIO) gestureAxis = 'horizontal';
-        else if (ay > ax * AXIS_RATIO) gestureAxis = 'vertical';
-        return gestureAxis;
-      }
-
-      function prepareVertical(activeSheet){
-        verticalClosedHeight = getCollapsedHeight(activeSheet);
-        verticalOpenHeight = getOpenHeight(activeSheet);
-        verticalCurrentHeight = Math.max(verticalClosedHeight,Math.min(verticalOpenHeight,stage.getBoundingClientRect().height));
-        verticalDetail = activeSheet.querySelector(activeSheet.dataset.key === 'intro' ? '.entry-discovery-detail' : '.sheet-detail');
-        stage.classList.add('gesture-dragging');
-        stage.style.transition = 'none';
-        stage.style.height = verticalCurrentHeight + 'px';
-      }
-
-      function moveGesture(x,y,event){
-        if (!gestureActive) return;
-        gestureLastX = Number(x || 0);
-        gestureLastY = Number(y || 0);
-        const dx = gestureLastX - gestureStartX;
-        const dy = gestureLastY - gestureStartY;
-        const axis = lockAxis(dx,dy);
-        if (!axis) return;
-        didSwipe = true;
-
-        if (axis === 'horizontal') {
-          if (event && event.cancelable) event.preventDefault();
-          const sheet = sheets[gestureStartIndex];
-          const maxPreview = Math.max(64,(sheet ? sheet.offsetWidth : carousel.clientWidth) * 0.28);
-          const preview = Math.max(-maxPreview,Math.min(maxPreview,dx * 0.58));
-          carousel.classList.add('gesture-dragging');
-          carousel.style.scrollBehavior = 'auto';
-          carousel.scrollLeft = gestureStartScrollLeft - preview;
-          return;
-        }
-
-        const activeSheet = sheets[gestureStartIndex];
-        if (!activeSheet) {
-          gestureAxis = 'native-scroll';
-          return;
-        }
-
-        if (gestureScrollable) {
-          const atTop = gestureScrollable.scrollTop <= 6;
-          const wantsClose = verticalStartedOpen && dy > 0 && atTop;
-          if (!wantsClose) {
-            gestureAxis = 'native-scroll';
-            return;
-          }
-        }
-
-        if (!verticalStartedOpen && dy >= 0) {
-          gestureAxis = 'vertical-idle';
-          return;
-        }
-        if (verticalStartedOpen && dy <= 0) {
-          gestureAxis = 'vertical-idle';
-          return;
-        }
-
-        if (event && event.cancelable) event.preventDefault();
-        if (!verticalClosedHeight || !verticalOpenHeight) prepareVertical(activeSheet);
-
-        const rawHeight = verticalStartedOpen
-          ? verticalOpenHeight - Math.max(0,dy)
-          : verticalClosedHeight + Math.max(0,-dy);
-        verticalCurrentHeight = Math.max(verticalClosedHeight,Math.min(verticalOpenHeight,rawHeight));
-        stage.style.height = verticalCurrentHeight + 'px';
-
-        if (verticalDetail) {
-          const progress = (verticalCurrentHeight - verticalClosedHeight) / Math.max(1,verticalOpenHeight - verticalClosedHeight);
-          verticalDetail.style.opacity = String(Math.max(0,Math.min(1,progress)));
-          verticalDetail.style.transform = 'translateY(' + Math.round((1 - progress) * 12) + 'px)';
-          verticalDetail.style.pointerEvents = 'none';
-        }
-      }
-
-      function finishVertical(activeSheet){
-        const travel = Math.max(1,verticalOpenHeight - verticalClosedHeight);
-        const openProgress = (verticalCurrentHeight - verticalClosedHeight) / travel;
-        const shouldOpen = !verticalStartedOpen && openProgress >= OPEN_PROGRESS_REQUIRED;
-        const shouldClose = verticalStartedOpen && (1 - openProgress) >= CLOSE_PROGRESS_REQUIRED;
-
-        stage.classList.remove('gesture-dragging');
-        stage.style.transition = 'height .38s var(--ease)';
-
-        if (shouldOpen) openCurrentSheet(activeSheet);
-        else if (shouldClose) closeCurrentSheet(activeSheet);
-        else if (verticalStartedOpen) openCurrentSheet(activeSheet);
-        else closeCurrentSheet(activeSheet);
-
-        requestAnimationFrame(function(){ stage.style.height = ''; });
-        resetTimer = window.setTimeout(clearVerticalPreview,460);
-      }
-
-      function endGesture(x,y){
-        if (!gestureActive) return;
-        gestureActive = false;
-        gestureLastX = Number(x == null ? gestureLastX : x);
-        gestureLastY = Number(y == null ? gestureLastY : y);
-        const dx = gestureLastX - gestureStartX;
-        const dy = gestureLastY - gestureStartY;
-        const axis = gestureAxis;
-        const activeSheet = sheets[gestureStartIndex];
-
-        if (axis === 'horizontal') {
-          let targetIndex = gestureStartIndex;
-          if (dx <= -HORIZONTAL_THRESHOLD) targetIndex = gestureStartIndex + 1;
-          else if (dx >= HORIZONTAL_THRESHOLD) targetIndex = gestureStartIndex - 1;
-          targetIndex = Math.max(0,Math.min(sheets.length - 1,targetIndex));
-          exactSnap(targetIndex,'smooth');
-        } else if (axis === 'vertical' && verticalClosedHeight && verticalOpenHeight) {
-          finishVertical(activeSheet);
-        } else {
-          exactSnap(gestureStartIndex,'smooth');
-        }
-
-        gestureAxis = '';
-        gesturePointerId = null;
-        gestureScrollable = null;
-        verticalClosedHeight = 0;
-        verticalOpenHeight = 0;
-        window.setTimeout(function(){ didSwipe = false; },260);
-      }
-
-      function cancelGesture(){
-        if (!gestureActive) return;
-        gestureActive = false;
-        if (gestureAxis === 'vertical' && verticalClosedHeight && verticalOpenHeight) {
-          const activeSheet = sheets[gestureStartIndex];
-          stage.style.transition = 'height .3s var(--ease)';
-          if (verticalStartedOpen) openCurrentSheet(activeSheet);
-          else closeCurrentSheet(activeSheet);
-          requestAnimationFrame(function(){ stage.style.height = ''; });
-          resetTimer = window.setTimeout(clearVerticalPreview,380);
-        } else {
-          exactSnap(gestureStartIndex,'smooth');
-        }
-        gestureAxis = '';
-        gesturePointerId = null;
-        gestureScrollable = null;
-        window.setTimeout(function(){ didSwipe = false; },260);
-      }
-
-      carousel.addEventListener('click',function(e){
-        if (!didSwipe) return;
-        e.preventDefault();
-        e.stopPropagation();
-      },true);
-
       sheets.forEach(function(sheet){
         sheet.addEventListener('click',function(e){
           if (isInteractiveTarget(e.target)) return;
@@ -2887,27 +2083,13 @@
           setActiveManagerSheet(key,true);
         });
       });
-
-      dots.forEach(function(dot,index){
-        dot.addEventListener('click',function(){ exactSnap(index,'smooth'); });
-      });
+      dots.forEach(function(dot,index){ dot.addEventListener('click',function(){ const key = sheets[index].dataset.key || 'login'; setActiveManagerSheet(key,true); }); });
 
       function runSheetAction(button,e){
         if (e) { e.preventDefault(); e.stopPropagation(); }
         const key = button.dataset.actionKey || '';
         const plan = button.dataset.plan || '';
-        if (key === 'employee-entry') { showEmployeeEntry('code'); return; }
-        if (key === 'manager-login') { setActiveManagerSheet('login',true); setTimeout(function(){ const input = document.getElementById('adminCompanyCode'); if (input) input.focus(); },260); return; }
-        if (key === 'expand-login') {
-          setActiveManagerSheet('login',true);
-          window.setTimeout(function(){
-            const loginSheet = sheets.find(function(sheet){ return sheet.dataset.key === 'login'; });
-            openCurrentSheet(loginSheet);
-            const input = document.getElementById('adminCompanyCode');
-            if (input) input.focus();
-          },80);
-          return;
-        }
+        if (key === 'expand-login') { phone.classList.add('expanded'); setActiveManagerSheet('login',true); setTimeout(function(){ const input = document.getElementById('adminCompanyCode'); if (input) input.focus(); },260); return; }
         if (key === 'contact-service') { contactService(); return; }
         if (key === 'go-back') { showHome(); return; }
         if (key === 'admin-email-login') { requestAdminEmailLogin(); return; }
@@ -2922,68 +2104,63 @@
       sheetActionButtons.forEach(function(button){
         let touchedAt = 0;
         button.addEventListener('touchend',function(e){ touchedAt = Date.now(); runSheetAction(button,e); },{passive:false});
-        button.addEventListener('click',function(e){
-          if (Date.now() - touchedAt < 500) { e.preventDefault(); e.stopPropagation(); return; }
-          runSheetAction(button,e);
-        });
+        button.addEventListener('click',function(e){ if (Date.now() - touchedAt < 500) { e.preventDefault(); e.stopPropagation(); return; } runSheetAction(button,e); });
       });
 
-      if (window.PointerEvent) {
-        carousel.addEventListener('pointerdown',function(e){
-          if (e.pointerType === 'mouse' && e.button !== 0) return;
-          if (!beginGesture(e.clientX,e.clientY,e.target,e.pointerId)) return;
-          try { carousel.setPointerCapture(e.pointerId); } catch(err) {}
-        });
-        carousel.addEventListener('pointermove',function(e){
-          if (!gestureActive || (gesturePointerId != null && e.pointerId !== gesturePointerId)) return;
-          moveGesture(e.clientX,e.clientY,e);
-        },{passive:false});
-        carousel.addEventListener('pointerup',function(e){
-          if (!gestureActive || (gesturePointerId != null && e.pointerId !== gesturePointerId)) return;
-          endGesture(e.clientX,e.clientY);
-          try { carousel.releasePointerCapture(e.pointerId); } catch(err) {}
-        });
-        carousel.addEventListener('pointercancel',cancelGesture);
-      } else {
-        carousel.addEventListener('touchstart',function(e){
-          if (!e.touches || !e.touches.length) return;
-          beginGesture(e.touches[0].clientX,e.touches[0].clientY,e.target,null);
-        },{passive:true});
-        carousel.addEventListener('touchmove',function(e){
-          if (!gestureActive || !e.touches || !e.touches.length) return;
-          moveGesture(e.touches[0].clientX,e.touches[0].clientY,e);
-        },{passive:false});
-        carousel.addEventListener('touchend',function(e){
-          if (!gestureActive) return;
-          const point = e.changedTouches && e.changedTouches[0];
-          endGesture(point ? point.clientX : gestureLastX,point ? point.clientY : gestureLastY);
-        },{passive:true});
-        carousel.addEventListener('touchcancel',cancelGesture,{passive:true});
-      }
+      let scrollTimer = null;
+      carousel.addEventListener('scroll',function(){ if (scrollTimer) clearTimeout(scrollTimer); scrollTimer = setTimeout(function(){ detectActiveManagerSheet(false); },180); },{passive:true});
+      if ('onscrollend' in window) carousel.addEventListener('scrollend',function(){ detectActiveManagerSheet(false); });
 
-      window.addEventListener('resize',function(){ exactSnap(activeSheetIndex(),'auto'); },{passive:true});
-      requestAnimationFrame(function(){ exactSnap(activeSheetIndex(),'auto'); });
+      carousel.addEventListener('touchstart',function(e){
+        if (isInteractiveTarget(e.target)) { gestureActive = false; return; }
+        if (!e.touches || !e.touches.length) return;
+        gestureActive = true;
+        didSwipe = false;
+        gestureStartX = e.touches[0].clientX;
+        gestureStartY = e.touches[0].clientY;
+      },{passive:true});
+      carousel.addEventListener('touchmove',function(e){
+        if (!gestureActive) return;
+        if (!e.touches || !e.touches.length) return;
+        const dx = e.touches[0].clientX - gestureStartX;
+        const dy = e.touches[0].clientY - gestureStartY;
+        if (Math.abs(dx) > 8 || Math.abs(dy) > 8) didSwipe = true;
+      },{passive:true});
+      carousel.addEventListener('touchend',function(e){
+        if (!gestureActive) return;
+        gestureActive = false;
+        if (!e.changedTouches || !e.changedTouches.length) return;
+        const dx = e.changedTouches[0].clientX - gestureStartX;
+        const dy = e.changedTouches[0].clientY - gestureStartY;
+        handleVerticalSwipe(dy,dx);
+        setTimeout(function(){ detectActiveManagerSheet(false); },160);
+        setTimeout(function(){ didSwipe = false; },80);
+      },{passive:true});
+      carousel.addEventListener('pointerdown',function(e){
+        if (isInteractiveTarget(e.target)) { gestureActive = false; return; }
+        gestureActive = true;
+        didSwipe = false;
+        gestureStartX = e.pageX;
+        gestureStartY = e.pageY;
+      });
+      carousel.addEventListener('pointermove',function(e){
+        if (!gestureActive) return;
+        const dx = e.pageX - gestureStartX;
+        const dy = e.pageY - gestureStartY;
+        if (Math.abs(dx) > 8 || Math.abs(dy) > 8) didSwipe = true;
+      },{passive:true});
+      carousel.addEventListener('pointerup',function(e){
+        if (!gestureActive) return;
+        gestureActive = false;
+        const dx = e.pageX - gestureStartX;
+        const dy = e.pageY - gestureStartY;
+        handleVerticalSwipe(dy,dx);
+        setTimeout(function(){ detectActiveManagerSheet(false); },160);
+        setTimeout(function(){ didSwipe = false; },80);
+      });
     }
 
-    function setActiveManagerSheet(key,shouldCenter,preserveExpanded){
-      const currentSheet = sheets.find(function(sheet){ return sheet.classList.contains('active'); });
-      const currentKey = currentSheet && currentSheet.dataset ? currentSheet.dataset.key : '';
-      const keyChanged = currentKey !== key;
-      const isIntro = key === 'intro';
-
-      if (keyChanged && preserveExpanded !== true) {
-        phone.classList.remove('intro-detail-open','sheet-detail-open','expanded');
-      }
-
-      phone.classList.toggle('intro-active',isIntro);
-      if (isIntro) {
-        phone.classList.remove('sheet-detail-open');
-        phone.classList.toggle('expanded',phone.classList.contains('intro-detail-open'));
-      } else {
-        phone.classList.remove('intro-detail-open');
-        phone.classList.toggle('expanded',phone.classList.contains('sheet-detail-open'));
-      }
-
+    function setActiveManagerSheet(key,shouldCenter){
       sheets.forEach(function(sheet,index){
         const active = sheet.dataset.key === key;
         sheet.classList.toggle('active',active);
@@ -2991,7 +2168,6 @@
         if (active && shouldCenter) centerManagerSheet(sheet,'smooth');
       });
     }
-
     function centerManagerSheet(sheet,behavior){ if (!carousel || !sheet) return; const targetLeft = sheet.offsetLeft - (carousel.clientWidth - sheet.offsetWidth) / 2; carousel.scrollTo({ left:Math.max(0,targetLeft), behavior:behavior || 'smooth' }); }
     function detectActiveManagerSheet(shouldCenter){
       const rect = carousel.getBoundingClientRect();
@@ -3013,136 +2189,21 @@
     function openLineAuthUrl(url,statusId){ const authUrl = String(url || '').trim(); const browser = getCapacitorBrowser(); if (!authUrl) { setStatus(statusId,'error','LINE 驗證網址無效'); return; } if (browser) { setStatus(statusId,'info','正在開啟 LINE 驗證視窗...'); browser.open({ url:authUrl, windowName:'_blank' }).catch(function(err){ setStatus(statusId,'error',err && err.message ? err.message : '無法開啟 LINE 驗證視窗，請改用 Email 驗證'); }); return; } window.location.href = authUrl; }
 
 
-    function getPlatformEmailChallengeId(){
-      let v = '';
-      try { v = String(window.__ANG_PLATFORM_EMAIL_CHALLENGE_ID || localStorage.getItem(PLATFORM_EMAIL_POLL_STORAGE_KEY) || '').trim(); } catch (err) { v = String(window.__ANG_PLATFORM_EMAIL_CHALLENGE_ID || '').trim(); }
-      return v;
-    }
-
-    function savePlatformEmailChallenge(res){
-      const challengeId = String((res && (res.challenge_id || res.challengeId || res.cid)) || '').trim();
-      if (!challengeId) return '';
-      window.__ANG_PLATFORM_EMAIL_CHALLENGE_ID = challengeId;
-      try { localStorage.setItem(PLATFORM_EMAIL_POLL_STORAGE_KEY,challengeId); } catch (err) {}
-      return challengeId;
-    }
-
-    function clearPlatformEmailChallenge(){
-      window.__ANG_PLATFORM_EMAIL_CHALLENGE_ID = '';
-      try { localStorage.removeItem(PLATFORM_EMAIL_POLL_STORAGE_KEY); } catch (err) {}
-    }
-
-    function stopPlatformEmailStatusPolling(){
-      if (platformEmailPollTimer) {
-        clearInterval(platformEmailPollTimer);
-        platformEmailPollTimer = null;
-      }
-    }
-
-    function startPlatformEmailStatusPolling(){
-      stopPlatformEmailStatusPolling();
-      platformEmailPollTimer = setInterval(function(){ refreshPlatformEmailStatus(false); },3000);
-      setTimeout(function(){ refreshPlatformEmailStatus(false); },1400);
-    }
-
-    function setPlatformRefreshButtonLoading(loading){
-      const btn = document.getElementById('platformEmailManualRefreshBtn');
-      if (!btn) return;
-      btn.disabled = !!loading;
-      btn.textContent = loading ? '刷新中...' : '手動刷新驗證狀態';
-    }
-
-    function goPlatformCreatorVerifiedTarget(target){
-      target = String(target || '').trim();
-      if (!target) return;
-      try { location.replace(target); }
-      catch (err) { location.href = target; }
-    }
-    window.goPlatformCreatorVerifiedTarget = goPlatformCreatorVerifiedTarget;
-
     function renderPlatformEmailStatus(res){
       const box = document.getElementById('platformEmailVerifyBox');
       if (!box) return;
-      if (res && res.challenge_id) savePlatformEmailChallenge(res);
-      if (res && res.masked_emails) platformEmailLastStartRes = Object.assign({},platformEmailLastStartRes || {},res || {});
-      const merged = Object.assign({},platformEmailLastStartRes || {},res || {});
-      const required = Number((merged && merged.required) || 2);
-      const sent = Number((merged && merged.sent_count) || 4);
-      const verified = Math.max(0,Number((merged && merged.verified_count) || 0));
-      const completed = !!(merged && merged.completed);
-      const challengeId = String((merged && merged.challenge_id) || getPlatformEmailChallengeId() || '').trim();
-      const emails = Array.isArray(merged && merged.masked_emails) ? merged.masked_emails : [];
-      const completedTarget = completed ? (buildPlatformCreatorGithubAppUrl(merged) || String(merged.web_next_url || merged.next_url || '')) : '';
-      let html = '<div style="font-weight:900;margin-bottom:8px">' + (completed ? '平台 Creator 認證成功' : '已寄出平台驗證信') + '</div>';
+      const required = Number((res && res.required) || 2);
+      const sent = Number((res && res.sent_count) || 4);
+      const emails = Array.isArray(res && res.masked_emails) ? res.masked_emails : [];
+      let html = '<div style="font-weight:900;margin-bottom:8px">已寄出平台驗證信</div>';
       html += '<div class="platform-secret">共寄出 ' + sent + ' 封，任意完成 ' + required + ' 封即可登入。</div>';
-      html += '<div class="platform-refresh-row"><span class="platform-refresh-pill">目前 ' + verified + ' / ' + required + '</span><button type="button" id="platformEmailManualRefreshBtn" class="platform-refresh-btn">手動刷新驗證狀態</button></div>';
-      if (challengeId) html += '<div class="platform-secret">驗證序號：' + escapeHtmlPlatformVerify(challengeId) + '</div>';
-      if (emails.length) html += '<div class="platform-secret">' + emails.map(function(x){ return escapeHtmlPlatformVerify(x); }).join('<br>') + '</div>';
-      if (completed) {
-        html += '<div class="platform-secret">✅ 已完成兩封 Email 驗證。App 會自動進入管理中心；如果畫面停住，請按下方按鈕。</div>';
-        if (completedTarget) html += '<div class="platform-refresh-row"><button type="button" id="platformEmailEnterAdminBtn" class="platform-refresh-btn" style="width:100%;padding:12px 16px;background:#ffffff;color:#111827">立即進入管理中心</button></div>';
-      } else {
-        html += '<div class="platform-secret">請到信箱點擊一次性驗證連結。系統會自動檢查；如果 App 沒反應，按「手動刷新驗證狀態」。</div>';
-      }
+      if (emails.length) html += '<div class="platform-secret">' + emails.map(function(x){ return String(x || '').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }).join('<br>') + '</div>';
+      html += '<div class="platform-secret">請到信箱點擊一次性驗證連結。第二封通過後會自動進入管理中心。</div>';
       box.innerHTML = html;
       box.classList.add('show');
-      const btn = document.getElementById('platformEmailManualRefreshBtn');
-      if (btn) btn.addEventListener('click',function(){ refreshPlatformEmailStatus(true); },false);
-      const enterBtn = document.getElementById('platformEmailEnterAdminBtn');
-      if (enterBtn && completedTarget) enterBtn.addEventListener('click',function(){ goPlatformCreatorVerifiedTarget(completedTarget); },false);
-    }
-
-    function handlePlatformEmailStatusResponse(res,manual){
-      if (!res || !res.ok) {
-        setStatus('platformLoginStatus','error',(res && (res.message || res.msg)) || '讀取平台驗證狀態失敗');
-        return;
-      }
-      renderPlatformEmailStatus(res);
-      if (res.completed) {
-        stopPlatformEmailStatusPolling();
-        clearPlatformEmailChallenge();
-        const target = buildPlatformCreatorGithubAppUrl(res) || String(res.web_next_url || res.next_url || '');
-        if (!target) {
-          setStatus('platformLoginStatus','error','驗證完成，但沒有取得登入憑證，請重新發送驗證信。');
-          return;
-        }
-        setStatus('platformLoginStatus','success',res.message || '平台 Creator 認證成功，正在進入管理中心。');
-        setTimeout(function(){ goPlatformCreatorVerifiedTarget(target); },1200);
-        return;
-      }
-      const verified = Number(res.verified_count || 0);
-      const required = Number(res.required || 2);
-      setStatus('platformLoginStatus',manual ? 'success' : 'info','目前已完成 ' + verified + ' / ' + required + ' 封 Email 驗證。');
-    }
-
-    function refreshPlatformEmailStatus(manual){
-      const challengeId = getPlatformEmailChallengeId();
-      if (!challengeId) {
-        setStatus('platformLoginStatus','error','目前沒有可刷新狀態的驗證序號，請先發送 4 封平台驗證信。');
-        return;
-      }
-      if (platformEmailStatusBusy) return;
-      platformEmailStatusBusy = true;
-      if (manual) setStatus('platformLoginStatus','info','正在手動刷新平台驗證狀態...');
-      setPlatformRefreshButtonLoading(true);
-      callGasApi('platformCreatorEmailStatus',{ challenge_id:challengeId, device_id:APP_STATE.deviceId, source:manual ? 'manual_refresh' : 'auto_poll' },20000)
-        .then(function(res){ handlePlatformEmailStatusResponse(res,manual); })
-        .catch(function(err){ if (manual) setStatus('platformLoginStatus','error',err && err.message ? err.message : '刷新平台驗證狀態失敗'); })
-        .finally(function(){ platformEmailStatusBusy = false; setPlatformRefreshButtonLoading(false); });
-    }
-    window.refreshPlatformEmailStatus = refreshPlatformEmailStatus;
-
-    function restorePlatformEmailWaitingState(){
-      const challengeId = getPlatformEmailChallengeId();
-      if (!challengeId) return;
-      renderPlatformEmailStatus({ challenge_id:challengeId, required:2, sent_count:4, verified_count:0, completed:false });
-      setStatus('platformLoginStatus','info','偵測到尚未完成的平台驗證，可按手動刷新或等待自動檢查。');
-      startPlatformEmailStatusPolling();
     }
 
     function requestPlatformEmailLogin(){
-      stopPlatformEmailStatusPolling();
-      clearPlatformEmailChallenge();
       setStatus('platformLoginStatus','info','正在寄出 4 封平台驗證信...');
       callGasApi('platformCreatorEmailStart',{ source:'entry_platform_email_2of4', device_id:APP_STATE.deviceId },20000)
         .then(function(res){
@@ -3150,10 +2211,7 @@
             setStatus('platformLoginStatus','error',(res && (res.message || res.msg)) || '平台驗證信寄送失敗');
             return;
           }
-          platformEmailLastStartRes = Object.assign({},res || {});
-          savePlatformEmailChallenge(res);
           renderPlatformEmailStatus(res);
-          startPlatformEmailStatusPolling();
           setStatus('platformLoginStatus','success',(res.message || '已寄出 4 封驗證信，請完成任意 2 封 Email 驗證。'));
         })
         .catch(function(err){ setStatus('platformLoginStatus','error',err && err.message ? err.message : 'GAS 連線失敗'); });
@@ -3291,7 +2349,7 @@
     function buildPlatformCreatorGithubAppUrl(res){
       var saved=storePlatformCreatorSessionFromVerify(res);
       if(!saved)return '';
-      return 'app.html?view=admin&page=admin&company_id='+encodeURIComponent(saved.company_id)+'&id='+encodeURIComponent(saved.id)+'&employee_id='+encodeURIComponent(saved.id)+'&role='+encodeURIComponent(saved.role)+'&session_token='+encodeURIComponent(saved.token)+'&token='+encodeURIComponent(saved.token)+'&source=platform_creator_email_2of4_github_bridge_direct_admin&auto_admin=1&_ts='+Date.now();
+      return 'app.html?view=employee&company_id='+encodeURIComponent(saved.company_id)+'&id='+encodeURIComponent(saved.id)+'&employee_id='+encodeURIComponent(saved.id)+'&role='+encodeURIComponent(saved.role)+'&session_token='+encodeURIComponent(saved.token)+'&token='+encodeURIComponent(saved.token)+'&source=platform_creator_email_2of4_github_bridge&auto_admin=1&_ts='+Date.now();
     }
 
     function handlePlatformCreatorSuccessQueryNoScheme(){
@@ -3313,7 +2371,8 @@
       var target=buildPlatformCreatorGithubAppUrl(res);
       if(!target)return false;
       renderGithubPlatformVerifyShell('平台 Creator 驗證完成','正在透過 GitHub HTTPS 轉接進入管理中心。','success','<a href="'+escapeHtmlPlatformVerify(target)+'" style="display:inline-flex;align-items:center;justify-content:center;text-decoration:none;color:#111827;background:#fff;border-radius:999px;padding:12px 18px;font-weight:1000">進入管理中心</a>');
-      updateGithubPlatformVerifyMsg('認證成功。請按按鈕進入管理中心；本版不再使用 anghr://。','success');
+      updateGithubPlatformVerifyMsg('正在跳轉，不再使用 anghr://。','success');
+      setTimeout(function(){location.replace(target);},450);
       return true;
     }
 
@@ -3344,7 +2403,7 @@
         }
         var completed=!!res.completed;
         if(!completed){
-          updateGithubPlatformVerifyMsg((res.message||'✅ 這封 Email 認證成功，請再點另一封。'),'success');
+          updateGithubPlatformVerifyMsg((res.message||'已完成一封 Email 驗證，請再點另一封。'),'success');
           return;
         }
         var target=buildPlatformCreatorGithubAppUrl(res) || String(res.web_next_url||res.next_url||'');
@@ -3352,8 +2411,9 @@
           updateGithubPlatformVerifyMsg('驗證已完成，但沒有取得登入憑證，請重新發送驗證信。','error');
           return;
         }
-        renderGithubPlatformVerifyShell('平台 Creator 認證成功','已完成兩封 Email 驗證。請回到原本開著 ANG HR 的 App 等待頁；App 會自動刷新，或按「手動刷新驗證狀態」。','success','<a href="'+escapeHtmlPlatformVerify(target)+'" style="display:inline-flex;align-items:center;justify-content:center;text-decoration:none;color:#111827;background:#fff;border-radius:999px;padding:12px 18px;font-weight:1000">在這台裝置進入管理中心</a>');
-        updateGithubPlatformVerifyMsg(res.message || '平台 Creator 認證成功。原本的 App 等待頁可以自動或手動刷新進入。','success');
+        renderGithubPlatformVerifyShell('平台 Creator 驗證完成','已完成兩封 Email 驗證，正在進入 ANG HR 管理中心。','success','<a href="'+escapeHtmlPlatformVerify(target)+'" style="display:inline-flex;align-items:center;justify-content:center;text-decoration:none;color:#111827;background:#fff;border-radius:999px;padding:12px 18px;font-weight:1000">進入管理中心</a>');
+        updateGithubPlatformVerifyMsg(res.message || '平台 Creator 驗證完成，正在跳轉。','success');
+        setTimeout(function(){ location.replace(target); },900);
       }).catch(function(err){
         updateGithubPlatformVerifyMsg(err && err.message ? err.message : 'GitHub 轉接 GAS 驗證失敗。','error');
       });
@@ -3361,128 +2421,6 @@
     }
 
     window.addEventListener('load',function(){ if (handlePlatformCreatorSuccessQueryNoScheme()) return; if (handlePlatformEmailVerifyFromGithub()) return; init(); startNativeAuthReceiveWatch(); });
-  
-/* ===== ANG HR｜Email 已寄出但前端誤判連線失敗修正 ===== */
-(function () {
-  'use strict';
-
-  function angIsEmailSendAction(action) {
-    action = String(action || '').trim();
-
-    return (
-      action === 'requestEmailVerifyCode' ||
-      action === 'sendEmailVerifyCode' ||
-      action === 'requestPlatformCreatorEmail' ||
-      action === 'sendPlatformCreatorEmail' ||
-      action === 'platformCreatorEmailSend' ||
-      action === 'platformCreatorEmailRequest' ||
-      action === 'requestPlatformCreatorEmailVerify' ||
-      action === 'requestPlatformCreatorEmailCode' ||
-      action.indexOf('PlatformCreatorEmail') >= 0 ||
-      action.indexOf('platformCreatorEmail') >= 0
-    );
-  }
-
-  function angLooksLikeConnectionReadBackFail(errOrResult) {
-    var text = '';
-
-    try {
-      if (typeof errOrResult === 'string') {
-        text = errOrResult;
-      } else if (errOrResult && errOrResult.message) {
-        text = errOrResult.message;
-      } else {
-        text = JSON.stringify(errOrResult || {});
-      }
-    } catch (err) {
-      text = String(errOrResult || '');
-    }
-
-    text = String(text || '').toLowerCase();
-
-    return (
-      text.indexOf('failed to fetch') >= 0 ||
-      text.indexOf('load failed') >= 0 ||
-      text.indexOf('networkerror') >= 0 ||
-      text.indexOf('cors') >= 0 ||
-      text.indexOf('無法連線') >= 0 ||
-      text.indexOf('連線失敗') >= 0 ||
-      text.indexOf('not json') >= 0 ||
-      text.indexOf('unexpected token') >= 0 ||
-      text.indexOf('html') >= 0
-    );
-  }
-
-  function angEmailSendAssumeOk(action, payload, originalError) {
-    console.warn('[ANG HR] Email send reached GAS but response unreadable, assume sent:', {
-      action: action,
-      payload: payload || {},
-      error: originalError
-    });
-
-    return {
-      ok: true,
-      success: true,
-      assumed_sent: true,
-      response_unreadable: true,
-      action: action,
-      provider: 'email',
-      message: '驗證信已送出，請到信箱收信。若已收到信，請直接點信中的驗證連結。',
-      original_error: originalError && originalError.message ? originalError.message : String(originalError || '')
-    };
-  }
-
-  function angPatchCallGasApi() {
-    if (typeof window.callGasApi !== 'function') return false;
-    if (window.callGasApi.__ANG_EMAIL_SEND_PATCHED__) return true;
-
-    var originalCallGasApi = window.callGasApi;
-
-    window.callGasApi = function (action, payload) {
-      var isEmailSend = angIsEmailSendAction(action);
-
-      return Promise.resolve()
-        .then(function () {
-          return originalCallGasApi.apply(this, arguments);
-        }.bind(this))
-        .then(function (result) {
-          if (isEmailSend) {
-            if (result && (result.ok === true || result.success === true)) {
-              return result;
-            }
-
-            if (angLooksLikeConnectionReadBackFail(result)) {
-              return angEmailSendAssumeOk(action, payload, result);
-            }
-          }
-
-          return result;
-        })
-        .catch(function (err) {
-          if (isEmailSend && angLooksLikeConnectionReadBackFail(err)) {
-            return angEmailSendAssumeOk(action, payload, err);
-          }
-
-          throw err;
-        });
-    };
-
-    window.callGasApi.__ANG_EMAIL_SEND_PATCHED__ = true;
-    console.log('[ANG HR] Email send read-back patch enabled');
-    return true;
-  }
-
-  if (!angPatchCallGasApi()) {
-    var tries = 0;
-    var timer = setInterval(function () {
-      tries++;
-      if (angPatchCallGasApi() || tries >= 40) {
-        clearInterval(timer);
-      }
-    }, 250);
-  }
-})();
-  
   </script>
 </body>
 </html>

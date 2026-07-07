@@ -31,7 +31,7 @@
     @media(max-width:430px){.topbar{padding:7px 10px;gap:8px}.topbar-right{max-width:52%}.brand-logo{width:42px;height:42px;flex-basis:42px;border-radius:14px}.brand-logo img{border-radius:14px}.brand-title-main{font-size:13px;max-width:34vw}.brand-title-sub{font-size:9px;max-width:34vw}.title{font-size:14px}.sub-title{font-size:10px}}
 
     /* === 通用 === */
-    .safe{padding:8px 16px 0}
+    .safe{padding:8px 8px 0}
     .page{display:none}.page.active{display:block;animation:fadeIn .2s ease}
     @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
     .card{background:var(--card);border-radius:22px;padding:14px;margin-bottom:10px;box-shadow:0 8px 24px rgba(0,0,0,.05);border:1px solid rgba(0,0,0,.03)}
@@ -177,15 +177,12 @@
       .fab-sat.sat-creator{right:64px!important}.fab-sat.sat-admin{right:113px!important}.fab-sat.sat-manager{right:156px!important}
     }
 
-    @media(max-width:390px){.safe{padding:6px 12px 0}.card{padding:12px;border-radius:20px}.hello{font-size:20px}}
-    @media(min-width:768px){.safe{padding:12px 20px 0}}
+    @media(max-width:390px){.safe{padding:6px 6px 0}.card{padding:12px;border-radius:20px}.hello{font-size:20px}}
 
     /* ANG_0603_ADMIN_COMPANY_SWITCHER_START
        管理頁 LOGO 公司選單：縮小版；最多三間公司；登出固定最下格；切換公司固定回員工主頁。 */
     .topbar-left,.brand-logo{cursor:pointer;user-select:none;-webkit-user-select:none;touch-action:manipulation;}
-        .topbar-left:active,.brand-logo:active{transform:scale(.985);}
-    body.fab-expanded-mode #brandSlot .brand-logo{box-shadow:0 0 0 4px rgba(var(--emp-rgb),.20),0 10px 26px rgba(var(--emp-rgb),.28);filter:saturate(1.12) brightness(1.06);}
-    body.fab-expanded-mode #brandSlot .brand-title-sub::after{content:"｜點 Logo 回員工端";color:var(--emp-deep);font-weight:900;}
+    .topbar-left:active,.brand-logo:active{transform:scale(.985);}
     .ang-company-switcher-backdrop{position:fixed;inset:0;z-index:2290;display:none;background:transparent;}
     .ang-company-switcher-backdrop.open{display:block;}
     .ang-company-switcher{position:fixed;top:calc(66px + env(safe-area-inset-top));left:10px;width:min(238px,calc(100vw - 20px));z-index:2300;display:none;transform-origin:28px -8px;animation:angCompanyDrop .16s ease both;}
@@ -1218,7 +1215,6 @@
       var wrap=qs('fabWrap');
       if(!wrap)return;
       wrap.classList.toggle('is-collapsed',!expanded);
-      document.body.classList.toggle('fab-expanded-mode',!!expanded);
       window.__angFabLastOpenAt = expanded ? Date.now() : 0;
     }
 
@@ -1238,9 +1234,6 @@
       function shouldIgnoreFabAutoClose_(target){
         if(!target)return false;
         if(target.closest&&target.closest('#fabWrap'))return true;
-        // FAB 展開時點 Logo 要執行「回員工端」，不能先被全域自動收合吃掉。
-        if(target.closest&&target.closest('#brandSlot'))return true;
-        if(target.closest&&target.closest('.ang-company-switcher'))return true;
         return false;
       }
 
@@ -1273,17 +1266,37 @@
 
     function handleHomeClick(){
       var wrap=qs('fabWrap');
-      var isExpanded=wrap&&!wrap.classList.contains('is-collapsed');
-
+      var wasCollapsed=!wrap||wrap.classList.contains('is-collapsed');
+      var activePage=getActiveAdminPage_();
+      currentPage=activePage||currentPage||'home';
       var hb=qs('fab-home');
       if(hb){
         hb.classList.add('swap');
         setTimeout(function(){ hb.classList.remove('swap'); },400);
       }
 
-      // FAB Home 現在只負責展開 / 收合，不再直接跳頁。
-      // 若要從 Admin 回 Employee：先展開 FAB，再點左上公司 Logo。
-      setFabExpanded(!isExpanded);
+      // Admin 頁 Home 鍵固定兩段式：
+      // 1. 目前在任何管理分頁，第一次按 Home 只展開功能導航。
+      // 2. 已展開時再按 Home：
+      //    - 如果目前畫面就是 Admin Home，立刻切回 Employee Home。
+      //    - 如果目前畫面是其他管理分頁，回 Admin Home。
+      // 注意：判斷 Home 不只看 currentPage，會同步讀取 .page.active，避免狀態不同步造成第二下不跳 Employee。
+      if(wasCollapsed){
+        setFabExpanded(true);
+        return;
+      }
+
+      setFabExpanded(false);
+      activePage=getActiveAdminPage_();
+      currentPage=activePage||currentPage||'home';
+
+      if(activePage==='home'){
+        hardGo('employee');
+        return;
+      }
+
+      navTo('home');
+      window.scrollTo({top:0,behavior:'smooth'});
     }
 
     function getRoleKey(){
@@ -2261,28 +2274,7 @@
         if(gasBase){try{window.location.replace(gasBase+'?page=index&_ts='+Date.now());}catch(e2){window.location.href=gasBase+'?page=index&_ts='+Date.now();}return;}
         try{window.location.href='index.html';}catch(e3){window.location.reload();}
       }
-      function handleBrandSlotClick(evt){
-        var expanded=(typeof isFabExpanded==='function')&&isFabExpanded();
-        if(expanded){
-          if(evt){evt.preventDefault();evt.stopPropagation();}
-          closeMenu();
-          setFabExpanded(false);
-          hardGo('employee');
-          return;
-        }
-        toggleMenu(evt);
-      }
-      var brandEl=qs('brandSlot');
-      if(brandEl&&!brandEl.getAttribute('data-company-switch-bound')){
-        brandEl.setAttribute('data-company-switch-bound','1');
-        brandEl.setAttribute('role','button');
-        brandEl.setAttribute('aria-label','開啟公司切換選單；導航展開時點擊可回員工端');
-        brandEl.addEventListener('click',handleBrandSlotClick,false);
-      }
-      var brandLogoEl=qs('brandLogo');
-      if(brandLogoEl){
-        brandLogoEl.setAttribute('aria-hidden','true');
-      }
+      ['brandSlot','brandLogo'].forEach(function(id){var el=qs(id);if(el&&!el.getAttribute('data-company-switch-bound')){el.setAttribute('data-company-switch-bound','1');el.setAttribute('role','button');el.setAttribute('aria-label','開啟公司切換選單');el.addEventListener('click',toggleMenu,false);}});
       document.addEventListener('keydown',function(evt){if(evt.key==='Escape')closeMenu();},false);
       window.angOpenCompanySwitcher=openMenu;window.angCloseCompanySwitcher=closeMenu;window.angSwitchCompany=switchCompany;
     }
