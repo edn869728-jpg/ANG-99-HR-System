@@ -9,7 +9,9 @@
   function getParam(name){try{return new URLSearchParams(window.location.search).get(name)||'';}catch(e){return '';}}
   function cleanViewName(v){
     v=String(v||'').toLowerCase().trim();
-    if(v==='admin'||v==='review'||v==='settings'||v==='publish'||v==='people'||v==='personnel'||v==='salary'||v==='data'||v==='home'||v==='creator'||v==='manager')return 'admin';
+    if(v==='creator'||v==='platform'||v==='platform_creator')return 'creator';
+    if(v==='personal'||v==='personal_solo'||v==='personal_team')return 'personal';
+    if(v==='admin'||v==='review'||v==='settings'||v==='publish'||v==='people'||v==='personnel'||v==='salary'||v==='data'||v==='home'||v==='manager')return 'admin';
     return 'employee';
   }
   function readTargetView(){
@@ -64,8 +66,26 @@
       s.parentNode.removeChild(s);
     });
   }
+  function externalViewUrl(view){
+    var file=view==='creator'?'creator.html':view==='personal'?'personal.html':'';
+    if(!file)return '';
+    var old;
+    try{old=new URL(window.location.href);}catch(e){old=new URL('app.html', window.location.href);}
+    var cfg=window.ANG_HR_CONFIG||{};
+    var targetBase=view==='creator'?cfg.creatorPageUrl:cfg.personalPageUrl;
+    var target;
+    try{target=new URL(targetBase||file,window.location.href);}catch(e2){target=new URL(file,window.location.href);}
+    old.searchParams.forEach(function(value,key){if(key!=='view'&&key!=='page'&&key!=='target')target.searchParams.set(key,value);});
+    target.searchParams.set('source','github_app_shell');
+    target.searchParams.set('_shell_ts',String(Date.now()));
+    return target.href;
+  }
   function loadView(view){
     view=cleanViewName(view);
+    if(view==='personal'||view==='creator'){
+      var external=externalViewUrl(view);
+      if(external){window.location.replace(external);return;}
+    }
     var def=window.ANG_APP_VIEWS && window.ANG_APP_VIEWS[view];
     if(!def){document.body.innerHTML='<div style="padding:24px;font-family:sans-serif">找不到頁面：'+view+'</div>';return;}
     generation++;

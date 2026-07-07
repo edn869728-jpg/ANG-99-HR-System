@@ -1,0 +1,1229 @@
+From c01e4cc3f7689f7ed7860c4773c693307a0afc1a Mon Sep 17 00:00:00 2001
+From: OpenAI Codex <noreply@openai.com>
+Date: Tue, 7 Jul 2026 01:01:08 +0000
+Subject: [PATCH 1/2] Add Personal workspace and Creator platform dashboard
+
+---
+ "GAS/\347\250\213\345\274\217\347\242\274.js" | 427 ++++++++++++++++++
+ app-core.js                                   |  22 +-
+ app.html                                      |  13 +-
+ config.js                                     |  12 +-
+ creator.html                                  | 110 +++++
+ index.html                                    | 111 ++++-
+ personal.html                                 | 242 ++++++++++
+ 7 files changed, 916 insertions(+), 21 deletions(-)
+ create mode 100644 creator.html
+ create mode 100644 personal.html
+
+diff --git "a/GAS/\347\250\213\345\274\217\347\242\274.js" "b/GAS/\347\250\213\345\274\217\347\242\274.js"
+index a5fcffb..68f0fc4 100644
+--- "a/GAS/\347\250\213\345\274\217\347\242\274.js"
++++ "b/GAS/\347\250\213\345\274\217\347\242\274.js"
+@@ -29,6 +29,10 @@ const SHEET_CLOCK_RECORDS = 'ClockRecords';
+ const SHEET_AUDIT_LOGS = 'AuditLogs';
+ const SHEET_SESSIONS = 'Sessions';
+ const SHEET_FREE_PRIVILEGES = 'FreePrivilegeCodes';
++const SHEET_PERSONAL_WORKSPACES = 'PersonalWorkspaces';
++const SHEET_BRANDS = 'Brands';
++const SHEET_ORGANIZATIONS = 'Organizations';
++const SHEET_BRANCHES = 'Branches';
+ 
+ const DATA_UPLOAD_DEFAULT_SPREADSHEET_ID = DEFAULT_ANG_HR_DB_ID;
+ const DATA_UPLOAD_DEFAULT_ROOT_FOLDER_ID = '19K_Vo9CF7_VVyy87JANn8Dt9133Wo_Zp';
+@@ -70,6 +74,28 @@ HEADERS[SHEET_FREE_PRIVILEGES] = [
+   'privilege_id', 'owner_id', 'issued_by', 'issued_to_email', 'note', 'status', 'created_at', 'used_at', 'used_company_id'
+ ];
+ 
++HEADERS[SHEET_PERSONAL_WORKSPACES] = [
++  'workspace_id', 'workspace_code', 'workspace_type', 'display_name',
++  'owner_user_id', 'owner_name', 'owner_email', 'device_id',
++  'plan', 'plan_label', 'modules_json', 'cloud_active',
++  'team_json', 'state_json', 'workplace_count', 'member_count',
++  'maintainer_name', 'member_names', 'invite_status', 'team_modules',
++  'company_conversion_status', 'created_at', 'updated_at', 'status'
++];
++HEADERS[SHEET_BRANDS] = [
++  'brand_id', 'brand_name', 'status', 'created_at', 'updated_at', 'note'
++];
++HEADERS[SHEET_ORGANIZATIONS] = [
++  'organization_id', 'organization_name', 'brand_id', 'brand_name',
++  'owner_account_id', 'ownership_mode', 'billing_owner_id', 'status',
++  'created_at', 'updated_at', 'note'
++];
++HEADERS[SHEET_BRANCHES] = [
++  'branch_id', 'branch_name', 'organization_id', 'organization_name',
++  'brand_id', 'brand_name', 'company_id', 'manager_user_id', 'address',
++  'status', 'created_at', 'updated_at', 'note'
++];
++
+ HEADERS[SHEET_COMPANY_UPLOAD_AUTH] = [
+   'upload_id', 'token_hash', 'company_id', 'company_name', 'user_id', 'user_email', 'role',
+   'action', 'data_type', 'folder_id', 'expires_at', 'status', 'created_at', 'used_at', 'upload_url'
+@@ -3692,6 +3718,9 @@ function handleApi_(action, payload, callback) {
+       case 'getManagerBootstrapData': result = apiManagerBootstrapV28_(payload); break;
+       case 'getAdminBootstrapData': result = apiAdminBootstrapV28_(payload); break;
+       case 'getCreatorBootstrapData': result = apiCreatorBootstrapV28_(payload); break;
++      case 'getPersonalBootstrapData': result = apiGetPersonalBootstrapDataP0_(payload); break;
++      case 'savePersonalWorkspaceState': result = apiSavePersonalWorkspaceStateP0_(payload); break;
++      case 'getCreatorPlatformOverview': result = apiGetCreatorPlatformOverviewP0_(payload); break;
+       case 'adminSetReviewStatus': result = apiGenericOkV28_('審核狀態已更新', payload); break;
+       case 'generateSalaryDraft': result = apiGenerateSalaryDraftV28_(payload); break;
+       case 'saveSalaryReview': result = apiGenericOkV28_('薪資審核已送出', payload, { total:0 }); break;
+@@ -5393,3 +5422,401 @@ function resetPlatformCreatorVerifySuccessAndSlideV39() {
+   props.deleteProperty('APP_DEEP_LINK_URL');
+   return { ok:true, frontend_url: DEFAULT_FRONTEND_URL, message:'平台驗證改用 GitHub HTTPS，驗證頁保留成功提示，完成後 app.html 直接進 admin。' };
+ }
++
++
++/************************************************************
++ * ANG HR System｜Personal / Creator P0
++ * Personal：個人模式與無老闆平等團隊共用一個 workspace。
++ * Creator：以品牌 → 經營主體 → 分店 → 使用者分層統計，
++ *          名稱只做顯示，所有歸屬一律依 ID 判定。
++ ************************************************************/
++function personalNowP0_() {
++  return new Date().toISOString();
++}
++
++function personalJsonP0_(value, fallback) {
++  if (value === null || value === undefined || value === '') return fallback;
++  if (typeof value === 'object') return value;
++  try { return JSON.parse(String(value)); } catch (err) { return fallback; }
++}
++
++function personalStringifyP0_(value, fallback) {
++  try { return JSON.stringify(value === undefined ? fallback : value); }
++  catch (err) { return JSON.stringify(fallback); }
++}
++
++function personalEnabledModulesP0_(modules) {
++  modules = personalJsonP0_(modules, {}) || {};
++  var out = [];
++  Object.keys(modules).forEach(function(key) {
++    if (modules[key] === true || modules[key] === 1 || String(modules[key]).toLowerCase() === 'true') out.push(key);
++  });
++  return out;
++}
++
++function personalWorkspaceRowP0_(payload, existing) {
++  payload = payload || {};
++  existing = existing || {};
++  var workspace = personalJsonP0_(payload.workspace, {}) || {};
++  var settings = personalJsonP0_(payload.settings, {}) || {};
++  var modules = personalJsonP0_(payload.modules, {}) || {};
++  var team = personalJsonP0_(payload.team, {}) || {};
++  var state = personalJsonP0_(payload.state_json, null);
++  if (!state && typeof payload.state === 'object') state = payload.state;
++
++  var workspaceType = normalizeLower_(workspace.type || workspace.workspace_type || payload.workspace_type || existing.workspace_type || 'personal_solo');
++  if (workspaceType !== 'personal_team') workspaceType = 'personal_solo';
++  var userId = normalizeUpper_(payload.user_id || payload.userId || payload.employee_id || payload.id || existing.owner_user_id || '');
++  var deviceId = normalize_(payload.device_id || payload.deviceId || existing.device_id || '');
++  if (!userId) userId = 'PUSER-' + (deviceId ? deviceId.replace(/[^A-Za-z0-9]/g, '').slice(-12).toUpperCase() : Utilities.getUuid().replace(/-/g, '').slice(0, 12).toUpperCase());
++
++  var workspaceId = normalizeUpper_(workspace.id || workspace.workspace_id || payload.workspace_id || existing.workspace_id || '');
++  if (!workspaceId) workspaceId = 'WS-' + Utilities.getUuid().replace(/-/g, '').slice(0, 16).toUpperCase();
++  var prefix = workspaceType === 'personal_team' ? 'PT' : 'P';
++  var workspaceCode = normalizeUpper_(workspace.code || workspace.workspace_code || payload.workspace_code || existing.workspace_code || '');
++  if (!workspaceCode) workspaceCode = prefix + Utilities.getUuid().replace(/-/g, '').slice(0, 8).toUpperCase();
++
++  var members = Array.isArray(team.members) ? team.members : [];
++  if (workspaceType === 'personal_team' && !members.length) {
++    members.push({ id:userId, name:payload.owner_name || payload.user_name || '我', role:'maintainer', plan:'Personal Free' });
++    team.members = members;
++  }
++  var memberNames = members.map(function(member) {
++    return normalize_(member && (member.name || member.id || member.user_id) || '');
++  }).filter(Boolean);
++  var maintainer = members.filter(function(member) {
++    return normalizeLower_(member && member.role || '') === 'maintainer';
++  })[0] || members[0] || {};
++
++  var stateJson = personalStringifyP0_(state || {
++    workspace: workspace,
++    settings: settings,
++    modules: modules,
++    team: team
++  }, {});
++  if (stateJson.length > 49000) throw new Error('Personal 雲端狀態已超過單筆同步上限，資料仍保留在本機；請先匯出或清理舊紀錄。');
++
++  var enabledModules = personalEnabledModulesP0_(modules);
++  var plan = enabledModules.length ? 'personal_plus' : 'personal_free';
++  var planLabel = enabledModules.length ? 'Personal 已加購' : 'Personal Free';
++  var now = personalNowP0_();
++  var workplaces = state && Array.isArray(state.workplaces) ? state.workplaces.length : Number(payload.workplace_count || existing.workplace_count || 1);
++
++  return {
++    workspace_id: workspaceId,
++    workspace_code: workspaceCode,
++    workspace_type: workspaceType,
++    display_name: normalize_(workspace.name || workspace.display_name || payload.display_name || existing.display_name || '我的工作空間'),
++    owner_user_id: userId,
++    owner_name: normalize_(payload.owner_name || payload.user_name || (state && state.user && state.user.name) || existing.owner_name || '我'),
++    owner_email: normalizeLower_(payload.owner_email || payload.email || existing.owner_email || ''),
++    device_id: deviceId,
++    plan: plan,
++    plan_label: planLabel,
++    modules_json: personalStringifyP0_(modules, {}),
++    cloud_active: settings.cloud === true || payload.cloud_active === true ? 'yes' : 'no',
++    team_json: personalStringifyP0_(team, {}),
++    state_json: stateJson,
++    workplace_count: Math.max(1, Number(workplaces || 1)),
++    member_count: workspaceType === 'personal_team' ? members.length : 1,
++    maintainer_name: normalize_(maintainer.name || maintainer.id || ''),
++    member_names: memberNames.join('、'),
++    invite_status: normalize_(team.inviteCode || team.invite_code || '') ? 'active' : 'closed',
++    team_modules: normalize_(payload.team_modules || existing.team_modules || '基本團隊'),
++    company_conversion_status: normalize_(payload.company_conversion_status || existing.company_conversion_status || 'not_requested'),
++    created_at: existing.created_at || workspace.createdAt || workspace.created_at || now,
++    updated_at: now,
++    status: normalizeLower_(payload.status || existing.status || 'active') || 'active'
++  };
++}
++
++function personalFindRowP0_(sheet, payload) {
++  var rows = sheetToObjects_(sheet);
++  var workspace = personalJsonP0_(payload && payload.workspace, {}) || {};
++  var workspaceId = normalizeUpper_(payload && (payload.workspace_id || workspace.id || workspace.workspace_id) || '');
++  var workspaceCode = normalizeUpper_(payload && (payload.workspace_code || workspace.code || workspace.workspace_code) || '');
++  var userId = normalizeUpper_(payload && (payload.user_id || payload.userId || payload.employee_id || payload.id) || '');
++  for (var i = 0; i < rows.length; i++) {
++    var row = rows[i];
++    if (workspaceId && normalizeUpper_(row.workspace_id || '') === workspaceId) return { index:i + 2, row:row };
++    if (workspaceCode && normalizeUpper_(row.workspace_code || '') === workspaceCode) return { index:i + 2, row:row };
++  }
++  for (var j = 0; j < rows.length; j++) {
++    var fallback = rows[j];
++    if (userId && normalizeUpper_(fallback.owner_user_id || '') === userId && normalizeLower_(fallback.workspace_type || '') === 'personal_solo') {
++      return { index:j + 2, row:fallback };
++    }
++  }
++  return null;
++}
++
++function personalWriteObjectP0_(sheet, rowNumber, obj) {
++  ensureHeader_(sheet, HEADERS[SHEET_PERSONAL_WORKSPACES]);
++  var lastCol = Math.max(sheet.getLastColumn(), HEADERS[SHEET_PERSONAL_WORKSPACES].length);
++  var headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0].map(function(h) { return String(h || '').trim(); });
++  var values = headers.map(function(header) {
++    return Object.prototype.hasOwnProperty.call(obj, header) ? obj[header] : '';
++  });
++  if (rowNumber) sheet.getRange(rowNumber, 1, 1, values.length).setValues([values]);
++  else sheet.appendRow(values);
++}
++
++function apiSavePersonalWorkspaceStateP0_(payload) {
++  payload = payload || {};
++  var lock = LockService.getScriptLock();
++  lock.waitLock(15000);
++  try {
++    var sheet = getSheet_(SHEET_PERSONAL_WORKSPACES);
++    var found = personalFindRowP0_(sheet, payload);
++    var row = personalWorkspaceRowP0_(payload, found ? found.row : null);
++    personalWriteObjectP0_(sheet, found ? found.index : null, row);
++    return ok_({
++      message: found ? 'Personal 空間已同步' : 'Personal 空間已建立並同步',
++      workspace_id: row.workspace_id,
++      workspace_code: row.workspace_code,
++      workspace_type: row.workspace_type,
++      updated_at: row.updated_at
++    });
++  } finally {
++    lock.releaseLock();
++  }
++}
++
++function personalUserCanReadP0_(row, userId) {
++  userId = normalizeUpper_(userId || '');
++  if (!userId) return false;
++  if (normalizeUpper_(row.owner_user_id || '') === userId) return true;
++  var team = personalJsonP0_(row.team_json, {}) || {};
++  var members = Array.isArray(team.members) ? team.members : [];
++  return members.some(function(member) {
++    return normalizeUpper_(member && (member.id || member.user_id || member.employee_id) || '') === userId;
++  });
++}
++
++function apiGetPersonalBootstrapDataP0_(payload) {
++  payload = payload || {};
++  var userId = normalizeUpper_(payload.user_id || payload.userId || payload.employee_id || payload.id || '');
++  if (!userId) return fail_('缺少 Personal 使用者 ID');
++  var rows = sheetToObjects_(getSheet_(SHEET_PERSONAL_WORKSPACES)).filter(function(row) {
++    return normalizeLower_(row.status || 'active') !== 'deleted' && personalUserCanReadP0_(row, userId);
++  });
++  rows.sort(function(a, b) { return String(b.updated_at || '').localeCompare(String(a.updated_at || '')); });
++  if (!rows.length) return ok_({ message:'尚未建立 Personal 空間', workspace:null, workspaces:[], state_json:'' });
++  var active = rows[0];
++  return ok_({
++    message: 'Personal 資料已載入',
++    workspace: {
++      id: active.workspace_id,
++      code: active.workspace_code,
++      type: active.workspace_type,
++      name: active.display_name
++    },
++    workspaces: rows.map(function(row) {
++      return {
++        workspace_id:row.workspace_id,
++        workspace_code:row.workspace_code,
++        workspace_type:row.workspace_type,
++        display_name:row.display_name,
++        plan:row.plan,
++        plan_label:row.plan_label,
++        updated_at:row.updated_at
++      };
++    }),
++    state_json: String(active.state_json || ''),
++    updated_at: active.updated_at
++  });
++}
++
++function creatorNormalizeCompanyP0_(company, branchMap) {
++  company = company || {};
++  var companyId = normalizeUpper_(company.company_id || '');
++  var branches = branchMap[companyId] || [];
++  var organizationId = normalizeUpper_(company.organization_id || companyId);
++  return Object.assign({}, company, {
++    company_id: companyId,
++    brand_id: normalizeUpper_(company.brand_id || ''),
++    brand_name: normalize_(company.brand_name || ''),
++    organization_id: organizationId,
++    organization_name: normalize_(company.organization_name || company.company_name || companyId),
++    ownership_mode: normalizeLower_(company.ownership_mode || (branches.length > 1 ? 'same_owner_multi_branch' : 'independent_store')),
++    branch_count: Math.max(1, branches.length),
++    branch_names: branches.map(function(branch) { return branch.branch_name || branch.branch_id; }).join('、')
++  });
++}
++
++function creatorPersonalWorkspaceP0_(row) {
++  var modulesObject = personalJsonP0_(row.modules_json, {}) || {};
++  var modules = personalEnabledModulesP0_(modulesObject);
++  var team = personalJsonP0_(row.team_json, {}) || {};
++  var members = Array.isArray(team.members) ? team.members : [];
++  return Object.assign({}, row, {
++    modules: modules,
++    cloud_active: ['yes','true','1','active'].indexOf(normalizeLower_(row.cloud_active || '')) >= 0,
++    member_count: Number(row.member_count || (row.workspace_type === 'personal_team' ? members.length : 1)),
++    member_names: row.member_names || members.map(function(member){ return member.name || member.id || ''; }).filter(Boolean).join('、'),
++    team: team
++  });
++}
++
++function creatorRequirePlatformP0_(payload) {
++  var ctx = authContextV30_(payload || {});
++  if (normalizeUpper_(ctx.employee_id || '') !== 'ANG8963') return { ok:false, message:'只有 ANG8963 平台 Creator 可以查看全平台資料' };
++  if (normalizeRoleV30_(ctx.role || '', ctx.employee_id) !== 'Creator') return { ok:false, message:'平台 Creator 權限驗證失敗' };
++  if (!ctx.authenticated) return { ok:false, message:'Creator Session 已失效，請重新完成平台雙信箱驗證' };
++  return { ok:true, ctx:ctx };
++}
++
++function apiGetCreatorPlatformOverviewP0_(payload) {
++  var access = creatorRequirePlatformP0_(payload);
++  if (!access.ok) return fail_(access.message);
++
++  var companiesRaw = sheetToObjects_(getSheet_(SHEET_COMPANIES)).filter(function(row) {
++    return normalizeLower_(row.status || 'active') !== 'deleted';
++  });
++  var employees = sheetToObjects_(getSheet_(SHEET_EMPLOYEES)).filter(function(row) {
++    return normalizeLower_(row.status || 'active') !== 'deleted';
++  });
++  var branchMap = {};
++  employees.forEach(function(emp) {
++    var companyId = normalizeUpper_(emp.company_id || '');
++    if (!companyId) return;
++    var branchId = normalizeUpper_(emp.branch_id || 'MAIN');
++    branchMap[companyId] = branchMap[companyId] || [];
++    if (!branchMap[companyId].some(function(branch){ return branch.branch_id === branchId; })) {
++      branchMap[companyId].push({
++        branch_id: branchId,
++        branch_name: normalize_(emp.branch_name || (branchId === 'MAIN' ? '主店' : branchId)),
++        company_id: companyId,
++        organization_id: companyId
++      });
++    }
++  });
++
++  var explicitBranches = sheetToObjects_(getSheet_(SHEET_BRANCHES)).filter(function(row) {
++    return normalizeLower_(row.status || 'active') !== 'deleted';
++  });
++  explicitBranches.forEach(function(branch) {
++    var companyId = normalizeUpper_(branch.company_id || '');
++    if (!companyId) return;
++    branchMap[companyId] = branchMap[companyId] || [];
++    var branchId = normalizeUpper_(branch.branch_id || 'MAIN');
++    var existingIndex = branchMap[companyId].findIndex(function(item){ return item.branch_id === branchId; });
++    var normalized = Object.assign({}, branch, { branch_id:branchId, company_id:companyId });
++    if (existingIndex >= 0) branchMap[companyId][existingIndex] = Object.assign({}, branchMap[companyId][existingIndex], normalized);
++    else branchMap[companyId].push(normalized);
++  });
++
++  var companies = companiesRaw.map(function(company) { return creatorNormalizeCompanyP0_(company, branchMap); });
++  var organizationsSheet = sheetToObjects_(getSheet_(SHEET_ORGANIZATIONS)).filter(function(row) {
++    return normalizeLower_(row.status || 'active') !== 'deleted';
++  });
++  var organizationMap = {};
++  organizationsSheet.forEach(function(org) {
++    var id = normalizeUpper_(org.organization_id || '');
++    if (id) organizationMap[id] = Object.assign({}, org, { organization_id:id });
++  });
++  companies.forEach(function(company) {
++    var id = company.organization_id || company.company_id;
++    if (!organizationMap[id]) {
++      organizationMap[id] = {
++        organization_id:id,
++        organization_name:company.organization_name || company.company_name,
++        brand_id:company.brand_id || '',
++        brand_name:company.brand_name || '',
++        ownership_mode:company.ownership_mode || 'independent_store',
++        company_id:company.company_id,
++        status:company.status || 'active'
++      };
++    }
++  });
++  var organizations = Object.keys(organizationMap).map(function(key){ return organizationMap[key]; });
++
++  var brands = sheetToObjects_(getSheet_(SHEET_BRANDS)).filter(function(row) {
++    return normalizeLower_(row.status || 'active') !== 'deleted';
++  }).map(function(row) {
++    return Object.assign({}, row, { brand_id:normalizeUpper_(row.brand_id || '') });
++  });
++  var branchList = [];
++  Object.keys(branchMap).forEach(function(companyId) {
++    (branchMap[companyId] || []).forEach(function(branch) {
++      var company = companies.filter(function(item){ return item.company_id === companyId; })[0] || {};
++      branchList.push(Object.assign({}, branch, {
++        company_id:companyId,
++        organization_id:branch.organization_id || company.organization_id || companyId,
++        organization_name:branch.organization_name || company.organization_name || company.company_name || '',
++        brand_id:branch.brand_id || company.brand_id || '',
++        brand_name:branch.brand_name || company.brand_name || ''
++      }));
++    });
++  });
++  companies.forEach(function(company) {
++    if (!branchMap[company.company_id] || !branchMap[company.company_id].length) {
++      branchList.push({
++        branch_id:'MAIN', branch_name:'主店', company_id:company.company_id,
++        organization_id:company.organization_id, organization_name:company.organization_name,
++        brand_id:company.brand_id, brand_name:company.brand_name
++      });
++    }
++  });
++
++  var workspaces = sheetToObjects_(getSheet_(SHEET_PERSONAL_WORKSPACES)).filter(function(row) {
++    return normalizeLower_(row.status || 'active') !== 'deleted';
++  }).map(creatorPersonalWorkspaceP0_);
++  var members = [];
++  workspaces.forEach(function(workspace) {
++    var team = workspace.team || {};
++    var teamMembers = Array.isArray(team.members) ? team.members : [];
++    if (!teamMembers.length && workspace.owner_user_id) {
++      teamMembers = [{ id:workspace.owner_user_id, name:workspace.owner_name, role:'maintainer', plan:workspace.plan_label || 'Personal Free' }];
++    }
++    teamMembers.forEach(function(member) {
++      members.push(Object.assign({}, member, {
++        workspace_id:workspace.workspace_id,
++        workspace_code:workspace.workspace_code,
++        workspace_type:workspace.workspace_type
++      }));
++    });
++  });
++
++  var plans = { personal:workspaces.length, personal_free:0, personal_plus:0, basic:0, plus:0, premium:0, private:0 };
++  companies.forEach(function(company) {
++    var plan = normalizeLower_(company.plan || company.plan_label || 'basic');
++    if (plan.indexOf('private') >= 0 || plan.indexOf('self') >= 0 || plan.indexOf('自管') >= 0) plans.private++;
++    else if (plan.indexOf('premium') >= 0) plans.premium++;
++    else if (plan.indexOf('plus') >= 0) plans.plus++;
++    else plans.basic++;
++  });
++  workspaces.forEach(function(workspace) {
++    if ((workspace.modules || []).length) plans.personal_plus++;
++    else plans.personal_free++;
++  });
++  var modules = {};
++  workspaces.forEach(function(workspace) {
++    (workspace.modules || []).forEach(function(moduleName) {
++      modules[moduleName] = Number(modules[moduleName] || 0) + 1;
++    });
++  });
++
++  return ok_({
++    overview: {
++      brand_count:brands.length,
++      organization_count:organizations.length,
++      branch_count:branchList.length,
++      company_count:companies.length,
++      personal_solo_count:workspaces.filter(function(row){ return row.workspace_type === 'personal_solo'; }).length,
++      personal_team_count:workspaces.filter(function(row){ return row.workspace_type === 'personal_team'; }).length,
++      total_user_count:employees.length + members.length,
++      paid_count:companies.filter(function(row){ return ['active_paid','active','paid'].indexOf(normalizeLower_(row.billing_status || '')) >= 0; }).length,
++      trial_count:companies.filter(function(row){ return normalizeLower_(row.billing_status || '').indexOf('trial') >= 0 || normalizeLower_(row.billing_status || '').indexOf('first') >= 0; }).length
++    },
++    companies:companies,
++    workspaces:workspaces,
++    members:members,
++    brands:brands,
++    organizations:organizations,
++    branches:branchList,
++    plans:plans,
++    modules:modules,
++    generated_at:personalNowP0_()
++  });
++}
+diff --git a/app-core.js b/app-core.js
+index c5d7405..8f208bf 100644
+--- a/app-core.js
++++ b/app-core.js
+@@ -9,7 +9,9 @@
+   function getParam(name){try{return new URLSearchParams(window.location.search).get(name)||'';}catch(e){return '';}}
+   function cleanViewName(v){
+     v=String(v||'').toLowerCase().trim();
+-    if(v==='admin'||v==='review'||v==='settings'||v==='publish'||v==='people'||v==='personnel'||v==='salary'||v==='data'||v==='home'||v==='creator'||v==='manager')return 'admin';
++    if(v==='creator'||v==='platform'||v==='platform_creator')return 'creator';
++    if(v==='personal'||v==='personal_solo'||v==='personal_team')return 'personal';
++    if(v==='admin'||v==='review'||v==='settings'||v==='publish'||v==='people'||v==='personnel'||v==='salary'||v==='data'||v==='home'||v==='manager')return 'admin';
+     return 'employee';
+   }
+   function readTargetView(){
+@@ -64,8 +66,26 @@
+       s.parentNode.removeChild(s);
+     });
+   }
++  function externalViewUrl(view){
++    var file=view==='creator'?'creator.html':view==='personal'?'personal.html':'';
++    if(!file)return '';
++    var old;
++    try{old=new URL(window.location.href);}catch(e){old=new URL('app.html', window.location.href);}
++    var cfg=window.ANG_HR_CONFIG||{};
++    var targetBase=view==='creator'?cfg.creatorPageUrl:cfg.personalPageUrl;
++    var target;
++    try{target=new URL(targetBase||file,window.location.href);}catch(e2){target=new URL(file,window.location.href);}
++    old.searchParams.forEach(function(value,key){if(key!=='view'&&key!=='page'&&key!=='target')target.searchParams.set(key,value);});
++    target.searchParams.set('source','github_app_shell');
++    target.searchParams.set('_shell_ts',String(Date.now()));
++    return target.href;
++  }
+   function loadView(view){
+     view=cleanViewName(view);
++    if(view==='personal'||view==='creator'){
++      var external=externalViewUrl(view);
++      if(external){window.location.replace(external);return;}
++    }
+     var def=window.ANG_APP_VIEWS && window.ANG_APP_VIEWS[view];
+     if(!def){document.body.innerHTML='<div style="padding:24px;font-family:sans-serif">找不到頁面：'+view+'</div>';return;}
+     generation++;
+diff --git a/app.html b/app.html
+index 77fdb4f..d3b4031 100644
+--- a/app.html
++++ b/app.html
+@@ -3,16 +3,19 @@
+ <head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
++<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
++<meta http-equiv="Pragma" content="no-cache">
++<meta http-equiv="Expires" content="0">
+ <title>ANG HR Unified App</title>
+ <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
+ <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+ <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+-<script src="config.js"></script>
+-<script src="ang-frontend-api.js"></script>
+-<script src="app-employee.js"></script>
+-<script src="app-admin.js"></script>
+-<script src="app-core.js"></script>
++<script src="config.js?v=20260707-personal-creator-p0"></script>
++<script src="ang-frontend-api.js?v=20260707-personal-creator-p0"></script>
++<script src="app-employee.js?v=20260707-personal-creator-p0"></script>
++<script src="app-admin.js?v=20260707-personal-creator-p0"></script>
++<script src="app-core.js?v=20260707-personal-creator-p0"></script>
+ </head>
+ <body>
+ <div id="angUnifiedMount"></div>
+diff --git a/config.js b/config.js
+index 9f85bb1..a30a55b 100644
+--- a/config.js
++++ b/config.js
+@@ -10,6 +10,7 @@
+   var GAS_API_URL = 'https://script.google.com/macros/s/AKfycbzNycUTGQG0gqgb8B6F7tndEhRXU7GAiKFFWZr0e8sDwL2kXU5tBGLlJR_iBdX7SCnH/exec';
+   var GOOGLE_CLIENT_ID = '660707205594-74rvsq9s1h87v1s5pi9nvtms1e4qipat.apps.googleusercontent.com';
+   var LINE_CHANNEL_ID = '2010402308';
++  var BUILD_VERSION = '20260707-personal-creator-p0';
+ 
+   function cleanBase(url){
+     return String(url || '').trim().replace(/\/+$/, '');
+@@ -39,12 +40,19 @@
+     indexPage: 'index.html',
+     employeePage: 'employee.html',
+     adminPage: 'admin.html',
++    personalPage: 'personal.html',
++    creatorPage: 'creator.html',
++    appPage: 'app.html',
+     indexPageUrl: joinUrl(frontendBaseUrl, 'index.html'),
+     employeePageUrl: joinUrl(frontendBaseUrl, 'employee.html'),
+     adminPageUrl: joinUrl(frontendBaseUrl, 'admin.html'),
++    personalPageUrl: joinUrl(frontendBaseUrl, 'personal.html'),
++    creatorPageUrl: joinUrl(frontendBaseUrl, 'creator.html'),
++    appShellUrl: joinUrl(frontendBaseUrl, 'app.html'),
+ 
+-    // 保留 webAppUrl 這個舊名稱，但內容改為 GitHub 前端，不是 GAS。
+-    webAppUrl: joinUrl(frontendBaseUrl, 'employee.html'),
++    // App 啟動入口固定走 GitHub app.html；GAS 僅作 API。
++    webAppUrl: joinUrl(frontendBaseUrl, 'app.html'),
++    buildVersion: BUILD_VERSION,
+ 
+     googleClientId: GOOGLE_CLIENT_ID,
+     googleWebClientId: GOOGLE_CLIENT_ID,
+diff --git a/creator.html b/creator.html
+new file mode 100644
+index 0000000..220b097
+--- /dev/null
++++ b/creator.html
+@@ -0,0 +1,110 @@
++<!DOCTYPE html>
++<html lang="zh-Hant">
++<head>
++  <meta charset="UTF-8">
++  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
++  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
++  <meta http-equiv="Pragma" content="no-cache">
++  <meta http-equiv="Expires" content="0">
++  <title>ANG HR Creator</title>
++  <script src="config.js"></script>
++  <script src="ang-frontend-api.js"></script>
++  <style>
++    :root{--c1:#FF87E0;--c2:#CCA4FF;--c3:#8089FF;--c4:#59DDFF;--bg:#f5f6fc;--surface:#fff;--text:#17182b;--muted:#737790;--line:rgba(46,51,93,.12);--shadow:0 16px 45px rgba(35,39,90,.10)}
++    body[data-theme="dark"]{--bg:#090b17;--surface:#14172a;--text:#f5f7ff;--muted:#aeb4cb;--line:rgba(255,255,255,.10);--shadow:0 16px 45px rgba(0,0,0,.28)}
++    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;background:var(--bg);color:var(--text)}body{padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}button,input,select{font:inherit}button{cursor:pointer}
++    .app{max-width:1500px;margin:0 auto}.topbar{position:sticky;top:0;z-index:20;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;background:color-mix(in srgb,var(--bg) 80%,transparent);backdrop-filter:blur(22px);border-bottom:1px solid var(--line)}
++    .brand{display:flex;align-items:center;gap:10px}.logo{width:44px;height:44px;border-radius:15px;display:grid;place-items:center;color:#11152f;font-weight:1000;background:linear-gradient(135deg,var(--c1),var(--c3),var(--c4))}.brand strong{display:block;font-size:18px}.brand small{display:block;color:var(--muted);font-size:11px;margin-top:2px}.actions{display:flex;gap:8px}.icon-btn,.btn{border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:14px;padding:10px 13px;font-weight:900}.icon-btn{width:42px;height:42px;padding:0}.btn.primary{background:linear-gradient(135deg,var(--c2),var(--c4));color:#101327;border:0}.btn:disabled{opacity:.45}
++    .layout{display:grid;grid-template-columns:240px minmax(0,1fr);min-height:calc(100vh - 70px)}.side{padding:16px;border-right:1px solid var(--line);position:sticky;top:69px;height:calc(100vh - 69px);overflow:auto}.side button{width:100%;border:0;background:transparent;color:var(--muted);text-align:left;padding:12px;border-radius:14px;font-weight:900;margin-bottom:4px}.side button.active{background:linear-gradient(135deg,color-mix(in srgb,var(--c2) 30%,transparent),color-mix(in srgb,var(--c4) 24%,transparent));color:var(--text)}
++    .main{padding:20px;min-width:0}.page{display:none}.page.active{display:block}.page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:16px}.page-head h1{margin:0;font-size:27px}.page-head p{margin:5px 0 0;color:var(--muted);font-size:12px}.status{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px}.dot{width:8px;height:8px;border-radius:50%;background:#f59e0b}.dot.ok{background:#10b981}.dot.error{background:#ef4444}
++    .metrics{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}.metric{padding:16px;border-radius:21px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);min-width:0}.metric small{font-size:10px;color:var(--muted);font-weight:850}.metric b{display:block;font-size:26px;margin-top:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.metric span{display:block;color:var(--muted);font-size:10px;margin-top:5px}
++    .section{margin-top:18px}.section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:9px}.section-head h2{font-size:17px;margin:0}.card{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:15px;box-shadow:0 10px 30px rgba(35,39,90,.06)}
++    .filters{display:grid;grid-template-columns:1.5fr repeat(3,1fr) auto;gap:8px}.input{width:100%;border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:13px;padding:10px;outline:none}.table-wrap{overflow:auto;border-radius:16px;border:1px solid var(--line)}table{width:100%;border-collapse:collapse;min-width:900px}th,td{padding:11px 12px;border-bottom:1px solid var(--line);text-align:left;font-size:12px;vertical-align:top}th{position:sticky;top:0;background:var(--surface);color:var(--muted);font-size:10px;z-index:1}tr:last-child td{border-bottom:0}.pill{display:inline-flex;border-radius:999px;padding:5px 8px;background:color-mix(in srgb,var(--c3) 14%,transparent);font-size:10px;font-weight:900}.pill.green{background:#dcfce7;color:#166534}.pill.red{background:#ffe4e6;color:#9f1239}.muted{color:var(--muted)}.empty{padding:26px;text-align:center;color:var(--muted);font-size:12px}
++    .split{display:grid;grid-template-columns:1fr 1fr;gap:12px}.plan-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.plan{padding:15px;border-radius:18px;background:var(--surface);border:1px solid var(--line)}.plan b{display:block;font-size:23px;margin-top:8px}.plan small{color:var(--muted);font-size:10px}
++    .mobile-nav{display:none}
++    @media(max-width:1050px){.metrics{grid-template-columns:repeat(3,1fr)}.plan-grid{grid-template-columns:repeat(3,1fr)}.filters{grid-template-columns:1fr 1fr}.filters .wide{grid-column:1/-1}}
++    @media(max-width:760px){body{padding-bottom:76px}.layout{display:block}.side{display:none}.main{padding:12px}.metrics{grid-template-columns:repeat(2,1fr)}.metric b{font-size:22px}.split{grid-template-columns:1fr}.plan-grid{grid-template-columns:repeat(2,1fr)}.filters{grid-template-columns:1fr}.filters .wide{grid-column:auto}.mobile-nav{display:grid;position:fixed;left:50%;transform:translateX(-50%);bottom:calc(8px + env(safe-area-inset-bottom));z-index:30;width:94%;height:62px;border-radius:22px;background:color-mix(in srgb,var(--surface) 94%,transparent);border:1px solid var(--line);box-shadow:0 18px 48px rgba(0,0,0,.24);grid-template-columns:repeat(5,1fr);padding:5px;backdrop-filter:blur(20px)}.mobile-nav button{border:0;background:transparent;color:var(--muted);border-radius:16px;font-size:10px;font-weight:900}.mobile-nav button.active{background:linear-gradient(135deg,var(--c2),var(--c4));color:#11152f}.page-head h1{font-size:23px}.topbar{padding:10px}.brand small{display:none}}
++  </style>
++</head>
++<body data-theme="dark">
++  <div class="app">
++    <header class="topbar">
++      <div class="brand"><span class="logo">C</span><span><strong>ANG HR Creator</strong><small>平台總管理｜品牌・經營主體・分店・空間・使用者</small></span></div>
++      <div class="actions"><button class="icon-btn" onclick="toggleTheme()">◐</button><button class="btn" onclick="goAdmin()">公司管理</button><button class="btn" onclick="goEntry()">登出入口</button></div>
++    </header>
++    <div class="layout">
++      <aside class="side">
++        <button class="active" data-nav="overview" onclick="showPage('overview')">總覽</button>
++        <button data-nav="companies" onclick="showPage('companies')">正式公司</button>
++        <button data-nav="personal" onclick="showPage('personal')">Personal 空間</button>
++        <button data-nav="teams" onclick="showPage('teams')">Personal 團隊</button>
++        <button data-nav="structure" onclick="showPage('structure')">品牌／主體／分店</button>
++        <button data-nav="plans" onclick="showPage('plans')">方案與模組</button>
++      </aside>
++      <main class="main">
++        <section class="page active" data-page="overview">
++          <div class="page-head"><div><h1>平台總覽</h1><p>名稱只用於顯示，歸屬一律以 brand_id、organization_id、branch_id、workspace_id 判斷。</p></div><div class="status" id="loadState"><i class="dot"></i>載入中</div></div>
++          <div class="metrics">
++            <div class="metric"><small>品牌</small><b id="mBrands">0</b><span>已建立品牌關係</span></div>
++            <div class="metric"><small>經營主體</small><b id="mOrgs">0</b><span>獨立老闆／公司</span></div>
++            <div class="metric"><small>實體分店</small><b id="mBranches">0</b><span>同老闆與加盟分開</span></div>
++            <div class="metric"><small>正式企業</small><b id="mCompanies">0</b><span>Basic 以上</span></div>
++            <div class="metric"><small>Personal 個人</small><b id="mSolo">0</b><span>一人空間</span></div>
++            <div class="metric"><small>Personal 團隊</small><b id="mTeams">0</b><span>無老闆模式</span></div>
++          </div>
++          <div class="split section">
++            <div class="card"><div class="section-head"><h2>最新正式公司</h2><button class="btn" onclick="showPage('companies')">全部</button></div><div id="latestCompanies"></div></div>
++            <div class="card"><div class="section-head"><h2>最新 Personal 空間</h2><button class="btn" onclick="showPage('personal')">全部</button></div><div id="latestPersonal"></div></div>
++          </div>
++          <div class="section"><div class="section-head"><h2>方案分布</h2><span class="muted">Trial 與付款狀態不算獨立方案</span></div><div id="planSummary" class="plan-grid"></div></div>
++        </section>
++
++        <section class="page" data-page="companies">
++          <div class="page-head"><div><h1>正式公司</h1><p>同名不同老闆維持不同 organization_id；一位老闆多店則共用 organization_id、分開 branch_id。</p></div></div>
++          <div class="card"><div class="filters"><input class="input wide" id="companySearch" placeholder="搜尋公司、代碼、老闆、分店" oninput="renderCompanies()"><select class="input" id="companyPlan" onchange="renderCompanies()"><option value="">全部方案</option><option>Basic</option><option>Plus</option><option>Premium</option><option>Private</option></select><select class="input" id="companyStatus" onchange="renderCompanies()"><option value="">全部狀態</option><option value="active">啟用</option><option value="expired">到期</option><option value="past_due">付款異常</option></select><select class="input" id="ownershipMode" onchange="renderCompanies()"><option value="">全部關係</option><option value="independent">獨立單店</option><option value="multi_branch">同老闆多分店</option><option value="franchise">加盟</option><option value="unverified">未確認</option></select><button class="btn primary" onclick="loadOverview()">重新整理</button></div><div class="table-wrap" style="margin-top:12px"><table><thead><tr><th>公司／代碼</th><th>品牌</th><th>經營主體</th><th>分店</th><th>方案</th><th>成員</th><th>狀態</th><th>建立日期</th></tr></thead><tbody id="companyRows"></tbody></table></div></div>
++        </section>
++
++        <section class="page" data-page="personal"><div class="page-head"><div><h1>Personal 個人空間</h1><p>個人功能跟著帳號；加入團隊後，個人買斷模組仍由本人保留。</p></div></div><div class="card"><div class="filters"><input class="input wide" id="soloSearch" placeholder="搜尋空間代碼、使用者、Email" oninput="renderSolo()"><select class="input" id="soloPlan" onchange="renderSolo()"><option value="">全部個人方案</option><option>Personal Free</option><option>Personal</option></select><button class="btn primary" onclick="loadOverview()">重新整理</button></div><div class="table-wrap" style="margin-top:12px"><table><thead><tr><th>空間</th><th>使用者</th><th>個人方案</th><th>買斷模組</th><th>Cloud</th><th>工作場所</th><th>最近更新</th></tr></thead><tbody id="soloRows"></tbody></table></div></div></section>
++
++        <section class="page" data-page="teams"><div class="page-head"><div><h1>Personal 平等團隊</h1><p>所有成員平等；維護者只處理邀請碼、成員移除與空間設定，不是上司。</p></div></div><div class="card"><div class="filters"><input class="input wide" id="teamSearch" placeholder="搜尋團隊、代碼、維護者或成員" oninput="renderTeams()"><select class="input" id="teamSize" onchange="renderTeams()"><option value="">全部人數</option><option value="small">1–3 人</option><option value="medium">4–10 人</option><option value="large">11 人以上</option></select><button class="btn primary" onclick="loadOverview()">重新整理</button></div><div class="table-wrap" style="margin-top:12px"><table><thead><tr><th>團隊／代碼</th><th>維護者</th><th>成員</th><th>團隊模組</th><th>邀請碼</th><th>最近活動</th><th>轉企業狀態</th></tr></thead><tbody id="teamRows"></tbody></table></div></div></section>
++
++        <section class="page" data-page="structure"><div class="page-head"><div><h1>品牌／經營主體／分店</h1><p>品牌可同名或共用，但資料與付款歸屬以經營主體為準。</p></div></div><div class="split"><div class="card"><div class="section-head"><h2>品牌</h2><span id="brandCount">0</span></div><div id="brandList"></div></div><div class="card"><div class="section-head"><h2>經營主體與分店</h2><span id="orgCount">0</span></div><div id="orgList"></div></div></div></section>
++
++        <section class="page" data-page="plans"><div class="page-head"><div><h1>方案與模組</h1><p>正式企業方案：Basic、Plus、Premium、資料自管版；Personal 採個人買斷模組＋雲端訂閱。</p></div></div><div id="planCards" class="plan-grid"></div><div class="section card"><div class="section-head"><h2>Personal 模組採用數</h2><span>個人升級不拖累團隊</span></div><div id="moduleSummary" class="table-wrap"></div></div></section>
++      </main>
++    </div>
++  </div>
++  <nav class="mobile-nav"><button class="active" data-nav="overview" onclick="showPage('overview')">總覽</button><button data-nav="companies" onclick="showPage('companies')">公司</button><button data-nav="personal" onclick="showPage('personal')">個人</button><button data-nav="teams" onclick="showPage('teams')">團隊</button><button data-nav="plans" onclick="showPage('plans')">方案</button></nav>
++  <script>
++  (function(){
++    'use strict';
++    const THEME_KEY='ang-hr-theme';
++    const API=(window.ANG_HR_CONFIG&&window.ANG_HR_CONFIG.apiBaseUrl)||'';
++    const data={overview:{},companies:[],workspaces:[],members:[],brands:[],organizations:[],branches:[],plans:{},modules:{}};
++    function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
++    function val(...keys){for(const k of keys){const v=localStorage.getItem(k);if(v)return v}return''}
++    function ctx(){const q=new URLSearchParams(location.search);return{company_id:q.get('company_id')||val('ang_hr_active_company_id','company_id')||'PLATFORM',employee_id:q.get('employee_id')||q.get('id')||val('ang_hr_active_employee_id','employee_id','loginId')||'',session_token:q.get('session_token')||q.get('token')||val('ang_hr_active_login_token','session_token','loginToken')||'',device_id:q.get('device_id')||val('ang_hr_device_id','device_id')||'',role:q.get('role')||val('ang_user_role','ang_employee_role')||''}}
++    window.showPage=function(name){document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.dataset.page===name));document.querySelectorAll('[data-nav]').forEach(b=>b.classList.toggle('active',b.dataset.nav===name));window.scrollTo({top:0,behavior:'smooth'})}
++    window.toggleTheme=function(){const next=document.body.dataset.theme==='dark'?'light':'dark';document.body.dataset.theme=next;localStorage.setItem(THEME_KEY,next)}
++    window.goEntry=function(){location.href=(window.ANG_HR_CONFIG&&ANG_HR_CONFIG.indexPageUrl)||'index.html'}
++    window.goAdmin=function(){location.href=(window.ANG_HR_CONFIG&&ANG_HR_CONFIG.adminPageUrl)||'admin.html'}
++    function setLoad(text,type){const el=document.getElementById('loadState');if(!el)return;el.innerHTML=`<i class="dot ${type||''}"></i>${esc(text)}`}
++    async function call(action,payload){const body=Object.assign({action},ctx(),payload||{});const r=await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body),cache:'no-store'});return r.json()}
++    window.loadOverview=async function(){if(!API){setLoad('未設定 API','error');return}setLoad('載入中','');try{const res=await call('getCreatorPlatformOverview',{});if(!res||!res.ok)throw new Error(res&&res.message||'讀取失敗');Object.assign(data,res);renderAll();setLoad('已同步','ok')}catch(e){setLoad(e.message||'讀取失敗','error');renderEmpty(e.message||'讀取失敗')}}
++    function renderEmpty(msg){['companyRows','soloRows','teamRows'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=`<tr><td colspan="8"><div class="empty">${esc(msg)}</div></td></tr>`});document.getElementById('latestCompanies').innerHTML=`<div class="empty">${esc(msg)}</div>`;document.getElementById('latestPersonal').innerHTML=`<div class="empty">${esc(msg)}</div>`}
++    function renderAll(){const o=data.overview||{};setText('mBrands',o.brand_count||0);setText('mOrgs',o.organization_count||0);setText('mBranches',o.branch_count||0);setText('mCompanies',o.company_count||0);setText('mSolo',o.personal_solo_count||0);setText('mTeams',o.personal_team_count||0);renderOverviewLists();renderCompanies();renderSolo();renderTeams();renderStructure();renderPlans()}
++    function setText(id,v){const el=document.getElementById(id);if(el)el.textContent=v}
++    function companyItem(c){return `<div class="card" style="padding:11px;margin-bottom:8px;box-shadow:none"><b>${esc(c.company_name||c.company_id)}</b><div class="muted" style="font-size:11px;margin-top:4px">${esc(c.company_id)}｜${esc(c.plan_label||c.plan||'')}</div></div>`}
++    function workspaceItem(w){return `<div class="card" style="padding:11px;margin-bottom:8px;box-shadow:none"><b>${esc(w.display_name||w.workspace_code)}</b><div class="muted" style="font-size:11px;margin-top:4px">${esc(w.workspace_code)}｜${w.workspace_type==='personal_team'?'平等團隊':'個人空間'}</div></div>`}
++    function renderOverviewLists(){const companies=(data.companies||[]).slice(0,5),ws=(data.workspaces||[]).slice(0,5);document.getElementById('latestCompanies').innerHTML=companies.map(companyItem).join('')||'<div class="empty">尚無正式公司</div>';document.getElementById('latestPersonal').innerHTML=ws.map(workspaceItem).join('')||'<div class="empty">尚無 Personal 空間</div>';const plans=data.plans||{};document.getElementById('planSummary').innerHTML=['Personal','Basic','Plus','Premium','Private'].map(p=>`<div class="plan"><small>${p}</small><b>${Number(plans[p.toLowerCase()]||plans[p]||0)}</b></div>`).join('')}
++    window.renderCompanies=function(){const q=(document.getElementById('companySearch')&&document.getElementById('companySearch').value||'').toLowerCase(),plan=(document.getElementById('companyPlan')&&document.getElementById('companyPlan').value||'').toLowerCase(),status=document.getElementById('companyStatus')&&document.getElementById('companyStatus').value||'',mode=document.getElementById('ownershipMode')&&document.getElementById('ownershipMode').value||'';const rows=(data.companies||[]).filter(c=>{const hay=JSON.stringify(c).toLowerCase();return(!q||hay.includes(q))&&(!plan||String(c.plan||c.plan_label||'').toLowerCase()===plan)&&(!status||String(c.billing_status||c.status||'')===status)&&(!mode||String(c.ownership_mode||'unverified')===mode)});document.getElementById('companyRows').innerHTML=rows.map(c=>`<tr><td><b>${esc(c.company_name||'未命名')}</b><br><span class="muted">${esc(c.company_id)}</span></td><td>${esc(c.brand_name||'未設定')}</td><td>${esc(c.organization_name||c.company_name||'')}<br><span class="muted">${esc(c.organization_id||c.company_id||'')}</span></td><td>${Number(c.branch_count||1)}<br><span class="muted">${esc(c.branch_names||'')}</span></td><td><span class="pill">${esc(c.plan_label||c.plan||'')}</span></td><td>${Number(c.active_employee_count||c.member_count||0)} / ${esc(c.employee_quota||'—')}</td><td><span class="pill ${String(c.billing_status||c.status).includes('active')?'green':''}">${esc(c.billing_status_label||c.billing_status||c.status||'')}</span></td><td>${esc(c.created_at||'—')}</td></tr>`).join('')||'<tr><td colspan="8"><div class="empty">沒有符合的公司</div></td></tr>'}
++    window.renderSolo=function(){const q=(document.getElementById('soloSearch')&&document.getElementById('soloSearch').value||'').toLowerCase(),plan=(document.getElementById('soloPlan')&&document.getElementById('soloPlan').value||'').toLowerCase();const rows=(data.workspaces||[]).filter(w=>w.workspace_type==='personal_solo').filter(w=>(!q||JSON.stringify(w).toLowerCase().includes(q))&&(!plan||String(w.plan_label||w.plan||'').toLowerCase()===plan));document.getElementById('soloRows').innerHTML=rows.map(w=>`<tr><td><b>${esc(w.display_name||'個人空間')}</b><br><span class="muted">${esc(w.workspace_code)}</span></td><td>${esc(w.owner_name||w.owner_user_id||'')}<br><span class="muted">${esc(w.owner_email||'')}</span></td><td><span class="pill">${esc(w.plan_label||w.plan||'Personal Free')}</span></td><td>${esc((w.modules||[]).join? w.modules.join('、'):w.modules||'—')}</td><td>${w.cloud_active?'有':'無'}</td><td>${Number(w.workplace_count||1)}</td><td>${esc(w.updated_at||w.created_at||'—')}</td></tr>`).join('')||'<tr><td colspan="7"><div class="empty">尚無 Personal 個人空間</div></td></tr>'}
++    window.renderTeams=function(){const q=(document.getElementById('teamSearch')&&document.getElementById('teamSearch').value||'').toLowerCase(),size=document.getElementById('teamSize')&&document.getElementById('teamSize').value||'';const rows=(data.workspaces||[]).filter(w=>w.workspace_type==='personal_team').filter(w=>{const n=Number(w.member_count||0);const sizeOk=!size||(size==='small'&&n<=3)||(size==='medium'&&n>=4&&n<=10)||(size==='large'&&n>=11);return sizeOk&&(!q||JSON.stringify(w).toLowerCase().includes(q))});document.getElementById('teamRows').innerHTML=rows.map(w=>`<tr><td><b>${esc(w.display_name||'平等團隊')}</b><br><span class="muted">${esc(w.workspace_code)}</span></td><td>${esc(w.maintainer_name||w.owner_name||w.owner_user_id||'')}</td><td>${Number(w.member_count||0)}<br><span class="muted">${esc(w.member_names||'')}</span></td><td>${esc(w.team_modules||'基本團隊')}</td><td>${esc(w.invite_status||'關閉')}</td><td>${esc(w.updated_at||w.created_at||'—')}</td><td><span class="pill">${esc(w.company_conversion_status||'尚未申請')}</span></td></tr>`).join('')||'<tr><td colspan="7"><div class="empty">尚無 Personal 平等團隊</div></td></tr>'}
++    function renderStructure(){const brands=data.brands||[],orgs=data.organizations||[];setText('brandCount',brands.length);setText('orgCount',orgs.length);document.getElementById('brandList').innerHTML=brands.map(b=>`<div class="card" style="box-shadow:none;margin-bottom:8px"><b>${esc(b.brand_name||b.brand_id)}</b><div class="muted" style="font-size:11px;margin-top:4px">${esc(b.brand_id)}｜${Number(b.organization_count||0)} 個經營主體｜${Number(b.branch_count||0)} 間店</div></div>`).join('')||'<div class="empty">尚未建立品牌資料</div>';document.getElementById('orgList').innerHTML=orgs.map(o=>`<div class="card" style="box-shadow:none;margin-bottom:8px"><b>${esc(o.organization_name||o.organization_id)}</b><div class="muted" style="font-size:11px;margin-top:4px">${esc(o.organization_id)}｜${esc(o.ownership_mode||'未確認')}｜${Number(o.branch_count||0)} 間店</div></div>`).join('')||'<div class="empty">尚未建立經營主體資料</div>'}
++    function renderPlans(){const p=data.plans||{},m=data.modules||{};document.getElementById('planCards').innerHTML=[['Personal','個人／平等團隊'],['Basic','基本企業'],['Plus','審核與進階管理'],['Premium','完整人資薪資'],['Private','資料自管版']].map(x=>`<div class="plan"><small>${x[1]}</small><b>${Number(p[x[0].toLowerCase()]||p[x[0]]||0)}</b><div class="muted" style="font-size:10px;margin-top:6px">${x[0]}</div></div>`).join('');document.getElementById('moduleSummary').innerHTML=`<table><thead><tr><th>個人模組</th><th>已解鎖人數</th></tr></thead><tbody>${[['advancedPayroll','進階薪資'],['multiWorkplaces','多工作場所'],['advancedSchedule','進階班表'],['exportReports','報表匯出'],['cloud','ANG Cloud']].map(x=>`<tr><td>${x[1]}</td><td>${Number(m[x[0]]||0)}</td></tr>`).join('')}</tbody></table>`}
++    function init(){document.body.dataset.theme=localStorage.getItem(THEME_KEY)||'dark';const c=ctx();if(c.employee_id!=='ANG8963'&&String(c.role||'').toLowerCase()!=='creator'){setLoad('需要平台 Creator 驗證','error');renderEmpty('請先使用平台 Creator 驗證登入');return}loadOverview()}
++    init();
++  })();
++  </script>
++</body>
++</html>
+diff --git a/index.html b/index.html
+index fa096e4..2b2df27 100644
+--- a/index.html
++++ b/index.html
+@@ -3,13 +3,16 @@
+ <head>
+   <meta charset="UTF-8" />
+   <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover" />
++  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
++  <meta http-equiv="Pragma" content="no-cache" />
++  <meta http-equiv="Expires" content="0" />
+   <title>ANG HR SYSTEMS｜ENTRY</title>
+-  <link rel="preload" as="image" href="ang-entry-bg-day.png?v=20260707-controlled-gestures" referrerpolicy="no-referrer" />
+-  <link rel="preload" as="image" href="ang-entry-bg-night.png?v=20260707-controlled-gestures" referrerpolicy="no-referrer" />
++  <link rel="preload" as="image" href="ang-entry-bg-day.png?v=20260707-personal-creator-p0" referrerpolicy="no-referrer" />
++  <link rel="preload" as="image" href="ang-entry-bg-night.png?v=20260707-personal-creator-p0" referrerpolicy="no-referrer" />
+   <style>
+     :root{
+       --body-bg:#000000;
+-      --screen-bg:url("ang-entry-bg-day.png?v=20260707-controlled-gestures");
++      --screen-bg:url("ang-entry-bg-day.png?v=20260707-personal-creator-p0");
+       --screen-fallback:linear-gradient(180deg,#eef7ff 0%,#dff3ff 45%,#f3e7ff 100%);
+       --panel-bg:rgba(255,255,255,.94);
+       --panel-border:rgba(226,232,240,.92);
+@@ -40,7 +43,7 @@
+ 
+     body[data-theme="dark"]{
+       --body-bg:#000000;
+-      --screen-bg:url("ang-entry-bg-night.png?v=20260707-controlled-gestures");
++      --screen-bg:url("ang-entry-bg-night.png?v=20260707-personal-creator-p0");
+       --screen-fallback:radial-gradient(circle at 50% 0%,#203b74 0%,#111a3b 42%,#050816 100%);
+       --panel-bg:rgba(18,25,42,.88);
+       --panel-border:rgba(255,255,255,.08);
+@@ -315,7 +318,7 @@
+     .plan-sheet{flex:0 0 auto;height:100%;scroll-snap-align:center;border-radius:32px 32px 0 0;background:var(--card-bg);border:1px solid var(--card-border);border-bottom:0;box-shadow:0 -14px 34px rgba(15,23,42,.10);backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px);overflow:hidden;display:flex;flex-direction:column;opacity:.58;transform:scale(.94) translateY(14px);transition:opacity .28s var(--ease),transform .28s var(--ease),box-shadow .28s var(--ease),background .28s ease;position:relative;touch-action:pan-x;}
+     .plan-sheet.active{opacity:1;transform:scale(1) translateY(0);box-shadow:0 -18px 46px rgba(15,23,42,.15);}
+     body[data-theme="dark"] .plan-sheet.active{box-shadow:0 -18px 46px rgba(0,0,0,.24);}
+-    .plan-sheet.employee,.plan-sheet.login,.plan-sheet.intro,.plan-sheet.basic,.plan-sheet.plus,.plan-sheet.premium{width:358px;}
++    .plan-sheet.employee,.plan-sheet.login,.plan-sheet.intro,.plan-sheet.personal,.plan-sheet.basic,.plan-sheet.plus,.plan-sheet.premium,.plan-sheet.private{width:358px;}
+     .plan-sheet::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 100% 0%,rgba(89,221,255,.18) 0%,rgba(89,221,255,0) 40%),radial-gradient(circle at 0% 100%,rgba(255,135,224,.13) 0%,rgba(255,135,224,0) 48%);pointer-events:none;z-index:0;}
+     .sheet-handle-zone{width:100%;padding:12px 0 8px;display:flex;justify-content:center;flex:0 0 auto;cursor:default;position:relative;z-index:2;pointer-events:none;}
+     .sheet-handle{width:44px;height:5px;border-radius:999px;background:rgba(100,116,139,.34);}
+@@ -1468,6 +1471,44 @@
+     }
+     /* ANG_20260707_FEATURE_ADS_END */
+     /* ANG_20260707_SIMPLE_ENTRY_END */
++
++
++    /* ANG_20260707_PERSONAL_CREATOR_P0_START
++       修正 iOS / App 底部入口卡被裁切，並加入 Personal 入口。 */
++    .phone.intro-active .sheet-stage,
++    .phone.intro-active:not(.expanded) .sheet-stage{
++      height:252px!important;
++      bottom:calc(12px + env(safe-area-inset-bottom))!important;
++    }
++    .phone.intro-active .plan-sheet.intro{
++      border-radius:30px!important;
++      border-bottom:1px solid var(--card-border)!important;
++    }
++    .phone.intro-active .entry-simple{
++      padding:14px 18px 13px!important;
++      justify-content:flex-start!important;
++    }
++    .entry-personal-cta{
++      width:100%;min-height:48px;margin:0 0 9px;padding:9px 13px;border:1px solid rgba(128,137,255,.22);border-radius:17px;
++      display:flex;align-items:center;justify-content:space-between;gap:10px;color:#11152f;
++      background:linear-gradient(135deg,rgba(255,135,224,.92),rgba(204,164,255,.94),rgba(89,221,255,.92));
++      box-shadow:0 10px 24px rgba(128,137,255,.22);font-weight:1000;text-align:left;
++    }
++    .entry-personal-cta small{display:block;font-size:9px;letter-spacing:.08em;opacity:.68;margin-bottom:2px}.entry-personal-cta strong{display:block;font-size:15px}.entry-personal-cta b{font-size:22px;line-height:1}
++    .entry-simple-title{margin-bottom:9px!important}.entry-simple-note{margin-top:7px!important;font-size:9px!important}.entry-simple-upbar{margin-top:7px!important}
++    .phone.intro-active.expanded .sheet-stage{bottom:0!important;height:86vh!important}.phone.intro-active.expanded .plan-sheet.intro{border-radius:30px 30px 0 0!important;border-bottom:0!important}
++    @media(max-width:370px){
++      .phone.intro-active .sheet-stage,.phone.intro-active:not(.expanded) .sheet-stage{height:244px!important;bottom:calc(8px + env(safe-area-inset-bottom))!important}
++      .entry-personal-cta{min-height:44px}.entry-personal-cta strong{font-size:14px}.entry-simple-side{min-height:50px!important}.entry-simple-note{display:none}
++    }
++
++    .plan-sheet.personal .sheet-summary{border:1.5px solid rgba(89,221,255,.72);background:linear-gradient(135deg,rgba(255,135,224,.20),rgba(204,164,255,.18),rgba(89,221,255,.20));box-shadow:0 0 24px rgba(128,137,255,.22)}
++    .plan-sheet.private .sheet-summary{border:1.5px solid rgba(15,23,42,.45);background:linear-gradient(135deg,rgba(226,232,240,.60),rgba(203,213,225,.40));box-shadow:0 0 24px rgba(15,23,42,.14)}
++    .plan-sheet.personal .sheet-tag{background:rgba(89,221,255,.22);color:#087fa0}.plan-sheet.private .sheet-tag{background:rgba(15,23,42,.12);color:#334155}
++    body[data-theme="dark"] .plan-sheet.personal .sheet-summary{background:linear-gradient(135deg,rgba(255,135,224,.18),rgba(128,137,255,.16),rgba(89,221,255,.14));border-color:rgba(89,221,255,.72)}
++    body[data-theme="dark"] .plan-sheet.private .sheet-summary{background:linear-gradient(135deg,rgba(30,41,59,.92),rgba(15,23,42,.88));border-color:rgba(203,213,225,.34)}
++    /* ANG_20260707_PERSONAL_CREATOR_P0_END */
++
+ </style>
+ 
+ <script>
+@@ -1499,7 +1540,7 @@
+       localStorage.setItem('ang_employee_role',role);
+       localStorage.setItem('isLoggedIn','1');
+     }catch(e){}
+-    var target='app.html?view=employee&company_id='+encodeURIComponent(companyId)+'&id='+encodeURIComponent(id)+'&employee_id='+encodeURIComponent(id)+'&role='+encodeURIComponent(role)+'&session_token='+encodeURIComponent(token)+'&token='+encodeURIComponent(token)+'&source=platform_creator_email_app_return_employee_bridge&auto_admin=1&_ts='+Date.now();
++    var target='creator.html?company_id='+encodeURIComponent(companyId)+'&id='+encodeURIComponent(id)+'&employee_id='+encodeURIComponent(id)+'&role='+encodeURIComponent(role)+'&session_token='+encodeURIComponent(token)+'&token='+encodeURIComponent(token)+'&source=platform_creator_email_app_return_creator&_ts='+Date.now();
+     location.replace(target);
+     return true;
+   }
+@@ -1517,8 +1558,8 @@
+ 
+ <body data-theme="dark">
+   <main class="phone intro-active" id="phone">
+-    <img class="screen-bg-img bg-day" src="ang-entry-bg-day.png?v=20260707-controlled-gestures" alt="" aria-hidden="true" loading="eager" decoding="async" referrerpolicy="no-referrer" />
+-    <img class="screen-bg-img bg-night" src="ang-entry-bg-night.png?v=20260707-controlled-gestures" alt="" aria-hidden="true" loading="eager" decoding="async" referrerpolicy="no-referrer" />
++    <img class="screen-bg-img bg-day" src="ang-entry-bg-day.png?v=20260707-personal-creator-p0" alt="" aria-hidden="true" loading="eager" decoding="async" referrerpolicy="no-referrer" />
++    <img class="screen-bg-img bg-night" src="ang-entry-bg-night.png?v=20260707-personal-creator-p0" alt="" aria-hidden="true" loading="eager" decoding="async" referrerpolicy="no-referrer" />
+ 
+     <button class="theme-toggle" type="button" aria-label="切換日光與暗夜模式" aria-pressed="true">
+       <span class="sun" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2.2M12 19.8V22M4.93 4.93l1.56 1.56M17.51 17.51l1.56 1.56M2 12h2.2M19.8 12H22M4.93 19.07l1.56-1.56M17.51 6.49l1.56-1.56"></path></svg></span>
+@@ -1650,6 +1691,9 @@
+             <div class="entry-simple">
+               <div class="entry-simple-eyebrow">ANG HR SYSTEMS</div>
+               <h2 class="entry-simple-title">選擇入口</h2>
++              <button class="entry-personal-cta" type="button" onclick="openPersonalEntry()">
++                <span><small>不必等公司導入</small><strong>Personal 個人／平等團隊</strong></span><b aria-hidden="true">›</b>
++              </button>
+               <div class="entry-simple-directions">
+                 <button class="entry-simple-side plan" type="button" onclick="setActiveManagerSheet('basic',true)">
+                   <span class="entry-simple-arrow" aria-hidden="true">←</span>
+@@ -1665,7 +1709,7 @@
+                 <span class="entry-simple-upbar-icon" aria-hidden="true">↑</span>
+                 <span>上滑看 APP 主要特色與廣告</span>
+               </div>
+-              <p class="entry-simple-note">左邊看 Basic / Plus / Premium　｜　右邊進入員工或企業管理登入</p>
++              <p class="entry-simple-note">左邊看企業方案　｜　右邊登入正式公司系統</p>
+             </div>
+ 
+             <div class="sheet-detail entry-discovery-detail">
+@@ -1723,6 +1767,19 @@
+             </div>
+           </article>
+ 
++          <article class="plan-sheet personal" data-key="personal">
++            <div class="sheet-handle-zone"><div class="sheet-handle"></div></div>
++            <div class="sheet-summary"><div class="sheet-summary-grid"><div class="grid-title"><h2 class="sheet-title">Personal</h2></div><div class="grid-tag"><div class="sheet-tag">個人入口</div></div><div class="grid-pills"><div class="mini-pills"><span class="mini-pill">班表</span><span class="mini-pill">打卡</span><span class="mini-pill">薪資核對</span></div></div><div class="grid-price"><div class="sheet-price">免費<span>開始</span></div></div></div></div>
++            <div class="sheet-detail">
++              <div class="feature-stack">
++                <div class="feature-card"><div class="feature-icon-box">🧍</div><div class="feature-copy"><h3 class="feature-title">一人也能直接使用</h3><p class="feature-desc">不需要公司代碼或老闆先購買，自己記錄班表、打卡、請假與薪資。</p></div><div class="feature-mini"><span class="feature-badge">個人空間</span><span>✓</span></div></div>
++                <div class="feature-card"><div class="feature-icon-box">👥</div><div class="feature-copy"><h3 class="feature-title">無老闆平等團隊</h3><p class="feature-desc">以邀請碼共同使用，沒有上下級、沒有審核；每個人的進階模組各自擁有。</p></div><div class="feature-mini"><span class="feature-badge">平等團隊</span><span>∞</span></div></div>
++              </div>
++              <div class="note">個人買斷模組跟著帳號；雲端同步與團隊共用服務可另外訂閱。</div>
++              <div class="sheet-action"><button type="button" onclick="openPersonalEntry()">進入 ANG HR Personal</button></div>
++            </div>
++          </article>
++
+           <article class="plan-sheet basic" data-key="basic">
+             <div class="sheet-handle-zone"><div class="sheet-handle"></div></div>
+             <div class="sheet-summary"><div class="sheet-summary-grid"><div class="grid-title"><h2 class="sheet-title">Basic</h2></div><div class="grid-tag"><div class="sheet-tag">實施方案</div></div><div class="grid-pills"><div class="mini-pills"><span class="mini-pill">打卡</span><span class="mini-pill">排班</span><span class="mini-pill">員工資料</span></div></div><div class="grid-price"><div class="sheet-price">$199<span>/月</span></div></div></div></div>
+@@ -1767,6 +1824,19 @@
+               <div class="sheet-action"><button type="button" data-action-key="plan-email" data-plan="premium">選擇 Premium 並驗證 Email</button><div class="auth-split-row"><button class="google-action" type="button" data-action-key="plan-google" data-plan="premium">使用 Google 帳戶驗證</button><button class="line-action" type="button" data-action-key="plan-line" data-plan="premium">使用 LINE 驗證</button></div><div id="premiumPlanStatus" class="status"></div></div>
+             </div>
+           </article>
++
++          <article class="plan-sheet private" data-key="private">
++            <div class="sheet-handle-zone"><div class="sheet-handle"></div></div>
++            <div class="sheet-summary"><div class="sheet-summary-grid"><div class="grid-title"><h2 class="sheet-title">資料自管版</h2></div><div class="grid-tag"><div class="sheet-tag">Private</div></div><div class="grid-pills"><div class="mini-pills"><span class="mini-pill">自有試算表</span><span class="mini-pill">自有 Drive</span><span class="mini-pill">資料控管</span></div></div><div class="grid-price"><div class="sheet-price">專案<span>報價</span></div></div></div></div>
++            <div class="sheet-detail">
++              <div class="feature-stack">
++                <div class="feature-card"><div class="feature-icon-box">🗄️</div><div class="feature-copy"><h3 class="feature-title">資料放在自己的 Google 環境</h3><p class="feature-desc">公司自行持有試算表與 Drive，ANG HR 提供系統與串接。</p></div><div class="feature-mini"><span class="feature-badge">自主管理</span><span>🔐</span></div></div>
++                <div class="feature-card"><div class="feature-icon-box">🏢</div><div class="feature-copy"><h3 class="feature-title">品牌、經營主體與分店分層</h3><p class="feature-desc">適合同品牌不同老闆、加盟或一位老闆多分店的正式管理。</p></div><div class="feature-mini"><span class="feature-badge">企業架構</span><span>↳</span></div></div>
++              </div>
++              <div class="note">資料自管版需先確認客戶試算表、Drive 權限與部署方式。</div>
++              <div class="sheet-action"><button type="button" data-action-key="contact-service">聯絡 ANG HR 開通</button></div>
++            </div>
++          </article>
+         </div>
+       </section>
+     </section>
+@@ -1780,23 +1850,38 @@
+       lineChannelId: '2010402308',
+       adminLogin: 'https://edn869728-jpg.github.io/ANG-99-HR-System/index.html',
+       companyRegister: 'https://edn869728-jpg.github.io/ANG-99-HR-System/index.html',
++      personalHome: 'https://edn869728-jpg.github.io/ANG-99-HR-System/personal.html',
++      creatorHome: 'https://edn869728-jpg.github.io/ANG-99-HR-System/creator.html',
+       employeeHome: 'https://edn869728-jpg.github.io/ang-hr-basic/employee_home.htm',
+       employeeQr: 'https://edn869728-jpg.github.io/ang-hr-basic/employee_home.htm',
+       supportEmail: 'ang0603.system@gmail.com',
+       planHome: {
+         basic: 'https://edn869728-jpg.github.io/ang-hr-basic/employee_home.htm',
+         plus: 'https://edn869728-jpg.github.io/ang-hr-plus/employee_home.htm',
+-        premium: 'https://edn869728-jpg.github.io/ang-hr-premium/employee_home.htm'
++        premium: 'https://edn869728-jpg.github.io/ang-hr-premium/employee_home.htm',
++        private: 'https://edn869728-jpg.github.io/ANG-99-HR-System/admin.html',
++        personal: 'https://edn869728-jpg.github.io/ANG-99-HR-System/personal.html'
+       },
+       planRegister: {
+         basic: 'https://edn869728-jpg.github.io/ANG-99-HR-System/index.html',
+         plus: 'https://edn869728-jpg.github.io/ANG-99-HR-System/index.html',
+-        premium: 'https://edn869728-jpg.github.io/ANG-99-HR-System/index.html'
++        premium: 'https://edn869728-jpg.github.io/ANG-99-HR-System/index.html',
++        private: 'https://edn869728-jpg.github.io/ANG-99-HR-System/index.html',
++        personal: 'https://edn869728-jpg.github.io/ANG-99-HR-System/personal.html'
+       }
+     };
+ 
+     const APP_STATE = { baseUrl:'', token:'', id:'', name:'', company:'', deviceId:'', routes:null, params:{} };
+ 
++    function openPersonalEntry(){
++      const base=(window.ANG_HR_CONFIG&&ANG_HR_CONFIG.personalPageUrl)||ANG_DATA_URLS.personalHome||'personal.html';
++      const url=new URL(base,window.location.href);
++      url.searchParams.set('source','entry_personal');
++      url.searchParams.set('_ts',String(Date.now()));
++      window.location.href=url.href;
++    }
++    window.openPersonalEntry=openPersonalEntry;
++
+     const PLATFORM_EMAIL_POLL_STORAGE_KEY = 'ang_platform_creator_email_challenge_v38';
+     let platformEmailPollTimer = null;
+     let platformEmailStatusBusy = false;
+@@ -1808,7 +1893,7 @@
+     const sheetActionButtons = Array.from(document.querySelectorAll('[data-action-key]'));
+ 
+     function preloadEntryBackgrounds(){
+-      ['ang-entry-bg-day.png?v=20260707-controlled-gestures','ang-entry-bg-night.png?v=20260707-controlled-gestures'].forEach(function(src){
++      ['ang-entry-bg-day.png?v=20260707-personal-creator-p0','ang-entry-bg-night.png?v=20260707-personal-creator-p0'].forEach(function(src){
+         const img = new Image();
+         img.referrerPolicy = 'no-referrer';
+         img.src = src;
+@@ -3291,7 +3376,7 @@
+     function buildPlatformCreatorGithubAppUrl(res){
+       var saved=storePlatformCreatorSessionFromVerify(res);
+       if(!saved)return '';
+-      return 'app.html?view=admin&page=admin&company_id='+encodeURIComponent(saved.company_id)+'&id='+encodeURIComponent(saved.id)+'&employee_id='+encodeURIComponent(saved.id)+'&role='+encodeURIComponent(saved.role)+'&session_token='+encodeURIComponent(saved.token)+'&token='+encodeURIComponent(saved.token)+'&source=platform_creator_email_2of4_github_bridge_direct_admin&auto_admin=1&_ts='+Date.now();
++      return 'creator.html?company_id='+encodeURIComponent(saved.company_id)+'&id='+encodeURIComponent(saved.id)+'&employee_id='+encodeURIComponent(saved.id)+'&role='+encodeURIComponent(saved.role)+'&session_token='+encodeURIComponent(saved.token)+'&token='+encodeURIComponent(saved.token)+'&source=platform_creator_email_2of4_creator&_ts='+Date.now();
+     }
+ 
+     function handlePlatformCreatorSuccessQueryNoScheme(){
+diff --git a/personal.html b/personal.html
+new file mode 100644
+index 0000000..3b09f7e
+--- /dev/null
++++ b/personal.html
+@@ -0,0 +1,242 @@
++<!DOCTYPE html>
++<html lang="zh-Hant">
++<head>
++  <meta charset="UTF-8">
++  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
++  <meta name="theme-color" content="#11152f">
++  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
++  <meta http-equiv="Pragma" content="no-cache">
++  <meta http-equiv="Expires" content="0">
++  <title>ANG HR Personal</title>
++  <script src="config.js"></script>
++  <script src="ang-frontend-api.js"></script>
++  <style>
++    :root{
++      --c1:#FF87E0;--c2:#CCA4FF;--c3:#8089FF;--c4:#59DDFF;
++      --bg:#f6f7ff;--surface:rgba(255,255,255,.91);--surface2:#fff;--text:#17182b;--muted:#70758f;
++      --line:rgba(73,80,125,.12);--shadow:0 18px 48px rgba(55,48,120,.13);--nav-h:76px;
++    }
++    body[data-theme="dark"]{--bg:#080a17;--surface:rgba(17,20,42,.91);--surface2:#13172c;--text:#f7f8ff;--muted:#aab0cc;--line:rgba(255,255,255,.10);--shadow:0 18px 48px rgba(0,0,0,.34)}
++    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
++    html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif}
++    body{padding:env(safe-area-inset-top) 0 calc(var(--nav-h) + env(safe-area-inset-bottom));overflow-x:hidden}
++    button,input,select,textarea{font:inherit}
++    button{cursor:pointer}
++    .bg{position:fixed;inset:0;pointer-events:none;background:radial-gradient(circle at 6% 0%,color-mix(in srgb,var(--c1) 22%,transparent),transparent 34%),radial-gradient(circle at 96% 8%,color-mix(in srgb,var(--c4) 24%,transparent),transparent 38%),linear-gradient(180deg,var(--bg),var(--bg));z-index:0}
++    .app{position:relative;z-index:1;max-width:980px;margin:0 auto;min-height:100vh}
++    .topbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;background:color-mix(in srgb,var(--bg) 78%,transparent);backdrop-filter:blur(22px);border-bottom:1px solid var(--line)}
++    .brand{display:flex;align-items:center;gap:10px;min-width:0;border:0;background:transparent;color:var(--text);padding:0;text-align:left}
++    .logo{width:42px;height:42px;border-radius:15px;display:grid;place-items:center;font-weight:1000;color:white;background:linear-gradient(135deg,var(--c1),var(--c3),var(--c4));box-shadow:0 10px 28px color-mix(in srgb,var(--c3) 34%,transparent)}
++    .brand-copy{min-width:0}.brand-copy strong{display:block;font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.brand-copy small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
++    .top-actions{display:flex;gap:8px}.icon-btn{width:42px;height:42px;border-radius:15px;border:1px solid var(--line);background:var(--surface);color:var(--text);display:grid;place-items:center;font-size:18px;box-shadow:0 8px 22px rgba(35,38,90,.08)}
++    .content{padding:14px}
++    .page{display:none}.page.active{display:block;animation:fade .22s ease}@keyframes fade{from{opacity:.35;transform:translateY(5px)}to{opacity:1;transform:none}}
++    .hero{padding:20px;border-radius:26px;background:linear-gradient(135deg,color-mix(in srgb,var(--c1) 70%,#fff),color-mix(in srgb,var(--c3) 86%,#fff),color-mix(in srgb,var(--c4) 78%,#fff));color:#11152f;box-shadow:var(--shadow);position:relative;overflow:hidden}
++    .hero:after{content:"";position:absolute;width:210px;height:210px;border-radius:50%;right:-70px;top:-90px;background:rgba(255,255,255,.25)}
++    .hero-row{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;position:relative;z-index:1}.hero h1{font-size:27px;margin:0 0 5px}.hero p{margin:0;font-weight:750;opacity:.72;font-size:13px;line-height:1.5}.plan-pill{padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.62);font-size:11px;font-weight:950;white-space:nowrap}
++    .hero-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:18px;position:relative;z-index:1}.hero-metric{padding:11px;border-radius:17px;background:rgba(255,255,255,.56);min-width:0}.hero-metric small{font-size:10px;font-weight:850;opacity:.65}.hero-metric b{display:block;font-size:18px;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
++    .section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:20px 2px 10px}.section-head h2{font-size:17px;margin:0}.section-head span{font-size:11px;color:var(--muted)}
++    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.card{border-radius:22px;background:var(--surface);border:1px solid var(--line);box-shadow:0 10px 28px rgba(42,44,100,.07);padding:16px}.card.wide{grid-column:1/-1}.card-title{font-size:14px;font-weight:950}.card-sub{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.45}.big{font-size:24px;font-weight:1000;margin-top:12px}.badge{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:5px 8px;background:color-mix(in srgb,var(--c3) 13%,transparent);color:var(--text);font-size:10px;font-weight:900}
++    .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}.btn{border:0;border-radius:14px;padding:11px 14px;font-weight:900;background:linear-gradient(135deg,var(--c2),var(--c3));color:#11152f;min-height:42px}.btn.soft{background:var(--surface2);color:var(--text);border:1px solid var(--line)}.btn.danger{background:#ffe4e8;color:#9f1239}.btn.full{width:100%}.btn:disabled{opacity:.45;cursor:not-allowed}
++    .list{display:grid;gap:9px}.item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;border-radius:17px;background:color-mix(in srgb,var(--surface2) 82%,transparent);border:1px solid var(--line)}.item-main{min-width:0}.item-main strong{font-size:13px}.item-main small{display:block;color:var(--muted);font-size:11px;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.item-side{text-align:right;font-size:12px;font-weight:900;white-space:nowrap}.empty{padding:22px;text-align:center;border:1px dashed var(--line);border-radius:18px;color:var(--muted);font-size:12px}
++    .weekbar{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}.day{border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:16px;padding:9px 2px;text-align:center}.day small{display:block;color:var(--muted);font-size:9px}.day b{display:block;font-size:14px;margin-top:4px}.day.active{background:linear-gradient(135deg,var(--c2),var(--c4));color:#101327}.day.active small{color:#30385f}
++    .form{display:grid;gap:11px}.field{display:grid;gap:6px}.field label{font-size:11px;font-weight:900;color:var(--muted)}.input{width:100%;border:1px solid var(--line);background:var(--surface2);color:var(--text);border-radius:15px;padding:12px;outline:none}.input:focus{border-color:var(--c3);box-shadow:0 0 0 4px color-mix(in srgb,var(--c3) 14%,transparent)}textarea.input{min-height:92px;resize:vertical}.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.three{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
++    .seg{display:flex;padding:4px;border-radius:15px;background:color-mix(in srgb,var(--surface2) 80%,transparent);border:1px solid var(--line)}.seg button{flex:1;border:0;border-radius:11px;padding:9px 7px;background:transparent;color:var(--muted);font-size:11px;font-weight:900}.seg button.active{background:linear-gradient(135deg,var(--c2),var(--c4));color:#101327}
++    .nav{position:fixed;z-index:50;left:50%;bottom:calc(8px + env(safe-area-inset-bottom));transform:translateX(-50%);width:min(94%,650px);height:64px;border-radius:24px;background:color-mix(in srgb,var(--surface) 92%,transparent);border:1px solid var(--line);box-shadow:0 18px 46px rgba(18,20,50,.22);backdrop-filter:blur(22px);display:grid;grid-template-columns:repeat(5,1fr);padding:6px}.nav button{border:0;background:transparent;color:var(--muted);border-radius:18px;display:grid;place-items:center;font-size:10px;font-weight:900;gap:1px}.nav button i{font-style:normal;font-size:18px}.nav button.active{color:#101327;background:linear-gradient(135deg,var(--c2),var(--c4))}
++    .drawer-backdrop{position:fixed;inset:0;background:rgba(5,8,20,.44);z-index:70;display:none}.drawer-backdrop.show{display:block}.drawer{position:fixed;right:10px;top:calc(64px + env(safe-area-inset-top));z-index:71;width:min(330px,calc(100% - 20px));max-height:calc(100vh - 84px - env(safe-area-inset-top));overflow:auto;border-radius:24px;background:var(--surface2);border:1px solid var(--line);box-shadow:0 24px 70px rgba(0,0,0,.28);padding:14px;display:none}.drawer.show{display:block}.drawer-title{font-size:16px;font-weight:1000;margin:4px 3px 12px}.menu-item{width:100%;border:0;border-radius:15px;background:transparent;color:var(--text);padding:12px;text-align:left;font-weight:850}.menu-item:hover,.menu-item:active{background:color-mix(in srgb,var(--c3) 10%,transparent)}
++    .modal-wrap{position:fixed;inset:0;z-index:90;background:rgba(4,6,18,.62);display:none;align-items:flex-end;justify-content:center;padding:12px}.modal-wrap.show{display:flex}.modal{width:min(620px,100%);max-height:92vh;overflow:auto;border-radius:28px 28px 22px 22px;background:var(--surface2);border:1px solid var(--line);box-shadow:0 30px 90px rgba(0,0,0,.34);padding:20px}.modal h2{margin:0 0 5px}.modal p{margin:0 0 16px;color:var(--muted);font-size:12px;line-height:1.55}.modal-actions{display:flex;gap:9px;margin-top:16px}.modal-actions .btn{flex:1}
++    .status{display:none;margin-top:10px;padding:10px 12px;border-radius:14px;font-size:11px;font-weight:800;line-height:1.4}.status.show{display:block}.status.info{background:#e8f4ff;color:#075985}.status.ok{background:#dcfce7;color:#166534}.status.error{background:#ffe4e6;color:#9f1239}
++    .sync-dot{width:7px;height:7px;border-radius:50%;display:inline-block;background:#f59e0b}.sync-dot.ok{background:#10b981}.sync-dot.error{background:#ef4444}
++    @media(min-width:760px){.content{padding:20px}.desktop-cols{display:grid;grid-template-columns:1.2fr .8fr;gap:14px}.hero h1{font-size:32px}.grid{grid-template-columns:repeat(4,minmax(0,1fr))}.card.wide{grid-column:span 2}.modal-wrap{align-items:center}}
++    @media(max-width:380px){.hero{padding:17px}.hero h1{font-size:23px}.hero-metric{padding:9px}.hero-metric b{font-size:15px}.content{padding:10px}.card{padding:13px}.two{grid-template-columns:1fr}.nav{width:96%}}
++  </style>
++</head>
++<body data-theme="dark">
++  <div class="bg"></div>
++  <main class="app">
++    <header class="topbar">
++      <button class="brand" type="button" onclick="toggleDrawer()">
++        <span class="logo">P</span>
++        <span class="brand-copy"><strong id="workspaceName">ANG HR Personal</strong><small id="workspaceMeta">尚未建立個人空間</small></span>
++      </button>
++      <div class="top-actions">
++        <button class="icon-btn" type="button" aria-label="切換日夜" onclick="toggleTheme()">◐</button>
++        <button class="icon-btn" type="button" aria-label="設定" onclick="openSettings()">⚙</button>
++      </div>
++    </header>
++
++    <div class="content">
++      <section class="page active" data-page="today">
++        <div class="hero">
++          <div class="hero-row"><div><h1 id="helloText">今天也辛苦了</h1><p id="todayLine">先建立個人空間，就能開始記錄班表、工時與薪資。</p></div><span class="plan-pill" id="personalPlan">Personal Free</span></div>
++          <div class="hero-metrics">
++            <div class="hero-metric"><small>今日班別</small><b id="metricShift">—</b></div>
++            <div class="hero-metric"><small>本期工時</small><b id="metricHours">0h</b></div>
++            <div class="hero-metric"><small>預估薪資</small><b id="metricPay">$0</b></div>
++          </div>
++        </div>
++        <div class="section-head"><h2>今日狀態</h2><span id="syncState"><i class="sync-dot"></i> 本機模式</span></div>
++        <div class="grid">
++          <article class="card"><div class="card-title">打卡</div><div class="card-sub" id="clockSummary">今天尚未打卡</div><div class="big" id="clockTime">--:--</div><div class="actions"><button class="btn" type="button" onclick="quickClock('in')">上班</button><button class="btn soft" type="button" onclick="quickClock('out')">下班</button></div></article>
++          <article class="card"><div class="card-title">下一個提醒</div><div class="card-sub" id="nextReminderMeta">尚無提醒</div><div class="big" id="nextReminderTitle">—</div><div class="actions"><button class="btn soft" type="button" onclick="showPage('more');openMorePanel('reminder')">新增提醒</button></div></article>
++          <article class="card wide"><div class="section-head" style="margin:0 0 10px"><h2>工作記事</h2><button class="btn soft" type="button" onclick="showPage('more');openMorePanel('note')">新增</button></div><div id="todayNotes" class="list"></div></article>
++          <article class="card wide"><div class="section-head" style="margin:0 0 10px"><h2>近期紀錄</h2><span>只顯示自己的資料</span></div><div id="recentRecords" class="list"></div></article>
++        </div>
++      </section>
++
++      <section class="page" data-page="schedule">
++        <div class="section-head"><h2>班表</h2><span id="scheduleModeLabel">週排班</span></div>
++        <div class="card">
++          <div class="seg" id="scheduleModeSeg"><button type="button" data-mode="week" onclick="setScheduleMode('week')">週排</button><button type="button" data-mode="month" onclick="setScheduleMode('month')">月排</button></div>
++          <div class="weekbar" id="weekBar" style="margin-top:12px"></div>
++        </div>
++        <div class="section-head"><h2>本週安排</h2><button class="btn soft" type="button" onclick="openShiftModal()">新增班別</button></div>
++        <div class="card"><div id="scheduleList" class="list"></div></div>
++      </section>
++
++      <section class="page" data-page="clock">
++        <div class="section-head"><h2>打卡與工時</h2><span>個人自行記錄</span></div>
++        <div class="card">
++          <div class="big" id="liveClock">--:--:--</div><div class="card-sub" id="liveDate">—</div>
++          <div class="actions"><button class="btn" type="button" onclick="quickClock('in')">上班打卡</button><button class="btn soft" type="button" onclick="quickClock('out')">下班打卡</button><button class="btn soft" type="button" onclick="openClockFixModal()">補打卡</button></div>
++        </div>
++        <div class="section-head"><h2>本期紀錄</h2><span id="clockPeriodLabel">依薪資週期</span></div>
++        <div class="card"><div id="clockList" class="list"></div></div>
++      </section>
++
++      <section class="page" data-page="pay">
++        <div class="hero">
++          <div class="hero-row"><div><h1>薪資核對</h1><p id="payCycleText">尚未設定領薪週期</p></div><span class="plan-pill" id="payTypePill">未設定</span></div>
++          <div class="hero-metrics"><div class="hero-metric"><small>預估</small><b id="payEstimate">$0</b></div><div class="hero-metric"><small>實領</small><b id="payActual">$0</b></div><div class="hero-metric"><small>差額</small><b id="payDiff">$0</b></div></div>
++        </div>
++        <div class="section-head"><h2>本期薪資</h2><button class="btn soft" type="button" onclick="openActualPayModal()">登記實領</button></div>
++        <div class="grid"><article class="card"><div class="card-title">一般工時</div><div class="big" id="normalHours">0h</div></article><article class="card"><div class="card-title">加班</div><div class="big" id="otHours">0h</div></article><article class="card wide"><div class="card-title">計算方式</div><div class="card-sub" id="payRuleText">請先到設定填寫時薪、日薪或月薪。</div></article></div>
++        <div class="section-head"><h2>歷史薪資</h2><span>預估與實領比較</span></div>
++        <div class="card"><div id="payHistory" class="list"></div></div>
++      </section>
++
++      <section class="page" data-page="more">
++        <div class="section-head"><h2>更多紀錄</h2><span>請假、記事、提醒與團隊</span></div>
++        <div class="grid">
++          <button class="card" type="button" onclick="openMorePanel('leave')" style="text-align:left;color:inherit"><div class="card-title">請假／休假</div><div class="card-sub">自己留下假別、時間與薪資影響</div></button>
++          <button class="card" type="button" onclick="openMorePanel('note')" style="text-align:left;color:inherit"><div class="card-title">個人記事</div><div class="card-sub">記下口頭約定、代班與工作備註</div></button>
++          <button class="card" type="button" onclick="openMorePanel('reminder')" style="text-align:left;color:inherit"><div class="card-title">提醒事項</div><div class="card-sub">上班、發薪、證件與自訂提醒</div></button>
++          <button class="card" type="button" onclick="openMorePanel('team')" style="text-align:left;color:inherit"><div class="card-title">平等團隊</div><div class="card-sub">沒有老闆、沒有審核，以邀請碼共同使用</div></button>
++        </div>
++        <div id="morePanel" style="margin-top:12px"></div>
++      </section>
++    </div>
++  </main>
++
++  <nav class="nav" aria-label="Personal 主導航">
++    <button type="button" class="active" data-nav="today" onclick="showPage('today')"><i>⌂</i>今日</button>
++    <button type="button" data-nav="schedule" onclick="showPage('schedule')"><i>▦</i>班表</button>
++    <button type="button" data-nav="clock" onclick="showPage('clock')"><i>◉</i>打卡</button>
++    <button type="button" data-nav="pay" onclick="showPage('pay')"><i>＄</i>薪資</button>
++    <button type="button" data-nav="more" onclick="showPage('more')"><i>•••</i>更多</button>
++  </nav>
++
++  <div id="drawerBackdrop" class="drawer-backdrop" onclick="toggleDrawer(false)"></div>
++  <aside id="drawer" class="drawer">
++    <div class="drawer-title">空間與帳號</div>
++    <button class="menu-item" type="button" onclick="openWorkspaceModal()">建立／切換 Personal 空間</button>
++    <button class="menu-item" type="button" onclick="openMorePanelFromMenu('team')">團隊與邀請碼</button>
++    <button class="menu-item" type="button" onclick="openSettings()">個人工作設定</button>
++    <button class="menu-item" type="button" onclick="openModulesModal()">方案與買斷模組</button>
++    <button class="menu-item" type="button" onclick="goCompanySpace()">切換到正式公司</button>
++    <button class="menu-item" type="button" onclick="goEntry()">回登入入口</button>
++  </aside>
++
++  <div id="modalWrap" class="modal-wrap"><div id="modal" class="modal"></div></div>
++
++  <script>
++  (function(){
++    'use strict';
++    const STORE_KEY='ang_personal_state_v1';
++    const THEME_KEY='ang-hr-theme';
++    const API=(window.ANG_HR_CONFIG&&window.ANG_HR_CONFIG.apiBaseUrl)||'';
++    const state=loadState();
++    let selectedDate=todayISO();
++
++    function defaultState(){return{version:1,user:{id:readIdentity(),name:localStorage.getItem('emp_name')||'我'},workspace:null,settings:{scheduleMode:'week',weekStart:1,monthStartDay:1,payFrequency:'monthly',payday:5,payType:'hourly',payRate:0,cloud:false},shifts:[],records:[],notes:[],reminders:[],leaves:[],pays:[],team:{members:[],inviteCode:''},modules:{advancedPayroll:false,multiWorkplaces:false,advancedSchedule:false,exportReports:false},updatedAt:''}}
++    function loadState(){try{const raw=localStorage.getItem(STORE_KEY);if(raw)return Object.assign(defaultState(),JSON.parse(raw)||{})}catch(e){}return defaultState()}
++    function saveState(sync){state.updatedAt=new Date().toISOString();localStorage.setItem(STORE_KEY,JSON.stringify(state));renderAll();if(sync)syncState()}
++    function readIdentity(){const q=new URLSearchParams(location.search);return (q.get('user_id')||q.get('employee_id')||q.get('id')||localStorage.getItem('ang_user_id')||localStorage.getItem('ang_hr_active_employee_id')||localStorage.getItem('loginId')||localStorage.getItem('ang_hr_device_id')||getDeviceId()).trim()}
++    function getDeviceId(){let id=localStorage.getItem('ang_hr_device_id')||'';if(!id){id='DEV-'+Date.now().toString(36).toUpperCase()+'-'+Math.random().toString(36).slice(2,8).toUpperCase();localStorage.setItem('ang_hr_device_id',id)}return id}
++    function todayISO(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
++    function money(n){return '$'+Math.round(Number(n)||0).toLocaleString('zh-TW')}
++    function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
++    function uid(prefix){return prefix+'-'+Date.now().toString(36).toUpperCase()+'-'+Math.random().toString(36).slice(2,7).toUpperCase()}
++    function fmtDate(v){if(!v)return'—';const d=new Date(v);if(isNaN(d))return v;return new Intl.DateTimeFormat('zh-TW',{month:'numeric',day:'numeric',weekday:'short'}).format(d)}
++    function fmtTime(v){if(!v)return'—';const d=new Date(v);if(isNaN(d))return v;return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
++    function hoursBetween(a,b){if(!a||!b)return 0;return Math.max(0,(new Date(b)-new Date(a))/3600000)}
++
++    window.showPage=function(name){document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.dataset.page===name));document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.nav===name));if(name==='more'&&!document.getElementById('morePanel').innerHTML)openMorePanel('leave');window.scrollTo({top:0,behavior:'smooth'})}
++    window.toggleTheme=function(){const next=document.body.dataset.theme==='dark'?'light':'dark';document.body.dataset.theme=next;localStorage.setItem(THEME_KEY,next)}
++    window.toggleDrawer=function(force){const show=typeof force==='boolean'?force:!document.getElementById('drawer').classList.contains('show');document.getElementById('drawer').classList.toggle('show',show);document.getElementById('drawerBackdrop').classList.toggle('show',show)}
++    window.goEntry=function(){location.href=(window.ANG_HR_CONFIG&&ANG_HR_CONFIG.indexPageUrl)||'index.html'}
++    window.goCompanySpace=function(){location.href=(window.ANG_HR_CONFIG&&ANG_HR_CONFIG.employeePageUrl)||'employee.html'}
++    window.openMorePanelFromMenu=function(type){toggleDrawer(false);showPage('more');openMorePanel(type)}
++
++    function openModal(html){document.getElementById('modal').innerHTML=html;document.getElementById('modalWrap').classList.add('show')}
++    window.closeModal=function(){document.getElementById('modalWrap').classList.remove('show')}
++    document.getElementById('modalWrap').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal()})
++
++    window.openWorkspaceModal=function(){toggleDrawer(false);openModal(`<h2>建立 Personal 空間</h2><p>一人使用選「個人」；同事想共同看班表與通知，選「平等團隊」。團隊沒有老闆、沒有審核。</p><div class="form"><div class="field"><label>空間名稱</label><input class="input" id="wsName" value="${esc(state.workspace&&state.workspace.name||'我的工作空間')}"></div><div class="field"><label>模式</label><select class="input" id="wsType"><option value="personal_solo">個人模式</option><option value="personal_team" ${state.workspace&&state.workspace.type==='personal_team'?'selected':''}>無老闆平等團隊</option></select></div></div><div class="modal-actions"><button class="btn soft" onclick="closeModal()">取消</button><button class="btn" onclick="saveWorkspace()">建立／更新</button></div><div class="status" id="modalStatus"></div>`)}
++    window.saveWorkspace=function(){const name=document.getElementById('wsName').value.trim();const type=document.getElementById('wsType').value;if(!name)return modalStatus('請輸入空間名稱','error');const prefix=type==='personal_team'?'PT':'P';if(!state.workspace)state.workspace={id:uid('WS'),code:prefix+Math.random().toString().slice(2,8),createdAt:new Date().toISOString()};state.workspace.name=name;state.workspace.type=type;state.workspace.code=state.workspace.code||prefix+Math.random().toString().slice(2,8);if(type==='personal_team'&&!state.team.members.length)state.team.members.push({id:state.user.id,name:state.user.name||'我',role:'maintainer',plan:'Personal Free'});saveState(true);closeModal()}
++    function modalStatus(text,type){const el=document.getElementById('modalStatus');if(!el)return;el.className='status show '+(type||'info');el.textContent=text}
++
++    window.openSettings=function(){toggleDrawer(false);const s=state.settings;openModal(`<h2>個人工作設定</h2><p>這裡只管理自己的班表、工時與薪資規則，平常不需要一直進來。</p><div class="form"><div class="two"><div class="field"><label>排班方式</label><select class="input" id="setScheduleMode"><option value="week" ${s.scheduleMode==='week'?'selected':''}>週排班</option><option value="month" ${s.scheduleMode==='month'?'selected':''}>月排班</option></select></div><div class="field"><label>每月週期起始日</label><input class="input" id="setMonthStart" type="number" min="1" max="28" value="${s.monthStartDay||1}"></div></div><div class="two"><div class="field"><label>薪資類型</label><select class="input" id="setPayType"><option value="hourly" ${s.payType==='hourly'?'selected':''}>時薪</option><option value="daily" ${s.payType==='daily'?'selected':''}>日薪</option><option value="monthly" ${s.payType==='monthly'?'selected':''}>月薪</option></select></div><div class="field"><label>金額</label><input class="input" id="setPayRate" type="number" min="0" step="1" value="${Number(s.payRate)||0}"></div></div><div class="two"><div class="field"><label>領薪週期</label><select class="input" id="setPayFrequency"><option value="weekly" ${s.payFrequency==='weekly'?'selected':''}>週領</option><option value="biweekly" ${s.payFrequency==='biweekly'?'selected':''}>雙週領</option><option value="semimonthly" ${s.payFrequency==='semimonthly'?'selected':''}>半月領</option><option value="monthly" ${s.payFrequency==='monthly'?'selected':''}>月領</option></select></div><div class="field"><label>發薪日</label><input class="input" id="setPayday" type="number" min="1" max="31" value="${s.payday||5}"></div></div></div><div class="modal-actions"><button class="btn soft" onclick="closeModal()">取消</button><button class="btn" onclick="saveSettings()">儲存設定</button></div>`)}
++    window.saveSettings=function(){state.settings.scheduleMode=document.getElementById('setScheduleMode').value;state.settings.monthStartDay=Math.max(1,Math.min(28,Number(document.getElementById('setMonthStart').value)||1));state.settings.payType=document.getElementById('setPayType').value;state.settings.payRate=Math.max(0,Number(document.getElementById('setPayRate').value)||0);state.settings.payFrequency=document.getElementById('setPayFrequency').value;state.settings.payday=Math.max(1,Math.min(31,Number(document.getElementById('setPayday').value)||5));saveState(true);closeModal()}
++
++    window.openModulesModal=function(){toggleDrawer(false);const m=state.modules;openModal(`<h2>Personal 模組</h2><p>個人功能跟著帳號，自己升級不會要求同團隊其他人一起購買。此頁先建立權限結構，付款流程後續串接。</p><div class="list">${moduleRow('advancedPayroll','進階薪資','加班倍率、津貼、扣款、預估與實領核對',m.advancedPayroll)}${moduleRow('multiWorkplaces','多工作場所','每份工作可有不同班別、薪資與週期',m.multiWorkplaces)}${moduleRow('advancedSchedule','進階班表','跨夜、多段班、輪班週期與進位規則',m.advancedSchedule)}${moduleRow('exportReports','報表匯出','PDF、Excel、CSV 與年度統計',m.exportReports)}</div><div class="modal-actions"><button class="btn full" onclick="closeModal()">完成</button></div>`)}
++    function moduleRow(key,title,sub,on){return `<div class="item"><div class="item-main"><strong>${title}</strong><small>${sub}</small></div><div class="item-side">${on?'已解鎖':'未購買'}</div></div>`}
++
++    window.setScheduleMode=function(mode){state.settings.scheduleMode=mode;saveState(true)}
++    window.openShiftModal=function(){openModal(`<h2>新增班表</h2><p>Personal 的班表是自己的預定工作，不需要主管核准。</p><div class="form"><div class="field"><label>日期</label><input class="input" id="shiftDate" type="date" value="${selectedDate}"></div><div class="two"><div class="field"><label>班別名稱</label><input class="input" id="shiftName" value="A"></div><div class="field"><label>工作場所</label><input class="input" id="shiftWorkplace" placeholder="例如 埔里店"></div></div><div class="two"><div class="field"><label>上班</label><input class="input" id="shiftStart" type="time" value="08:00"></div><div class="field"><label>下班</label><input class="input" id="shiftEnd" type="time" value="16:00"></div></div></div><div class="modal-actions"><button class="btn soft" onclick="closeModal()">取消</button><button class="btn" onclick="saveShift()">儲存班表</button></div>`)}
++    window.saveShift=function(){const date=document.getElementById('shiftDate').value;const name=document.getElementById('shiftName').value.trim()||'班';const start=document.getElementById('shiftStart').value;const end=document.getElementById('shiftEnd').value;if(!date||!start||!end)return;state.shifts.push({id:uid('SH'),date,name,start,end,workplace:document.getElementById('shiftWorkplace').value.trim(),createdAt:new Date().toISOString()});saveState(true);closeModal()}
++
++    window.quickClock=function(type){if(!state.workspace){openWorkspaceModal();return}const now=new Date();const date=todayISO();const openIn=[...state.records].reverse().find(r=>r.type==='clock'&&r.date===date&&r.clockType==='in'&&!state.records.some(o=>o.type==='clock'&&o.clockType==='out'&&o.pairId===r.id));if(type==='out'&&!openIn){alert('今天還沒有上班打卡');return}const rec={id:uid('CLK'),type:'clock',clockType:type,date,at:now.toISOString(),pairId:type==='out'?openIn.id:'',title:type==='in'?'上班打卡':'下班打卡',createdAt:now.toISOString()};state.records.push(rec);saveState(true)}
++    window.openClockFixModal=function(){openModal(`<h2>補打卡</h2><p>Personal 補打卡會直接保存，不需要送審；仍會保留「補登」標記與備註。</p><div class="form"><div class="field"><label>日期時間</label><input class="input" id="fixAt" type="datetime-local"></div><div class="field"><label>類型</label><select class="input" id="fixType"><option value="in">上班</option><option value="out">下班</option></select></div><div class="field"><label>備註</label><textarea class="input" id="fixNote" placeholder="例如：忘記打下班卡"></textarea></div></div><div class="modal-actions"><button class="btn soft" onclick="closeModal()">取消</button><button class="btn" onclick="saveClockFix()">保存補登</button></div>`)}
++    window.saveClockFix=function(){const v=document.getElementById('fixAt').value;if(!v)return;const at=new Date(v);state.records.push({id:uid('FIX'),type:'clock',clockType:document.getElementById('fixType').value,date:v.slice(0,10),at:at.toISOString(),manual:true,title:'補打卡',note:document.getElementById('fixNote').value.trim(),createdAt:new Date().toISOString()});saveState(true);closeModal()}
++
++    window.openActualPayModal=function(){const calc=calculatePayroll();openModal(`<h2>登記實領薪資</h2><p>收到薪水後填入實際金額，系統會和預估薪資比較。</p><div class="form"><div class="field"><label>本期預估</label><input class="input" value="${calc.estimate}" disabled></div><div class="field"><label>實際收到</label><input class="input" id="actualPay" type="number" min="0" value="${calc.actual||''}"></div><div class="field"><label>備註</label><textarea class="input" id="actualNote" placeholder="例如：扣制服費 450 元"></textarea></div></div><div class="modal-actions"><button class="btn soft" onclick="closeModal()">取消</button><button class="btn" onclick="saveActualPay()">儲存</button></div>`)}
++    window.saveActualPay=function(){const calc=calculatePayroll();state.pays.push({id:uid('PAY'),period:calc.period,estimate:calc.estimate,actual:Number(document.getElementById('actualPay').value)||0,note:document.getElementById('actualNote').value.trim(),createdAt:new Date().toISOString()});saveState(true);closeModal()}
++
++    window.openMorePanel=function(type){const box=document.getElementById('morePanel');if(type==='leave')box.innerHTML=leavePanel();if(type==='note')box.innerHTML=notePanel();if(type==='reminder')box.innerHTML=reminderPanel();if(type==='team')box.innerHTML=teamPanel()}
++    function leavePanel(){return `<div class="card"><div class="section-head" style="margin:0 0 12px"><h2>請假／休假紀錄</h2><span>不送審</span></div><div class="form"><div class="two"><div class="field"><label>假別</label><select class="input" id="leaveType"><option>事假</option><option>病假</option><option>特休</option><option>公假</option><option>生理假</option><option>家庭照顧假</option><option>婚假</option><option>喪假</option><option>產假</option><option>陪產假</option><option>育嬰假</option><option>其他</option></select></div><div class="field"><label>薪資影響</label><select class="input" id="leavePay"><option value="unpaid">無薪</option><option value="half">半薪</option><option value="paid">有薪</option><option value="none">不計入</option></select></div></div><div class="two"><div class="field"><label>開始</label><input class="input" id="leaveStart" type="datetime-local"></div><div class="field"><label>結束</label><input class="input" id="leaveEnd" type="datetime-local"></div></div><div class="field"><label>備註</label><textarea class="input" id="leaveNote" placeholder="例如：已用 LINE 通知公司"></textarea></div><button class="btn full" onclick="saveLeave()">儲存請假紀錄</button></div><div class="section-head"><h2>已記錄</h2><span>${state.leaves.length} 筆</span></div><div class="list">${renderLeaveItems()}</div></div>`}
++    window.saveLeave=function(){const start=document.getElementById('leaveStart').value,end=document.getElementById('leaveEnd').value;if(!start||!end)return alert('請選擇開始與結束時間');state.leaves.push({id:uid('LEV'),type:document.getElementById('leaveType').value,pay:document.getElementById('leavePay').value,start:new Date(start).toISOString(),end:new Date(end).toISOString(),note:document.getElementById('leaveNote').value.trim(),status:'recorded',createdAt:new Date().toISOString()});saveState(true);openMorePanel('leave')}
++    function renderLeaveItems(){if(!state.leaves.length)return'<div class="empty">尚無請假／休假紀錄</div>';return [...state.leaves].reverse().map(x=>`<div class="item"><div class="item-main"><strong>${esc(x.type)}</strong><small>${fmtDate(x.start)} ${fmtTime(x.start)}－${fmtTime(x.end)}${x.note?'｜'+esc(x.note):''}</small></div><div class="item-side">已記錄</div></div>`).join('')}
++    function notePanel(){return `<div class="card"><div class="section-head" style="margin:0 0 12px"><h2>個人記事</h2><span>只有自己看得到</span></div><div class="form"><div class="field"><label>內容</label><textarea class="input" id="noteText" placeholder="例如：下週記得問加班費"></textarea></div><div class="two"><div class="field"><label>綁定日期</label><input class="input" id="noteDate" type="date" value="${todayISO()}"></div><div class="field"><label>重要性</label><select class="input" id="noteLevel"><option value="normal">一般</option><option value="important">重要</option></select></div></div><button class="btn full" onclick="saveNote()">保存記事</button></div><div class="section-head"><h2>記事清單</h2><span>${state.notes.length} 筆</span></div><div class="list">${renderNoteItems()}</div></div>`}
++    window.saveNote=function(){const text=document.getElementById('noteText').value.trim();if(!text)return;state.notes.push({id:uid('NOTE'),text,date:document.getElementById('noteDate').value,level:document.getElementById('noteLevel').value,done:false,createdAt:new Date().toISOString()});saveState(true);openMorePanel('note')}
++    window.toggleNoteDone=function(id){const n=state.notes.find(x=>x.id===id);if(n)n.done=!n.done;saveState(true);openMorePanel('note')}
++    function renderNoteItems(){if(!state.notes.length)return'<div class="empty">尚無個人記事</div>';return [...state.notes].reverse().map(x=>`<div class="item"><div class="item-main"><strong style="${x.done?'text-decoration:line-through;opacity:.55':''}">${x.level==='important'?'★ ':''}${esc(x.text)}</strong><small>${fmtDate(x.date)}</small></div><button class="btn soft" onclick="toggleNoteDone('${x.id}')">${x.done?'還原':'完成'}</button></div>`).join('')}
++    function reminderPanel(){return `<div class="card"><div class="section-head" style="margin:0 0 12px"><h2>提醒事項</h2><span>提醒自己</span></div><div class="form"><div class="field"><label>提醒內容</label><input class="input" id="reminderTitle" placeholder="例如：記得帶診斷證明"></div><div class="field"><label>時間</label><input class="input" id="reminderAt" type="datetime-local"></div><button class="btn full" onclick="saveReminder()">新增提醒</button></div><div class="section-head"><h2>提醒清單</h2><span>${state.reminders.length} 筆</span></div><div class="list">${renderReminderItems()}</div></div>`}
++    window.saveReminder=function(){const title=document.getElementById('reminderTitle').value.trim(),at=document.getElementById('reminderAt').value;if(!title||!at)return;state.reminders.push({id:uid('REM'),title,at:new Date(at).toISOString(),done:false,createdAt:new Date().toISOString()});saveState(true);openMorePanel('reminder')}
++    window.toggleReminder=function(id){const r=state.reminders.find(x=>x.id===id);if(r)r.done=!r.done;saveState(true);openMorePanel('reminder')}
++    function renderReminderItems(){if(!state.reminders.length)return'<div class="empty">尚無提醒事項</div>';return [...state.reminders].sort((a,b)=>new Date(a.at)-new Date(b.at)).map(x=>`<div class="item"><div class="item-main"><strong style="${x.done?'text-decoration:line-through;opacity:.55':''}">${esc(x.title)}</strong><small>${fmtDate(x.at)} ${fmtTime(x.at)}</small></div><button class="btn soft" onclick="toggleReminder('${x.id}')">${x.done?'還原':'完成'}</button></div>`).join('')}
++    function teamPanel(){const isTeam=state.workspace&&state.workspace.type==='personal_team';return `<div class="card"><div class="section-head" style="margin:0 0 12px"><h2>平等團隊</h2><span>${isTeam?'無老闆模式':'尚未開啟'}</span></div>${!isTeam?`<div class="empty">目前是個人模式。建立平等團隊後，可用邀請碼讓同事加入，共享班表、請假時段與團隊提醒；薪資和私人記事預設不共享。</div><div class="actions"><button class="btn full" onclick="openWorkspaceModal()">建立平等團隊</button></div>`:`<div class="item"><div class="item-main"><strong>團隊代碼</strong><small>${esc(state.workspace.code)}</small></div><div class="item-side">${state.team.members.length} 人</div></div><div class="actions"><button class="btn" onclick="createInvite()">產生邀請碼</button><button class="btn soft" onclick="joinTeamPrompt()">輸入邀請碼</button></div><div class="section-head"><h2>成員</h2><span>個人方案各自獨立</span></div><div class="list">${renderMembers()}</div>`}</div>`}
++    function renderMembers(){if(!state.team.members.length)return'<div class="empty">尚無團隊成員</div>';return state.team.members.map(m=>`<div class="item"><div class="item-main"><strong>${esc(m.name||m.id)}</strong><small>${esc(m.role==='maintainer'?'空間維護者':'團隊成員')}</small></div><div class="item-side">${esc(m.plan||'Personal Free')}</div></div>`).join('')}
++    window.createInvite=function(){if(!state.workspace||state.workspace.type!=='personal_team')return;state.team.inviteCode='INV-'+Math.random().toString(36).slice(2,8).toUpperCase();saveState(true);alert('邀請碼：'+state.team.inviteCode);openMorePanel('team')}
++    window.joinTeamPrompt=function(){const code=prompt('輸入團隊邀請碼');if(!code)return;alert('邀請碼加入流程已建立，待雲端 API 啟用後會正式加入。')}
++
++    function renderAll(){renderHeader();renderToday();renderWeek();renderSchedule();renderClock();renderPay();if(document.querySelector('[data-page="more"]').classList.contains('active')){const panel=document.getElementById('morePanel');if(panel.dataset.type)openMorePanel(panel.dataset.type)}}
++    function renderHeader(){const ws=state.workspace;document.getElementById('workspaceName').textContent=ws?ws.name:'ANG HR Personal';document.getElementById('workspaceMeta').textContent=ws?(ws.type==='personal_team'?'平等團隊｜':'個人空間｜')+ws.code:'尚未建立個人空間';document.getElementById('personalPlan').textContent=state.modules.advancedPayroll||state.modules.advancedSchedule?'Personal 已加購':'Personal Free'}
++    function renderToday(){const today=todayISO();const shift=state.shifts.find(s=>s.date===today);const calc=calculatePayroll();document.getElementById('helloText').textContent=(state.user.name&&state.user.name!=='我'?state.user.name+'，':'')+'今天也辛苦了';document.getElementById('todayLine').textContent=shift?`${shift.workplace||'工作'}｜${shift.start}－${shift.end}`:'今天尚未安排班表';document.getElementById('metricShift').textContent=shift?shift.name:'休';document.getElementById('metricHours').textContent=calc.hours.toFixed(1)+'h';document.getElementById('metricPay').textContent=money(calc.estimate);const clocks=state.records.filter(r=>r.type==='clock'&&r.date===today);const last=clocks[clocks.length-1];document.getElementById('clockSummary').textContent=last?(last.clockType==='in'?'已上班':'已下班')+(last.manual?'｜補登':''):'今天尚未打卡';document.getElementById('clockTime').textContent=last?fmtTime(last.at):'--:--';const next=state.reminders.filter(r=>!r.done&&new Date(r.at)>=new Date()).sort((a,b)=>new Date(a.at)-new Date(b.at))[0];document.getElementById('nextReminderTitle').textContent=next?next.title:'—';document.getElementById('nextReminderMeta').textContent=next?fmtDate(next.at)+' '+fmtTime(next.at):'尚無提醒';document.getElementById('todayNotes').innerHTML=state.notes.filter(n=>!n.done).slice(-3).reverse().map(n=>`<div class="item"><div class="item-main"><strong>${esc(n.text)}</strong><small>${fmtDate(n.date)}</small></div><span class="badge">${n.level==='important'?'重要':'記事'}</span></div>`).join('')||'<div class="empty">尚無工作記事</div>';document.getElementById('recentRecords').innerHTML=[...state.records].reverse().slice(0,5).map(r=>`<div class="item"><div class="item-main"><strong>${esc(r.title||r.type)}</strong><small>${fmtDate(r.at||r.date)} ${fmtTime(r.at)}</small></div><div class="item-side">${r.manual?'補登':'已保存'}</div></div>`).join('')||'<div class="empty">尚無近期紀錄</div>'}
++    function renderWeek(){const bar=document.getElementById('weekBar');const now=new Date();const day=(now.getDay()+6)%7;const monday=new Date(now);monday.setDate(now.getDate()-day);bar.innerHTML='';for(let i=0;i<7;i++){const d=new Date(monday);d.setDate(monday.getDate()+i);const iso=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');const b=document.createElement('button');b.className='day'+(iso===selectedDate?' active':'');b.innerHTML=`<small>${['一','二','三','四','五','六','日'][i]}</small><b>${d.getDate()}</b>`;b.onclick=()=>{selectedDate=iso;renderWeek();renderSchedule()};bar.appendChild(b)}document.querySelectorAll('#scheduleModeSeg button').forEach(b=>b.classList.toggle('active',b.dataset.mode===state.settings.scheduleMode));document.getElementById('scheduleModeLabel').textContent=state.settings.scheduleMode==='month'?'月排班':'週排班'}
++    function renderSchedule(){const list=document.getElementById('scheduleList');const rows=state.shifts.filter(s=>state.settings.scheduleMode==='month'?s.date.slice(0,7)===selectedDate.slice(0,7):true).sort((a,b)=>a.date.localeCompare(b.date));list.innerHTML=rows.map(s=>`<div class="item"><div class="item-main"><strong>${fmtDate(s.date)}｜${esc(s.name)}</strong><small>${s.start}－${s.end}${s.workplace?'｜'+esc(s.workplace):''}</small></div><div class="item-side">已確認</div></div>`).join('')||'<div class="empty">尚未建立班表</div>'}
++    function renderClock(){const rows=state.records.filter(r=>r.type==='clock').slice().reverse();document.getElementById('clockList').innerHTML=rows.map(r=>`<div class="item"><div class="item-main"><strong>${r.clockType==='in'?'上班':'下班'}${r.manual?'（補登）':''}</strong><small>${fmtDate(r.at)} ${fmtTime(r.at)}${r.note?'｜'+esc(r.note):''}</small></div><div class="item-side">${r.manual?'自行補登':'個人紀錄'}</div></div>`).join('')||'<div class="empty">尚無打卡紀錄</div>'}
++    function calculatePayroll(){let hours=0;const ins={};state.records.filter(r=>r.type==='clock').sort((a,b)=>new Date(a.at)-new Date(b.at)).forEach(r=>{if(r.clockType==='in')ins[r.id]=r;else{const i=r.pairId?ins[r.pairId]:Object.values(ins).find(x=>x.date===r.date&&!x.used);if(i){hours+=hoursBetween(i.at,r.at);i.used=true}}});let estimate=0;if(state.settings.payType==='hourly')estimate=hours*(Number(state.settings.payRate)||0);if(state.settings.payType==='daily'){const days=new Set(state.records.filter(r=>r.type==='clock'&&r.clockType==='in').map(r=>r.date)).size;estimate=days*(Number(state.settings.payRate)||0)}if(state.settings.payType==='monthly')estimate=Number(state.settings.payRate)||0;const last=state.pays[state.pays.length-1]||{};return{hours,estimate,actual:Number(last.actual)||0,period:currentPeriodLabel()}}
++    function currentPeriodLabel(){const map={weekly:'本週',biweekly:'本雙週',semimonthly:'本半月',monthly:'本月'};return map[state.settings.payFrequency]||'本期'}
++    function renderPay(){const c=calculatePayroll(),last=state.pays[state.pays.length-1]||{};const f={weekly:'週領',biweekly:'雙週領',semimonthly:'半月領',monthly:'月領'}[state.settings.payFrequency]||'未設定';const t={hourly:'時薪',daily:'日薪',monthly:'月薪'}[state.settings.payType]||'未設定';document.getElementById('payCycleText').textContent=f+'｜每期核對預估與實領';document.getElementById('payTypePill').textContent=t+' '+money(state.settings.payRate);document.getElementById('payEstimate').textContent=money(c.estimate);document.getElementById('payActual').textContent=money(last.actual||0);document.getElementById('payDiff').textContent=money((last.actual||0)-c.estimate);document.getElementById('normalHours').textContent=c.hours.toFixed(1)+'h';document.getElementById('otHours').textContent='0h';document.getElementById('payRuleText').textContent=t+' '+money(state.settings.payRate)+'｜'+f+'｜發薪日 '+state.settings.payday+' 日';document.getElementById('payHistory').innerHTML=[...state.pays].reverse().map(p=>`<div class="item"><div class="item-main"><strong>${esc(p.period)}</strong><small>預估 ${money(p.estimate)}｜實領 ${money(p.actual)}${p.note?'｜'+esc(p.note):''}</small></div><div class="item-side">差額 ${money((p.actual||0)-(p.estimate||0))}</div></div>`).join('')||'<div class="empty">尚無實領薪資紀錄</div>'}
++
++    async function syncState(){if(!API||!state.workspace){setSync('本機模式','');return}setSync('同步中','');try{const payload={action:'savePersonalWorkspaceState',user_id:state.user.id,workspace:state.workspace,settings:state.settings,modules:state.modules,team:state.team,state_json:JSON.stringify(state)};const res=await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)}).then(r=>r.json());if(res&&res.ok)setSync('已同步','ok');else setSync('本機已保存','error')}catch(e){setSync('本機已保存','error')}}
++    function setSync(text,cls){const el=document.getElementById('syncState');el.innerHTML=`<i class="sync-dot ${cls||''}"></i> ${text}`}
++    async function loadCloud(){if(!API)return;try{const url=API+'?action=getPersonalBootstrapData&user_id='+encodeURIComponent(state.user.id)+'&device_id='+encodeURIComponent(getDeviceId())+'&_ts='+Date.now();const res=await fetch(url,{cache:'no-store'}).then(r=>r.json());if(res&&res.ok&&res.state_json&&!state.workspace){const cloud=JSON.parse(res.state_json);Object.assign(state,cloud);saveState(false);setSync('已同步','ok')}}catch(e){}}
++    function tick(){const d=new Date();document.getElementById('liveClock').textContent=d.toLocaleTimeString('zh-TW',{hour12:false});document.getElementById('liveDate').textContent=d.toLocaleDateString('zh-TW',{year:'numeric',month:'long',day:'numeric',weekday:'long'})}
++    function init(){document.body.dataset.theme=localStorage.getItem(THEME_KEY)||'dark';tick();setInterval(tick,1000);renderAll();loadCloud();if(!state.workspace)setTimeout(openWorkspaceModal,280)}
++    init();
++  })();
++  </script>
++</body>
++</html>
+-- 
+2.47.3
+
+
+From 17fdd7d9f539de6e727d1af3d850fc739b5900dd Mon Sep 17 00:00:00 2001
+From: OpenAI Codex <noreply@openai.com>
+Date: Tue, 7 Jul 2026 01:04:50 +0000
+Subject: [PATCH 2/2] Document Personal Creator P0 rollout
+
+---
+ README_PERSONAL_CREATOR_P0.txt | 39 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 39 insertions(+)
+ create mode 100644 README_PERSONAL_CREATOR_P0.txt
+
+diff --git a/README_PERSONAL_CREATOR_P0.txt b/README_PERSONAL_CREATOR_P0.txt
+new file mode 100644
+index 0000000..61ce264
+--- /dev/null
++++ b/README_PERSONAL_CREATOR_P0.txt
+@@ -0,0 +1,39 @@
++ANG HR｜Personal + Creator P0
++日期：2026-07-07
++
++本包以 GitHub main 最新基準 eb5a5010368e32d4043cac836a0fd8515c9c266f 製作。
++
++已修改／新增：
++1. index.html
++   - 修正 iPhone / App 底部「選擇入口」卡片裁切。
++   - 新增 Personal 個人／平等團隊入口。
++   - 新增 Personal 與資料自管版方案卡。
++   - 平台 Creator 驗證成功改進 creator.html。
++
++2. personal.html
++   - 個人模式與無老闆平等團隊共用單頁。
++   - 今日、班表、打卡、請假紀錄、薪資、記事、提醒、個人設定。
++   - 週排／月排、週領／雙週／半月／月領。
++   - 個人模組權限跟帳號，不綁整個團隊。
++
++3. creator.html
++   - 平台 Creator 總覽。
++   - 正式公司、Personal 個人、Personal 團隊、方案模組統計。
++   - 品牌 → 經營主體 → 分店 → 使用者分層。
++   - 同名店不依名稱合併，一律依 brand_id / organization_id / branch_id / workspace_id 判斷。
++
++4. config.js / app.html / app-core.js
++   - App shell 固定使用 GitHub app.html。
++   - Personal / Creator 路由。
++   - no-cache 版本控制。
++
++5. GAS/程式碼.js
++   - 新增 PersonalWorkspaces、Brands、Organizations、Branches 表頭。
++   - 新增 getPersonalBootstrapData。
++   - 新增 savePersonalWorkspaceState。
++   - 新增 getCreatorPlatformOverview。
++
++注意：
++- GitHub 前端檔案合併後即可由 GitHub Pages 更新。
++- GAS/程式碼.js 合併後仍需 clasp push 或在 Apps Script 重新部署新版 Web App。
++- 目前最新 Git 包內沒有 Android / iOS 原生專案，因此本包完成的是 GitHub 前端 App shell 串接，不含重新編譯 APK / IPA。
+-- 
+2.47.3
+

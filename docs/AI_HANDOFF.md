@@ -2,63 +2,56 @@
 
 ## 目前任務
 
-P1｜入口員工登入改為「先鎖定公司／開通碼，再做 Email 快速驗證」＋方向判斷手勢
+P0-2｜建立前後端 API action 對照表｜依 PR review 修正 V28 router 判定
 
 ## 本次是否修改檔案
 
-有。只修改入口登入前端、GAS 登入 action 與交接文件；未修改 admin.html、employee.html、register.html、Auth.js、Company.js 或其他正式流程。
+只新增 / 更新文件，不修改正式程式檔案。
 
 ## 修改檔案清單
 
-- index.html
-- GAS/程式碼.js
 - docs/AI_HANDOFF.md
+- docs/API_ACTION_MATRIX.md
 
 ## 完成內容
 
-- 移除員工登入畫面的「員工編號」輸入欄位。
-- 員工登入第一階段只輸入「公司代碼／開通碼」。
-- 按「確認」或在員工卡片往上拉時，呼叫 `prepareEmployeeEmailLogin`，先鎖定公司或開通資料。
-- 鎖定成功後才展開 Email 驗證區，並提供「重新輸入」。
-- 公司代碼登入改用「公司 + Email」尋找唯一人員資料；不再要求使用者手動輸入員工編號。
-- 開通碼登入先鎖定對應員工，但仍要求輸入人員資料 Email 完成驗證。
-- 新增 `login_context_id` 與 `pending_login_id`，以 CacheService 暫存 10 分鐘，驗證時不再重掃公司與人員範圍。
-- Email 驗證碼改為快速登入專用快取；同一公司與 Email 60 秒內不可重寄，一天最多 5 次。
-- 驗證成功後才建立 session；首次開通在驗證成功後才消耗開通碼並綁定裝置。
-- `prepareEmployeeEmailLogin`、`requestEmployeeEmailLoginCode`、`verifyEmployeeEmailCodeAndLogin` 不再每次重跑 `initializeSystem_()`，降低登入前置等待。
-- 一次性連結會自動帶入開通碼並執行第一階段鎖定；若連結帶 Email 也會自動填入。
-- 修正卡片垂直手勢方向：收合時往上拉才展開；展開後繼續往上改為捲動卡片內內容，不再誤判成關閉。
-- 展開後若內容尚未回到頂端，往下只會先捲回頂端；必須在內容頂端再次往下拉，才會收回卡片。
-- 左右手勢仍固定一次只切換一張卡片，不會因為內文上下捲動而跳頁。
-- 已完成 index 內嵌 JavaScript 與 GAS JavaScript 語法檢查。
+- 依 Copilot review 重新檢查 GAS/程式碼.js 後段。
+- 確認 GAS/程式碼.js 後段存在「ANG HR System｜V28 相容補強層」，且最後有效 handleApi_ 已支援多數 admin / employee action。
+- 修正 docs/API_ACTION_MATRIX.md：不再把 getAdminBootstrapData、getManagerBootstrapData、getCreatorBootstrapData、adminSetReviewStatus、employeeBootstrap、employeeClock、employeeLeave、employeeClockFix、employeeUpload、angGetPermissionSnapshot 等誤列為未接 router。
+- 將問題分類改為：已接 router 但需補正式資料寫入 / 權限檢查 / 真實資料來源，以及仍未接 router 的 action。
+- 更新 google.script.run 轉 fetch 風險段落，只把真正未接 router 的方法列為未知 action 風險。
+- 本次未修改 index.html、admin.html、employee.html、register.html、app-core.js、config.js、ang-frontend-api.js 或 GAS/ 內正式程式檔。
 
 ## 發現問題
 
-- 目前主要登入資料仍來自平台 `Companies` / `Employees`，舊資料不存在平台表時會回退查公司人員表，回退路徑仍可能較慢。
-- 同一公司若有兩筆人員共用同一 Email，系統會拒絕登入並要求管理員整理資料，避免登入到錯誤員工。
-- 一般公司代碼登入仍受裝置綁定限制；未完成首次開通者必須使用開通碼。
-- `native-google-bridge.js` 仍是 safe-isolation 版本，本次沒有恢復原生 Google / LINE bridge。
-- P0-2 盤點中列出的正式寫入、權限快照、註冊 alias 等問題仍未在本次處理。
+- P0：angGetPermissionSnapshot 已接 router，但 apiPermissionSnapshotV30_ 仍需檢查 session gate、device gate、平台 Creator 與公司 Owner 分離、companies / plan / billing_status 回傳完整性。
+- P0：employeeLeave、employeeClockFix、employeeUpload、employeeMessage、employeePreselect 已接 router，但目前疑似多為 generic ok，相容但尚未正式寫入請假、補打卡、上傳、留言、預選休資料。
+- P0：getAdminBootstrapData、getManagerBootstrapData、getCreatorBootstrapData 已接 router，但目前多為最小空資料，需要補正式審核、發布、設定資料來源。
+- P0：adminSetReviewStatus 已接 router，但目前疑似 generic ok，需要補真正審核狀態寫入。
+- P0：register.html 使用 startFreeUseCompany / startFreeTrial，但最後有效 handleApi_ 尚未支援；正式註冊應統一到 registerCompany 或建立 alias。
+- P0：activateEmployee 已存在，但目前沒有建立 session；驗證成功後必須建立 session。
+- P1：saveClockLocationSettings、saveBrandSettings、savePreselectSettings、saveShiftTypes 被 admin.html 呼叫，但最後有效 handleApi_ 尚未支援。
+- P1：Auth.js 的 requestEmailVerifyCode / confirmEmailVerifyCode / verifyAuthToken 與主 router 命名不一致。
 
 ## 需要 Enden 確認
 
-- 員工登入是否固定只保留 Email 驗證，不再提供 Google / LINE。
-- 同一 Email 對應多名員工時，是否一律由管理員整理，不在前端再顯示人員選單。
-- 鎖定公司後顯示的公司名稱、方案與付款狀態是否要再縮減，只保留公司名稱。
+- 是否確認 P0-3A 改為「強化 angGetPermissionSnapshot / apiPermissionSnapshotV30_」，不是新增 router case。
+- 是否確認 employeeClock 作前端主名，後端保留 clockByButton / nfcClock 作相容入口。
+- 是否確認 register.html 的 startFreeUseCompany / startFreeTrial 只作 alias，不新增第二套註冊流程。
+- 是否要將 AGENTS.md 正式加入 repo，讓後續代理直接從 repo 讀規則。
 
 ## 下一步建議
 
-先部署 GAS/程式碼.js，再上傳 index.html 測試以下四條路徑：
+P0-3A｜只強化 angGetPermissionSnapshot / apiPermissionSnapshotV30_ 的正式權限快照。
 
-1. 公司代碼 → Email → 驗證碼 → 已綁定裝置登入。
-2. 開通碼 → Email → 驗證碼 → 首次綁定裝置。
-3. 一次性連結 → 自動鎖定 → Email 驗證。
-4. 錯誤公司、錯誤 Email、重複 Email、已使用開通碼的錯誤提示。
-5. 收合卡片往上展開；展開後連續往上可滑到註冊／底部內容且不會關閉。
-6. 內文不在頂端時往下只回捲；回到頂端後再往下才收回卡片。
-7. 左右各滑一次只切換一張卡片。
+建議 P0-3A 影響檔案只列為：
 
-完成測試後停止，不自行進入下一個 P0 / P1 任務。
+- GAS/程式碼.js
+- docs/AI_HANDOFF.md
+
+P0-3A 不處理 employeeBootstrap、admin bootstrap、employeeLeave、employeeUpload、審核寫入或方案設定，避免一次大改。
+
+完成後停止，等待 Enden 確認是否進 P0-3B。
 
 ## 補充盤點（不改程式）：左右留白 / 頁面邊界
 
