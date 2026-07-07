@@ -10,6 +10,7 @@
   var GAS_API_URL = 'https://script.google.com/macros/s/AKfycbzNycUTGQG0gqgb8B6F7tndEhRXU7GAiKFFWZr0e8sDwL2kXU5tBGLlJR_iBdX7SCnH/exec';
   var GOOGLE_CLIENT_ID = '660707205594-74rvsq9s1h87v1s5pi9nvtms1e4qipat.apps.googleusercontent.com';
   var LINE_CHANNEL_ID = '2010402308';
+  var BUILD_VERSION = '20260707-personal-creator-p0';
 
   function cleanBase(url){
     return String(url || '').trim().replace(/\/+$/, '');
@@ -39,12 +40,19 @@
     indexPage: 'index.html',
     employeePage: 'employee.html',
     adminPage: 'admin.html',
+    personalPage: 'personal.html',
+    creatorPage: 'creator.html',
+    appPage: 'app.html',
     indexPageUrl: joinUrl(frontendBaseUrl, 'index.html'),
     employeePageUrl: joinUrl(frontendBaseUrl, 'employee.html'),
     adminPageUrl: joinUrl(frontendBaseUrl, 'admin.html'),
+    personalPageUrl: joinUrl(frontendBaseUrl, 'personal.html'),
+    creatorPageUrl: joinUrl(frontendBaseUrl, 'creator.html'),
+    appShellUrl: joinUrl(frontendBaseUrl, 'app.html'),
 
-    // 保留 webAppUrl 這個舊名稱，但內容改為 GitHub 前端，不是 GAS。
-    webAppUrl: joinUrl(frontendBaseUrl, 'employee.html'),
+    // App 啟動入口固定走 GitHub app.html；GAS 僅作 API。
+    webAppUrl: joinUrl(frontendBaseUrl, 'app.html'),
+    buildVersion: BUILD_VERSION,
 
     googleClientId: GOOGLE_CLIENT_ID,
     googleWebClientId: GOOGLE_CLIENT_ID,
