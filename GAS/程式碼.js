@@ -29,10 +29,6 @@ const SHEET_CLOCK_RECORDS = 'ClockRecords';
 const SHEET_AUDIT_LOGS = 'AuditLogs';
 const SHEET_SESSIONS = 'Sessions';
 const SHEET_FREE_PRIVILEGES = 'FreePrivilegeCodes';
-const SHEET_PERSONAL_WORKSPACES = 'PersonalWorkspaces';
-const SHEET_BRANDS = 'Brands';
-const SHEET_ORGANIZATIONS = 'Organizations';
-const SHEET_BRANCHES = 'Branches';
 
 const DATA_UPLOAD_DEFAULT_SPREADSHEET_ID = DEFAULT_ANG_HR_DB_ID;
 const DATA_UPLOAD_DEFAULT_ROOT_FOLDER_ID = '19K_Vo9CF7_VVyy87JANn8Dt9133Wo_Zp';
@@ -72,28 +68,6 @@ HEADERS[SHEET_SESSIONS] = [
 ];
 HEADERS[SHEET_FREE_PRIVILEGES] = [
   'privilege_id', 'owner_id', 'issued_by', 'issued_to_email', 'note', 'status', 'created_at', 'used_at', 'used_company_id'
-];
-
-HEADERS[SHEET_PERSONAL_WORKSPACES] = [
-  'workspace_id', 'workspace_code', 'workspace_type', 'display_name',
-  'owner_user_id', 'owner_name', 'owner_email', 'device_id',
-  'plan', 'plan_label', 'modules_json', 'cloud_active',
-  'team_json', 'state_json', 'workplace_count', 'member_count',
-  'maintainer_name', 'member_names', 'invite_status', 'team_modules',
-  'company_conversion_status', 'created_at', 'updated_at', 'status'
-];
-HEADERS[SHEET_BRANDS] = [
-  'brand_id', 'brand_name', 'status', 'created_at', 'updated_at', 'note'
-];
-HEADERS[SHEET_ORGANIZATIONS] = [
-  'organization_id', 'organization_name', 'brand_id', 'brand_name',
-  'owner_account_id', 'ownership_mode', 'billing_owner_id', 'status',
-  'created_at', 'updated_at', 'note'
-];
-HEADERS[SHEET_BRANCHES] = [
-  'branch_id', 'branch_name', 'organization_id', 'organization_name',
-  'brand_id', 'brand_name', 'company_id', 'manager_user_id', 'address',
-  'status', 'created_at', 'updated_at', 'note'
 ];
 
 HEADERS[SHEET_COMPANY_UPLOAD_AUTH] = [
@@ -3660,18 +3634,28 @@ function runCleanupNowV26() {
  ************************************************************/
 function handleApi_(action, payload, callback) {
   try {
-    initializeSystem_();
     action = String(action || (payload && payload.action) || '').trim();
     payload = payload || {};
+
+    // 登入前置與 Email 驗證屬於高頻輕量 action。
+    // 正式資料表已部署完成時，不應每一次都重跑 initializeSystem_()。
+    // 這可避免登入前先花大量時間檢查／補建所有工作表。
+    var fastLoginActionsV35 = {
+      prepareEmployeeEmailLogin: true,
+      requestEmployeeEmailLoginCode: true,
+      verifyEmployeeEmailCodeAndLogin: true
+    };
+    if (!fastLoginActionsV35[action]) initializeSystem_();
+
     let result;
     switch (action) {
       case 'ping': result = apiPing_(payload); break;
       case 'getPlans': result = apiGetPlans_(); break;
       case 'requestEmailCode': result = apiRequestEmailCode_(payload); break;
       case 'requestCompanySignupEmailVerification': result = apiRequestCompanySignupEmailVerificationV28_(payload); break;
-      case 'requestAdminLoginEmailVerification': result = apiRequestAdminLoginEmailVerificationV28_(payload); break;
+      case 'requestAdminLoginEmailVerification': result = apiRequestAdminLoginEmailVerificationV34_(payload); break;
       case 'verifyEmailCode': result = apiVerifyEmailCode_(payload); break;
-      case 'verifyAdminEmailCodeAndLogin': result = apiVerifyAdminEmailCodeAndLoginV28_(payload); break;
+      case 'verifyAdminEmailCodeAndLogin': result = apiVerifyAdminEmailCodeAndLoginV34_(payload); break;
       case 'verifyGoogleCredential': result = apiVerifyGoogleCredential_(payload); break;
       case 'verifyNativeGoogleIdToken': result = apiVerifyNativeGoogleIdToken_(payload); break;
       case 'verifyNativeLineIdToken': result = apiVerifyNativeLineIdToken_(payload); break;
@@ -3682,6 +3666,9 @@ function handleApi_(action, payload, callback) {
       case 'activateEmployeeByVerifiedAuth':
       case 'employeeActivateByVerifiedAuth': result = apiActivateEmployeeByVerifiedAuth_(payload); break;
       case 'verifyEmployeeSession': result = apiVerifyEmployeeSessionV28_(payload); break;
+      case 'prepareEmployeeEmailLogin': result = apiPrepareEmployeeEmailLoginV35_(payload); break;
+      case 'requestEmployeeEmailLoginCode': result = apiRequestEmployeeEmailLoginCodeV35_(payload); break;
+      case 'verifyEmployeeEmailCodeAndLogin': result = apiVerifyEmployeeEmailCodeAndLoginV35_(payload); break;
       case 'platformCreatorEmailStart':
       case 'platformCreatorEmailSend':
       case 'requestPlatformCreatorEmailLinks': result = apiPlatformCreatorEmailStart_(payload); break;
@@ -3718,9 +3705,6 @@ function handleApi_(action, payload, callback) {
       case 'getManagerBootstrapData': result = apiManagerBootstrapV28_(payload); break;
       case 'getAdminBootstrapData': result = apiAdminBootstrapV28_(payload); break;
       case 'getCreatorBootstrapData': result = apiCreatorBootstrapV28_(payload); break;
-      case 'getPersonalBootstrapData': result = apiGetPersonalBootstrapDataP0_(payload); break;
-      case 'savePersonalWorkspaceState': result = apiSavePersonalWorkspaceStateP0_(payload); break;
-      case 'getCreatorPlatformOverview': result = apiGetCreatorPlatformOverviewP0_(payload); break;
       case 'adminSetReviewStatus': result = apiGenericOkV28_('審核狀態已更新', payload); break;
       case 'generateSalaryDraft': result = apiGenerateSalaryDraftV28_(payload); break;
       case 'saveSalaryReview': result = apiGenericOkV28_('薪資審核已送出', payload, { total:0 }); break;
@@ -5424,399 +5408,640 @@ function resetPlatformCreatorVerifySuccessAndSlideV39() {
 }
 
 
+
 /************************************************************
- * ANG HR System｜Personal / Creator P0
- * Personal：個人模式與無老闆平等團隊共用一個 workspace。
- * Creator：以品牌 → 經營主體 → 分店 → 使用者分層統計，
- *          名稱只做顯示，所有歸屬一律依 ID 判定。
+ * ANG HR System｜V35 公司鎖定 + Email 快速登入
+ *
+ * 流程：
+ * 1. prepareEmployeeEmailLogin：只用公司代碼／開通碼鎖定登入範圍。
+ * 2. requestEmployeeEmailLoginCode：用鎖定內容 + Email 找到唯一人員，寄出驗證碼。
+ * 3. verifyEmployeeEmailCodeAndLogin：只讀 pending_login_id，驗證後建立 session。
+ *
+ * 速度重點：
+ * - 三個 action 不重跑 initializeSystem_()。
+ * - 公司鎖定與待登入資料使用 CacheService 暫存 10 分鐘。
+ * - 驗證碼直接存快取，不在驗證時重新掃描整張 EmailVerifications。
  ************************************************************/
-function personalNowP0_() {
-  return new Date().toISOString();
+var ANG_EMPLOYEE_LOGIN_CONTEXT_PREFIX_V35 = 'ANG_EMP_LOGIN_CTX_V35_';
+var ANG_EMPLOYEE_LOGIN_PENDING_PREFIX_V35 = 'ANG_EMP_LOGIN_PENDING_V35_';
+var ANG_EMPLOYEE_LOGIN_COOLDOWN_PREFIX_V35 = 'ANG_EMP_LOGIN_COOLDOWN_V35_';
+var ANG_EMPLOYEE_LOGIN_CONTEXT_TTL_V35 = 10 * 60;
+var ANG_EMPLOYEE_LOGIN_CODE_TTL_V35 = 10 * 60;
+var ANG_EMPLOYEE_LOGIN_RESEND_SECONDS_V35 = 60;
+var ANG_EMPLOYEE_LOGIN_DAILY_LIMIT_V35 = 5;
+
+function employeeLoginCacheV35_() {
+  return CacheService.getScriptCache();
 }
 
-function personalJsonP0_(value, fallback) {
-  if (value === null || value === undefined || value === '') return fallback;
-  if (typeof value === 'object') return value;
-  try { return JSON.parse(String(value)); } catch (err) { return fallback; }
+function employeeLoginUuidV35_() {
+  return Utilities.getUuid().replace(/-/g, '') + String(Date.now());
 }
 
-function personalStringifyP0_(value, fallback) {
-  try { return JSON.stringify(value === undefined ? fallback : value); }
-  catch (err) { return JSON.stringify(fallback); }
+function employeeLoginCachePutV35_(prefix, id, data, ttlSeconds) {
+  employeeLoginCacheV35_().put(prefix + id, JSON.stringify(data || {}), ttlSeconds || ANG_EMPLOYEE_LOGIN_CONTEXT_TTL_V35);
 }
 
-function personalEnabledModulesP0_(modules) {
-  modules = personalJsonP0_(modules, {}) || {};
-  var out = [];
-  Object.keys(modules).forEach(function(key) {
-    if (modules[key] === true || modules[key] === 1 || String(modules[key]).toLowerCase() === 'true') out.push(key);
-  });
-  return out;
+function employeeLoginCacheGetV35_(prefix, id) {
+  id = normalize_(id || '');
+  if (!id) return null;
+  var raw = employeeLoginCacheV35_().get(prefix + id);
+  if (!raw) return null;
+  try { return JSON.parse(raw); } catch (err) { return null; }
 }
 
-function personalWorkspaceRowP0_(payload, existing) {
+function employeeLoginCacheRemoveV35_(prefix, id) {
+  id = normalize_(id || '');
+  if (!id) return;
+  employeeLoginCacheV35_().remove(prefix + id);
+}
+
+function employeeLoginPropertyKeyV35_(prefix, value) {
+  return prefix + hash_(String(value || '')).slice(0, 40);
+}
+
+function employeeLoginCompanyActiveV35_(company) {
+  if (!company) return false;
+  var status = normalizeLower_(company.status || 'active');
+  return ['deleted', 'disabled', 'inactive', '停用', '已刪除'].indexOf(status) < 0;
+}
+
+function getCompanyForEmployeeLoginV35_(companyId) {
+  companyId = normalizeUpper_(companyId || '');
+  if (!companyId) return null;
+  var cacheKey = 'ANG_EMP_LOGIN_COMPANY_V35_' + companyId;
+  var cache = employeeLoginCacheV35_();
+  var raw = cache.get(cacheKey);
+  if (raw) {
+    try { return JSON.parse(raw); } catch (err) {}
+  }
+  var company = findCompany_(companyId);
+  if (company) cache.put(cacheKey, JSON.stringify(company), 5 * 60);
+  return company;
+}
+
+function listEmployeesByEmailInCompanyV35_(companyId, email) {
+  companyId = normalizeUpper_(companyId || '');
+  email = normalizeEmail_(email || '');
+  if (!companyId || !email) return [];
+
+  var found = [];
+  var seen = {};
+  function addPerson(person) {
+    person = person || {};
+    var employeeId = normalizeUpper_(person.employee_id || person.id || person['員工ID'] || '');
+    var personEmail = normalizeEmail_(person.email || person.Email || person['Email'] || '');
+    if (!employeeId || personEmail !== email || seen[employeeId]) return;
+    seen[employeeId] = true;
+    found.push(normalizeCompanyPersonRowV31_(person, companyId));
+  }
+
+  // 先查平台 Employees；一般登入大多可在這一次完成。
+  var masterRows = sheetToObjects_(getSheet_(SHEET_EMPLOYEES));
+  for (var i = 0; i < masterRows.length; i++) {
+    var row = masterRows[i] || {};
+    if (normalizeUpper_(row.company_id || '') !== companyId) continue;
+    addPerson(row);
+  }
+  if (found.length) return found;
+
+  // 舊資料或公司分流資料才回退查公司表。
+  var sh = getCompanyPersonSheetV31_(companyId, false);
+  if (!sh) return found;
+  var rows = sheetToObjects_(sh);
+  for (var j = 0; j < rows.length; j++) addPerson(rows[j]);
+  return found;
+}
+
+function apiPrepareEmployeeEmailLoginV35_(payload) {
   payload = payload || {};
-  existing = existing || {};
-  var workspace = personalJsonP0_(payload.workspace, {}) || {};
-  var settings = personalJsonP0_(payload.settings, {}) || {};
-  var modules = personalJsonP0_(payload.modules, {}) || {};
-  var team = personalJsonP0_(payload.team, {}) || {};
-  var state = personalJsonP0_(payload.state_json, null);
-  if (!state && typeof payload.state === 'object') state = payload.state;
+  var rawKey = normalizeUpper_(
+    payload.company_or_code || payload.login_key || payload.activation_code ||
+    payload.one_time_token || payload.company_id || payload.company || payload.companyCode || ''
+  );
+  var deviceId = normalize_(payload.device_id || '');
+  if (!rawKey) return fail_('請輸入公司代碼或開通碼');
 
-  var workspaceType = normalizeLower_(workspace.type || workspace.workspace_type || payload.workspace_type || existing.workspace_type || 'personal_solo');
-  if (workspaceType !== 'personal_team') workspaceType = 'personal_solo';
-  var userId = normalizeUpper_(payload.user_id || payload.userId || payload.employee_id || payload.id || existing.owner_user_id || '');
-  var deviceId = normalize_(payload.device_id || payload.deviceId || existing.device_id || '');
-  if (!userId) userId = 'PUSER-' + (deviceId ? deviceId.replace(/[^A-Za-z0-9]/g, '').slice(-12).toUpperCase() : Utilities.getUuid().replace(/-/g, '').slice(0, 12).toUpperCase());
+  var mode = 'login';
+  var company = getCompanyForEmployeeLoginV35_(rawKey);
+  var companyId = '';
+  var companyName = '';
+  var employee = null;
+  var employeeId = '';
+  var email = '';
+  var emailMasked = '';
 
-  var workspaceId = normalizeUpper_(workspace.id || workspace.workspace_id || payload.workspace_id || existing.workspace_id || '');
-  if (!workspaceId) workspaceId = 'WS-' + Utilities.getUuid().replace(/-/g, '').slice(0, 16).toUpperCase();
-  var prefix = workspaceType === 'personal_team' ? 'PT' : 'P';
-  var workspaceCode = normalizeUpper_(workspace.code || workspace.workspace_code || payload.workspace_code || existing.workspace_code || '');
-  if (!workspaceCode) workspaceCode = prefix + Utilities.getUuid().replace(/-/g, '').slice(0, 8).toUpperCase();
-
-  var members = Array.isArray(team.members) ? team.members : [];
-  if (workspaceType === 'personal_team' && !members.length) {
-    members.push({ id:userId, name:payload.owner_name || payload.user_name || '我', role:'maintainer', plan:'Personal Free' });
-    team.members = members;
-  }
-  var memberNames = members.map(function(member) {
-    return normalize_(member && (member.name || member.id || member.user_id) || '');
-  }).filter(Boolean);
-  var maintainer = members.filter(function(member) {
-    return normalizeLower_(member && member.role || '') === 'maintainer';
-  })[0] || members[0] || {};
-
-  var stateJson = personalStringifyP0_(state || {
-    workspace: workspace,
-    settings: settings,
-    modules: modules,
-    team: team
-  }, {});
-  if (stateJson.length > 49000) throw new Error('Personal 雲端狀態已超過單筆同步上限，資料仍保留在本機；請先匯出或清理舊紀錄。');
-
-  var enabledModules = personalEnabledModulesP0_(modules);
-  var plan = enabledModules.length ? 'personal_plus' : 'personal_free';
-  var planLabel = enabledModules.length ? 'Personal 已加購' : 'Personal Free';
-  var now = personalNowP0_();
-  var workplaces = state && Array.isArray(state.workplaces) ? state.workplaces.length : Number(payload.workplace_count || existing.workplace_count || 1);
-
-  return {
-    workspace_id: workspaceId,
-    workspace_code: workspaceCode,
-    workspace_type: workspaceType,
-    display_name: normalize_(workspace.name || workspace.display_name || payload.display_name || existing.display_name || '我的工作空間'),
-    owner_user_id: userId,
-    owner_name: normalize_(payload.owner_name || payload.user_name || (state && state.user && state.user.name) || existing.owner_name || '我'),
-    owner_email: normalizeLower_(payload.owner_email || payload.email || existing.owner_email || ''),
-    device_id: deviceId,
-    plan: plan,
-    plan_label: planLabel,
-    modules_json: personalStringifyP0_(modules, {}),
-    cloud_active: settings.cloud === true || payload.cloud_active === true ? 'yes' : 'no',
-    team_json: personalStringifyP0_(team, {}),
-    state_json: stateJson,
-    workplace_count: Math.max(1, Number(workplaces || 1)),
-    member_count: workspaceType === 'personal_team' ? members.length : 1,
-    maintainer_name: normalize_(maintainer.name || maintainer.id || ''),
-    member_names: memberNames.join('、'),
-    invite_status: normalize_(team.inviteCode || team.invite_code || '') ? 'active' : 'closed',
-    team_modules: normalize_(payload.team_modules || existing.team_modules || '基本團隊'),
-    company_conversion_status: normalize_(payload.company_conversion_status || existing.company_conversion_status || 'not_requested'),
-    created_at: existing.created_at || workspace.createdAt || workspace.created_at || now,
-    updated_at: now,
-    status: normalizeLower_(payload.status || existing.status || 'active') || 'active'
-  };
-}
-
-function personalFindRowP0_(sheet, payload) {
-  var rows = sheetToObjects_(sheet);
-  var workspace = personalJsonP0_(payload && payload.workspace, {}) || {};
-  var workspaceId = normalizeUpper_(payload && (payload.workspace_id || workspace.id || workspace.workspace_id) || '');
-  var workspaceCode = normalizeUpper_(payload && (payload.workspace_code || workspace.code || workspace.workspace_code) || '');
-  var userId = normalizeUpper_(payload && (payload.user_id || payload.userId || payload.employee_id || payload.id) || '');
-  for (var i = 0; i < rows.length; i++) {
-    var row = rows[i];
-    if (workspaceId && normalizeUpper_(row.workspace_id || '') === workspaceId) return { index:i + 2, row:row };
-    if (workspaceCode && normalizeUpper_(row.workspace_code || '') === workspaceCode) return { index:i + 2, row:row };
-  }
-  for (var j = 0; j < rows.length; j++) {
-    var fallback = rows[j];
-    if (userId && normalizeUpper_(fallback.owner_user_id || '') === userId && normalizeLower_(fallback.workspace_type || '') === 'personal_solo') {
-      return { index:j + 2, row:fallback };
+  if (company) {
+    if (!employeeLoginCompanyActiveV35_(company)) return fail_('此公司目前未啟用');
+    companyId = normalizeUpper_(company.company_id || rawKey);
+    companyName = normalize_(company.company_name || company.name || companyId);
+  } else {
+    mode = 'activation';
+    employee = findEmployeeByActivationCodeV34_(rawKey, '');
+    if (!employee) return fail_('開通碼錯誤，或找不到對應員工資料');
+    if (isActivationUsedV34_(employee.token_used || employee['綁定狀態'])) {
+      return fail_('此開通碼已使用，請改用公司代碼登入或聯絡管理員重發');
     }
+    if (!isEmployeeActiveV31_(employee.status || 'active')) return fail_('此員工帳號已停用');
+
+    companyId = normalizeUpper_(employee.company_id || '');
+    employeeId = normalizeUpper_(employee.employee_id || employee.id || '');
+    company = getCompanyForEmployeeLoginV35_(companyId) || {};
+    if (!companyId || !employeeId) return fail_('開通碼對應的人員資料不完整');
+    if (company && !employeeLoginCompanyActiveV35_(company)) return fail_('此公司目前未啟用');
+
+    companyName = normalize_(employee.company_name || company.company_name || companyId);
+    email = normalizeEmail_(employee.email || '');
+    if (!email) return fail_('此員工的人員資料尚未設定 Email，請聯絡管理員補上 Email');
+    emailMasked = maskEmailV34_(email);
   }
-  return null;
-}
 
-function personalWriteObjectP0_(sheet, rowNumber, obj) {
-  ensureHeader_(sheet, HEADERS[SHEET_PERSONAL_WORKSPACES]);
-  var lastCol = Math.max(sheet.getLastColumn(), HEADERS[SHEET_PERSONAL_WORKSPACES].length);
-  var headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0].map(function(h) { return String(h || '').trim(); });
-  var values = headers.map(function(header) {
-    return Object.prototype.hasOwnProperty.call(obj, header) ? obj[header] : '';
+  var contextId = employeeLoginUuidV35_();
+  var context = {
+    version: 'V35',
+    context_id: contextId,
+    mode: mode,
+    login_key: rawKey,
+    activation_code: mode === 'activation' ? rawKey : '',
+    company_id: companyId,
+    company_name: companyName,
+    plan: normalizeLower_(company && company.plan || employee && employee.plan || ''),
+    billing_status: normalizeLower_(company && (company.billing_status || company.payment_status) || employee && employee.billing_status || ''),
+    employee_id: employeeId,
+    employee_name: normalize_(employee && employee.name || ''),
+    email: email,
+    email_masked: emailMasked,
+    device_id: deviceId,
+    created_at: Date.now()
+  };
+  employeeLoginCachePutV35_(ANG_EMPLOYEE_LOGIN_CONTEXT_PREFIX_V35, contextId, context, ANG_EMPLOYEE_LOGIN_CONTEXT_TTL_V35);
+
+  return ok_({
+    message: mode === 'activation' ? '開通資料已鎖定，請輸入人員資料 Email 進行驗證' : '公司已鎖定，請輸入人員資料 Email',
+    login_context_id: contextId,
+    mode: mode,
+    company_id: companyId,
+    company_name: companyName,
+    plan: context.plan,
+    billing_status: context.billing_status,
+    employee_id: employeeId,
+    name: context.employee_name,
+    email_masked: emailMasked,
+    locked: true,
+    expires_in_seconds: ANG_EMPLOYEE_LOGIN_CONTEXT_TTL_V35
   });
-  if (rowNumber) sheet.getRange(rowNumber, 1, 1, values.length).setValues([values]);
-  else sheet.appendRow(values);
 }
 
-function apiSavePersonalWorkspaceStateP0_(payload) {
+function getEmployeeLoginContextV35_(payload) {
   payload = payload || {};
+  var contextId = normalize_(payload.login_context_id || payload.context_id || '');
+  var context = employeeLoginCacheGetV35_(ANG_EMPLOYEE_LOGIN_CONTEXT_PREFIX_V35, contextId);
+  if (context) return { ok:true, context_id:contextId, context:context };
+
+  // 相容舊前端：若仍直接傳公司代碼／開通碼，自動補做一次鎖定。
+  var rawKey = normalize_(payload.company_or_code || payload.login_key || payload.activation_code || payload.company_id || '');
+  if (!rawKey) return { ok:false, message:'登入鎖定已失效，請重新輸入公司代碼或開通碼' };
+  var prepared = apiPrepareEmployeeEmailLoginV35_(payload);
+  if (!prepared || !prepared.ok) return { ok:false, message:(prepared && prepared.message) || '無法鎖定登入資料' };
+  contextId = prepared.login_context_id;
+  context = employeeLoginCacheGetV35_(ANG_EMPLOYEE_LOGIN_CONTEXT_PREFIX_V35, contextId);
+  if (!context) return { ok:false, message:'登入鎖定建立失敗，請重試' };
+  return { ok:true, context_id:contextId, context:context };
+}
+
+function consumeEmployeeLoginDailyQuotaV35_(email, companyId) {
+  email = normalizeEmail_(email || '');
+  companyId = normalizeUpper_(companyId || '');
+  var dateKey = todayKey_();
+  var propKey = employeeLoginPropertyKeyV35_('ANG_EMP_LOGIN_DAY_V35_' + dateKey + '_', companyId + '|' + email);
+  var props = PropertiesService.getScriptProperties();
   var lock = LockService.getScriptLock();
-  lock.waitLock(15000);
+  lock.waitLock(5000);
   try {
-    var sheet = getSheet_(SHEET_PERSONAL_WORKSPACES);
-    var found = personalFindRowP0_(sheet, payload);
-    var row = personalWorkspaceRowP0_(payload, found ? found.row : null);
-    personalWriteObjectP0_(sheet, found ? found.index : null, row);
-    return ok_({
-      message: found ? 'Personal 空間已同步' : 'Personal 空間已建立並同步',
-      workspace_id: row.workspace_id,
-      workspace_code: row.workspace_code,
-      workspace_type: row.workspace_type,
-      updated_at: row.updated_at
-    });
+    var count = Number(props.getProperty(propKey) || 0);
+    if (count >= ANG_EMPLOYEE_LOGIN_DAILY_LIMIT_V35) {
+      return { ok:false, message:'今天此 Email 已寄送 5 次驗證碼，請明天再試或聯絡管理員' };
+    }
+    return { ok:true, property_key:propKey, count:count };
   } finally {
     lock.releaseLock();
   }
 }
 
-function personalUserCanReadP0_(row, userId) {
-  userId = normalizeUpper_(userId || '');
-  if (!userId) return false;
-  if (normalizeUpper_(row.owner_user_id || '') === userId) return true;
-  var team = personalJsonP0_(row.team_json, {}) || {};
-  var members = Array.isArray(team.members) ? team.members : [];
-  return members.some(function(member) {
-    return normalizeUpper_(member && (member.id || member.user_id || member.employee_id) || '') === userId;
-  });
+function commitEmployeeLoginDailyQuotaV35_(quota) {
+  if (!quota || !quota.property_key) return;
+  var props = PropertiesService.getScriptProperties();
+  var lock = LockService.getScriptLock();
+  lock.waitLock(5000);
+  try {
+    var count = Number(props.getProperty(quota.property_key) || 0);
+    props.setProperty(quota.property_key, String(count + 1));
+  } finally {
+    lock.releaseLock();
+  }
 }
 
-function apiGetPersonalBootstrapDataP0_(payload) {
+function apiRequestEmployeeEmailLoginCodeV35_(payload) {
   payload = payload || {};
-  var userId = normalizeUpper_(payload.user_id || payload.userId || payload.employee_id || payload.id || '');
-  if (!userId) return fail_('缺少 Personal 使用者 ID');
-  var rows = sheetToObjects_(getSheet_(SHEET_PERSONAL_WORKSPACES)).filter(function(row) {
-    return normalizeLower_(row.status || 'active') !== 'deleted' && personalUserCanReadP0_(row, userId);
-  });
-  rows.sort(function(a, b) { return String(b.updated_at || '').localeCompare(String(a.updated_at || '')); });
-  if (!rows.length) return ok_({ message:'尚未建立 Personal 空間', workspace:null, workspaces:[], state_json:'' });
-  var active = rows[0];
-  return ok_({
-    message: 'Personal 資料已載入',
-    workspace: {
-      id: active.workspace_id,
-      code: active.workspace_code,
-      type: active.workspace_type,
-      name: active.display_name
-    },
-    workspaces: rows.map(function(row) {
-      return {
-        workspace_id:row.workspace_id,
-        workspace_code:row.workspace_code,
-        workspace_type:row.workspace_type,
-        display_name:row.display_name,
-        plan:row.plan,
-        plan_label:row.plan_label,
-        updated_at:row.updated_at
-      };
-    }),
-    state_json: String(active.state_json || ''),
-    updated_at: active.updated_at
-  });
-}
+  var loaded = getEmployeeLoginContextV35_(payload);
+  if (!loaded.ok) return fail_(loaded.message);
+  var contextId = loaded.context_id;
+  var context = loaded.context || {};
+  var inputEmail = normalizeEmail_(payload.email || payload.employee_email || '');
+  if (!inputEmail) return fail_('請輸入人員資料 Email');
 
-function creatorNormalizeCompanyP0_(company, branchMap) {
-  company = company || {};
-  var companyId = normalizeUpper_(company.company_id || '');
-  var branches = branchMap[companyId] || [];
-  var organizationId = normalizeUpper_(company.organization_id || companyId);
-  return Object.assign({}, company, {
-    company_id: companyId,
-    brand_id: normalizeUpper_(company.brand_id || ''),
-    brand_name: normalize_(company.brand_name || ''),
-    organization_id: organizationId,
-    organization_name: normalize_(company.organization_name || company.company_name || companyId),
-    ownership_mode: normalizeLower_(company.ownership_mode || (branches.length > 1 ? 'same_owner_multi_branch' : 'independent_store')),
-    branch_count: Math.max(1, branches.length),
-    branch_names: branches.map(function(branch) { return branch.branch_name || branch.branch_id; }).join('、')
-  });
-}
+  var employee = null;
+  if (context.mode === 'activation') {
+    if (normalizeEmail_(context.email || '') !== inputEmail) return fail_('Email 與開通碼對應的人員資料不一致');
+    employee = findEmployee_(normalizeUpper_(context.company_id || ''), normalizeUpper_(context.employee_id || ''));
+    if (!employee) employee = findEmployeeByActivationCodeV34_(context.activation_code || context.login_key || '', context.employee_id || '');
+    if (!employee) return fail_('找不到開通碼對應的人員資料');
+  } else {
+    var matches = listEmployeesByEmailInCompanyV35_(context.company_id, inputEmail);
+    if (!matches.length) return fail_('此 Email 不在這間公司的人員資料中');
+    if (matches.length > 1) return fail_('此 Email 對應多筆人員資料，請聯絡管理員整理後再登入');
+    employee = matches[0];
+  }
 
-function creatorPersonalWorkspaceP0_(row) {
-  var modulesObject = personalJsonP0_(row.modules_json, {}) || {};
-  var modules = personalEnabledModulesP0_(modulesObject);
-  var team = personalJsonP0_(row.team_json, {}) || {};
-  var members = Array.isArray(team.members) ? team.members : [];
-  return Object.assign({}, row, {
-    modules: modules,
-    cloud_active: ['yes','true','1','active'].indexOf(normalizeLower_(row.cloud_active || '')) >= 0,
-    member_count: Number(row.member_count || (row.workspace_type === 'personal_team' ? members.length : 1)),
-    member_names: row.member_names || members.map(function(member){ return member.name || member.id || ''; }).filter(Boolean).join('、'),
-    team: team
-  });
-}
+  if (!isEmployeeActiveV31_(employee.status || 'active')) return fail_('此員工帳號已停用');
+  var employeeId = normalizeUpper_(employee.employee_id || employee.id || '');
+  if (!employeeId) return fail_('人員資料缺少員工編號，請聯絡管理員');
 
-function creatorRequirePlatformP0_(payload) {
-  var ctx = authContextV30_(payload || {});
-  if (normalizeUpper_(ctx.employee_id || '') !== 'ANG8963') return { ok:false, message:'只有 ANG8963 平台 Creator 可以查看全平台資料' };
-  if (normalizeRoleV30_(ctx.role || '', ctx.employee_id) !== 'Creator') return { ok:false, message:'平台 Creator 權限驗證失敗' };
-  if (!ctx.authenticated) return { ok:false, message:'Creator Session 已失效，請重新完成平台雙信箱驗證' };
-  return { ok:true, ctx:ctx };
-}
+  var cooldownKey = ANG_EMPLOYEE_LOGIN_COOLDOWN_PREFIX_V35 + hash_(context.company_id + '|' + inputEmail).slice(0, 40);
+  var cache = employeeLoginCacheV35_();
+  if (cache.get(cooldownKey)) return fail_('請等待 60 秒後再重新寄送驗證碼');
 
-function apiGetCreatorPlatformOverviewP0_(payload) {
-  var access = creatorRequirePlatformP0_(payload);
-  if (!access.ok) return fail_(access.message);
+  var quota = consumeEmployeeLoginDailyQuotaV35_(inputEmail, context.company_id);
+  if (!quota.ok) return fail_(quota.message);
 
-  var companiesRaw = sheetToObjects_(getSheet_(SHEET_COMPANIES)).filter(function(row) {
-    return normalizeLower_(row.status || 'active') !== 'deleted';
-  });
-  var employees = sheetToObjects_(getSheet_(SHEET_EMPLOYEES)).filter(function(row) {
-    return normalizeLower_(row.status || 'active') !== 'deleted';
-  });
-  var branchMap = {};
-  employees.forEach(function(emp) {
-    var companyId = normalizeUpper_(emp.company_id || '');
-    if (!companyId) return;
-    var branchId = normalizeUpper_(emp.branch_id || 'MAIN');
-    branchMap[companyId] = branchMap[companyId] || [];
-    if (!branchMap[companyId].some(function(branch){ return branch.branch_id === branchId; })) {
-      branchMap[companyId].push({
-        branch_id: branchId,
-        branch_name: normalize_(emp.branch_name || (branchId === 'MAIN' ? '主店' : branchId)),
-        company_id: companyId,
-        organization_id: companyId
-      });
-    }
+  var pendingId = employeeLoginUuidV35_();
+  var code = String(Math.floor(100000 + Math.random() * 900000));
+  var codeHash = hash_(pendingId + ':' + inputEmail + ':' + code);
+  var pending = {
+    version: 'V35',
+    pending_login_id: pendingId,
+    login_context_id: contextId,
+    mode: context.mode,
+    login_key: context.login_key,
+    activation_code: context.activation_code || '',
+    company_id: normalizeUpper_(context.company_id || ''),
+    company_name: normalize_(context.company_name || context.company_id || ''),
+    employee_id: employeeId,
+    employee_name: normalize_(employee.name || employeeId),
+    email: inputEmail,
+    email_masked: maskEmailV34_(inputEmail),
+    code_hash: codeHash,
+    attempts: 0,
+    request_device_id: normalize_(payload.device_id || context.device_id || ''),
+    created_at: Date.now(),
+    expires_at: Date.now() + ANG_EMPLOYEE_LOGIN_CODE_TTL_V35 * 1000
+  };
+
+  var eol = String.fromCharCode(10);
+  var body = [
+    '你的 ANG HR 員工登入驗證碼是：' + code,
+    '',
+    '公司：' + pending.company_name,
+    '此驗證碼 10 分鐘內有效。',
+    '同一信箱 60 秒內不可重寄，一天最多 5 次。',
+    '如果不是你本人操作，請忽略此信。'
+  ].join(eol);
+
+  MailApp.sendEmail({
+    to: inputEmail,
+    subject: 'ANG HR 員工登入驗證碼',
+    body: body,
+    name: 'ANG HR System'
   });
 
-  var explicitBranches = sheetToObjects_(getSheet_(SHEET_BRANCHES)).filter(function(row) {
-    return normalizeLower_(row.status || 'active') !== 'deleted';
-  });
-  explicitBranches.forEach(function(branch) {
-    var companyId = normalizeUpper_(branch.company_id || '');
-    if (!companyId) return;
-    branchMap[companyId] = branchMap[companyId] || [];
-    var branchId = normalizeUpper_(branch.branch_id || 'MAIN');
-    var existingIndex = branchMap[companyId].findIndex(function(item){ return item.branch_id === branchId; });
-    var normalized = Object.assign({}, branch, { branch_id:branchId, company_id:companyId });
-    if (existingIndex >= 0) branchMap[companyId][existingIndex] = Object.assign({}, branchMap[companyId][existingIndex], normalized);
-    else branchMap[companyId].push(normalized);
-  });
-
-  var companies = companiesRaw.map(function(company) { return creatorNormalizeCompanyP0_(company, branchMap); });
-  var organizationsSheet = sheetToObjects_(getSheet_(SHEET_ORGANIZATIONS)).filter(function(row) {
-    return normalizeLower_(row.status || 'active') !== 'deleted';
-  });
-  var organizationMap = {};
-  organizationsSheet.forEach(function(org) {
-    var id = normalizeUpper_(org.organization_id || '');
-    if (id) organizationMap[id] = Object.assign({}, org, { organization_id:id });
-  });
-  companies.forEach(function(company) {
-    var id = company.organization_id || company.company_id;
-    if (!organizationMap[id]) {
-      organizationMap[id] = {
-        organization_id:id,
-        organization_name:company.organization_name || company.company_name,
-        brand_id:company.brand_id || '',
-        brand_name:company.brand_name || '',
-        ownership_mode:company.ownership_mode || 'independent_store',
-        company_id:company.company_id,
-        status:company.status || 'active'
-      };
-    }
-  });
-  var organizations = Object.keys(organizationMap).map(function(key){ return organizationMap[key]; });
-
-  var brands = sheetToObjects_(getSheet_(SHEET_BRANDS)).filter(function(row) {
-    return normalizeLower_(row.status || 'active') !== 'deleted';
-  }).map(function(row) {
-    return Object.assign({}, row, { brand_id:normalizeUpper_(row.brand_id || '') });
-  });
-  var branchList = [];
-  Object.keys(branchMap).forEach(function(companyId) {
-    (branchMap[companyId] || []).forEach(function(branch) {
-      var company = companies.filter(function(item){ return item.company_id === companyId; })[0] || {};
-      branchList.push(Object.assign({}, branch, {
-        company_id:companyId,
-        organization_id:branch.organization_id || company.organization_id || companyId,
-        organization_name:branch.organization_name || company.organization_name || company.company_name || '',
-        brand_id:branch.brand_id || company.brand_id || '',
-        brand_name:branch.brand_name || company.brand_name || ''
-      }));
-    });
-  });
-  companies.forEach(function(company) {
-    if (!branchMap[company.company_id] || !branchMap[company.company_id].length) {
-      branchList.push({
-        branch_id:'MAIN', branch_name:'主店', company_id:company.company_id,
-        organization_id:company.organization_id, organization_name:company.organization_name,
-        brand_id:company.brand_id, brand_name:company.brand_name
-      });
-    }
-  });
-
-  var workspaces = sheetToObjects_(getSheet_(SHEET_PERSONAL_WORKSPACES)).filter(function(row) {
-    return normalizeLower_(row.status || 'active') !== 'deleted';
-  }).map(creatorPersonalWorkspaceP0_);
-  var members = [];
-  workspaces.forEach(function(workspace) {
-    var team = workspace.team || {};
-    var teamMembers = Array.isArray(team.members) ? team.members : [];
-    if (!teamMembers.length && workspace.owner_user_id) {
-      teamMembers = [{ id:workspace.owner_user_id, name:workspace.owner_name, role:'maintainer', plan:workspace.plan_label || 'Personal Free' }];
-    }
-    teamMembers.forEach(function(member) {
-      members.push(Object.assign({}, member, {
-        workspace_id:workspace.workspace_id,
-        workspace_code:workspace.workspace_code,
-        workspace_type:workspace.workspace_type
-      }));
-    });
-  });
-
-  var plans = { personal:workspaces.length, personal_free:0, personal_plus:0, basic:0, plus:0, premium:0, private:0 };
-  companies.forEach(function(company) {
-    var plan = normalizeLower_(company.plan || company.plan_label || 'basic');
-    if (plan.indexOf('private') >= 0 || plan.indexOf('self') >= 0 || plan.indexOf('自管') >= 0) plans.private++;
-    else if (plan.indexOf('premium') >= 0) plans.premium++;
-    else if (plan.indexOf('plus') >= 0) plans.plus++;
-    else plans.basic++;
-  });
-  workspaces.forEach(function(workspace) {
-    if ((workspace.modules || []).length) plans.personal_plus++;
-    else plans.personal_free++;
-  });
-  var modules = {};
-  workspaces.forEach(function(workspace) {
-    (workspace.modules || []).forEach(function(moduleName) {
-      modules[moduleName] = Number(modules[moduleName] || 0) + 1;
-    });
-  });
+  employeeLoginCachePutV35_(ANG_EMPLOYEE_LOGIN_PENDING_PREFIX_V35, pendingId, pending, ANG_EMPLOYEE_LOGIN_CODE_TTL_V35);
+  context.employee_id = employeeId;
+  context.employee_name = pending.employee_name;
+  context.email = inputEmail;
+  context.email_masked = pending.email_masked;
+  context.pending_login_id = pendingId;
+  employeeLoginCachePutV35_(ANG_EMPLOYEE_LOGIN_CONTEXT_PREFIX_V35, contextId, context, ANG_EMPLOYEE_LOGIN_CONTEXT_TTL_V35);
+  cache.put(cooldownKey, String(Date.now()), ANG_EMPLOYEE_LOGIN_RESEND_SECONDS_V35);
+  commitEmployeeLoginDailyQuotaV35_(quota);
 
   return ok_({
-    overview: {
-      brand_count:brands.length,
-      organization_count:organizations.length,
-      branch_count:branchList.length,
-      company_count:companies.length,
-      personal_solo_count:workspaces.filter(function(row){ return row.workspace_type === 'personal_solo'; }).length,
-      personal_team_count:workspaces.filter(function(row){ return row.workspace_type === 'personal_team'; }).length,
-      total_user_count:employees.length + members.length,
-      paid_count:companies.filter(function(row){ return ['active_paid','active','paid'].indexOf(normalizeLower_(row.billing_status || '')) >= 0; }).length,
-      trial_count:companies.filter(function(row){ return normalizeLower_(row.billing_status || '').indexOf('trial') >= 0 || normalizeLower_(row.billing_status || '').indexOf('first') >= 0; }).length
-    },
-    companies:companies,
-    workspaces:workspaces,
-    members:members,
-    brands:brands,
-    organizations:organizations,
-    branches:branchList,
-    plans:plans,
-    modules:modules,
-    generated_at:personalNowP0_()
+    message:'驗證碼已寄到：' + pending.email_masked,
+    login_context_id:contextId,
+    pending_login_id:pendingId,
+    mode:pending.mode,
+    company_id:pending.company_id,
+    company_name:pending.company_name,
+    employee_id:pending.employee_id,
+    name:pending.employee_name,
+    email_masked:pending.email_masked,
+    resend_after_seconds:ANG_EMPLOYEE_LOGIN_RESEND_SECONDS_V35,
+    daily_limit:ANG_EMPLOYEE_LOGIN_DAILY_LIMIT_V35,
+    expires_in_seconds:ANG_EMPLOYEE_LOGIN_CODE_TTL_V35
   });
+}
+
+function apiVerifyEmployeeEmailCodeAndLoginV35_(payload) {
+  payload = payload || {};
+  var pendingId = normalize_(payload.pending_login_id || payload.login_pending_id || '');
+  var code = normalize_(payload.code || '');
+  var deviceId = normalize_(payload.device_id || '');
+  if (!pendingId) return fail_('登入驗證已失效，請重新寄送 Email 驗證碼');
+  if (!/^\d{6}$/.test(code)) return fail_('請輸入 6 位數 Email 驗證碼');
+
+  var pending = employeeLoginCacheGetV35_(ANG_EMPLOYEE_LOGIN_PENDING_PREFIX_V35, pendingId);
+  if (!pending) return fail_('驗證碼不存在、已過期或已使用，請重新寄送');
+  if (Number(pending.expires_at || 0) < Date.now()) {
+    employeeLoginCacheRemoveV35_(ANG_EMPLOYEE_LOGIN_PENDING_PREFIX_V35, pendingId);
+    return fail_('驗證碼已過期，請重新寄送');
+  }
+
+  var expectedHash = hash_(pendingId + ':' + normalizeEmail_(pending.email || '') + ':' + code);
+  if (normalize_(pending.code_hash || '') !== expectedHash) {
+    pending.attempts = Number(pending.attempts || 0) + 1;
+    if (pending.attempts >= 5) {
+      employeeLoginCacheRemoveV35_(ANG_EMPLOYEE_LOGIN_PENDING_PREFIX_V35, pendingId);
+      return fail_('驗證碼錯誤次數過多，請重新寄送');
+    }
+    employeeLoginCachePutV35_(ANG_EMPLOYEE_LOGIN_PENDING_PREFIX_V35, pendingId, pending, ANG_EMPLOYEE_LOGIN_CODE_TTL_V35);
+    return fail_('Email 驗證碼錯誤');
+  }
+
+  var companyId = normalizeUpper_(pending.company_id || '');
+  var employeeId = normalizeUpper_(pending.employee_id || '');
+  var employee = findEmployee_(companyId, employeeId);
+  if (!employee) {
+    var sh = getCompanyPersonSheetV31_(companyId, false);
+    if (sh) {
+      var rows = sheetToObjects_(sh);
+      for (var i = 0; i < rows.length; i++) {
+        var person = normalizeCompanyPersonRowV31_(rows[i], companyId);
+        if (normalizeUpper_(person.employee_id || '') === employeeId) { employee = person; break; }
+      }
+    }
+  }
+  if (!employee) return fail_('找不到員工資料');
+  if (!isEmployeeActiveV31_(employee.status || 'active')) return fail_('此員工帳號已停用');
+  if (normalizeEmail_(employee.email || '') !== normalizeEmail_(pending.email || '')) return fail_('人員資料 Email 已變更，請重新登入');
+
+  var boundDevice = normalize_(employee.device_id || employee.specialdeviceid || '');
+  if (pending.mode === 'activation') {
+    var currentCode = normalizeUpper_(employee.one_time_token || employee.activation_code || employee['開通碼'] || '');
+    if (currentCode !== normalizeUpper_(pending.activation_code || pending.login_key || '')) return fail_('開通碼已變更，請重新取得開通連結');
+    if (isActivationUsedV34_(employee.token_used || employee['綁定狀態'])) return fail_('此開通碼已使用，請改用公司代碼登入');
+    if (!deviceId) return fail_('無法取得裝置識別碼，請重新開啟頁面後再試');
+
+    var updates = { device_id:deviceId, token_used:'yes', updated_at:nowText_() };
+    updateCompanyPersonRowV31_(companyId, employeeId, updates);
+    updateEmployeeInSheetV25_(getSheet_(SHEET_EMPLOYEES), companyId, employeeId, updates);
+    employee = Object.assign({}, employee, updates);
+  } else {
+    if (!boundDevice) return fail_('此員工尚未完成首次開通，請改用開通碼登入');
+    if (!deviceId) return fail_('無法取得裝置識別碼，請重新開啟頁面後再試');
+    if (boundDevice !== deviceId) return fail_('此帳號已綁定其他裝置，請聯絡管理員重發開通碼');
+  }
+
+  var session = createSessionForEmployee_(companyId, Object.assign({}, employee, { employee_id:employeeId }), deviceId);
+  var role = normalizeRoleV30_(employee.role || 'Employee', employeeId);
+  employeeLoginCacheRemoveV35_(ANG_EMPLOYEE_LOGIN_PENDING_PREFIX_V35, pendingId);
+  employeeLoginCacheRemoveV35_(ANG_EMPLOYEE_LOGIN_CONTEXT_PREFIX_V35, pending.login_context_id || '');
+
+  return ok_({
+    message:pending.mode === 'activation' ? 'Email 驗證完成，裝置已開通' : 'Email 驗證登入成功',
+    mode:pending.mode,
+    company_id:companyId,
+    company_name:pending.company_name || companyId,
+    employee_id:employeeId,
+    name:employee.name || pending.employee_name || employeeId,
+    role:role,
+    session_token:session,
+    auto_login:true,
+    next_url:DEFAULT_FRONTEND_URL + 'app.html?view=employee&company_id=' + encodeURIComponent(companyId) + '&id=' + encodeURIComponent(employeeId) + '&employee_id=' + encodeURIComponent(employeeId) + '&role=' + encodeURIComponent(role) + '&session_token=' + encodeURIComponent(session) + '&token=' + encodeURIComponent(session)
+  });
+}
+
+/************************************************************
+ * ANG HR System｜V34 Email 登入預查
+ * - 員工：公司代碼 + 員編，或開通碼，先查人員資料再寄 Email 驗證碼。
+ * - 首次開通：Email 驗證後綁定裝置並建立 session。
+ * - 企業管理：公司代碼 + 管理員 Email，先確認公司角色再寄碼。
+ ************************************************************/
+function maskEmailV34_(email) {
+  email = normalizeEmail_(email || '');
+  if (!email || email.indexOf('@') < 1) return '';
+  var parts = email.split('@');
+  var name = parts[0] || '';
+  var domain = parts[1] || '';
+  var visible = name.length <= 2 ? name.slice(0, 1) : name.slice(0, 2);
+  return visible + '***@' + domain;
+}
+
+function isActivationUsedV34_(value) {
+  var v = normalizeLower_(value || '');
+  return ['yes','true','1','used','active','已使用','已綁定','是'].indexOf(v) >= 0;
+}
+
+function findEmployeeByActivationCodeV34_(activationCode, expectedEmployeeId) {
+  var code = normalizeUpper_(activationCode || '');
+  var expected = normalizeUpper_(expectedEmployeeId || '');
+  if (!code) return null;
+
+  var masterRows = sheetToObjects_(getSheet_(SHEET_EMPLOYEES));
+  for (var i = 0; i < masterRows.length; i++) {
+    var mr = masterRows[i] || {};
+    var token = normalizeUpper_(mr.one_time_token || mr.activation_code || mr['開通碼'] || '');
+    var employeeId = normalizeUpper_(mr.employee_id || mr.id || mr['員工ID'] || '');
+    if (token !== code) continue;
+    if (expected && employeeId !== expected) continue;
+    var companyId = normalizeUpper_(mr.company_id || mr.companyId || mr['公司ID'] || '');
+    if (!companyId) continue;
+    var found = findEmployee_(companyId, employeeId);
+    return found || normalizeCompanyPersonRowV31_(mr, companyId);
+  }
+
+  var companies = sheetToObjects_(getSheet_(SHEET_COMPANIES));
+  for (var c = 0; c < companies.length; c++) {
+    var companyId2 = normalizeUpper_(companies[c].company_id || '');
+    if (!companyId2) continue;
+    var sh = getCompanyPersonSheetV31_(companyId2, false);
+    if (!sh) continue;
+    var rows = sheetToObjects_(sh);
+    for (var r = 0; r < rows.length; r++) {
+      var person = normalizeCompanyPersonRowV31_(rows[r], companyId2);
+      if (normalizeUpper_(person.one_time_token || '') !== code) continue;
+      if (expected && normalizeUpper_(person.employee_id || '') !== expected) continue;
+      return person;
+    }
+  }
+  return null;
+}
+
+function resolveEmployeeEmailLoginTargetV34_(payload) {
+  payload = payload || {};
+  var rawKey = normalizeUpper_(payload.company_or_code || payload.login_key || payload.activation_code || payload.one_time_token || payload.company_id || payload.company || payload.companyCode || '');
+  var employeeId = normalizeUpper_(payload.employee_id || payload.id || payload.user_id || '');
+  if (!rawKey) return { ok:false, message:'請輸入公司代碼或開通碼' };
+
+  var company = findCompany_(rawKey);
+  var employee = null;
+  var mode = 'login';
+  var companyId = '';
+  var loginKey = rawKey;
+
+  if (company) {
+    companyId = normalizeUpper_(company.company_id || rawKey);
+    if (!employeeId) return { ok:false, message:'請輸入員工編號' };
+    employee = findEmployee_(companyId, employeeId);
+    if (!employee) return { ok:false, message:'此公司找不到這個員工編號' };
+  } else {
+    mode = 'activation';
+    employee = findEmployeeByActivationCodeV34_(rawKey, employeeId);
+    if (!employee) return { ok:false, message:'開通碼錯誤，或找不到對應員工資料' };
+    companyId = normalizeUpper_(employee.company_id || '');
+    employeeId = normalizeUpper_(employee.employee_id || '');
+    if (isActivationUsedV34_(employee.token_used || employee['綁定狀態'])) return { ok:false, message:'此開通碼已使用，請改用公司代碼登入或聯絡管理員重發' };
+  }
+
+  if (!employee || !companyId || !employeeId) return { ok:false, message:'員工資料不完整' };
+  if (!isEmployeeActiveV31_(employee.status || 'active')) return { ok:false, message:'此員工帳號已停用' };
+  var email = normalizeEmail_(employee.email || '');
+  if (!email) return { ok:false, message:'此員工的人員資料尚未設定 Email，請聯絡管理員補上 Email' };
+
+  return {
+    ok:true,
+    mode:mode,
+    login_key:loginKey,
+    company_id:companyId,
+    company_name:employee.company_name || (company && company.company_name) || companyId,
+    employee_id:employeeId,
+    employee:employee,
+    email:email,
+    email_masked:maskEmailV34_(email)
+  };
+}
+
+function apiRequestEmployeeEmailLoginCodeV34_(payload) {
+  var target = resolveEmployeeEmailLoginTargetV34_(payload);
+  if (!target.ok) return fail_(target.message);
+  var send = apiRequestEmailCode_({
+    email:target.email,
+    flow:'employee_login',
+    company_id:target.company_id,
+    plan:'',
+    device_id:normalize_(payload && payload.device_id || ''),
+    source:normalize_(payload && payload.source || 'entry_employee_email')
+  });
+  if (!send || !send.ok) return send || fail_('Email 驗證碼寄送失敗');
+  return ok_({
+    message:'驗證碼已寄到人員資料 Email：' + target.email_masked,
+    mode:target.mode,
+    login_key:target.login_key,
+    company_id:target.company_id,
+    company_name:target.company_name,
+    employee_id:target.employee_id,
+    name:target.employee.name || target.employee_id,
+    email_masked:target.email_masked,
+    resend_after_seconds:send.resend_after_seconds || 60,
+    daily_limit:send.daily_limit || 5
+  });
+}
+
+function apiVerifyEmployeeEmailCodeAndLoginV34_(payload) {
+  payload = payload || {};
+  var target = resolveEmployeeEmailLoginTargetV34_(payload);
+  if (!target.ok) return fail_(target.message);
+  var code = normalize_(payload.code || '');
+  var deviceId = normalize_(payload.device_id || '');
+  if (!/^\d{6}$/.test(code)) return fail_('請輸入 6 位數 Email 驗證碼');
+
+  var verify = apiVerifyEmailCode_({
+    email:target.email,
+    code:code,
+    flow:'employee_login',
+    company_id:target.company_id
+  });
+  if (!verify || !verify.ok) return verify || fail_('Email 驗證失敗');
+
+  var employee = findEmployee_(target.company_id, target.employee_id) || target.employee;
+  var boundDevice = normalize_(employee.device_id || employee.specialdeviceid || '');
+  if (target.mode === 'login') {
+    if (!boundDevice) return fail_('此員工尚未完成首次開通，請改用開通碼登入');
+    if (deviceId && boundDevice !== deviceId) return fail_('此帳號已綁定其他裝置，請聯絡管理員重發開通碼');
+  } else {
+    var updates = { device_id:deviceId, token_used:'yes', updated_at:nowText_() };
+    updateCompanyPersonRowV31_(target.company_id, target.employee_id, updates);
+    updateEmployeeInSheetV25_(getSheet_(SHEET_EMPLOYEES), target.company_id, target.employee_id, updates);
+    employee = Object.assign({}, employee, updates);
+  }
+
+  var session = createSessionForEmployee_(target.company_id, Object.assign({}, employee, { employee_id:target.employee_id }), deviceId);
+  var role = normalizeRoleV30_(employee.role || 'Employee', target.employee_id);
+  return ok_({
+    message:target.mode === 'activation' ? 'Email 驗證完成，裝置已開通' : 'Email 驗證登入成功',
+    mode:target.mode,
+    company_id:target.company_id,
+    company_name:target.company_name,
+    employee_id:target.employee_id,
+    name:employee.name || target.employee_id,
+    role:role,
+    session_token:session,
+    auto_login:true,
+    next_url:DEFAULT_FRONTEND_URL + 'app.html?view=employee&company_id=' + encodeURIComponent(target.company_id) + '&id=' + encodeURIComponent(target.employee_id) + '&employee_id=' + encodeURIComponent(target.employee_id) + '&role=' + encodeURIComponent(role) + '&session_token=' + encodeURIComponent(session) + '&token=' + encodeURIComponent(session)
+  });
+}
+
+function findEmployeeByEmailInCompanyV34_(companyId, email) {
+  companyId = normalizeUpper_(companyId || '');
+  email = normalizeEmail_(email || '');
+  if (!companyId || !email) return null;
+  ensureCompanyCreatorInPersonSheetV31_(companyId);
+  var sh = getCompanyPersonSheetV31_(companyId, false);
+  if (sh) {
+    var rows = sheetToObjects_(sh);
+    for (var i = 0; i < rows.length; i++) {
+      var person = normalizeCompanyPersonRowV31_(rows[i], companyId);
+      if (normalizeEmail_(person.email || '') === email) return person;
+    }
+  }
+  var masterRows = sheetToObjects_(getSheet_(SHEET_EMPLOYEES));
+  for (var j = 0; j < masterRows.length; j++) {
+    var row = masterRows[j] || {};
+    if (normalizeUpper_(row.company_id || '') !== companyId) continue;
+    if (normalizeEmail_(row.email || '') !== email) continue;
+    return normalizeCompanyPersonRowV31_(row, companyId);
+  }
+  return null;
+}
+
+function apiRequestAdminLoginEmailVerificationV34_(payload) {
+  payload = payload || {};
+  var companyId = normalizeUpper_(payload.company_id || payload.company || payload.companyCode || '');
+  var email = normalizeEmail_(payload.email || payload.adminEmail || '');
+  if (!companyId) return fail_('請輸入公司代碼');
+  if (!email) return fail_('請輸入管理員 Email');
+  if (!findCompany_(companyId)) return fail_('找不到公司資料');
+  var employee = findEmployeeByEmailInCompanyV34_(companyId, email);
+  if (!employee) return fail_('此 Email 不在這間公司的人員資料中');
+  if (!isEmployeeActiveV31_(employee.status || 'active')) return fail_('此管理員帳號已停用');
+  if (roleRankV30_(employee.role || '') < roleRankV30_('Manager')) return fail_('此 Email 沒有企業管理權限');
+  var send = apiRequestEmailCode_({ email:email, flow:'admin_login', company_id:companyId, device_id:normalize_(payload.device_id || ''), source:normalize_(payload.source || 'entry_admin_email') });
+  if (!send || !send.ok) return send || fail_('Email 驗證碼寄送失敗');
+  return ok_({ message:'驗證碼已寄到：' + maskEmailV34_(email), company_id:companyId, employee_id:employee.employee_id || '', email_masked:maskEmailV34_(email), resend_after_seconds:send.resend_after_seconds || 60 });
+}
+
+function apiVerifyAdminEmailCodeAndLoginV34_(payload) {
+  payload = payload || {};
+  var companyId = normalizeUpper_(payload.company_id || payload.company || payload.companyCode || '');
+  var email = normalizeEmail_(payload.email || payload.adminEmail || '');
+  var code = normalize_(payload.code || '');
+  var deviceId = normalize_(payload.device_id || '');
+  if (!companyId) return fail_('請輸入公司代碼');
+  if (!email) return fail_('請輸入管理員 Email');
+  var employee = findEmployeeByEmailInCompanyV34_(companyId, email);
+  if (!employee) return fail_('此 Email 不在這間公司的人員資料中');
+  if (!isEmployeeActiveV31_(employee.status || 'active')) return fail_('此管理員帳號已停用');
+  if (roleRankV30_(employee.role || '') < roleRankV30_('Manager')) return fail_('此 Email 沒有企業管理權限');
+  var verify = apiVerifyEmailCode_({ email:email, code:code, flow:'admin_login', company_id:companyId });
+  if (!verify || !verify.ok) return verify || fail_('Email 驗證失敗');
+  var token = createSessionForEmployee_(companyId, employee, deviceId);
+  return buildAdminLoginResponse_(companyId, employee, token);
 }
