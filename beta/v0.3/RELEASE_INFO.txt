@@ -1,0 +1,21 @@
+ANG HR BETA-v0.3
+
+Purpose: public friend-testing build with seven plan-specific temporary accounts.
+Online target: /ANG-99-HR-System/beta/v0.3/
+
+Verified:
+- npm run test:release
+- 390 x 852 mobile plan and permission checks
+- schedule draft, publish, reload, and cross-week isolation
+- leave create, duplicate guard, approval, and employee status roundtrip
+- blocked localStorage and sessionStorage fallback
+- Personal Lite salary lock
+- Business Basic and Business Lite brand permission lock
+- landing floating cue and compact expanded feature panel
+
+Important limitations:
+- Browser-local frontend Beta; not a production HR system.
+- Data is local to the browser and does not sync across devices.
+- Temporary credentials are visible in the frontend and are not secure authentication.
+- Logto, Supabase, Google, LINE, NFC, QR, device binding, and production APIs are not connected.
+- Premium and Performance planned features are labeled but not connected.

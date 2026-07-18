@@ -1,0 +1,4 @@
+ANG HR BETA-v0.3
+Package: 0.3.0
+Built: 2026-07-18 Asia/Taipei
+Status: frozen friend-testing build
