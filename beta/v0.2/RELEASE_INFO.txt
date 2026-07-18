@@ -1,0 +1,21 @@
+ANG HR BETA-v0.2
+
+Purpose: public friend-testing build with seven plan-specific temporary accounts.
+Online target: /ANG-99-HR-System/beta/v0.2/
+
+Verified:
+- npm run build
+- npm run test:smoke
+- 390 x 852 mobile login and plan-scope checks for all seven accounts
+- Business Basic, Pro, Premium
+- Personal Solo, Performance
+- Free Personal Lite, Business Lite
+- no browser console errors during the targeted plan test
+
+Important limitations:
+- This is a browser-local frontend Beta, not a production HR system.
+- Data is stored in the current browser and is not synchronized across devices.
+- Temporary credentials are visible in the frontend bundle and are not secure authentication.
+- Logto, Supabase, Google, LINE, NFC, QR, device binding and production APIs are not connected.
+- Premium and Performance planned features are labeled as not yet connected in Beta.
+

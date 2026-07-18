@@ -1,0 +1,4 @@
+ANG-HR-BETA-v0.2
+Package: 0.2.0
+Frozen: 2026-07-18 Asia/Taipei
+
