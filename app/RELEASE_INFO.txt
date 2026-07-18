@@ -1,0 +1,5 @@
+ANG HR online app
+Version: v0.4.0
+Path: /app/
+Login: manual entry only
+Data: stored in the current browser; backend services are not connected yet
