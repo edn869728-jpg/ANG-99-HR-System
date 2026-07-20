@@ -1,0 +1,68 @@
+name: Strengthen v0.6.0 index accents
+on:
+  push:
+    paths:
+      - '.github/workflows/strengthen-v060-index-accents.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Patch visible accents without changing v0.5.0 layout
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          css='''<style id="ang-v060-minimal-index-style">
+:root{
+  --ang-login:#ffd84a;--ang-login-rgb:255,216,74;
+  --ang-ok:#35e67a;--ang-ok-rgb:53,230,122;
+  --ang-basic:#6edbff;--ang-basic-rgb:110,219,255;
+  --ang-plus:#ff4fa8;--ang-plus-rgb:255,79,168;
+  --ang-premium:#a873ff;--ang-premium-rgb:168,115,255;
+}
+.phone::after{opacity:.12!important}
+body:not([data-theme="dark"]) .phone::after{opacity:.08!important}
+.plan-sheet{border-width:3px!important;border-style:solid!important;transition:opacity .28s var(--ease),transform .42s var(--ease),box-shadow .32s ease,border-color .32s ease!important}
+.plan-sheet.login{border-color:rgba(var(--ang-login-rgb),1)!important;box-shadow:0 -16px 42px rgba(var(--ang-login-rgb),.34),0 0 28px rgba(var(--ang-login-rgb),.52),inset 0 0 0 1px rgba(255,255,255,.16)!important}
+.plan-sheet.basic{border-color:rgba(var(--ang-basic-rgb),1)!important;box-shadow:0 -16px 42px rgba(var(--ang-basic-rgb),.30),0 0 28px rgba(var(--ang-basic-rgb),.48),inset 0 0 0 1px rgba(255,255,255,.14)!important}
+.plan-sheet.plus{border-color:rgba(var(--ang-plus-rgb),1)!important;box-shadow:0 -16px 42px rgba(var(--ang-plus-rgb),.30),0 0 28px rgba(var(--ang-plus-rgb),.48),inset 0 0 0 1px rgba(255,255,255,.14)!important}
+.plan-sheet.premium{border-color:rgba(var(--ang-premium-rgb),1)!important;box-shadow:0 -16px 42px rgba(var(--ang-premium-rgb),.30),0 0 28px rgba(var(--ang-premium-rgb),.50),inset 0 0 0 1px rgba(255,255,255,.14)!important}
+.plan-sheet.login.active{box-shadow:0 -20px 52px rgba(var(--ang-login-rgb),.42),0 0 36px rgba(var(--ang-login-rgb),.68),inset 0 0 0 1px rgba(255,255,255,.18)!important}
+.plan-sheet.basic.active{box-shadow:0 -20px 52px rgba(var(--ang-basic-rgb),.38),0 0 36px rgba(var(--ang-basic-rgb),.64),inset 0 0 0 1px rgba(255,255,255,.16)!important}
+.plan-sheet.plus.active{box-shadow:0 -20px 52px rgba(var(--ang-plus-rgb),.38),0 0 36px rgba(var(--ang-plus-rgb),.64),inset 0 0 0 1px rgba(255,255,255,.16)!important}
+.plan-sheet.premium.active{box-shadow:0 -20px 52px rgba(var(--ang-premium-rgb),.38),0 0 36px rgba(var(--ang-premium-rgb),.66),inset 0 0 0 1px rgba(255,255,255,.16)!important}
+.plan-sheet.basic .sheet-title,.plan-sheet.basic .sheet-price{color:#d79253!important;text-shadow:0 0 14px rgba(199,122,63,.34)!important}
+.plan-sheet.plus .sheet-title,.plan-sheet.plus .sheet-price{color:#eef2f7!important;text-shadow:0 0 14px rgba(216,221,229,.48)!important}
+.plan-sheet.premium .sheet-title,.plan-sheet.premium .sheet-price{color:#ffd95a!important;text-shadow:0 0 14px rgba(227,173,34,.48)!important}
+.plan-sheet.basic .sheet-tag{background:linear-gradient(135deg,#6f351b,#c77a3f,#f0b77b)!important;color:#fff8ee!important;border-color:rgba(255,215,170,.72)!important;box-shadow:0 0 14px rgba(199,122,63,.30)!important}
+.plan-sheet.plus .sheet-tag{background:linear-gradient(135deg,#737b88,#d8dde5,#ffffff)!important;color:#243041!important;border-color:rgba(255,255,255,.88)!important;box-shadow:0 0 14px rgba(216,221,229,.34)!important}
+.plan-sheet.premium .sheet-tag{background:linear-gradient(135deg,#8d5b00,#e3ad22,#ffe99a)!important;color:#fffdf2!important;border-color:rgba(255,241,170,.88)!important;box-shadow:0 0 15px rgba(227,173,34,.36)!important}
+.plan-sheet.basic .sheet-tag::after{content:"｜銅"}
+.plan-sheet.plus .sheet-tag::after{content:"｜銀"}
+.plan-sheet.premium .sheet-tag::after{content:"｜金"}
+.plan-sheet.login.account-verified{border-color:rgba(var(--ang-ok-rgb),1)!important;box-shadow:0 -24px 58px rgba(var(--ang-ok-rgb),.44),0 0 42px rgba(var(--ang-ok-rgb),.82),inset 0 0 0 1px rgba(255,255,255,.22)!important;animation:angLoginLift .68s var(--ease) both!important}
+.plan-sheet.login.account-verified .sheet-handle{background:var(--ang-ok)!important;box-shadow:0 0 16px rgba(var(--ang-ok-rgb),.88)!important}
+@keyframes angLoginLift{0%{transform:scale(1) translateY(0)}58%{transform:scale(1.012) translateY(-22px)}100%{transform:scale(1) translateY(-15px)}}
+.ang-index-version{position:absolute;left:12px;top:12px;z-index:50;padding:6px 10px;border-radius:999px;background:rgba(0,0,0,.38);border:1px solid rgba(255,255,255,.26);color:#fff;font-size:11px;font-weight:900;backdrop-filter:blur(10px)}
+</style>'''
+          pattern=r'<style id="ang-v060-minimal-index-style">.*?</style>'
+          if not re.search(pattern,s,flags=re.S):
+              raise SystemExit('minimal style block not found')
+          s=re.sub(pattern,css,s,count=1,flags=re.S)
+          s=s.replace("v.textContent='ANG HR v0.6.0'","v.textContent='ANG HR v0.6.0｜R2'",1)
+          p.write_text(s,encoding='utf-8')
+          PY
+          rm -f .github/workflows/strengthen-v060-index-accents.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html .github/workflows/strengthen-v060-index-accents.yml
+          git commit -m 'fix(v0.6.0): make neon and metal accents clearly visible on v0.5.0 base'
+          git push
