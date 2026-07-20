@@ -1,0 +1,37 @@
+name: Restore v0.5.0 index and patch
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/restore-v050-index-and-patch.yml'
+permissions:
+  contents: write
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Restore v0.5.0 index and apply minimal accents
+        shell: bash
+        run: |
+          git show 6ba372a23dc5be8f3dfd70956d9de8ca12255723:index.html > index.html
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          css='''\n<style id="ang-v060-minimal-index-style">\n:root{\n  --ang-login:#ffd84a;--ang-login-rgb:255,216,74;\n  --ang-ok:#35e67a;--ang-ok-rgb:53,230,122;\n  --ang-basic:#6edbff;--ang-basic-rgb:110,219,255;\n  --ang-plus:#ff4fa8;--ang-plus-rgb:255,79,168;\n  --ang-premium:#a873ff;--ang-premium-rgb:168,115,255;\n}\n.phone::after{opacity:.16!important}\nbody:not([data-theme="dark"]) .phone::after{opacity:.10!important}\n.plan-sheet{border-width:2px!important;border-style:solid!important;transition:opacity .28s var(--ease),transform .42s var(--ease),box-shadow .32s ease,border-color .32s ease!important}\n.plan-sheet.login{border-color:rgba(var(--ang-login-rgb),.94)!important;box-shadow:0 -14px 34px rgba(var(--ang-login-rgb),.22),0 0 18px rgba(var(--ang-login-rgb),.30)!important}\n.plan-sheet.basic{border-color:rgba(var(--ang-basic-rgb),.94)!important;box-shadow:0 -14px 34px rgba(var(--ang-basic-rgb),.18),0 0 18px rgba(var(--ang-basic-rgb),.26)!important}\n.plan-sheet.plus{border-color:rgba(var(--ang-plus-rgb),.94)!important;box-shadow:0 -14px 34px rgba(var(--ang-plus-rgb),.18),0 0 18px rgba(var(--ang-plus-rgb),.26)!important}\n.plan-sheet.premium{border-color:rgba(var(--ang-premium-rgb),.94)!important;box-shadow:0 -14px 34px rgba(var(--ang-premium-rgb),.18),0 0 18px rgba(var(--ang-premium-rgb),.26)!important}\n.plan-sheet.basic .sheet-tag{background:linear-gradient(135deg,#6f351b,#c77a3f)!important;color:#fff8ee!important;border-color:rgba(255,215,170,.52)!important}\n.plan-sheet.plus .sheet-tag{background:linear-gradient(135deg,#8a929f,#eef1f5)!important;color:#243041!important;border-color:rgba(255,255,255,.75)!important}\n.plan-sheet.premium .sheet-tag{background:linear-gradient(135deg,#946300,#e3ad22)!important;color:#fffdf2!important;border-color:rgba(255,241,170,.72)!important}\n.plan-sheet.login.account-verified{border-color:rgba(var(--ang-ok-rgb),.98)!important;box-shadow:0 -20px 50px rgba(var(--ang-ok-rgb),.32),0 0 28px rgba(var(--ang-ok-rgb),.60)!important;animation:angLoginLift .68s var(--ease) both!important}\n.plan-sheet.login.account-verified .sheet-handle{background:var(--ang-ok)!important;box-shadow:0 0 12px rgba(var(--ang-ok-rgb),.70)!important}\n@keyframes angLoginLift{0%{transform:scale(1) translateY(0)}58%{transform:scale(1.01) translateY(-20px)}100%{transform:scale(1) translateY(-14px)}}\n.ang-index-version{position:absolute;left:12px;top:12px;z-index:50;padding:5px 9px;border-radius:999px;background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.18);color:#fff;font-size:11px;font-weight:900;backdrop-filter:blur(10px)}\n</style>\n'''
+          js='''\n<script id="ang-v060-minimal-index-script">\n(function(){\n  function sheet(){return document.querySelector('.plan-sheet.login[data-key="login"]')}\n  function mark(){var s=sheet(),p=document.getElementById('phone');if(!s)return;s.classList.add('account-verified');if(p)p.classList.add('expanded')}\n  function reset(){var s=sheet();if(s)s.classList.remove('account-verified')}\n  function sync(){var st=document.getElementById('adminLoginStatus');if(!st)return;if(st.classList.contains('success')&&String(st.textContent||'').trim())mark();else if(st.classList.contains('error'))reset()}\n  function init(){var p=document.getElementById('phone');if(p&&!p.querySelector('.ang-index-version')){var v=document.createElement('div');v.className='ang-index-version';v.textContent='ANG HR v0.6.0';p.appendChild(v)}var st=document.getElementById('adminLoginStatus');if(st){new MutationObserver(sync).observe(st,{attributes:true,childList:true,subtree:true,characterData:true});sync()}['adminCompanyCode','adminEmail'].forEach(function(id){var el=document.getElementById(id);if(el)el.addEventListener('input',reset)})}\n  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();\n})();\n</script>\n'''
+          if '</head>' not in s or '</body>' not in s:
+              raise SystemExit('index.html missing closing tags')
+          s=s.replace('</head>',css+'\n</head>',1)
+          s=s.replace('</body>',js+'\n</body>',1)
+          p.write_text(s,encoding='utf-8')
+          PY
+          rm -f .github/workflows/restore-v050-index-and-patch.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html .github/workflows/restore-v050-index-and-patch.yml
+          git commit -m 'fix(v0.6.0): restore v0.5.0 index base with minimal neon accents'
+          git push
