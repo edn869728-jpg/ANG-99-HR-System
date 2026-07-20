@@ -2,9 +2,8 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
-  <meta name="ang-hr-version" content="0.6.0" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
-  <title>ANG HR SYSTEMS｜ENTRY v0.6.0</title>
+  <title>ANG HR SYSTEMS｜ENTRY</title>
   <link rel="preload" as="image" href="https://pub-51476fa95e5148749c1b932e123dc797.r2.dev/ang-entry-bg-day.png?v=20260613-r2-html" referrerpolicy="no-referrer" />
   <link rel="preload" as="image" href="https://pub-51476fa95e5148749c1b932e123dc797.r2.dev/ang-entry-bg-night.png?v=20260613-r2-html" referrerpolicy="no-referrer" />
   <style>
@@ -943,122 +942,6 @@
     body:not([data-theme="dark"]) .platform-email-list div{background:rgba(255,255,255,.78);border-color:rgba(148,163,184,.24);color:#0f172a;}
     body[data-theme="dark"] .platform-secret{color:#cbd5e1;}
 
-  
-/* ANG_INDEX_V060_PRINCE_STYLE_START */
-:root{
-  --login-neon:#ffd84a;
-  --login-neon-rgb:255,216,74;
-  --verified-neon:#35e67a;
-  --verified-neon-rgb:53,230,122;
-  --basic-neon:#6edbff;
-  --basic-neon-rgb:110,219,255;
-  --plus-neon:#ff4fa8;
-  --plus-neon-rgb:255,79,168;
-  --premium-neon:#a873ff;
-  --premium-neon-rgb:168,115,255;
-  --bronze-1:#6f351b;
-  --bronze-2:#c77a3f;
-  --bronze-3:#f0b77b;
-  --silver-1:#737b88;
-  --silver-2:#d8dde5;
-  --silver-3:#ffffff;
-  --gold-1:#8d5b00;
-  --gold-2:#e3ad22;
-  --gold-3:#ffe99a;
-}
-
-/* 移除妨礙觀感的黑色底層遮罩，只保留極淡景深。 */
-.phone::after{opacity:.16!important;}
-body:not([data-theme="dark"]) .phone::after{opacity:.10!important;}
-
-/* 四種入口外框：登入黃、Basic 淺藍、Plus 桃紅、Premium 紫。 */
-.plan-sheet{
-  border-width:2px!important;
-  border-style:solid!important;
-  transition:opacity .28s var(--ease),transform .44s var(--ease),box-shadow .35s ease,border-color .35s ease,background .28s ease!important;
-}
-.plan-sheet.login{
-  border-color:rgba(var(--login-neon-rgb),.92)!important;
-  box-shadow:0 -12px 34px rgba(var(--login-neon-rgb),.24),0 0 18px rgba(var(--login-neon-rgb),.30),inset 0 0 0 1px rgba(255,255,255,.13)!important;
-}
-.plan-sheet.login.active{
-  box-shadow:0 -18px 46px rgba(var(--login-neon-rgb),.28),0 0 24px rgba(var(--login-neon-rgb),.48),inset 0 0 0 1px rgba(255,255,255,.18)!important;
-}
-.plan-sheet.basic{
-  border-color:rgba(var(--basic-neon-rgb),.92)!important;
-  box-shadow:0 -12px 34px rgba(var(--basic-neon-rgb),.20),0 0 18px rgba(var(--basic-neon-rgb),.28)!important;
-}
-.plan-sheet.basic.active{box-shadow:0 -18px 46px rgba(var(--basic-neon-rgb),.28),0 0 25px rgba(var(--basic-neon-rgb),.46)!important;}
-.plan-sheet.plus{
-  border-color:rgba(var(--plus-neon-rgb),.94)!important;
-  box-shadow:0 -12px 34px rgba(var(--plus-neon-rgb),.20),0 0 18px rgba(var(--plus-neon-rgb),.28)!important;
-}
-.plan-sheet.plus.active{box-shadow:0 -18px 46px rgba(var(--plus-neon-rgb),.28),0 0 25px rgba(var(--plus-neon-rgb),.46)!important;}
-.plan-sheet.premium{
-  border-color:rgba(var(--premium-neon-rgb),.94)!important;
-  box-shadow:0 -12px 34px rgba(var(--premium-neon-rgb),.20),0 0 18px rgba(var(--premium-neon-rgb),.28)!important;
-}
-.plan-sheet.premium.active{box-shadow:0 -18px 46px rgba(var(--premium-neon-rgb),.28),0 0 25px rgba(var(--premium-neon-rgb),.48)!important;}
-
-/* 三方案內層等級：Basic 銅、Plus 銀、Premium 金。 */
-.plan-sheet.basic .sheet-summary{
-  background:linear-gradient(135deg,rgba(111,53,27,.96),rgba(199,122,63,.92) 58%,rgba(240,183,123,.90))!important;
-  border:1px solid rgba(255,218,176,.54)!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 12px 28px rgba(111,53,27,.22)!important;
-}
-.plan-sheet.plus .sheet-summary{
-  background:linear-gradient(135deg,rgba(115,123,136,.96),rgba(216,221,229,.94) 56%,rgba(255,255,255,.92))!important;
-  border:1px solid rgba(255,255,255,.72)!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.64),0 12px 28px rgba(71,85,105,.20)!important;
-}
-.plan-sheet.premium .sheet-summary{
-  background:linear-gradient(135deg,rgba(141,91,0,.97),rgba(227,173,34,.94) 56%,rgba(255,233,154,.94))!important;
-  border:1px solid rgba(255,241,177,.78)!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.40),0 12px 30px rgba(141,91,0,.24)!important;
-}
-.plan-sheet.basic .sheet-summary .sheet-title,
-.plan-sheet.basic .sheet-summary .sheet-price,
-.plan-sheet.basic .sheet-summary .sheet-price span,
-.plan-sheet.premium .sheet-summary .sheet-title,
-.plan-sheet.premium .sheet-summary .sheet-price,
-.plan-sheet.premium .sheet-summary .sheet-price span{color:#fff8e8!important;text-shadow:0 2px 10px rgba(0,0,0,.30)!important;}
-.plan-sheet.plus .sheet-summary .sheet-title,
-.plan-sheet.plus .sheet-summary .sheet-price,
-.plan-sheet.plus .sheet-summary .sheet-price span{color:#111827!important;text-shadow:0 1px 0 rgba(255,255,255,.65)!important;}
-.plan-sheet.basic .sheet-tag{background:rgba(69,30,13,.36)!important;color:#fff5e9!important;border-color:rgba(255,224,187,.46)!important;}
-.plan-sheet.plus .sheet-tag{background:rgba(255,255,255,.50)!important;color:#334155!important;border-color:rgba(71,85,105,.24)!important;}
-.plan-sheet.premium .sheet-tag{background:rgba(105,65,0,.28)!important;color:#fffdf0!important;border-color:rgba(255,246,190,.52)!important;}
-.plan-sheet.basic .mini-pill,.plan-sheet.premium .mini-pill{color:#fff!important;background:rgba(15,23,42,.18)!important;border-color:rgba(255,255,255,.30)!important;}
-.plan-sheet.plus .mini-pill{color:#1f2937!important;background:rgba(255,255,255,.44)!important;border-color:rgba(71,85,105,.22)!important;}
-
-/* 帳號核對成功：黃光立刻切成綠光，卡片再往上拉。 */
-.plan-sheet.login.account-verified{
-  border-color:rgba(var(--verified-neon-rgb),.98)!important;
-  box-shadow:0 -22px 54px rgba(var(--verified-neon-rgb),.35),0 0 30px rgba(var(--verified-neon-rgb),.66),inset 0 0 0 1px rgba(255,255,255,.20)!important;
-  animation:angVerifiedLift .72s var(--ease) both!important;
-}
-.plan-sheet.login.account-verified .sheet-handle{background:var(--verified-neon)!important;box-shadow:0 0 12px rgba(var(--verified-neon-rgb),.74)!important;}
-.plan-sheet.login.account-verified .sheet-title::after{
-  content:"  ✓";
-  color:var(--verified-neon);
-  text-shadow:0 0 12px rgba(var(--verified-neon-rgb),.82);
-}
-@keyframes angVerifiedLift{
-  0%{transform:scale(1) translateY(0);}
-  45%{transform:scale(1.015) translateY(-24px);}
-  100%{transform:scale(1.005) translateY(-14px);}
-}
-
-.ang-index-version{
-  position:absolute;left:10px;top:12px;z-index:45;padding:5px 9px;border-radius:999px;
-  color:rgba(255,255,255,.80);background:rgba(5,8,22,.34);border:1px solid rgba(255,255,255,.10);
-  font-size:9px;font-weight:900;letter-spacing:.08em;backdrop-filter:blur(10px);pointer-events:none;
-}
-/* 預留兩方案版的金銀等級樣式。 */
-.plan-sheet[data-metal="silver"] .sheet-summary{background:linear-gradient(135deg,var(--silver-1),var(--silver-2),var(--silver-3))!important;}
-.plan-sheet[data-metal="gold"] .sheet-summary{background:linear-gradient(135deg,var(--gold-1),var(--gold-2),var(--gold-3))!important;}
-/* ANG_INDEX_V060_PRINCE_STYLE_END */
-
   </style>
 
 <script>
@@ -1103,6 +986,31 @@ body:not([data-theme="dark"]) .phone::after{opacity:.10!important;}
 })();
 /* ANG_0603_PLATFORM_CREATOR_APP_RETURN_HANDLER_END */
 </script>
+
+
+<style id="ang-v060-minimal-index-style">
+:root{
+  --ang-login:#ffd84a;--ang-login-rgb:255,216,74;
+  --ang-ok:#35e67a;--ang-ok-rgb:53,230,122;
+  --ang-basic:#6edbff;--ang-basic-rgb:110,219,255;
+  --ang-plus:#ff4fa8;--ang-plus-rgb:255,79,168;
+  --ang-premium:#a873ff;--ang-premium-rgb:168,115,255;
+}
+.phone::after{opacity:.16!important}
+body:not([data-theme="dark"]) .phone::after{opacity:.10!important}
+.plan-sheet{border-width:2px!important;border-style:solid!important;transition:opacity .28s var(--ease),transform .42s var(--ease),box-shadow .32s ease,border-color .32s ease!important}
+.plan-sheet.login{border-color:rgba(var(--ang-login-rgb),.94)!important;box-shadow:0 -14px 34px rgba(var(--ang-login-rgb),.22),0 0 18px rgba(var(--ang-login-rgb),.30)!important}
+.plan-sheet.basic{border-color:rgba(var(--ang-basic-rgb),.94)!important;box-shadow:0 -14px 34px rgba(var(--ang-basic-rgb),.18),0 0 18px rgba(var(--ang-basic-rgb),.26)!important}
+.plan-sheet.plus{border-color:rgba(var(--ang-plus-rgb),.94)!important;box-shadow:0 -14px 34px rgba(var(--ang-plus-rgb),.18),0 0 18px rgba(var(--ang-plus-rgb),.26)!important}
+.plan-sheet.premium{border-color:rgba(var(--ang-premium-rgb),.94)!important;box-shadow:0 -14px 34px rgba(var(--ang-premium-rgb),.18),0 0 18px rgba(var(--ang-premium-rgb),.26)!important}
+.plan-sheet.basic .sheet-tag{background:linear-gradient(135deg,#6f351b,#c77a3f)!important;color:#fff8ee!important;border-color:rgba(255,215,170,.52)!important}
+.plan-sheet.plus .sheet-tag{background:linear-gradient(135deg,#8a929f,#eef1f5)!important;color:#243041!important;border-color:rgba(255,255,255,.75)!important}
+.plan-sheet.premium .sheet-tag{background:linear-gradient(135deg,#946300,#e3ad22)!important;color:#fffdf2!important;border-color:rgba(255,241,170,.72)!important}
+.plan-sheet.login.account-verified{border-color:rgba(var(--ang-ok-rgb),.98)!important;box-shadow:0 -20px 50px rgba(var(--ang-ok-rgb),.32),0 0 28px rgba(var(--ang-ok-rgb),.60)!important;animation:angLoginLift .68s var(--ease) both!important}
+.plan-sheet.login.account-verified .sheet-handle{background:var(--ang-ok)!important;box-shadow:0 0 12px rgba(var(--ang-ok-rgb),.70)!important}
+@keyframes angLoginLift{0%{transform:scale(1) translateY(0)}58%{transform:scale(1.01) translateY(-20px)}100%{transform:scale(1) translateY(-14px)}}
+.ang-index-version{position:absolute;left:12px;top:12px;z-index:50;padding:5px 9px;border-radius:999px;background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.18);color:#fff;font-size:11px;font-weight:900;backdrop-filter:blur(10px)}
+</style>
 
 </head>
 
@@ -2540,62 +2448,15 @@ body:not([data-theme="dark"]) .phone::after{opacity:.10!important;}
     window.addEventListener('load',function(){ if (handlePlatformCreatorSuccessQueryNoScheme()) return; if (handlePlatformEmailVerifyFromGithub()) return; init(); startNativeAuthReceiveWatch(); });
   </script>
 
-<script>
-/* ANG_INDEX_V060_PRINCE_SCRIPT_START */
+<script id="ang-v060-minimal-index-script">
 (function(){
-  function byId(id){return document.getElementById(id);}
-  function loginSheet(){return document.querySelector('.plan-sheet.login[data-key="login"]');}
-  function resetLoginVerified(){
-    var sheet=loginSheet();
-    if(sheet)sheet.classList.remove('account-verified');
-  }
-  function markLoginVerified(){
-    var sheet=loginSheet(),phone=byId('phone');
-    if(!sheet)return;
-    sheet.classList.add('account-verified');
-    if(typeof window.setActiveManagerSheet==='function')window.setActiveManagerSheet('login',true);
-    requestAnimationFrame(function(){
-      if(phone)phone.classList.add('expanded');
-    });
-  }
-  function syncLoginStatus(){
-    var status=byId('adminLoginStatus');
-    if(!status)return;
-    if(status.classList.contains('success') && String(status.textContent||'').trim())markLoginVerified();
-    else if(status.classList.contains('error'))resetLoginVerified();
-  }
-  function initV060Index(){
-    var phone=byId('phone');
-    if(phone && !phone.querySelector('.ang-index-version')){
-      var version=document.createElement('div');
-      version.className='ang-index-version';
-      version.textContent='ANG HR v0.6.0';
-      phone.appendChild(version);
-    }
-    var basic=document.querySelector('.plan-sheet.basic');
-    var plus=document.querySelector('.plan-sheet.plus');
-    var premium=document.querySelector('.plan-sheet.premium');
-    if(basic)basic.dataset.metal='bronze';
-    if(plus)plus.dataset.metal='silver';
-    if(premium)premium.dataset.metal='gold';
-
-    var status=byId('adminLoginStatus');
-    if(status){
-      new MutationObserver(syncLoginStatus).observe(status,{attributes:true,childList:true,subtree:true,characterData:true});
-      syncLoginStatus();
-    }
-    var company=byId('adminCompanyCode');
-    var email=byId('adminEmail');
-    if(company)company.addEventListener('input',resetLoginVerified,{passive:true});
-    if(email)email.addEventListener('input',resetLoginVerified,{passive:true});
-
-    /* OAuth 回到本頁時既有程式會寫入 success，這裡統一觸發綠光與上拉。 */
-    window.addEventListener('pageshow',function(){setTimeout(syncLoginStatus,120);});
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initV060Index);
-  else initV060Index();
+  function sheet(){return document.querySelector('.plan-sheet.login[data-key="login"]')}
+  function mark(){var s=sheet(),p=document.getElementById('phone');if(!s)return;s.classList.add('account-verified');if(p)p.classList.add('expanded')}
+  function reset(){var s=sheet();if(s)s.classList.remove('account-verified')}
+  function sync(){var st=document.getElementById('adminLoginStatus');if(!st)return;if(st.classList.contains('success')&&String(st.textContent||'').trim())mark();else if(st.classList.contains('error'))reset()}
+  function init(){var p=document.getElementById('phone');if(p&&!p.querySelector('.ang-index-version')){var v=document.createElement('div');v.className='ang-index-version';v.textContent='ANG HR v0.6.0';p.appendChild(v)}var st=document.getElementById('adminLoginStatus');if(st){new MutationObserver(sync).observe(st,{attributes:true,childList:true,subtree:true,characterData:true});sync()}['adminCompanyCode','adminEmail'].forEach(function(id){var el=document.getElementById(id);if(el)el.addEventListener('input',reset)})}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
-/* ANG_INDEX_V060_PRINCE_SCRIPT_END */
 </script>
 
 </body>
