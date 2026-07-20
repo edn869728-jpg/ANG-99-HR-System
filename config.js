@@ -1,7 +1,6 @@
 //=============================================================================
 // 檔案：config.js
-// 說明：ANG HR GitHub 前端設定檔（已填好版）
-// 重點：GAS 只當 API；頁面切換一律走 GitHub 前端 admin.html / employee.html。
+// 說明：ANG HR GitHub 前端設定檔（v0.6.0）
 //=============================================================================
 (function(window){
   'use strict';
@@ -11,29 +10,18 @@
   var GOOGLE_CLIENT_ID = '660707205594-74rvsq9s1h87v1s5pi9nvtms1e4qipat.apps.googleusercontent.com';
   var LINE_CHANNEL_ID = '2010402308';
 
-  function cleanBase(url){
-    return String(url || '').trim().replace(/\/+$/, '');
-  }
-
-  function joinUrl(base, file){
-    base = cleanBase(base || FRONTEND_BASE_URL);
-    file = String(file || '').replace(/^\/+/, '');
-    return base + '/' + file;
-  }
+  function cleanBase(url){ return String(url || '').trim().replace(/\/+$/, ''); }
+  function joinUrl(base, file){ return cleanBase(base || FRONTEND_BASE_URL) + '/' + String(file || '').replace(/^\/+/, ''); }
 
   var frontendBaseUrl = cleanBase(FRONTEND_BASE_URL);
 
   window.ANG_HR_CONFIG = {
     appName: 'ANG HR System',
+    version: '0.6.0',
     contactEmail: 'ang0603.system@gmail.com',
-
-    // API：這兩個是 GAS 後端，僅供 fetch / google.script.run bridge 呼叫。
-    // 不可拿來當頁面跳轉網址。
     gasApiUrl: GAS_API_URL,
     apiBaseUrl: GAS_API_URL,
     workerApiUrl: '',
-
-    // GitHub 前端：index / employee / admin 切換都走這裡。
     frontendBaseUrl: frontendBaseUrl,
     githubBaseUrl: frontendBaseUrl,
     indexPage: 'index.html',
@@ -42,19 +30,20 @@
     indexPageUrl: joinUrl(frontendBaseUrl, 'index.html'),
     employeePageUrl: joinUrl(frontendBaseUrl, 'employee.html'),
     adminPageUrl: joinUrl(frontendBaseUrl, 'admin.html'),
-
-    // 保留 webAppUrl 這個舊名稱，但內容改為 GitHub 前端，不是 GAS。
     webAppUrl: joinUrl(frontendBaseUrl, 'employee.html'),
-
     googleClientId: GOOGLE_CLIENT_ID,
     googleWebClientId: GOOGLE_CLIENT_ID,
     lineChannelId: LINE_CHANNEL_ID,
-
     themeColors: ['#FF87E0', '#CCA4FF', '#8089FF', '#59DDFF'],
     defaultCompanyId: '',
     defaultEmployeeId: '',
-
     platformCreatorEmployeeId: 'ANG8963',
     freePrivilegeOwnerId: 'ANG8963'
   };
+
+  // v0.6.0 共用功能：管理端＋員工端同步載入。
+  var featureScript = document.createElement('script');
+  featureScript.src = joinUrl(frontendBaseUrl, 'ang-hr-v0.6.0.js') + '?v=0.6.0';
+  featureScript.defer = true;
+  document.head.appendChild(featureScript);
 })(window);
