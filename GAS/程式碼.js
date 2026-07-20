@@ -3689,14 +3689,15 @@ function handleApi_(action, payload, callback) {
       case 'generateEmployeeBindLink': result = apiGenerateEmployeeBindLinkV28_(payload); break;
       case 'resetEmployeeDeviceBinding': result = apiResetEmployeeDeviceBindingV28_(payload); break;
       case 'employeeBootstrap':
-      case 'getEmployeeBootstrapData': result = apiEmployeeBootstrapV28_(payload); break;
+      case 'getEmployeeBootstrapData': result = enrichEmployeeBootstrapV060_(apiEmployeeBootstrapV28_(payload), payload); break;
       case 'employeeHeaderData': result = apiEmployeeHeaderDataV28_(payload); break;
-      case 'employeeClock': result = apiEmployeeClockV28_(payload); break;
+      case 'employeeClock': result = employeeClockV060_(payload); break;
       case 'employeeLeave': result = apiGenericOkV28_('請假申請已送出', payload); break;
       case 'employeeClockFix': result = apiGenericOkV28_('補打卡申請已送出', payload); break;
       case 'employeeUpload': result = apiGenericOkV28_('資料已送出', payload); break;
       case 'employeeMessage': result = apiGenericOkV28_('留言已送出', payload); break;
-      case 'employeePreselect': result = apiGenericOkV28_('預選休已送出', payload); break;
+      case 'employeePreselect':
+      case 'submitPreselect': result = submitPreselectV060_(payload); break;
       case 'getTodayStatus': result = ok_({ today:{icon:'✅',text:'今日狀態正常',urgency:'normal'}, tomorrow:{text:'明日班表請查看排班頁'} }); break;
       case 'getRecentActivities': result = ok_({ activities:[] }); break;
       case 'getNoticesForEmployee': result = ok_({ notices:[] }); break;
@@ -3739,6 +3740,15 @@ function handleApi_(action, payload, callback) {
       case 'saveMixedModeSetting': result = saveMixedModeSetting(payload); break;
       case 'saveApproverSettings': result = saveApproverSettings(payload); break;
       case 'saveSystemSettings': result = saveSystemSettings(payload); break;
+      case 'setupV060Sheets': result = setupV060Sheets(payload); break;
+      case 'savePreselectSettings': result = savePreselectSettingsV060_(payload); break;
+      case 'getPreselectSettings': result = getPreselectSettingsV060_(payload); break;
+      case 'getEmployeePreselect': result = getEmployeePreselectV060_(payload); break;
+      case 'createSupportAssignment': result = createSupportAssignmentV060_(payload); break;
+      case 'listSupportAssignments': result = listSupportAssignmentsV060_(payload); break;
+      case 'cancelSupportAssignment': result = cancelSupportAssignmentV060_(payload); break;
+      case 'saveEmergencyContact': result = saveEmergencyContactV060_(payload); break;
+      case 'getEmergencyContactHistory': result = getEmergencyContactHistoryV060_(payload); break;
       case 'loadSystemSettings': result = loadSystemSettings(payload); break;
       case 'issueFreePrivilegeCode': result = apiIssueFreePrivilegeCode_(payload); break;
       case 'getEmployeeDashboard': result = apiFrontendGetEmployeeDashboardV29_(payload); break;
